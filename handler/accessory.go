@@ -8,7 +8,6 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"time"

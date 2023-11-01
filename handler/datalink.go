@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"encoding/json"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )

@@ -2,6 +2,7 @@ package main
 
 import (
 	"elichika/router"
+	"elichika/config"
 
 	"fmt"
 	"os"
@@ -45,6 +46,6 @@ func main() {
 
 	r := gin.Default()
 	router.Router(r)
-
-	r.Run(":8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	fmt.Println("server address")
+	r.Run(config.Conf.ServerAddress) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
