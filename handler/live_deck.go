@@ -18,7 +18,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"xorm.io/xorm"
 )
 
 func SaveDeckAll(ctx *gin.Context) {
@@ -36,12 +35,11 @@ func SaveDeckAll(ctx *gin.Context) {
 	err := decoder.Decode(&req)
 	utils.CheckErr(err)
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	deckInfo := session.GetUserLiveDeck(req.DeckID)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	db := ctx.MustGet("masterdata.db").(*xorm.Engine)
 	for i := 0; i < 9; i++ {
 		if req.CardWithSuit[i*2+1] == 0 {
 			req.CardWithSuit[i*2+1] = klab.DefaultSuitMasterIDFromMemberMasterID(
@@ -79,20 +77,14 @@ func SaveDeckAll(ctx *gin.Context) {
 			decoder.UseNumber()
 			err = decoder.Decode(&dictInfo)
 			utils.CheckErr(err)
-			// fmt.Println("Party Info:", dictInfo)
-
-			roles := []int{}
-			err = db.Table("m_card").
-				Where("id IN (?,?,?)", dictInfo.CardMasterIDs[0], dictInfo.CardMasterIDs[1], dictInfo.CardMasterIDs[2]).
-				Cols("role").Find(&roles)
-			utils.CheckErr(err)
 
 			partyInfo := model.UserLiveParty{}
-			partyInfo.UserID = UserID
+			partyInfo.UserID = userID
 			partyInfo.PartyID = int(partyId)
-			partyInfo.Name.DotUnderText = gamedata.LiveParty.PartyInfoByRoleIDs[roles[0]][roles[1]][roles[2]].PartyName
+			partyInfo.IconMasterID, partyInfo.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIDs(
+				dictInfo.CardMasterIDs[0], dictInfo.CardMasterIDs[1], dictInfo.CardMasterIDs[2],
+			)
 			partyInfo.UserLiveDeckID = req.DeckID
-			partyInfo.IconMasterID = gamedata.LiveParty.PartyInfoByRoleIDs[roles[0]][roles[1]][roles[2]].PartyIcon
 			partyInfo.CardMasterID1 = dictInfo.CardMasterIDs[0]
 			partyInfo.CardMasterID2 = dictInfo.CardMasterIDs[1]
 			partyInfo.CardMasterID3 = dictInfo.CardMasterIDs[2]
@@ -190,7 +182,6 @@ func SaveDeck(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, UserID)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	db := ctx.MustGet("masterdata.db").(*xorm.Engine)
 
 	// fetch the deck and parties affected
 	deck := session.GetUserLiveDeck(req.DeckID)
@@ -255,17 +246,12 @@ func SaveDeck(ctx *gin.Context) {
 		})
 
 		partyInfo := gjson.Parse(partyJson)
+		partyIcon, partyName := gamedata.GetLivePartyInfoByCardMasterIDs(
+			int(partyInfo.Get("card_master_id_1").Int()),
+			int(partyInfo.Get("card_master_id_2").Int()),
+			int(partyInfo.Get("card_master_id_3").Int()),
+		)
 
-		roles := []int{}
-		err = db.Table("m_card").
-			Where("id IN (?,?,?)", partyInfo.Get("card_master_id_1").Int(),
-				partyInfo.Get("card_master_id_2").Int(),
-				partyInfo.Get("card_master_id_3").Int()).
-			Cols("role").Find(&roles)
-		utils.CheckErr(err)
-
-		partyIcon := gamedata.LiveParty.PartyInfoByRoleIDs[roles[0]][roles[1]][roles[2]].PartyIcon
-		partyName := gamedata.LiveParty.PartyInfoByRoleIDs[roles[0]][roles[1]][roles[2]].PartyName
 		partyJson, _ = sjson.Set(partyJson, "name.dot_under_text", partyName)
 		partyJson, _ = sjson.Set(partyJson, "icon_master_id", partyIcon)
 		err = json.Unmarshal([]byte(partyJson), &party)

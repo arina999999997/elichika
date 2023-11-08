@@ -2,6 +2,7 @@ package handler
 
 import (
 	"elichika/config"
+	"elichika/gamedata"
 	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"
@@ -14,7 +15,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"xorm.io/xorm"
 )
 
 func FetchTrainingTree(ctx *gin.Context) {
@@ -26,8 +26,8 @@ func FetchTrainingTree(ctx *gin.Context) {
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	signBody := `"{}"`
 	signBody, _ = sjson.Set(signBody, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterID))
@@ -37,14 +37,15 @@ func FetchTrainingTree(ctx *gin.Context) {
 }
 
 func LevelUpCard(ctx *gin.Context) {
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
 	type LevelUpCardReq struct {
-		CardMasterId    int `json:"card_master_id"`
+		CardMasterID    int `json:"card_master_id"`
 		AdditionalLevel int `json:"additional_level"`
 	}
 
@@ -53,60 +54,60 @@ func LevelUpCard(ctx *gin.Context) {
 		panic(err)
 	}
 
-	userCard := session.GetUserCard(req.CardMasterId)
-	userCard.Level += req.AdditionalLevel
-	session.UpdateUserCard(userCard)
+	cardLevel := gamedata.CardLevel[gamedata.Card[req.CardMasterID].CardRarityType]
+	card := session.GetUserCard(req.CardMasterID)
+	session.RemoveGameMoney(int64(
+		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.GameMoneyPrefixSum[card.Level]))
+	session.RemoveCardExp(int64(
+		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.ExpPrefixSum[card.Level]))
+	card.Level += req.AdditionalLevel
+	session.UpdateUserCard(card)
 	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
-
-	// TODO: Handle things like exp and gold cost
 }
 
 func GradeUpCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type GradeUpCardReq struct {
 		CardMasterID int `json:"card_master_id"`
+		ContentID    int `json:"content_id"`
 	}
 	req := GradeUpCardReq{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
-
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-
-	userCard := session.GetUserCard(req.CardMasterID)
-	memberInfo := session.GetMember(klab.MemberMasterIDFromCardMasterID(req.CardMasterID))
-	userCard.Grade += 1
-	currentBondLevel := klab.BondLevelFromBondValue(memberInfo.LovePointLimit)
-	currentBondLevel += klab.CardRarityFromCardMasterID(req.CardMasterID) / 10
-	memberInfo.LovePointLimit = klab.BondRequiredTotal(currentBondLevel)
-	session.UpdateUserCard(userCard)
-	memberInfo.IsNew = true // setting this will make the game update the bond level, not sure where to set it to false
-	session.UpdateMember(memberInfo)
-
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+	masterCard := gamedata.Card[req.CardMasterID]
+	card := session.GetUserCard(req.CardMasterID)
+	member := session.GetMember(*masterCard.MemberMasterID)
+	card.Grade += 1
+	currentBondLevel := klab.BondLevelFromBondValue(member.LovePointLimit)
+	currentBondLevel += masterCard.CardRarityType / 10
+	member.LovePointLimit = klab.BondRequiredTotal(currentBondLevel)
+	session.UpdateUserCard(card)
+	member.IsNew = true
+	session.UpdateMember(member)
+	session.RemoveResource(masterCard.CardGradeUpItem[card.Grade][req.ContentID])
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
-
 	// this trigger show the pop up after limit break
-
 	session.AddTriggerCardGradeUp(0, &model.TriggerCardGradeUp{
-		UserID:               UserID,
+		UserID:               userID,
 		TriggerID:            0,
-		CardMasterID:         userCard.CardMasterID,
-		BeforeLoveLevelLimit: currentBondLevel - klab.CardRarityFromCardMasterID(req.CardMasterID)/10,
+		CardMasterID:         req.CardMasterID,
+		BeforeLoveLevelLimit: currentBondLevel - masterCard.CardRarityType/10,
 		AfterLoveLevelLimit:  currentBondLevel})
 
 	resp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
 	resp = SignResp(ctx, resp, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
-	// fmt.Println(resp)
 }
 
 func ActivateTrainingTreeCell(ctx *gin.Context) {
@@ -121,112 +122,87 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		panic(err)
 	}
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	db := ctx.MustGet("masterdata.db").(*xorm.Engine)
-
-	type TrainingTreeMapping struct {
-		// ID int  // card master id
-		TrainingTreeMappingMID int `xorm:"'training_tree_mapping_m_id'"` // the training tree
-		// TrainingTreeCardParamMID int  // same as card master id
-		TrainingTreeCardPassiveSkillIncreaseMID int `xorm:"'training_tree_card_passive_skill_increase_m_id'"` // 1 to 2
-	}
-
-	treeMapping := TrainingTreeMapping{}
-	exists, err := db.Table("m_training_tree").Where("id = ?", req.CardMasterID).
-		Cols("training_tree_mapping_m_id", "training_tree_card_passive_skill_increase_m_id").Get(&treeMapping)
-	if (err != nil) || (!exists) {
-		panic(err)
-	}
-
-	type TrainingTreeCellContent struct {
-		// Id int // tree id
-		CellID               int `xorm:"'cell_id'"` // cell id
-		TrainingTreeCellType int // type of the cell
-		TrainingContentNo    int // the content of the cell
-		// RequiredGrade int // the limit break required, no need to read this here
-		TrainingTreeCellItemSetMID int `xorm:"'training_tree_cell_item_set_m_id'"` // the set of items used to unlock this cell
-		// SnsCoin int // always 1, consume exp
-	}
-
-	cellContents := []TrainingTreeCellContent{}
-	err = db.Table("m_training_tree_cell_content").Where("id = ?", treeMapping.TrainingTreeMappingMID).
-		Cols("cell_id", "training_tree_cell_type", "training_content_no", "training_tree_cell_item_set_m_id").
-		OrderBy("cell_id").Find(&cellContents)
-
-	if err != nil {
-		panic(err)
-	}
-
-	// stats reward is in "m_training_tree_card_param"
-	type TrainingTreeCardParam struct {
-		TrainingContentType int
-		Value               int
-	}
-	cellParams := []TrainingTreeCardParam{}
-	db.Table("m_training_tree_card_param").
-		Where("id = ?", req.CardMasterID).
-		Cols("training_content_type", "value").OrderBy("training_content_no").Find(&cellParams)
-
-	increasedStats := [5]int{}
 	card := session.GetUserCard(req.CardMasterID)
+	masterCard := gamedata.Card[req.CardMasterID]
+	trainingTree := masterCard.TrainingTree
+	cellContents := &trainingTree.TrainingTreeMapping.TrainingTreeCellContents
 	for _, cellID := range req.CellMasterIDs {
-		switch cellContents[cellID].TrainingTreeCellType {
-		case 2:
-			// param cells, reference the
-			paramCell := &cellParams[cellContents[cellID].TrainingContentNo-1]
-			increasedStats[paramCell.TrainingContentType] += paramCell.Value
-		case 3:
-			// voice
-			// TODO: Unlock voice
-		case 4:
-			// story
-			// TODO: Unlock story
+		cell := &(*cellContents)[cellID]
+		// consume practice items
+		for _, resource := range cell.TrainingTreeCellItemSet.Resources {
+			session.RemoveResource(resource)
+		}
+
+		switch cell.TrainingTreeCellType {
+		// note that this reference is different from m_training_tree_cell_type_setting
+		// that table is for training_content_type
+		case 2: // params
+			paramCell := &trainingTree.TrainingTreeCardParams[cell.TrainingContentNo]
+			switch paramCell.TrainingContentType {
+			case 2: // stamina
+				card.TrainingLife += paramCell.Value
+			case 3: // appeal
+				card.TrainingAttack += paramCell.Value
+			case 4: // technique
+				card.TrainingDexterity += paramCell.Value
+			default:
+				panic("Unexpected training content type")
+			}
+		case 3: // voice
+			naviActionID := trainingTree.NaviActionIDs[cell.TrainingContentNo]
+			session.AddNaviAction(naviActionID)
+		case 4: // story cell
+			// training_content_type 11 in m_training_tree_card_story_side
+			storySideID, exists := trainingTree.TrainingTreeCardStorySides[11]
+			if !exists {
+				panic("story doesn't exists")
+			}
+			session.AddStorySide(storySideID)
 		case 5:
 			// idolize
 			card.IsAwakening = true
 			card.IsAwakeningImage = true
-		case 6:
-			// award suit, suit have the same id as card
+			storySideID, exists := trainingTree.TrainingTreeCardStorySides[9]
+			if exists {
+				session.AddStorySide(storySideID)
+			}
+		case 6: // costume
 			// alternative suit is awarded based on amount of tile instead
-			// SELECT * FROM m_training_tree_card_suit WHERE card_m_id == suit_m_id; -> 0
 			session.InsertUserSuit(model.UserSuit{
-				UserID:       UserID,
-				SuitMasterID: card.CardMasterID,
+				UserID:       userID,
+				SuitMasterID: trainingTree.SuitMIDs[cell.TrainingContentNo],
 				IsNew:        true})
-		case 7:
-			// skill
+		case 7: // skill
 			card.ActiveSkillLevel += 1
-		case 8:
-			// insight
+		case 8: // insight
 			card.MaxFreePassiveSkill += 1
-		case 9:
-			// ability
+		case 9: // ability
 			card.PassiveSkillALevel += 1
+		default:
+			panic("Unknown cell type")
 		}
 	}
 
-	card.TrainingLife += increasedStats[2]
-	card.TrainingAttack += increasedStats[3]
-	card.TrainingDexterity += increasedStats[4]
-
-	// progression reward
-	progressionRewards := []model.Content{}
-	err = db.Table("m_training_tree_progress_reward").Where("card_master_id = ? AND activate_num > ? and activate_num <= ?",
-		card.CardMasterID, card.TrainingActivatedCellCount, card.TrainingActivatedCellCount+len(req.CellMasterIDs)).
-		Find(&progressionRewards)
-	utils.CheckErr(err)
-	for _, reward := range progressionRewards {
-		session.AddResource(reward)
+	// progress reward
+	for _, reward := range trainingTree.TrainingTreeProgressRewards {
+		if reward.ActivateNum > card.TrainingActivatedCellCount+len(req.CellMasterIDs) {
+			break
+		}
+		if reward.ActivateNum > card.TrainingActivatedCellCount {
+			session.AddResource(reward.Reward)
+		}
 	}
 
 	card.TrainingActivatedCellCount += len(req.CellMasterIDs)
 
-	if card.TrainingActivatedCellCount+1 == len(cellContents) {
+	if card.TrainingActivatedCellCount+1 == len(*cellContents) {
 		card.IsAllTrainingActivated = true
-		member := session.GetMember(klab.MemberMasterIDFromCardMasterID(card.CardMasterID))
+		member := session.GetMember(*masterCard.MemberMasterID)
 		member.AllTrainingCardCount++
 		session.UpdateMember(member)
 	}
@@ -239,7 +215,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	for _, cellID := range req.CellMasterIDs {
 		unlockedCells = append(unlockedCells,
 			model.TrainingTreeCell{
-				UserID:       UserID,
+				UserID:       userID,
 				CardMasterID: req.CardMasterID,
 				CellID:       cellID,
 				ActivatedAt:  timeStamp})

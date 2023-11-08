@@ -2,6 +2,7 @@ package live
 
 import (
 	"elichika/config"
+	"elichika/gamedata"
 	"elichika/handler"
 	"elichika/model"
 	"elichika/userdata"
@@ -15,21 +16,29 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"xorm.io/xorm"
 )
 
 func FetchLiveMusicSelect(ctx *gin.Context) {
 	now := time.Now()
 	year, month, day := now.Year(), now.Month(), now.Day()
+	// does this work if it's EOY?
 	tomorrow := time.Date(year, month, day+1, 0, 0, 0, 0, now.Location()).Unix()
 	weekday := int(now.Weekday())
 	if weekday == 0 {
 		weekday = 7
 	}
-	db := ctx.MustGet("masterdata.db").(*xorm.Engine)
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	liveDailyList := []model.LiveDaily{}
-	err := db.Table("m_live_daily").Where("weekday = ?", weekday).Cols("id,live_id").Find(&liveDailyList)
-	utils.CheckErr(err)
+	for _, liveDaily := range gamedata.LiveDaily {
+		if liveDaily.Weekday != weekday {
+			continue
+		}
+		liveDailyList = append(liveDailyList,
+			model.LiveDaily{
+				LiveDailyMasterID: liveDaily.ID,
+				LiveMasterID:      liveDaily.LiveID,
+			})
+	}
 	for k := range liveDailyList {
 		liveDailyList[k].EndAt = int(tomorrow)
 		liveDailyList[k].RemainingPlayCount = 5

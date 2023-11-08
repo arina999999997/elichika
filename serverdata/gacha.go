@@ -48,26 +48,25 @@ func InitGacha(session *xorm.Session, args []string) {
 	// gacha guarantee: new card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
 		GachaGuaranteeMasterID: 0,
-		GuaranteeHandler:       "guarantee_new_card",
-		GuaranteeParams:        []string{},
+		GuaranteeHandler:       "guaranteed_new_card",
 	})
 	// gacha guarantee: UR card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
 		GachaGuaranteeMasterID: 1,
-		GuaranteeHandler:       "guarantee_card_in_set",
-		GuaranteeParams:        []string{"card_rarity_type = 30"},
+		GuaranteeHandler:       "guaranteed_card_set",
+		CardSetSQL:             "card_rarity_type = 30",
 	})
 	// gacha guarantee: SR+ card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
 		GachaGuaranteeMasterID: 2,
-		GuaranteeHandler:       "guarantee_card_in_set",
-		GuaranteeParams:        []string{"card_rarity_type >= 20"},
+		GuaranteeHandler:       "guaranteed_card_set",
+		CardSetSQL:             "card_rarity_type >= 20",
 	})
 	// gacha guarantee: festival / party card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
 		GachaGuaranteeMasterID: 3,
-		GuaranteeHandler:       "guarantee_card_in_set",
-		GuaranteeParams:        []string{"passive_skill_slot == 2"},
+		GuaranteeHandler:       "guaranteed_card_set",
+		CardSetSQL:             "passive_skill_slot == 2",
 	})
 }
 

@@ -9,16 +9,16 @@ import (
 )
 
 type AppConfigs struct {
-	CdnServer  string   `json:"cdn_server"`
+	CdnServer     string `json:"cdn_server"`
 	ServerAddress string `json:"server_address"`
-	TapBondGain int `json:"tap_bond_gain"`
+	TapBondGain   int    `json:"tap_bond_gain"`
 }
 
 func DefaultConfigs() *AppConfigs {
 	return &AppConfigs{
-		CdnServer: "http://127.0.0.1:8080/static", // self-hosted 
+		CdnServer:     "http://127.0.0.1:8080/static", // self-hosted
 		ServerAddress: "0.0.0.0:8080",
-		TapBondGain: 20,
+		TapBondGain:   20,
 	}
 }
 

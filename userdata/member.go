@@ -2,11 +2,12 @@ package userdata
 
 import (
 	"elichika/enum"
+	"elichika/gamedata"
 	"elichika/klab"
 	"elichika/model"
+	"elichika/utils"
 
 	"fmt"
-	"xorm.io/xorm"
 )
 
 func (session *Session) GetMember(memberMasterID int) model.UserMemberInfo {
@@ -17,9 +18,7 @@ func (session *Session) GetMember(memberMasterID int) model.UserMemberInfo {
 	exists, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).Get(&member)
 	// inserted at login if not exist
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	if !exists {
 		panic("member not found")
 	}
@@ -41,9 +40,7 @@ func (session *Session) UpdateMember(member model.UserMemberInfo) {
 
 func (session *Session) InsertMembers(members []model.UserMemberInfo) {
 	affected, err := session.Db.Table("u_member").Insert(&members)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	fmt.Println("Inserted ", affected, " members")
 }
 
@@ -73,16 +70,10 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 	member.LoveLevel = klab.BondLevelFromBondValue(member.LovePoint)
 	// unlock bond stories, unlock bond board
 	if oldLoveLevel < member.LoveLevel {
-		db := session.Ctx.MustGet("masterdata.db").(*xorm.Engine)
-
-		rewards := []model.Content{}
-		err := db.Table("m_member_love_level_reward").Where("member_m_id = ? AND love_level > ? and love_level <= ?",
-			memberID, oldLoveLevel, member.LoveLevel).Find(&rewards)
-		if err != nil {
-			panic(err)
-		}
-		for i, _ := range rewards {
-			session.AddResource(rewards[i])
+		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
+		masterMember := gamedata.Member[memberID]
+		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
+			session.AddResource(masterMember.LoveLevelRewards[loveLevel])
 		}
 
 		latestLovePanelLevel := klab.MaxLovePanelLevelFromLoveLevel(member.LoveLevel)

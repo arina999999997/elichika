@@ -1,42 +1,18 @@
 package gacha
 
 import (
+	"elichika/gamedata"
 	"elichika/klab"
 	"elichika/model"
-	"elichika/serverdata"
 	"elichika/userdata"
-	"elichika/utils"
 
 	"math/rand"
 
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	cachedGroupWeight map[int]int64
-)
-
-func init() {
-	cachedGroupWeight = make(map[int]int64)
-}
-
-// fetch from db with cache
-func GetGroupWeight(groupID int) int64 {
-	_, exists := cachedGroupWeight[groupID]
-	if !exists {
-		// fetch all from db
-		groups := []model.GachaGroup{}
-		err := serverdata.Engine.Table("s_gacha_group").Find(&groups)
-		utils.CheckErr(err)
-		for _, group := range groups {
-			cachedGroupWeight[group.GroupMasterID] = group.GroupWeight
-		}
-	}
-	return cachedGroupWeight[groupID]
-}
-
 // it's not too bad to call this function multiple time, but maybe it's better to have a function that return multiple
-func ChooseRandomCard(cards []model.GachaCard) int {
+func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int {
 	if len(cards) == 0 { // no card
 		return 0
 	}
@@ -45,17 +21,16 @@ func ChooseRandomCard(cards []model.GachaCard) int {
 	for _, card := range cards {
 		_, exists := groups[card.GroupMasterID]
 		if !exists {
-			totalWeight += GetGroupWeight(card.GroupMasterID)
-			groups[card.GroupMasterID] = []int{}
+			totalWeight += gamedata.GachaGroup[card.GroupMasterID].GroupWeight
 		}
 		groups[card.GroupMasterID] = append(groups[card.GroupMasterID], card.CardMasterID)
 	}
 	groupRand := rand.Int63n(totalWeight)
 	for groupID, cardIDs := range groups {
-		if GetGroupWeight(groupID) > groupRand { // this group
+		if gamedata.GachaGroup[groupID].GroupWeight > groupRand { // this group
 			return cardIDs[rand.Intn(len(cardIDs))]
 		} else {
-			groupRand -= GetGroupWeight(groupID)
+			groupRand -= gamedata.GachaGroup[groupID].GroupWeight
 		}
 	}
 	panic("this shouldn't happen")
@@ -117,37 +92,28 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 
 func HandleGacha(ctx *gin.Context, req model.GachaDrawReq) (model.Gacha, []model.ResultCard) {
 	session := ctx.MustGet("session").(*userdata.Session)
-	draw := model.GachaDraw{}
-	exists, err := serverdata.Engine.Table("s_gacha_draw").
-		Where("gacha_draw_master_id = ?", req.GachaDrawMasterID).Get(&draw)
-	utils.CheckErrMustExist(err, exists)
-	gacha := session.GetGacha(draw.GachaMasterID)
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+	draw := *gamedata.GachaDraw[req.GachaDrawMasterID]
+	gacha := *gamedata.Gacha[draw.GachaMasterID]
 	cardPool := []model.GachaCard{}
 	for _, group := range gacha.DbGachaGroups {
-		groupPool := []model.GachaCard{}
-		err := serverdata.Engine.Table("s_gacha_card").Where("group_master_id = ?", group).Find(&groupPool)
-		utils.CheckErr(err)
-		cardPool = append(cardPool, groupPool...)
+		cardPool = append(cardPool, gamedata.GachaGroup[group].Cards...)
 		// allow 1 card to be in multiple group
 	}
 	ctx.Set("gacha_card_pool", cardPool)
-
 	// TODO: gacha recovery and economy
 	// for now just get this to work
 	resultCards := []model.ResultCard{}
-	for _, guranteeID := range draw.Guarantees {
-		gachaGuarantee := model.GachaGuarantee{}
-		exists, err := serverdata.Engine.Table("s_gacha_guarantee").
-			Where("gacha_guarantee_master_id = ?", guranteeID).Get(&gachaGuarantee)
-		utils.CheckErrMustExist(err, exists)
-		cardMasterID := GuaranteeHandlers[gachaGuarantee.GuaranteeHandler](ctx, gachaGuarantee.GuaranteeParams)
+	for _, guaranteeID := range draw.Guarantees {
+		gachaGuarantee := gamedata.GachaGuarantee[guaranteeID]
+		cardMasterID := GuaranteeHandlers[gachaGuarantee.GuaranteeHandler](ctx, gachaGuarantee)
 		if cardMasterID == 0 {
 			continue
 		}
 		resultCards = append(resultCards, MakeResultCard(session, cardMasterID, true))
 	}
 	for i := len(resultCards); i < draw.DrawCount; i++ {
-		resultCards = append(resultCards, MakeResultCard(session, ChooseRandomCard(cardPool), false))
+		resultCards = append(resultCards, MakeResultCard(session, ChooseRandomCard(gamedata, cardPool), false))
 	}
 	return gacha, resultCards
 }

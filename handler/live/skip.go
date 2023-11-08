@@ -2,6 +2,7 @@ package live
 
 import (
 	"elichika/config"
+	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler"
 	"elichika/klab"
@@ -16,7 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"xorm.io/xorm"
 )
 
 type DropWithTypes struct {
@@ -50,24 +50,22 @@ func LiveSkip(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	session.UserStatus.LastLiveDifficultyID = req.LiveDifficultyMasterID
-	db := ctx.MustGet("masterdata.db").(*xorm.Engine)
-	info := LiveFinishLiveDifficultyInfo{}
-
-	exists, err := db.Table("m_live_difficulty").Where("live_difficulty_id = ?", req.LiveDifficultyMasterID).Get(&info)
-	utils.CheckErrMustExist(err, exists)
-	liveMemberMappingID := 0
-	db.Table("m_live").Where("live_id = ?", info.LiveID).Cols("live_member_mapping_id").Get(&liveMemberMappingID)
+	liveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyMasterID]
 	centerPositions := []int{}
-	err = db.Table("m_live_member_mapping").Where("mapping_id = ? AND is_center = 1", liveMemberMappingID).
-		Cols("position").Find(&centerPositions)
-	utils.CheckErr(err)
-	info.RewardCenterLovePoint = klab.CenterBondGainBasedOnBondGain(info.RewardBaseLovePoint) / len(centerPositions)
+	for _, memberMapping := range liveDifficulty.Live.LiveMemberMapping {
+		if memberMapping.IsCenter {
+			centerPositions = append(centerPositions, memberMapping.Position)
+		}
+	}
+
+	rewardCenterLovePoint := klab.CenterBondGainBasedOnBondGain(liveDifficulty.RewardBaseLovePoint) / len(centerPositions)
 
 	skipLiveResult := SkipLiveResult{
 		LiveDifficultyMasterID: req.LiveDifficultyMasterID,
 		LiveDeckID:             req.DeckID,
-		GainUserExp:            info.RewardUserExp * req.TicketUseCount}
+		GainUserExp:            liveDifficulty.RewardUserExp * req.TicketUseCount}
 
 	for i := 1; i <= req.TicketUseCount; i++ {
 		skipLiveResult.Drops = append(skipLiveResult.Drops, DropWithTypes{})
@@ -91,9 +89,9 @@ func LiveSkip(ctx *gin.Context) {
 		// update member love point
 		isCenter := (i+1 == centerPositions[0])
 		isCenter = isCenter || ((len(centerPositions) > 1) && (i+1 == centerPositions[1]))
-		addedBond := info.RewardBaseLovePoint
+		addedBond := liveDifficulty.RewardBaseLovePoint
 		if isCenter {
-			addedBond += info.RewardCenterLovePoint
+			addedBond += rewardCenterLovePoint
 		}
 		memberMasterID := klab.MemberMasterIDFromCardMasterID(cardMasterId)
 
@@ -114,7 +112,7 @@ func LiveSkip(ctx *gin.Context) {
 		(*skipLiveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint = addedBond
 	}
 
-	if info.IsCountTarget { // counted toward target and profiles
+	if liveDifficulty.IsCountTarget { // counted toward target and profiles
 		liveStats := session.GetUserLiveStats()
 		idx := klab.LiveDifficultyTypeIndexFromLiveDifficultyID(req.LiveDifficultyMasterID)
 		liveStats.LivePlayCount[idx] += req.TicketUseCount

@@ -43,6 +43,21 @@ func (session *Session) RemoveGameMoney(money int64) {
 	})
 }
 
+func (session *Session) AddCardExp(exp int64) {
+	session.AddResource(model.Content{
+		ContentType:   4,
+		ContentID:     0,
+		ContentAmount: exp,
+	})
+}
+
+func (session *Session) RemoveCardExp(exp int64) {
+	session.RemoveResource(model.Content{
+		ContentType:   4,
+		ContentID:     0,
+		ContentAmount: exp,
+	})
+}
 func (session *Session) GetUserResource(contentType, contentID int) UserResource {
 	_, exists := session.UserResourceDiffs[contentType]
 	if !exists {

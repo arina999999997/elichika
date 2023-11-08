@@ -1,16 +1,16 @@
 package webui
 
 import (
-	"elichika/userdata"
 	"elichika/gamedata"
 	"elichika/locale"
+	"elichika/userdata"
 	"elichika/utils"
 
 	"fmt"
-	"strings"
 	"net/http"
-    "net/url"
+	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +24,7 @@ func BuildPrefix(ctx *gin.Context) string {
 	var res string
 	res = CommonPrefix
 	for key, value := range *ctx.MustGet("params").(*map[string]string) {
-		res += key + "="+value + "&"
+		res += key + "=" + value + "&"
 	}
 	return res + "response="
 }
@@ -46,10 +46,9 @@ func Common(ctx *gin.Context) {
 
 	lang := params["client"]
 	ctx.Set("locale", locale.Locales[lang])
-	ctx.Set("masterdata.db", locale.Locales[lang].MasterdataEngine)
 	ctx.Set("gamedata", locale.Locales[lang].Gamedata)
 	ctx.Set("dictionary", locale.Locales[lang].Dictionary)
-	
+
 	userIDString := params["user_id"]
 	userID := 0
 	userID, err = strconv.Atoi(userIDString)
@@ -58,7 +57,7 @@ func Common(ctx *gin.Context) {
 		utils.CheckErr(err)
 		if !exists {
 			ctx.Set("is_good", false)
-			ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + "Error: there is no user in the database, start playing first")
+			ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+"Error: there is no user in the database, start playing first")
 			return
 		}
 	}
@@ -72,32 +71,31 @@ func Birthday(ctx *gin.Context) {
 	if ctx.MustGet("is_good").(bool) == false {
 		return
 	}
-	
+
 	userID := ctx.MustGet("user_id").(int)
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + fmt.Sprint("Error: user ", userID, " doesn't exists"))
+		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: user ", userID, " doesn't exists"))
 		return
 	}
-	// var err error 
+	// var err error
 	params := *ctx.MustGet("params").(*map[string]string)
 	birthdayString, exists := params["birthday"]
-	if (!exists) {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + "Error: no birthday given")
+	if !exists {
+		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+"Error: no birthday given")
 		return
 	}
 	tokens := strings.Split(birthdayString, "-")
 	year, _ := strconv.Atoi(tokens[0])
 	month, _ := strconv.Atoi(tokens[1])
 	day, _ := strconv.Atoi(tokens[2])
-	session.UserStatus.BirthDate = year * 10000 + month * 100 + day
+	session.UserStatus.BirthDate = year*10000 + month*100 + day
 	session.UserStatus.BirthDay = day
 	session.UserStatus.BirthMonth = month
 	session.Finalize("", "")
-	ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userID, year, month, day))
+	ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userID, year, month, day))
 }
-
 
 func Accessory(ctx *gin.Context) {
 	if ctx.MustGet("is_good").(bool) == false {
@@ -107,7 +105,7 @@ func Accessory(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + fmt.Sprint("Error: user ", userID, " doesn't exists"))
+		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: user ", userID, " doesn't exists"))
 		return
 	}
 	params := *ctx.MustGet("params").(*map[string]string)
@@ -123,13 +121,13 @@ func Accessory(ctx *gin.Context) {
 		_, getRarity[20] = params["sr_accessories"]
 		_, getRarity[10] = params["r_accessories"]
 		for _, accessory := range gamedata.Accessory.Accessory {
-			if (getRarity[accessory.RarityType]) {
+			if getRarity[accessory.RarityType] {
 				accessoryIDs = append(accessoryIDs, accessory.MasterID)
 			}
 		}
 	}
 	if len(accessoryIDs) == 0 {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + fmt.Sprint("Error: no accessory found, add a specific ID or choose at least one rarity"))
+		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: no accessory found, add a specific ID or choose at least one rarity"))
 		return
 	}
 	amount, _ := strconv.Atoi(params["accessory_amount"])
@@ -138,7 +136,7 @@ func Accessory(ctx *gin.Context) {
 	for _, accessoryMasterID := range accessoryIDs {
 		masterAccessory, exists := gamedata.Accessory.Accessory[accessoryMasterID]
 		if !exists {
-			ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + fmt.Sprint("Error: invalid accessory id ", accessoryMasterID))
+			ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: invalid accessory id ", accessoryMasterID))
 			return
 		}
 		for i := 1; i <= amount; i++ {
@@ -155,5 +153,5 @@ func Accessory(ctx *gin.Context) {
 		}
 	}
 	session.Finalize("", "")
-	ctx.Redirect(http.StatusFound, BuildPrefix(ctx) + fmt.Sprint("Success: Added ", total, " accessories"))
+	ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Success: Added ", total, " accessories"))
 }

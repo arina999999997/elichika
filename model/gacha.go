@@ -140,8 +140,13 @@ type GachaCard struct { // s_gacha_card
 }
 
 // can be shared depending on impl
+// GuaranteedCardSet is not stored, built by gamedata when loaded, if applicable
+// - (static) CardSet can be used to specify almost if not all the guaranteed form official version had
+// - More exotic form of guarantee should be built into the handler itself
+// - If CardSetSQL is not empty, GuaranteedCardSet would contain the relevant cards ID
 type GachaGuarantee struct { // s_gacha_guarantee
-	GachaGuaranteeMasterID int      `xorm:"pk 'gacha_guarantee_master_id'"` // unique id
-	GuaranteeHandler       string   `xorm:"'handler'"`
-	GuaranteeParams        []string `xorm:"'params'"`
+	GachaGuaranteeMasterID int          `xorm:"pk 'gacha_guarantee_master_id'"` // unique id
+	GuaranteeHandler       string       `xorm:"'handler'"`
+	CardSetSQL             string       `xorm:"card_set_sql"`
+	GuaranteedCardSet      map[int]bool `xorm:"-"`
 }

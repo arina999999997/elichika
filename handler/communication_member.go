@@ -2,6 +2,7 @@ package handler
 
 import (
 	"elichika/config"
+	"elichika/gamedata"
 	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
@@ -9,11 +10,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	// "fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	"xorm.io/xorm"
+	// "xorm.io/xorm"
 )
 
 func FetchCommunicationMemberDetail(ctx *gin.Context) {
@@ -82,40 +84,34 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 
 func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	// mark all the song that this member is featured in as not new
-	// TODO: this has the side effect of inserting all the bond song, but it works for the most part
-	// it's a desired effect for now, but after adding song unlock, we can fix it by either checking the song separately
-	// or to insert all initially unlocked song from the beginning.
+	// only choose from the song user has access to, so no bond song and story locked songs
+	// TODO: also need to mark some flag to get rid of the ! on the button
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type UpdateUserLiveDifficultyNewFlag struct {
 		MemberMasterID int `json:"member_master_id"`
 	}
-	userID := ctx.GetInt("user_id")
-	db := ctx.MustGet("masterdata.db").(*xorm.Engine)
 	req := UpdateUserLiveDifficultyNewFlag{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	// this is atrocious, maybe prepare a db to avoid indirections
-	featuredMappings := []int{}
-	err = db.Table("m_live_member_mapping").Where("member_master_id = ?", req.MemberMasterID).
-		Cols("mapping_id").Find(&featuredMappings)
-	utils.CheckErr(err)
-	featuredLives := []int{}
-	err = db.Table("m_live").In("live_member_mapping_id", featuredMappings).Cols("live_id").Find(&featuredLives)
-	utils.CheckErr(err)
-	featuredLiveDifficulties := []int{}
-	err = db.Table("m_live_difficulty").In("live_id", featuredLives).Cols("live_difficulty_id").
-		Find(&featuredLiveDifficulties)
-	utils.CheckErr(err)
+
+	userID := ctx.GetInt("user_id")
 
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	for _, liveDifficultyID := range featuredLiveDifficulties {
-		liveDifficultyRecord := session.GetLiveDifficultyRecord(liveDifficultyID)
+
+	liveDifficultyRecords := session.GetAllLiveDifficultyRecords()
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+
+	for _, liveDifficultyRecord := range liveDifficultyRecords {
 		if liveDifficultyRecord.IsNew == false { // no need to update
 			continue
 		}
-		liveDifficultyRecord.IsNew = false
-		session.UpdateLiveDifficultyRecord(liveDifficultyRecord)
+		// update if it feature this member
+		_, exists := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyID].Live.LiveMemberMapping[req.MemberMasterID]
+		if exists {
+			liveDifficultyRecord.IsNew = false
+			session.UpdateLiveDifficultyRecord(liveDifficultyRecord)
+		}
 	}
 
 	signBody := session.Finalize(GetData("userModel.json"), "user_model")

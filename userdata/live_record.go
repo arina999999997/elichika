@@ -11,9 +11,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func GetOtherUserLiveRecord(otherUserID, liveDifficultyID int) model.UserLiveDifficultyRecord {
+func (session *Session) GetOtherUserLiveRecord(otherUserID, liveDifficultyID int) model.UserLiveDifficultyRecord {
 	record := model.UserLiveDifficultyRecord{}
-	exists, err := Engine.Table("u_live_record").
+	exists, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", otherUserID, liveDifficultyID).
 		Get(&record)
 	if err != nil {
@@ -29,10 +29,10 @@ func GetOtherUserLiveRecord(otherUserID, liveDifficultyID int) model.UserLiveDif
 }
 
 func (session *Session) GetLiveDifficultyRecord(liveDifficultyID int) model.UserLiveDifficultyRecord {
-	return GetOtherUserLiveRecord(session.UserStatus.UserID, liveDifficultyID)
+	return session.GetOtherUserLiveRecord(session.UserStatus.UserID, liveDifficultyID)
 }
 
-func (session *Session) GetAllLiveRecords() []model.UserLiveDifficultyRecord {
+func (session *Session) GetAllLiveDifficultyRecords() []model.UserLiveDifficultyRecord {
 	records := []model.UserLiveDifficultyRecord{}
 	err := session.Db.Table("u_live_record").Where("user_id = ?", session.UserStatus.UserID).
 		Find(&records)

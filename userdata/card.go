@@ -1,13 +1,12 @@
 package userdata
 
 import (
+	"elichika/gamedata"
 	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
 	"time"
-
-	"xorm.io/xorm"
 )
 
 // fetch a card, use the value in diff is present, otherwise fetch from db
@@ -24,6 +23,8 @@ func (session *Session) GetUserCard(cardMasterID int) model.UserCard {
 	}
 
 	if !exists {
+		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
+		masterCard := gamedata.Card[cardMasterID]
 		card = model.UserCard{
 			UserID:                     session.UserStatus.UserID,
 			CardMasterID:               cardMasterID,
@@ -35,7 +36,7 @@ func (session *Session) GetUserCard(cardMasterID int) model.UserCard {
 			IsAwakeningImage:           false,
 			IsAllTrainingActivated:     false,
 			TrainingActivatedCellCount: 0,
-			MaxFreePassiveSkill:        -1,
+			MaxFreePassiveSkill:        masterCard.PassiveSkillSlot,
 			Grade:                      -1, // check this for new card
 			TrainingLife:               0,
 			TrainingAttack:             0,
@@ -54,9 +55,6 @@ func (session *Session) GetUserCard(cardMasterID int) model.UserCard {
 			LiveJoinCount:              0,
 			ActiveSkillPlayCount:       0,
 		}
-		exists, err := session.Ctx.MustGet("masterdata.db").(*xorm.Engine).Table("m_card").Where("id = ?", cardMasterID).
-			Cols("passive_skill_slot").Get(&card.MaxFreePassiveSkill)
-		utils.CheckErrMustExist(err, exists)
 	}
 	return card
 }

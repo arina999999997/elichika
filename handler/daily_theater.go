@@ -76,29 +76,28 @@ func FetchDailyTheaterArchive(ctx *gin.Context) {
 	respObj.DailyTheaterArchiveMemberMasterRows = []response.DailyTheaterArchiveMemberMasterRow{}
 
 	// this isn't the actual thing
-	respObj.DailyTheaterArchiveMasterRows = append(respObj.DailyTheaterArchiveMasterRows, 
+	respObj.DailyTheaterArchiveMasterRows = append(respObj.DailyTheaterArchiveMasterRows,
 		response.DailyTheaterArchiveMasterRow{
 			DailyTheaterID: 1001243,
 			Year:           2023,
 			Month:          6,
 			Day:            29,
-			PublishedAt: 1687964400,
+			PublishedAt:    1687964400,
 		})
-	respObj.DailyTheaterArchiveMemberMasterRows = append(respObj.DailyTheaterArchiveMemberMasterRows, 
-		response.DailyTheaterArchiveMemberMasterRow {
+	respObj.DailyTheaterArchiveMemberMasterRows = append(respObj.DailyTheaterArchiveMemberMasterRows,
+		response.DailyTheaterArchiveMemberMasterRow{
 			DailyTheaterID: 1001243,
 			MemberMasterID: 101, // Chika
 		})
-	respObj.DailyTheaterArchiveMemberMasterRows = append(respObj.DailyTheaterArchiveMemberMasterRows, 
-		response.DailyTheaterArchiveMemberMasterRow {
+	respObj.DailyTheaterArchiveMemberMasterRows = append(respObj.DailyTheaterArchiveMemberMasterRows,
+		response.DailyTheaterArchiveMemberMasterRow{
 			DailyTheaterID: 1001243,
 			MemberMasterID: 106, // Yoshiko
 		})
-	
+
 	signBody, _ := json.Marshal(respObj)
 
 	resp := SignResp(ctx, string(signBody), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
-

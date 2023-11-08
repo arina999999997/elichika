@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/dictionary"
 	"elichika/gamedata"
 	"elichika/klab"
 	"elichika/model"
@@ -14,12 +15,12 @@ import (
 	"github.com/gin-gonic/gin"
 	// "github.com/tidwall/gjson"
 	// "github.com/tidwall/sjson"
-	"xorm.io/xorm"
 )
 
 // return the userID if it is not given
 func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+	dictionary := ctx.MustGet("dictionary").(*dictionary.Dictionary)
 	{
 		db := Engine.NewSession()
 		defer db.Close()
@@ -96,32 +97,19 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 	session := GetSession(ctx, userID)
 	defer session.Close()
 
-	masterdatadb := ctx.MustGet("masterdata.db").(*xorm.Engine).NewSession()
-	defer masterdatadb.Close()
 	{ // members, initial cards
 		members := []model.UserMemberInfo{}
 		cards := []model.UserCard{}
 
-		type MemberInitInfo struct {
-			MemberMasterID           int `xorm:"'member_m_id'"`
-			SuitMasterID             int `xorm:"'suit_m_id'"`
-			CustomBackgroundMasterID int `xorm:"'custom_background_m_id'"`
-			LovePointLimit           int `xorm:"love_point_limit"`
-		}
-
-		memberInits := []MemberInitInfo{}
-		err := masterdatadb.Table("m_member_init").Find(&memberInits)
-		utils.CheckErr(err)
-
-		for _, memberInit := range memberInits {
+		for _, member := range gamedata.Member {
 			members = append(members, model.UserMemberInfo{
 				UserID:                   userID,
-				MemberMasterID:           memberInit.MemberMasterID,
-				CustomBackgroundMasterID: memberInit.CustomBackgroundMasterID,
-				SuitMasterID:             memberInit.SuitMasterID,
-				LovePoint:                0,
-				LoveLevel:                1,
-				LovePointLimit:           memberInit.LovePointLimit,
+				MemberMasterID:           member.ID,
+				CustomBackgroundMasterID: member.MemberInit.CustomBackgroundMID,
+				SuitMasterID:             member.MemberInit.SuitMasterID,
+				LovePoint:                member.MemberInit.LovePoint,
+				LoveLevel:                member.MemberInit.LoveLevel,
+				LovePointLimit:           member.MemberInit.LovePointLimit,
 				ViewStatus:               1,
 				IsNew:                    false,
 				OwnedCardCount:           1,
@@ -129,7 +117,7 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			})
 			cards = append(cards, model.UserCard{
 				UserID:                     userID,
-				CardMasterID:               memberInit.SuitMasterID,
+				CardMasterID:               member.MemberInit.SuitMasterID,
 				Level:                      1,
 				Exp:                        0,
 				LovePoint:                  0,
@@ -163,15 +151,15 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 	}
 	{ // all the costumes that can't be obtained from maxing cards
 		suits := []model.UserSuit{}
-		suitMasterIDs := []int{}
-		err := masterdatadb.Table("m_suit").Where("suit_release_route == 2").Cols("id").Find(&suitMasterIDs)
-		utils.CheckErr(err)
-		for _, suitMasterID := range suitMasterIDs {
-			suits = append(suits, model.UserSuit{
-				UserID:       userID,
-				SuitMasterID: suitMasterID,
-				IsNew:        false,
-			})
+
+		for _, suit := range gamedata.Suit {
+			if suit.SuitReleaseRoute == 2 {
+				suits = append(suits, model.UserSuit{
+					UserID:       userID,
+					SuitMasterID: suit.ID,
+					IsNew:        false,
+				})
+			}
 		}
 		session.InsertUserSuits(suits)
 	}
@@ -206,7 +194,7 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 				SuitMasterID8:  cid[8],
 				SuitMasterID9:  cid[9],
 			}
-			liveDeck.Name.DotUnderText = fmt.Sprintf("Show formation %d", i)
+			liveDeck.Name.DotUnderText = fmt.Sprintf(dictionary.Resolve("k.m_sorter_deck_live")+" %d", i)
 			liveDecks = append(liveDecks, liveDeck)
 			for j := 1; j <= 3; j++ {
 				liveParty := model.UserLiveParty{
@@ -217,16 +205,8 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 					CardMasterID2:  cid[(j-1)*3+2],
 					CardMasterID3:  cid[(j-1)*3+3],
 				}
-				roles := []int{}
-				err := masterdatadb.Table("m_card").
-					Where("id IN (?,?,?)", liveParty.CardMasterID1,
-						liveParty.CardMasterID2,
-						liveParty.CardMasterID3).
-					Cols("role").Find(&roles)
-				utils.CheckErr(err)
-				partyInfo := gamedata.LiveParty.PartyInfoByRoleIDs[roles[0]][roles[1]][roles[2]]
-				liveParty.IconMasterID = partyInfo.PartyIcon
-				liveParty.Name.DotUnderText = partyInfo.PartyName
+				liveParty.IconMasterID, liveParty.Name.DotUnderText = gamedata.
+					GetLivePartyInfoByCardMasterIDs(liveParty.CardMasterID1, liveParty.CardMasterID2, liveParty.CardMasterID3)
 				liveParties = append(liveParties, liveParty)
 			}
 		}
@@ -240,7 +220,7 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			lessonDecks = append(lessonDecks, model.UserLessonDeck{
 				UserID:           userID,
 				UserLessonDeckID: i,
-				Name:             fmt.Sprintf("Training formation %d", i),
+				Name:             fmt.Sprintf(dictionary.Resolve("k.m_sorter_deck_lesson")+" %d", i),
 			})
 		}
 		session.InsertLessonDecks(lessonDecks)

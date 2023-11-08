@@ -139,9 +139,11 @@ func Router(r *gin.Engine) {
 		api.POST("/dailyTheater/fetchDailyTheater", handler.FetchDailyTheater)
 		api.POST("/dailyTheater/setLike", handler.DailyTheaterSetLike)
 		api.POST("/dailyTheaterArchive/fetchDailyTheaterArchive", handler.FetchDailyTheaterArchive)
+
+		// TODO
+		// api.POST("/ruleDescription/saveRuleDescription", )
 	}
 
-	
 	webapi := r.Group("/webui", webui.Common)
 	r.Static("/webui", "webui")
 	{

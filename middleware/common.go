@@ -22,7 +22,6 @@ func Common(ctx *gin.Context) {
 		lang = "ja"
 	}
 	ctx.Set("locale", locale.Locales[lang])
-	ctx.Set("masterdata.db", locale.Locales[lang].MasterdataEngine)
 	ctx.Set("gamedata", locale.Locales[lang].Gamedata)
 	ctx.Set("dictionary", locale.Locales[lang].Dictionary)
 

@@ -24,7 +24,7 @@ func (dictionary *Dictionary) Init(path string, language string) {
 		"k",
 		"m",
 		"petag",
-		"s",
+		// "s", // s has different structure
 	}
 	dictionary.Dictionaries = make(map[string]*xorm.Engine)
 

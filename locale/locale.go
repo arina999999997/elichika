@@ -12,40 +12,36 @@ import (
 
 type Locale struct {
 	// Loaded bool
-	Path             string
-	Language         string
-	StartUpKey       string
-	MasterVersion    string
-	MasterdataEngine *xorm.Engine
-	ServerdataEngine *xorm.Engine
-	Gamedata         *gamedata.Gamedata
-	Dictionary       *dictionary.Dictionary
+	Path          string
+	Language      string
+	StartUpKey    string
+	MasterVersion string
+	Gamedata      *gamedata.Gamedata
+	Dictionary    *dictionary.Dictionary
 }
 
 func (locale *Locale) Load() {
 	var err error
-	locale.MasterdataEngine, err = xorm.NewEngine("sqlite", locale.Path+"masterdata.db")
+	MasterdataEngine, err := xorm.NewEngine("sqlite", locale.Path+"masterdata.db")
 	utils.CheckErr(err)
-	locale.MasterdataEngine.SetMaxOpenConns(50)
-	locale.MasterdataEngine.SetMaxIdleConns(10)
+	MasterdataEngine.SetMaxOpenConns(50)
+	MasterdataEngine.SetMaxIdleConns(10)
 	locale.Dictionary = new(dictionary.Dictionary)
 	locale.Dictionary.Init(locale.Path, locale.Language)
 	locale.Gamedata = new(gamedata.Gamedata)
-	locale.Gamedata.Init(locale.MasterdataEngine, locale.ServerdataEngine, locale.Dictionary)
+	locale.Gamedata.Init(MasterdataEngine, serverdata.Engine, locale.Dictionary)
 }
 
 var (
-	Locales                map[string](*Locale)
-	sharedServerdataEngine *xorm.Engine
+	Locales map[string](*Locale)
 )
 
 func addLocale(path, language, masterVersion, startUpKey string) {
 	locale := Locale{
-		Path:             path,
-		Language:         language,
-		MasterVersion:    masterVersion,
-		StartUpKey:       startUpKey,
-		ServerdataEngine: serverdata.Engine,
+		Path:          path,
+		Language:      language,
+		MasterVersion: masterVersion,
+		StartUpKey:    startUpKey,
 	}
 	locale.Load()
 	Locales[language] = &locale

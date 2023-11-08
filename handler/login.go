@@ -194,7 +194,7 @@ func Login(ctx *gin.Context) {
 
 	// song records
 	// if return empty, all the song are unlocked, except for bond episide unlocked song
-	dbLiveRecords := session.GetAllLiveRecords()
+	dbLiveRecords := session.GetAllLiveDifficultyRecords()
 	userLiveRecords := []any{}
 	for _, userLiveRecord := range dbLiveRecords {
 		userLiveRecords = append(userLiveRecords, userLiveRecord.LiveDifficultyID)

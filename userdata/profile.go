@@ -111,7 +111,7 @@ func (sesison *Session) GetOtherUserBasicProfile(otherUserID int) model.UserBasi
 	return basicInfo
 }
 
-func GetOtherUserLiveStats(otherUserID int) model.UserProfileLiveStats {
+func (session *Session) GetOtherUserLiveStats(otherUserID int) model.UserProfileLiveStats {
 	stats := model.UserProfileLiveStats{}
 	_, err := Engine.Table("u_info").Where("user_id = ?", otherUserID).Get(&stats)
 	utils.CheckErr(err)
@@ -119,7 +119,7 @@ func GetOtherUserLiveStats(otherUserID int) model.UserProfileLiveStats {
 }
 
 func (session *Session) GetUserLiveStats() model.UserProfileLiveStats {
-	return GetOtherUserLiveStats(session.UserStatus.UserID)
+	return session.GetOtherUserLiveStats(session.UserStatus.UserID)
 }
 
 func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
@@ -196,7 +196,7 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	}
 
 	// live clear stats
-	liveStats := GetOtherUserLiveStats(otherUserID)
+	liveStats := session.GetOtherUserLiveStats(otherUserID)
 	for i, liveDifficultyType := range enum.LiveDifficultyTypes {
 		profile.PlayInfo.LivePlayCount = append(profile.PlayInfo.LivePlayCount, liveDifficultyType)
 		profile.PlayInfo.LivePlayCount = append(profile.PlayInfo.LivePlayCount, liveStats.LivePlayCount[i])
@@ -214,12 +214,12 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	if customProfile.VoltageLiveDifficultyID != 0 {
 		profile.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterID = customProfile.VoltageLiveDifficultyID
 		profile.PlayInfo.MaxScoreLiveDifficulty.Score =
-			GetOtherUserLiveRecord(otherUserID, customProfile.VoltageLiveDifficultyID).MaxScore
+			session.GetOtherUserLiveRecord(otherUserID, customProfile.VoltageLiveDifficultyID).MaxScore
 	}
 	if customProfile.ComboLiveDifficultyID != 0 {
 		profile.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterID = customProfile.ComboLiveDifficultyID
 		profile.PlayInfo.MaxComboLiveDifficulty.Score =
-			GetOtherUserLiveRecord(otherUserID, customProfile.ComboLiveDifficultyID).MaxCombo
+			session.GetOtherUserLiveRecord(otherUserID, customProfile.ComboLiveDifficultyID).MaxCombo
 	}
 
 	// can get from members[] to save sql
