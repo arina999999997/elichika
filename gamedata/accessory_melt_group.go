@@ -1,15 +1,15 @@
 package gamedata
 
 import (
-	"elichika/model"
 	"elichika/dictionary"
+	"elichika/model"
 	"elichika/utils"
 
 	"xorm.io/xorm"
 )
 
 type AccessoryMeltGroup struct {
-	ID int `xorm:"pk 'id'"`
+	ID     int           `xorm:"pk 'id'"`
 	Reward model.Content `xorm:"extends"`
 }
 

@@ -142,7 +142,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 		} else {
 			userAccessory.Exp += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].PlusExp
 			moneyUsed += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].GameMoney
-			skillPlusPercent +=  masterPowerUpAccessory.Rarity.SkillLevelUpPlusPercent[powerUpAccessory.PassiveSkill1Level]
+			skillPlusPercent += masterPowerUpAccessory.Rarity.SkillLevelUpPlusPercent[powerUpAccessory.PassiveSkill1Level]
 		}
 		powerUpAccessory.AccessoryMasterID = 0 // mark for delete
 		session.UpdateUserAccessory(powerUpAccessory)

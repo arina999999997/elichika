@@ -54,7 +54,7 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 	userCard.IsAwakeningImage = req.IsAwakeningImage
 	session.UpdateUserCard(userCard)
 
-	cardResp := session.Finalize(GetData("changeIsAwakeningImage.json"), "user_model_diff")
+	cardResp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
 	resp := SignResp(ctx, cardResp, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -77,7 +77,7 @@ func ChangeFavorite(ctx *gin.Context) {
 	userCard.IsFavorite = req.IsFavorite
 	session.UpdateUserCard(userCard)
 
-	cardResp := session.Finalize(GetData("changeFavorite.json"), "user_model_diff")
+	cardResp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
 	resp := SignResp(ctx, cardResp, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")

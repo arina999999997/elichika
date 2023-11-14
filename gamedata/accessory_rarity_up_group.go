@@ -1,16 +1,16 @@
 package gamedata
 
 import (
+	"elichika/dictionary"
 	"elichika/model"
 	"elichika/utils"
-	"elichika/dictionary"
 
 	"xorm.io/xorm"
 )
 
 type AccessoryRarityUpGroup struct {
 	// from m_accessory_rarity_up_group
-	ID int `xorm:"pk 'id'"`
+	ID       int           `xorm:"pk 'id'"`
 	Resource model.Content `xorm:"extends"`
 }
 

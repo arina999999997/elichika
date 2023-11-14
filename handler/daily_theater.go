@@ -2,7 +2,7 @@ package handler
 
 import (
 	"elichika/config"
-	"elichika/response"
+	"elichika/protocol/response"
 	"elichika/userdata"
 	"elichika/utils"
 

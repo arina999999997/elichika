@@ -40,7 +40,7 @@ type loadFunc = func(*Gamedata, *xorm.Session, *xorm.Session, *dictionary.Dictio
 var (
 	funcs       map[uintptr]loadFunc
 	prequisites map[uintptr][]uintptr
-	loadOrder []loadFunc
+	loadOrder   []loadFunc
 )
 
 func addLoadFunc(name loadFunc) {
@@ -72,12 +72,12 @@ func generateLoadOrder(fid uintptr) {
 }
 
 type Gamedata struct {
-	Accessory map[int]*Accessory
-	AccessoryRarity map[int]*AccessoryRarity
+	Accessory              map[int]*Accessory
+	AccessoryRarity        map[int]*AccessoryRarity
 	AccessoryRarityUpGroup map[int]*AccessoryRarityUpGroup
-	AccessoryMeltGroup map[int]*AccessoryMeltGroup
-	AccessoryLevelUpItem map[int]*AccessoryLevelUpItem
-	
+	AccessoryMeltGroup     map[int]*AccessoryMeltGroup
+	AccessoryLevelUpItem   map[int]*AccessoryLevelUpItem
+
 	Member map[int]*Member
 
 	Live              map[int]*Live
@@ -100,9 +100,9 @@ type Gamedata struct {
 	GachaGroup     map[int]*GachaGroup
 	GachaGuarantee map[int]*GachaGuarantee
 
-	Trade       map[int]*model.Trade // map from TradeID to Trade
+	Trade        map[int]*model.Trade // map from TradeID to Trade
 	TradesByType [3][]*model.Trade    // map from trade type to array of Trade
-	TradeProduct     map[int]*model.TradeProduct
+	TradeProduct map[int]*model.TradeProduct
 }
 
 func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {

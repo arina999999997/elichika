@@ -54,7 +54,7 @@ func SetProfile(ctx *gin.Context) {
 		session.UserStatus.Message.DotUnderText = gjson.Parse(reqBody).Array()[0].Get("message").String()
 	}
 
-	signBody := session.Finalize(GetData("setProfile.json"), "user_model")
+	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -69,7 +69,7 @@ func SetRecommendCard(ctx *gin.Context) {
 	cardMasterId := int(gjson.Parse(reqBody).Array()[0].Get("card_master_id").Int())
 	session.UserStatus.RecommendCardMasterID = cardMasterId
 
-	signBody := session.Finalize(GetData("setRecommendCard.json"), "user_model")
+	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")

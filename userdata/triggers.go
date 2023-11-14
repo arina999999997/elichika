@@ -10,7 +10,7 @@ import (
 
 // card grade up trigger is responsible for showing the pop-up animation when openning a card after getting a new copy
 // or right after performing a limit break using items
-// Getting a new trigger also destroy old trigger, and we might have tp update it
+// Getting a new trigger also destroy old trigger, and we might have to update it
 func (session *Session) AddTriggerCardGradeUp(id int64, trigger *model.TriggerCardGradeUp) {
 	if id == 0 {
 		id = time.Now().UnixNano()

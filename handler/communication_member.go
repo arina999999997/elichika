@@ -3,7 +3,8 @@ package handler
 import (
 	"elichika/config"
 	"elichika/gamedata"
-	"elichika/model"
+	// "elichika/model"
+	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -29,8 +30,8 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 		return true
 	})
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	lovePanelCellIds := session.GetLovePanelCellIDs(memberId)
 
@@ -73,7 +74,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	// 	MemberMasterID: int(memberMasterId),
 	// })
 
-	// signBody := GetData("updateUserCommunicationMemberDetailBadge.json")
+	// signBody := GetData("userModel.json")
 	// signBody, _ = sjson.Set(signBody, "user_model.user_status", GetUserStatus())
 	// signBody, _ = sjson.Set(signBody, "user_model.user_communication_member_detail_badge_by_id", userDetail)
 	// resp := SignResp(ctx, signBody, config.SessionKey)
@@ -121,11 +122,11 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 }
 
 func FinishUserStorySide(ctx *gin.Context) {
-	// need to award items / mark as read
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	// TODO: need to award items / mark as read
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("finishUserStorySide.json"), "user_model")
+	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -133,11 +134,11 @@ func FinishUserStorySide(ctx *gin.Context) {
 }
 
 func FinishUserStoryMember(ctx *gin.Context) {
-	// need to award items / mark as read
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	// TODO: need to award items / mark as read
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("finishUserStoryMember.json"), "user_model")
+	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -145,52 +146,40 @@ func FinishUserStoryMember(ctx *gin.Context) {
 }
 
 func SetTheme(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
-	// fmt.Println(reqBody)
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SetThemeRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 
-	var memberMasterID, suitMasterID, backgroundMasterID int
-	gjson.Parse(reqBody).ForEach(func(key, value gjson.Result) bool {
-		if value.Get("member_master_id").String() != "" {
-			memberMasterID = int(value.Get("member_master_id").Int())
-			suitMasterID = int(value.Get("suit_master_id").Int())
-			backgroundMasterID = int(value.Get("custom_background_master_id").Int())
+	member := session.GetMember(req.MemberMasterID)
+	member.SuitMasterID = req.SuitMasterID
+	member.CustomBackgroundMasterID = req.CustomBackgroundMasterID
+	session.UpdateMember(member)
 
-			member := session.GetMember(memberMasterID)
-			member.SuitMasterID = suitMasterID
-			member.CustomBackgroundMasterID = backgroundMasterID
-			session.UpdateMember(member)
-			return false
-		}
-		return true
-	})
-
-	userSuitRes := []any{}
-	userSuitRes = append(userSuitRes, suitMasterID)
-	userSuitRes = append(userSuitRes, model.SuitInfo{
-		SuitMasterID: int(suitMasterID),
-		IsNew:        false,
-	})
-
-	signBody := session.Finalize(GetData("setTheme.json"), "user_model")
-	signBody, _ = sjson.Set(signBody, "user_model.user_suit_by_suit_id", userSuitRes)
+	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
 func SetFavoriteMember(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
-	defer session.Close()
-	session.UserStatus.FavoriteMemberID = int(gjson.Parse(reqBody).Array()[0].Get("member_master_id").Int())
-	signBody := session.Finalize(GetData("setFavoriteMember.json"), "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SetFavoriteMemberRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
+	defer session.Close()
+
+	session.UserStatus.FavoriteMemberID = req.MemberMasterID
+
+	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }

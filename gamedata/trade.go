@@ -27,7 +27,7 @@ type Trade struct {
 	Products     map[int]model.TradeProduct
 }
 
-func loadTrade(gamedata* Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading Trade")
 	gamedata.Trade = make(map[int]*model.Trade)
 	gamedata.TradeProduct = make(map[int]*model.TradeProduct)

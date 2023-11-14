@@ -1,15 +1,15 @@
 package gamedata
 
 import (
-	"elichika/utils"
 	"elichika/dictionary"
+	"elichika/utils"
 
 	"xorm.io/xorm"
 )
 
 type AccessoryGrade struct {
 	// Grade int
-	MaxLevel                       int  `xorm:"'max_level'"`
+	MaxLevel              int  `xorm:"'max_level'"`
 	PassiveSkill1MasterID *int `xorm:"'accessory_passive_skill_1_master_id'"`
 	PassiveSkill2MasterID *int `xorm:"'accessory_passive_skill_2_master_id'"` // always null
 }
@@ -69,7 +69,7 @@ func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverda
 
 	{
 		err := masterdata_db.Table("m_accessory_melt").Where("accessory_master_id = ?", accessory.ID).OrderBy("grade").
-		Cols("accessory_melt_group_master_id").Find(&accessory.MeltGroupMasterIDs)
+			Cols("accessory_melt_group_master_id").Find(&accessory.MeltGroupMasterIDs)
 		utils.CheckErr(err)
 		for _, meltGroupID := range accessory.MeltGroupMasterIDs {
 			accessory.MeltGroup = append(accessory.MeltGroup, gamedata.AccessoryMeltGroup[meltGroupID])
@@ -81,9 +81,9 @@ func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverda
 		exists, err := masterdata_db.Table("m_accessory_rarity_up").Where("accessory_master_id = ?", accessory.ID).Get(&rarityUp)
 		utils.CheckErr(err)
 		if exists {
-			
+
 			rarityUp.populate(gamedata, masterdata_db, serverdata_db, dictionary)
-			accessory.RarityUp =&rarityUp
+			accessory.RarityUp = &rarityUp
 		}
 	}
 }

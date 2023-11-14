@@ -1,8 +1,8 @@
 package gamedata
 
 import (
-	"elichika/utils"
 	"elichika/dictionary"
+	"elichika/utils"
 
 	"xorm.io/xorm"
 )

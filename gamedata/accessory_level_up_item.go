@@ -1,26 +1,26 @@
 package gamedata
 
 import (
-	"elichika/utils"
 	"elichika/dictionary"
+	"elichika/utils"
 
 	"xorm.io/xorm"
 )
 
 type AccessoryLevelUpItem struct {
 	// frm m_accessory_level_up_item
-	ID int `xorm:"pk 'id'"`	
+	ID int `xorm:"pk 'id'"`
 	// Name string
 	// ThumbnailAssetPath
-	Rarity int `xorm:"'rarity'"`
+	Rarity    int `xorm:"'rarity'"`
 	Attribute int `xorm:"'attribute'"`
-	PlusExp int `xorm:"'plus_exp'"`
+	PlusExp   int `xorm:"'plus_exp'"`
 	GameMoney int `xorm:"'game_money'"`
 	// Description string
 	ItemListCategoryType int `xorm:"'item_list_category_type'"`
-	// SceneID int 
+	// SceneID int
 	// BannerImageAssetPath
-	// DisplayOrder int 
+	// DisplayOrder int
 }
 
 func loadAccessoryLevelUpItem(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
