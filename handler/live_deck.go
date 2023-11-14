@@ -5,7 +5,6 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
@@ -42,8 +41,7 @@ func SaveDeckAll(ctx *gin.Context) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	for i := 0; i < 9; i++ {
 		if req.CardWithSuit[i*2+1] == 0 {
-			req.CardWithSuit[i*2+1] = klab.DefaultSuitMasterIDFromMemberMasterID(
-				klab.MemberMasterIDFromCardMasterID(req.CardWithSuit[i*2]))
+			req.CardWithSuit[i*2+1] = gamedata.Card[req.CardWithSuit[i*2]].Member.MemberInit.SuitMasterID
 		}
 	}
 
@@ -150,7 +148,7 @@ func SaveSuit(ctx *gin.Context) {
 	session.UpdateUserLiveDeck(deck)
 
 	// Rina-chan board toggle
-	if klab.MemberMasterIDFromSuitMasterID(req.SuitMasterID) == enum.MemberMasterIDRina {
+	if  session.Gamedata.Suit[req.SuitMasterID].Member.ID == enum.MemberMasterIDRina {
 		RinaChan := session.GetMember(enum.MemberMasterIDRina)
 		RinaChan.ViewStatus = req.ViewStatus
 		session.UpdateMember(RinaChan)

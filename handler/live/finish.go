@@ -180,7 +180,8 @@ func LiveFinish(ctx *gin.Context) {
 		}
 		if liveDifficulty.IsCountTarget { // counted toward target and profiles
 			liveStats := session.GetUserLiveStats()
-			idx := klab.LiveDifficultyTypeIndexFromLiveDifficultyID(liveState.LiveStage.LiveDifficultyID)
+			// TODO: just use the map instead of this
+			idx := enum.LiveDifficultyIndex[liveDifficulty.LiveDifficultyType]
 			liveStats.LivePlayCount[idx]++
 			if liveRecord.ClearCount == 1 { // 1st clear
 				liveStats.LiveClearCount[idx]++
@@ -238,7 +239,7 @@ func LiveFinish(ctx *gin.Context) {
 			userCard.ActiveSkillPlayCount += liveFinishCard.SkillTriggeredCount
 			session.UpdateUserCard(userCard)
 			// update member love point
-			memberMasterID := klab.MemberMasterIDFromCardMasterID(liveFinishCard.CardMasterID)
+			memberMasterID := gamedata.Card[liveFinishCard.CardMasterID].Member.ID
 
 			pos, exists := bondCardPosition[memberMasterID]
 			// only use 1 card master id or an idol might be shown multiple times

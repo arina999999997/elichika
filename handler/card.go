@@ -47,8 +47,8 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 		panic(err)
 	}
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	userCard := session.GetUserCard(req.CardMasterID)
 	userCard.IsAwakeningImage = req.IsAwakeningImage
@@ -70,8 +70,8 @@ func ChangeFavorite(ctx *gin.Context) {
 		panic(err)
 	}
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	userCard := session.GetUserCard(req.CardMasterID)
 	userCard.IsFavorite = req.IsFavorite
@@ -96,8 +96,10 @@ func GetOtherUserCard(ctx *gin.Context) {
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-
-	partnerCard := userdata.GetPartnerCardFromUserCard(userdata.GetOtherUserCard(req.UserID, req.CardMasterID))
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
+	defer session.Close()
+	partnerCard := session.GetPartnerCardFromUserCard(userdata.GetOtherUserCard(req.UserID, req.CardMasterID))
 	userCardResp, _ := sjson.Set("{}", "other_user_card", partnerCard)
 	resp := SignResp(ctx, userCardResp, config.SessionKey)
 	// fmt.Println(resp)

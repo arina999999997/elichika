@@ -3,7 +3,6 @@ package userdata
 import (
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/utils"
 
@@ -67,7 +66,7 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 	member.LovePoint += point
 
 	oldLoveLevel := member.LoveLevel
-	member.LoveLevel = klab.BondLevelFromBondValue(member.LovePoint)
+	member.LoveLevel = session.Gamedata.LoveLevelFromLovePoint(member.LovePoint)
 	// unlock bond stories, unlock bond board
 	if oldLoveLevel < member.LoveLevel {
 		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
@@ -76,17 +75,21 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 			session.AddResource(masterMember.LoveLevelRewards[loveLevel])
 		}
 
-		latestLovePanelLevel := klab.MaxLovePanelLevelFromLoveLevel(member.LoveLevel)
 		currentLovePanel := session.GetMemberLovePanel(memberID)
-		if (currentLovePanel.LovePanelLevel < latestLovePanelLevel) && (len(currentLovePanel.LovePanelLastLevelCellIDs) == 5) {
-			currentLovePanel.LevelUp()
-			session.AddTriggerBasic(0, &model.TriggerBasic{
-				InfoTriggerType: enum.InfoTriggerTypeUnlockBondBoard,
-				LimitAt:         nil,
-				Description:     nil,
-				ParamInt:        currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberID})
+		if (len(currentLovePanel.LovePanelLastLevelCellIDs) == 5) {
+			// the current bond board is full, check if we can unlock a new bond board
+			masterLovePanel := gamedata.MemberLovePanelCell[currentLovePanel.LovePanelLastLevelCellIDs[0]].MemberLovePanel
+			if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
+				// TODO: remove magic id from love panel system
+				currentLovePanel.LevelUp()
+				session.AddTriggerBasic(0, &model.TriggerBasic{
+					InfoTriggerType: enum.InfoTriggerTypeUnlockBondBoard,
+					LimitAt:         nil,
+					Description:     nil,
+					ParamInt:        currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberID})
 
-			session.UpdateMemberLovePanel(currentLovePanel)
+				session.UpdateMemberLovePanel(currentLovePanel)
+			}
 		}
 		session.AddTriggerMemberLoveLevelUp(0,
 			&model.TriggerMemberLoveLevelUp{

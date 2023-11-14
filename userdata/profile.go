@@ -2,7 +2,6 @@ package userdata
 
 import (
 	"elichika/enum"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/utils"
 
@@ -30,8 +29,9 @@ func FetchPartnerCards(otherUserID int) []model.UserCard {
 	return partnerCards
 }
 
-func GetPartnerCardFromUserCard(card model.UserCard) model.PartnerCardInfo {
-	memberId := klab.MemberMasterIDFromCardMasterID(card.CardMasterID)
+func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.PartnerCardInfo {
+	
+	memberID := session.Gamedata.Card[card.CardMasterID].Member.ID
 
 	partnerCard := model.PartnerCardInfo{}
 
@@ -44,7 +44,7 @@ func GetPartnerCardFromUserCard(card model.UserCard) model.PartnerCardInfo {
 		panic(err)
 	}
 
-	exists, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserID, memberId).
+	exists, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserID, memberID).
 		Cols("love_level").Get(&partnerCard.LoveLevel)
 	if err != nil {
 		panic(err)
@@ -185,7 +185,7 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 
 	partnerCards := FetchPartnerCards(otherUserID)
 	for _, card := range partnerCards {
-		partnerCard := GetPartnerCardFromUserCard(card)
+		partnerCard := session.GetPartnerCardFromUserCard(card)
 		livePartner := model.LivePartnerCard{}
 		livePartner.PartnerCard = partnerCard
 		for i := 1; i <= 7; i++ {

@@ -49,8 +49,8 @@ func FetchLiveMusicSelect(ctx *gin.Context) {
 	signBody, _ = sjson.Set(signBody, "weekday_state.weekday", weekday)
 	signBody, _ = sjson.Set(signBody, "weekday_state.next_weekday_at", tomorrow)
 	signBody, _ = sjson.Set(signBody, "live_daily_list", liveDailyList)
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	signBody = session.Finalize(signBody, "user_model_diff")
 	resp := handler.SignResp(ctx, signBody, config.SessionKey)
@@ -65,8 +65,10 @@ func FetchLivePartners(ctx *gin.Context) {
 	// currently only have current user
 	// note that all card are available, but we need to use the filter functionality to actually get them to show up.
 	partnerIDs := []int{}
-	UserID := ctx.GetInt("user_id")
-	partnerIDs = append(partnerIDs, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
+	defer session.Close()
+	partnerIDs = append(partnerIDs, userID)
 	livePartners := []model.LiveStartLivePartner{}
 	for _, partnerID := range partnerIDs {
 		partner := model.LiveStartLivePartner{}
@@ -79,7 +81,7 @@ func FetchLivePartners(ctx *gin.Context) {
 		for _, card := range partnerCards {
 			for i := 1; i <= 7; i++ {
 				if (card.LivePartnerCategories & (1 << i)) != 0 {
-					partnerCardInfo := userdata.GetPartnerCardFromUserCard(card)
+					partnerCardInfo := session.GetPartnerCardFromUserCard(card)
 					partner.CardByCategory = append(partner.CardByCategory, i)
 					partner.CardByCategory = append(partner.CardByCategory, partnerCardInfo)
 				}
@@ -103,8 +105,8 @@ func LiveStart(ctx *gin.Context) {
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 
 	session.UserStatus.LastLiveDifficultyID = req.LiveDifficultyID
@@ -113,7 +115,7 @@ func LiveStart(ctx *gin.Context) {
 	// 保存请求包因为 /live/finish 接口的响应包里有部分字段不在该接口的请求包里
 	// live is stored in db
 	liveState := model.LiveState{}
-	liveState.UserID = UserID
+	liveState.UserID = userID
 	liveState.PartnerUserID = req.PartnerUserID
 	liveState.LiveID = time.Now().UnixNano()
 	liveState.LiveType = 1 // not sure what this is
@@ -137,7 +139,7 @@ func LiveStart(ctx *gin.Context) {
 	}
 
 	if req.PartnerUserID != 0 {
-		liveState.LivePartnerCard = userdata.GetPartnerCardFromUserCard(
+		liveState.LivePartnerCard = session.GetPartnerCardFromUserCard(
 			userdata.GetOtherUserCard(req.PartnerUserID, req.PartnerCardMasterID))
 	}
 

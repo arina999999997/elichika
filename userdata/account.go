@@ -3,7 +3,6 @@ package userdata
 import (
 	"elichika/dictionary"
 	"elichika/gamedata"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/utils"
 
@@ -170,7 +169,7 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			cid := [10]int{}
 			// this order isn't actually correct to the official server
 			for j := 1; j <= 9; j++ {
-				cid[j] = klab.DefaultSuitMasterIDFromMemberMasterID(j + 100*((i-1)%3))
+				cid[j] = gamedata.Member[j + 100*((i-1)%3)].MemberInit.SuitMasterID
 			}
 			liveDeck := model.UserLiveDeck{
 				UserID:         userID,

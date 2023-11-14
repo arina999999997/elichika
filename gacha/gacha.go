@@ -2,7 +2,6 @@ package gacha
 
 import (
 	"elichika/gamedata"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"
 
@@ -38,8 +37,8 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int 
 
 func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bool) model.ResultCard {
 	card := session.GetUserCard(cardMasterID)
-	cardRarity := klab.CardRarityFromCardMasterID(cardMasterID)
-	member := session.GetMember(klab.MemberMasterIDFromCardMasterID(cardMasterID))
+	cardRarity := session.Gamedata.Card[cardMasterID].CardRarityType
+	member := session.GetMember(session.Gamedata.Card[cardMasterID].Member.ID)
 	resultCard := model.ResultCard{
 		GachaLotType:         1,
 		CardMasterID:         cardMasterID,
@@ -48,7 +47,7 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 		AfterGrade:           card.Grade + 1,
 		Content:              nil,
 		LimitExceeded:        false,
-		BeforeLoveLevelLimit: klab.BondLevelFromBondValue(member.LovePointLimit),
+		BeforeLoveLevelLimit: session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit),
 		AfterLoveLevelLimit:  0,
 	}
 	if isGuaranteed {
@@ -69,7 +68,10 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 		}
 	} else {
 		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + cardRarity/10
-		member.LovePointLimit = klab.BondRequiredTotal(resultCard.AfterLoveLevelLimit)
+		if resultCard.AfterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
+			resultCard.AfterLoveLevelLimit = session.Gamedata.MemberLoveLevelCount
+		}
+		member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[resultCard.AfterLoveLevelLimit]
 		card.Grade++ // new grade,
 		if card.Grade == 0 {
 			// entirely new card

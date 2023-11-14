@@ -79,6 +79,11 @@ type Gamedata struct {
 	AccessoryLevelUpItem   map[int]*AccessoryLevelUpItem
 
 	Member map[int]*Member
+	MemberLoveLevelLovePoint []int 
+	MemberLoveLevelCount int
+	MemberLovePanel map[int]*MemberLovePanel
+	MemberLovePanelCell map[int]*MemberLovePanelCell
+	MemberLovePanelLevelAtLoveLevel []int
 
 	Live              map[int]*Live
 	LiveParty         LiveParty

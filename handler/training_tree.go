@@ -3,7 +3,6 @@ package handler
 import (
 	"elichika/config"
 	"elichika/gamedata"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
@@ -87,9 +86,12 @@ func GradeUpCard(ctx *gin.Context) {
 	card := session.GetUserCard(req.CardMasterID)
 	member := session.GetMember(*masterCard.MemberMasterID)
 	card.Grade += 1
-	currentBondLevel := klab.BondLevelFromBondValue(member.LovePointLimit)
-	currentBondLevel += masterCard.CardRarityType / 10
-	member.LovePointLimit = klab.BondRequiredTotal(currentBondLevel)
+	currentBondLevel := gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
+	currentBondLevel += masterCard.CardRarityType / 10 // TODO: Do not hard code this
+	if currentBondLevel > gamedata.MemberLoveLevelCount {
+		currentBondLevel = gamedata.MemberLoveLevelCount
+	}
+	member.LovePointLimit = gamedata.MemberLoveLevelLovePoint[currentBondLevel]
 	session.UpdateUserCard(card)
 	member.IsNew = true
 	session.UpdateMember(member)

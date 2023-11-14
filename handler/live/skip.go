@@ -5,6 +5,7 @@ import (
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler"
+	"elichika/enum"
 	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"
@@ -93,7 +94,7 @@ func LiveSkip(ctx *gin.Context) {
 		if isCenter {
 			addedBond += rewardCenterLovePoint
 		}
-		memberMasterID := klab.MemberMasterIDFromCardMasterID(cardMasterId)
+		memberMasterID := gamedata.Card[cardMasterId].Member.ID
 
 		pos, exists := bondCardPosition[memberMasterID]
 		// only use 1 card master id or an idol might be shown multiple times
@@ -114,7 +115,7 @@ func LiveSkip(ctx *gin.Context) {
 
 	if liveDifficulty.IsCountTarget { // counted toward target and profiles
 		liveStats := session.GetUserLiveStats()
-		idx := klab.LiveDifficultyTypeIndexFromLiveDifficultyID(req.LiveDifficultyMasterID)
+		idx := enum.LiveDifficultyIndex[liveDifficulty.LiveDifficultyType]
 		liveStats.LivePlayCount[idx] += req.TicketUseCount
 		session.UpdateUserLiveStats(liveStats)
 	}

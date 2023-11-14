@@ -3,10 +3,11 @@ package handler
 import (
 	"elichika/config"
 	"elichika/enum"
-	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"
+	"elichika/gamedata"
 	"elichika/utils"
+	"elichika/protocol/request"
 
 	"encoding/json"
 	"net/http"
@@ -17,28 +18,28 @@ import (
 
 func OpenMemberLovePanel(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type OpenMemberLovePanelReq struct {
-		MemberID               int   `json:"member_id"`
-		MemberLovePanelID      int   `json:"member_love_panel_id"`
-		MemberLovePanelCellIDs []int `json:"member_love_panel_cell_ids"`
-	}
-	req := OpenMemberLovePanelReq{}
+	req := request.OpenMemberLovePanelRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	panel := session.GetMemberLovePanel(req.MemberID)
-
 	panel.LovePanelLastLevelCellIDs = append(panel.LovePanelLastLevelCellIDs, req.MemberLovePanelCellIDs...)
+	// remove resource
+	for _, cellID := range req.MemberLovePanelCellIDs {
+		for _, resource := range gamedata.MemberLovePanelCell[cellID].Resources {
+			session.RemoveResource(resource)
+		}
+	}
 
 	// if is full panel, then we have to send a basic info trigger to actually open up the next panel
 	if len(panel.LovePanelLastLevelCellIDs) == 5 {
 		member := session.GetMember(panel.MemberID)
-		maxPanelLevel := klab.MaxLovePanelLevelFromLoveLevel(member.LoveLevel)
-		if panel.LovePanelLevel < maxPanelLevel {
-			// unlock the next board if available
-			// otherwise it will be unlocked when bond level reach the value
+		masterLovePanel := gamedata.MemberLovePanel[req.MemberLovePanelID]
+		if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
+			// TODO: remove magic id from love panel system
 			panel.LevelUp()
 			session.AddTriggerBasic(0, &model.TriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeUnlockBondBoard,
@@ -51,7 +52,6 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 
 	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
