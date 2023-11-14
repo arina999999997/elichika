@@ -55,7 +55,7 @@ func ExecuteTrade(ctx *gin.Context) {
 	// this only decide whether there's a text saying that things were sent to present box
 	signBody, _ = sjson.Set(signBody, "is_send_present_box", sentToPresentBox)
 
-	tradeType := gamedata.Trade.Trades[gamedata.Trade.Products[req.ProductID].TradeID].TradeType
+	tradeType := gamedata.Trade[gamedata.TradeProduct[req.ProductID].TradeID].TradeType
 	signBody, _ = sjson.Set(signBody, "trades", session.GetTrades(tradeType))
 
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -91,7 +91,7 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 	// this only decide whether there's a text saying that things were sent to present box
 	signBody, _ = sjson.Set(signBody, "is_send_present_box", sentToPresentBox)
 
-	tradeType := gamedata.Trade.Trades[gamedata.Trade.Products[req.TradeOrders[0].ProductID].TradeID].TradeType
+	tradeType := gamedata.Trade[gamedata.TradeProduct[req.TradeOrders[0].ProductID].TradeID].TradeType
 	signBody, _ = sjson.Set(signBody, "trades", session.GetTrades(tradeType))
 
 	resp := SignResp(ctx, signBody, config.SessionKey)

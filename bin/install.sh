@@ -65,3 +65,4 @@ download_db "zh" && \
 # set the permission
 chmod +rx elichika && \
 echo "Installed succesfully!"
+# todo: edit .bashrc to make an easier command

@@ -36,7 +36,8 @@ func (session *Session) SetTradeProductUser(productID, newTradedCount int) {
 
 func (session *Session) GetTrades(tradeType int) []model.Trade {
 	trades := []model.Trade{}
-	for _, trade := range session.Gamedata.Trade.TradesByType[tradeType] {
+	for _, trade_ptr := range session.Gamedata.TradesByType[tradeType] {
+		trade := *trade_ptr
 		for j, product := range trade.Products {
 			product.TradedCount = session.GetTradeProductUser(product.ProductID)
 			trade.Products[j] = product
@@ -54,8 +55,8 @@ func (session *Session) ExecuteTrade(productID int, tradeCount int) bool {
 	session.SetTradeProductUser(productID, tradedCount)
 
 	// award items and take away source item
-	product := session.Gamedata.Trade.Products[productID]
-	trade := session.Gamedata.Trade.Trades[product.TradeID]
+	product := session.Gamedata.TradeProduct[productID]
+	trade := session.Gamedata.Trade[product.TradeID]
 	content := product.ActualContent
 	content.ContentAmount *= int64(tradeCount)
 	session.AddResource(content)

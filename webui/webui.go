@@ -120,9 +120,9 @@ func Accessory(ctx *gin.Context) {
 		_, getRarity[30] = params["ur_accessories"]
 		_, getRarity[20] = params["sr_accessories"]
 		_, getRarity[10] = params["r_accessories"]
-		for _, accessory := range gamedata.Accessory.Accessory {
+		for _, accessory := range gamedata.Accessory {
 			if getRarity[accessory.RarityType] {
-				accessoryIDs = append(accessoryIDs, accessory.MasterID)
+				accessoryIDs = append(accessoryIDs, accessory.ID)
 			}
 		}
 	}
@@ -134,7 +134,7 @@ func Accessory(ctx *gin.Context) {
 	index := time.Now().UnixNano()
 	total := 0
 	for _, accessoryMasterID := range accessoryIDs {
-		masterAccessory, exists := gamedata.Accessory.Accessory[accessoryMasterID]
+		masterAccessory, exists := gamedata.Accessory[accessoryMasterID]
 		if !exists {
 			ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: invalid accessory id ", accessoryMasterID))
 			return
@@ -142,7 +142,7 @@ func Accessory(ctx *gin.Context) {
 		for i := 1; i <= amount; i++ {
 			total++
 			accessory := session.GetUserAccessory(index + int64(total))
-			accessory.AccessoryMasterID = masterAccessory.MasterID
+			accessory.AccessoryMasterID = masterAccessory.ID
 			accessory.Level = 1
 			accessory.Exp = 0
 			accessory.Grade = 0

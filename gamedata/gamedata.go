@@ -27,6 +27,7 @@ package gamedata
 
 import (
 	"elichika/dictionary"
+	"elichika/model"
 
 	"reflect"
 	// "fmt"
@@ -39,7 +40,6 @@ type loadFunc = func(*Gamedata, *xorm.Session, *xorm.Session, *dictionary.Dictio
 var (
 	funcs       map[uintptr]loadFunc
 	prequisites map[uintptr][]uintptr
-
 	loadOrder []loadFunc
 )
 
@@ -72,13 +72,16 @@ func generateLoadOrder(fid uintptr) {
 }
 
 type Gamedata struct {
-	Accessory Accessory
-	Trade     Trade
-
+	Accessory map[int]*Accessory
+	AccessoryRarity map[int]*AccessoryRarity
+	AccessoryRarityUpGroup map[int]*AccessoryRarityUpGroup
+	AccessoryMeltGroup map[int]*AccessoryMeltGroup
+	AccessoryLevelUpItem map[int]*AccessoryLevelUpItem
+	
 	Member map[int]*Member
 
-	LiveParty         LiveParty
 	Live              map[int]*Live
+	LiveParty         LiveParty
 	LiveDaily         map[int]*LiveDaily
 	LiveMemberMapping map[int]LiveMemberMapping
 	LiveDifficulty    map[int]*LiveDifficulty
@@ -96,6 +99,10 @@ type Gamedata struct {
 	GachaDraw      map[int]*GachaDraw
 	GachaGroup     map[int]*GachaGroup
 	GachaGuarantee map[int]*GachaGuarantee
+
+	Trade       map[int]*model.Trade // map from TradeID to Trade
+	TradesByType [3][]*model.Trade    // map from trade type to array of Trade
+	TradeProduct     map[int]*model.TradeProduct
 }
 
 func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {
@@ -103,8 +110,6 @@ func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine,
 	serverdata_session := serverdata.NewSession()
 	defer masterdata_session.Close()
 	defer serverdata_session.Close()
-	gamedata.Accessory.Load(masterdata_session, serverdata_session, dictionary)
-	gamedata.Trade.Load(masterdata_session, serverdata_session, dictionary)
 
 	for len(funcs) > 0 {
 		var fid uintptr

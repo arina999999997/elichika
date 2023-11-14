@@ -17,7 +17,6 @@ import (
 	"elichika/utils"
 
 	"fmt"
-	"os"
 
 	"xorm.io/xorm"
 )
@@ -28,39 +27,40 @@ type Trade struct {
 	Products     map[int]model.TradeProduct
 }
 
-func (trade *Trade) Load(masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	if len(os.Args) > 1 && os.Args[1] == "init" {
-		return
-	}
-	trade.Trades = make(map[int]model.Trade)
-	trade.Products = make(map[int]model.TradeProduct)
-	serverTrades := make(map[int]model.Trade)
-	err := serverdata_db.Table("s_trade").Find(&serverTrades)
+func loadTrade(gamedata* Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+	fmt.Println("Loading Trade")
+	gamedata.Trade = make(map[int]*model.Trade)
+	gamedata.TradeProduct = make(map[int]*model.TradeProduct)
+	err := serverdata_db.Table("s_trade").Find(&gamedata.Trade)
 	utils.CheckErr(err)
-	for tradeID, t := range serverTrades {
-		exists, err := masterdata_db.Table("m_trade").Where("id = ?", tradeID).
+
+	for id, trade := range gamedata.Trade {
+		exists, err := masterdata_db.Table("m_trade").Where("id = ?", id).
 			Cols("trade_type", "source_content_type", "source_content_id").Get(
-			&t.TradeType, &t.SourceContentType, &t.SourceContentID)
+			&trade.TradeType, &trade.SourceContentType, &trade.SourceContentID)
 		utils.CheckErr(err)
 		if !exists {
-			fmt.Println("Warning: Skipped trade ", tradeID, " (did not exists in masterdata.db)")
+			fmt.Println("Warning: Skipped trade ", id, " (did not exists in masterdata.db)")
+			delete(gamedata.Trade, id)
 			continue
 		}
+		// server and client product_id might not be the same, we need to sync it here
 		serverProducts := []model.TradeProduct{}
-		err = serverdata_db.Table("s_trade_product").Where("trade_id = ?", tradeID).
+		err = serverdata_db.Table("s_trade_product").Where("trade_id = ?", id).
 			OrderBy("product_id").Find(&serverProducts)
 		utils.CheckErr(err)
 		clientProductIDs := []int{}
-		err = masterdata_db.Table("m_trade_product").Where("trade_master_id = ?", tradeID).
+		err = masterdata_db.Table("m_trade_product").Where("trade_master_id = ?", id).
 			OrderBy("id").Cols("id").Find(&clientProductIDs)
 		utils.CheckErr(err)
+
 		n := len(serverProducts)
 		m := len(clientProductIDs)
-		for ; n < m; n++ {
+		for ; n < m; n++ { // if server have less than necessary append random product
 			serverProducts = append(
 				serverProducts,
 				model.TradeProduct{
-					TradeID:      tradeID,
+					TradeID:      id,
 					SourceAmount: 1,
 					StockAmount:  nil,
 					ActualContent: model.Content{
@@ -70,15 +70,19 @@ func (trade *Trade) Load(masterdata_db, serverdata_db *xorm.Session, dictionary 
 					},
 				})
 		}
-		serverProducts = serverProducts[0:m]
-		for i := 0; i < m; i++ {
+		serverProducts = serverProducts[0:m] // if server have more then reduce to what client have
+
+		for i := 0; i < m; i++ { // need to use client's id
 			serverProducts[i].ProductID = clientProductIDs[i]
 			serverProducts[i].DummyID = clientProductIDs[i]
 			serverProducts[i].Contents = append(serverProducts[i].Contents, serverProducts[i].ActualContent)
-			trade.Products[clientProductIDs[i]] = serverProducts[i]
+			gamedata.TradeProduct[clientProductIDs[i]] = &serverProducts[i]
 		}
-		t.Products = serverProducts
-		trade.TradesByType[t.TradeType] = append(trade.TradesByType[t.TradeType], t)
-		trade.Trades[t.TradeID] = t
+		trade.Products = serverProducts
+		gamedata.TradesByType[trade.TradeType] = append(gamedata.TradesByType[trade.TradeType], trade)
 	}
+}
+
+func init() {
+	addLoadFunc(loadTrade)
 }
