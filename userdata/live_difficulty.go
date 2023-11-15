@@ -11,29 +11,31 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func (session *Session) GetOtherUserLiveRecord(otherUserID, liveDifficultyID int) model.UserLiveDifficultyRecord {
-	record := model.UserLiveDifficultyRecord{}
+// TODO: rename table "u_live_record" to "u_live_difficulty"
+
+func (session *Session) GetOtherUserLiveDifficulty(otherUserID, liveDifficultyID int) model.UserLiveDifficulty {
+	userLiveDifficulty := model.UserLiveDifficulty{}
 	exists, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", otherUserID, liveDifficultyID).
-		Get(&record)
+		Get(&userLiveDifficulty)
 	if err != nil {
 		panic(err)
 	}
 	if !exists {
-		record.UserID = otherUserID
-		record.LiveDifficultyID = liveDifficultyID
-		record.EnableAutoplay = true
-		record.IsNew = true
+		userLiveDifficulty.UserID = otherUserID
+		userLiveDifficulty.LiveDifficultyID = liveDifficultyID
+		userLiveDifficulty.EnableAutoplay = true
+		userLiveDifficulty.IsNew = true
 	}
-	return record
+	return userLiveDifficulty
 }
 
-func (session *Session) GetLiveDifficultyRecord(liveDifficultyID int) model.UserLiveDifficultyRecord {
-	return session.GetOtherUserLiveRecord(session.UserStatus.UserID, liveDifficultyID)
+func (session *Session) GetLiveDifficulty(liveDifficultyID int) model.UserLiveDifficulty {
+	return session.GetOtherUserLiveDifficulty(session.UserStatus.UserID, liveDifficultyID)
 }
 
-func (session *Session) GetAllLiveDifficultyRecords() []model.UserLiveDifficultyRecord {
-	records := []model.UserLiveDifficultyRecord{}
+func (session *Session) GetAllLiveDifficulties() []model.UserLiveDifficulty {
+	records := []model.UserLiveDifficulty{}
 	err := session.Db.Table("u_live_record").Where("user_id = ?", session.UserStatus.UserID).
 		Find(&records)
 	if err != nil {
@@ -42,21 +44,22 @@ func (session *Session) GetAllLiveDifficultyRecords() []model.UserLiveDifficulty
 	return records
 }
 
-func (session *Session) UpdateLiveDifficultyRecord(record model.UserLiveDifficultyRecord) {
-	session.UserLiveDifficultyRecordDiffs[record.LiveDifficultyID] = record
+func (session *Session) UpdateLiveDifficulty(userLiveDifficulty model.UserLiveDifficulty) {
+	session.UserLiveDifficultyDiffs[userLiveDifficulty.LiveDifficultyID] = userLiveDifficulty
 }
 
-func (session *Session) FinalizeLiveDifficultyRecords() []any {
+func (session *Session) FinalizeLiveDifficulties() []any {
 	diffs := []any{}
-	for _, record := range session.UserLiveDifficultyRecordDiffs {
-		diffs = append(diffs, record.LiveDifficultyID)
-		diffs = append(diffs, record)
+	for _, userLiveDifficulty := range session.UserLiveDifficultyDiffs {
+		session.UserModelCommon.UserLiveDifficultyByDifficultyID.PushBack(userLiveDifficulty)
+		diffs = append(diffs, userLiveDifficulty.LiveDifficultyID)
+		diffs = append(diffs, userLiveDifficulty)
 		updated, err := session.Db.Table("u_live_record").
-			Where("user_id = ? AND live_difficulty_id = ?", record.UserID, record.LiveDifficultyID).
-			AllCols().Update(&record)
+			Where("user_id = ? AND live_difficulty_id = ?", userLiveDifficulty.UserID, userLiveDifficulty.LiveDifficultyID).
+			AllCols().Update(&userLiveDifficulty)
 		utils.CheckErr(err)
 		if updated == 0 {
-			_, err = session.Db.AllCols().Table("u_live_record").Insert(&record)
+			_, err = session.Db.AllCols().Table("u_live_record").Insert(&userLiveDifficulty)
 			utils.CheckErr(err)
 		}
 	}

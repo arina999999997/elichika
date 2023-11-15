@@ -30,6 +30,7 @@ func LiveMvStart(ctx *gin.Context) {
 }
 
 func LiveMvSaveDeck(ctx *gin.Context) {
+	// TODO: actually save this in db
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
 	type LiveSaveDeckReq struct {
@@ -46,10 +47,10 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 		panic(err)
 	}
 
-	userLiveMvDeckInfo := model.UserLiveMvDeckInfo{
+	userLiveMvDeck := model.UserLiveMvDeck{
 		LiveMasterID: req.LiveMasterID,
 	}
-	deckJsonBytes, err := json.Marshal(userLiveMvDeckInfo)
+	deckJsonBytes, err := json.Marshal(userLiveMvDeck)
 	utils.CheckErr(err)
 	deckJson := string(deckJsonBytes)
 
@@ -65,7 +66,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 			deckJson, err = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", v), suitId)
 		}
 	}
-	err = json.Unmarshal([]byte(deckJson), &userLiveMvDeckInfo)
+	err = json.Unmarshal([]byte(deckJson), &userLiveMvDeck)
 	utils.CheckErr(err)
 	UserID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, UserID)
@@ -84,7 +85,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 
 	var userLiveMvDeckCustomByID []any
 	userLiveMvDeckCustomByID = append(userLiveMvDeckCustomByID, req.LiveMasterID)
-	userLiveMvDeckCustomByID = append(userLiveMvDeckCustomByID, userLiveMvDeckInfo)
+	userLiveMvDeckCustomByID = append(userLiveMvDeckCustomByID, userLiveMvDeck)
 
 	signBody := session.Finalize(GetData("userModel.json"), "user_model")
 	if req.LiveMvDeckType == 1 {

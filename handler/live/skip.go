@@ -2,10 +2,10 @@ package live
 
 import (
 	"elichika/config"
+	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler"
-	"elichika/enum"
 	"elichika/klab"
 	"elichika/model"
 	"elichika/userdata"

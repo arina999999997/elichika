@@ -19,21 +19,39 @@ var (
 // take no params, return a new card
 func GuaranteedNewCard(ctx *gin.Context, gachaGuarantee *model.GachaGuarantee) int {
 	cardPool := ctx.MustGet("gacha_card_pool").([]model.GachaCard)
-	userCards := []int{}
 	session := ctx.MustGet("session").(*userdata.Session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	err := session.Db.Table("u_card").Where("user_id = ?", ctx.GetInt("user_id")).Cols("card_master_id").
-		Find(&userCards)
-	utils.CheckErr(err)
-	cardSet := map[int]bool{}
-	for _, id := range userCards {
-		cardSet[id] = true
-	}
 	newCards := []model.GachaCard{}
-	for _, card := range cardPool {
-		_, have := cardSet[card.CardMasterID]
-		if !have {
-			newCards = append(newCards, card)
+	{
+		userCards := []int{}
+		err := session.Db.Table("u_card").Where("user_id = ?", ctx.GetInt("user_id")).Cols("card_master_id").
+			Find(&userCards)
+		utils.CheckErr(err)
+		cardSet := map[int]bool{}
+		for _, id := range userCards {
+			cardSet[id] = true
+		}
+		for _, card := range cardPool {
+			_, have := cardSet[card.CardMasterID]
+			if !have {
+				newCards = append(newCards, card)
+			}
+		}
+	}
+	if len(newCards) == 0 { // if empty then choose from the cards that have grade < 5
+		userCards := []int{}
+		err := session.Db.Table("u_card").Where("user_id = ? AND grade = 5", ctx.GetInt("user_id")).Cols("card_master_id").
+			Find(&userCards)
+		utils.CheckErr(err)
+		cardSet := map[int]bool{}
+		for _, id := range userCards {
+			cardSet[id] = true
+		}
+		for _, card := range cardPool {
+			_, have := cardSet[card.CardMasterID]
+			if !have {
+				newCards = append(newCards, card)
+			}
 		}
 	}
 	return ChooseRandomCard(gamedata, newCards)

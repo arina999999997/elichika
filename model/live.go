@@ -1,6 +1,5 @@
 package model
 
-// UserLiveDeck ...
 type UserLiveDeck struct {
 	UserID         int `xorm:"pk 'user_id'" json:"-"`
 	UserLiveDeckID int `xorm:"pk 'user_live_deck_id'" json:"user_live_deck_id"`
@@ -27,7 +26,10 @@ type UserLiveDeck struct {
 	SuitMasterID9 int `xorm:"'suit_master_id_9'" json:"suit_master_id_9"`
 }
 
-// UserLiveParty ...
+func (uld *UserLiveDeck) ID() int64 {
+	return int64(uld.UserLiveDeckID)
+}
+
 type UserLiveParty struct {
 	UserID         int `xorm:"pk 'user_id'" json:"-"`
 	PartyID        int `xorm:"pk 'party_id'" json:"party_id"`
@@ -42,6 +44,10 @@ type UserLiveParty struct {
 	UserAccessoryID1 *int64 `xorm:"'user_accessory_id_1'" json:"user_accessory_id_1"` // null for empty
 	UserAccessoryID2 *int64 `xorm:"'user_accessory_id_2'" json:"user_accessory_id_2"`
 	UserAccessoryID3 *int64 `xorm:"'user_accessory_id_3'" json:"user_accessory_id_3"`
+}
+
+func (uld *UserLiveParty) ID() int64 {
+	return int64(uld.PartyID)
 }
 
 // PartyName ...
@@ -119,8 +125,7 @@ type LiveState struct {
 	TowerLive       *int            `json:"tower_live"`
 }
 
-// UserLiveMvDeckInfo ...
-type UserLiveMvDeckInfo struct {
+type UserLiveMvDeck struct {
 	LiveMasterID     int  `json:"live_master_id"`
 	MemberMasterID1  *int `json:"member_master_id_1"`
 	MemberMasterID2  *int `json:"member_master_id_2"`
@@ -146,6 +151,10 @@ type UserLiveMvDeckInfo struct {
 	SuitMasterID10   *int `json:"suit_master_id_10"`
 	SuitMasterID11   *int `json:"suit_master_id_11"`
 	SuitMasterID12   *int `json:"suit_master_id_12"`
+}
+
+func (ulmd *UserLiveMvDeck) ID() int64 {
+	return int64(ulmd.LiveMasterID)
 }
 
 // LiveStageInfo ...

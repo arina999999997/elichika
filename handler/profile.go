@@ -109,6 +109,7 @@ func SetLivePartner(ctx *gin.Context) {
 
 	session.Finalize("{}", "")
 	// this is correct, the server send {}
+	//
 	resp := SignResp(ctx, "{}", config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -127,13 +128,14 @@ func SetScoreOrComboLive(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	customSetProfile := session.GetUserCustomSetProfile()
+	setProfile := session.GetUserSetProfile()
 	if ctx.Request.URL.Path == "/userProfile/setScoreLive" {
-		customSetProfile.VoltageLiveDifficultyID = req.LiveDifficultyMasterID
+		setProfile.VoltageLiveDifficultyID = req.LiveDifficultyMasterID
 	} else {
-		customSetProfile.ComboLiveDifficultyID = req.LiveDifficultyMasterID
+		setProfile.ComboLiveDifficultyID = req.LiveDifficultyMasterID
 	}
-	session.SetUserCustomSetProfile(customSetProfile)
+	session.SetUserSetProfile(setProfile)
+	session.Finalize("{}", "")
 	resp := SignResp(ctx, reqBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

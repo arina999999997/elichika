@@ -3,11 +3,11 @@ package handler
 import (
 	"elichika/config"
 	"elichika/enum"
-	"elichika/model"
-	"elichika/userdata"
 	"elichika/gamedata"
-	"elichika/utils"
+	"elichika/model"
 	"elichika/protocol/request"
+	"elichika/userdata"
+	"elichika/utils"
 
 	"encoding/json"
 	"net/http"
@@ -41,10 +41,8 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 		if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
 			// TODO: remove magic id from love panel system
 			panel.LevelUp()
-			session.AddTriggerBasic(0, &model.TriggerBasic{
+			session.AddTriggerBasic(model.TriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeUnlockBondBoard,
-				LimitAt:         nil,
-				Description:     nil,
 				ParamInt:        panel.LovePanelLevel*1000 + panel.MemberID})
 		}
 	}

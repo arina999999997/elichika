@@ -72,7 +72,7 @@ func AccessoryMelt(ctx *gin.Context) {
 	for _, userAccessoryID := range req.UserAccessoryIDs {
 		accessory := session.GetUserAccessory(userAccessoryID)
 		session.AddResource(gamedata.Accessory[accessory.AccessoryMasterID].MeltGroup[accessory.Grade].Reward)
-		accessory.AccessoryMasterID = 0 // marked for delete
+		accessory.IsNull = true // marked for delete
 		session.UpdateUserAccessory(accessory)
 	}
 
@@ -144,7 +144,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 			moneyUsed += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].GameMoney
 			skillPlusPercent += masterPowerUpAccessory.Rarity.SkillLevelUpPlusPercent[powerUpAccessory.PassiveSkill1Level]
 		}
-		powerUpAccessory.AccessoryMasterID = 0 // mark for delete
+		powerUpAccessory.IsNull = true // mark for delete
 		session.UpdateUserAccessory(powerUpAccessory)
 	}
 

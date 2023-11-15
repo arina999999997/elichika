@@ -39,7 +39,7 @@ func GachaDraw(ctx *gin.Context) {
 	defer session.Close()
 	ctx.Set("session", session)
 	gacha, resultCards := gacha.HandleGacha(ctx, req)
-
+	// TODO: add items
 	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "gacha", gacha)
 	signBody, _ = sjson.Set(signBody, "result_cards", resultCards)

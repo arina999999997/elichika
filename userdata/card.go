@@ -75,6 +75,7 @@ func (session *Session) UpdateUserCard(card model.UserCard) {
 func (session *Session) FinalizeCardDiffs() []any {
 	userCardByCardID := []any{}
 	for cardMasterID, card := range session.CardDiffs {
+		session.UserModelCommon.UserCardByCardID.PushBack(card)
 		userCardByCardID = append(userCardByCardID, cardMasterID)
 		userCardByCardID = append(userCardByCardID, card)
 		affected, err := session.Db.Table("u_card").

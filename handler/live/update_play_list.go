@@ -8,6 +8,7 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,6 +38,7 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 
 	signBody := session.Finalize(handler.GetData("userModelDiff.json"), "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "is_success", true)
+	fmt.Println(signBody)
 	resp := handler.SignResp(ctx, string(signBody), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

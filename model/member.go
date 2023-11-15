@@ -11,8 +11,8 @@ type UserCommunicationMemberDetailBadgeByID struct {
 	IsMusicBadge       bool `json:"is_music_badge"`
 }
 
-// UserMemberInfo ...
-type UserMemberInfo struct {
+// UserMember ...
+type UserMember struct {
 	UserID                   int  `xorm:"pk 'user_id'" json:"-"`
 	MemberMasterID           int  `xorm:"pk 'member_master_id'" json:"member_master_id"`
 	CustomBackgroundMasterID int  `xorm:"'custom_background_master_id'" json:"custom_background_master_id"`
@@ -24,6 +24,10 @@ type UserMemberInfo struct {
 	IsNew                    bool `json:"is_new"`
 	OwnedCardCount           int  `json:"-"`
 	AllTrainingCardCount     int  `json:"-"`
+}
+
+func (um *UserMember) ID() int64 {
+	return int64(um.MemberMasterID)
 }
 
 type MemberPublicInfo struct {
@@ -64,10 +68,4 @@ func (x *UserMemberLovePanel) LevelUp() {
 	}
 	x.LovePanelLastLevelCellIDs = []int{}
 	x.LovePanelLevel++
-}
-
-// SuitInfo ...
-type SuitInfo struct {
-	SuitMasterID int  `json:"suit_master_id"`
-	IsNew        bool `json:"is_new"`
 }

@@ -9,7 +9,7 @@ import (
 	"fmt"
 )
 
-func (session *Session) GetMember(memberMasterID int) model.UserMemberInfo {
+func (session *Session) GetMember(memberMasterID int) model.UserMember {
 	member, exist := session.UserMemberDiffs[memberMasterID]
 	if exist {
 		return member
@@ -24,8 +24,8 @@ func (session *Session) GetMember(memberMasterID int) model.UserMemberInfo {
 	return member
 }
 
-func (session *Session) GetAllMembers() []model.UserMemberInfo {
-	members := []model.UserMemberInfo{}
+func (session *Session) GetAllMembers() []model.UserMember {
+	members := []model.UserMember{}
 	err := session.Db.Table("u_member").Where("user_id = ?", session.UserStatus.UserID).Find(&members)
 	if err != nil {
 		panic(err)
@@ -33,11 +33,11 @@ func (session *Session) GetAllMembers() []model.UserMemberInfo {
 	return members
 }
 
-func (session *Session) UpdateMember(member model.UserMemberInfo) {
+func (session *Session) UpdateMember(member model.UserMember) {
 	session.UserMemberDiffs[member.MemberMasterID] = member
 }
 
-func (session *Session) InsertMembers(members []model.UserMemberInfo) {
+func (session *Session) InsertMembers(members []model.UserMember) {
 	affected, err := session.Db.Table("u_member").Insert(&members)
 	utils.CheckErr(err)
 	fmt.Println("Inserted ", affected, " members")
@@ -46,6 +46,7 @@ func (session *Session) InsertMembers(members []model.UserMemberInfo) {
 func (session *Session) FinalizeUserMemberDiffs() []any {
 	userMemberByMemberID := []any{}
 	for memberMasterID, member := range session.UserMemberDiffs {
+		session.UserModelCommon.UserMemberByMemberID.PushBack(member)
 		userMemberByMemberID = append(userMemberByMemberID, memberMasterID)
 		userMemberByMemberID = append(userMemberByMemberID, member)
 		affected, err := session.Db.Table("u_member").
@@ -76,26 +77,22 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 		}
 
 		currentLovePanel := session.GetMemberLovePanel(memberID)
-		if (len(currentLovePanel.LovePanelLastLevelCellIDs) == 5) {
+		if len(currentLovePanel.LovePanelLastLevelCellIDs) == 5 {
 			// the current bond board is full, check if we can unlock a new bond board
 			masterLovePanel := gamedata.MemberLovePanelCell[currentLovePanel.LovePanelLastLevelCellIDs[0]].MemberLovePanel
 			if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
 				// TODO: remove magic id from love panel system
 				currentLovePanel.LevelUp()
-				session.AddTriggerBasic(0, &model.TriggerBasic{
+				session.AddTriggerBasic(model.TriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeUnlockBondBoard,
-					LimitAt:         nil,
-					Description:     nil,
 					ParamInt:        currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberID})
 
 				session.UpdateMemberLovePanel(currentLovePanel)
 			}
 		}
-		session.AddTriggerMemberLoveLevelUp(0,
-			&model.TriggerMemberLoveLevelUp{
-				TriggerID:       0,
-				MemberMasterID:  memberID,
-				BeforeLoveLevel: member.LoveLevel - 1})
+		session.AddTriggerMemberLoveLevelUp(model.TriggerMemberLoveLevelUp{
+			MemberMasterID:  memberID,
+			BeforeLoveLevel: member.LoveLevel - 1})
 
 	}
 	session.UpdateMember(member)

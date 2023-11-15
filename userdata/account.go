@@ -97,11 +97,11 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 	defer session.Close()
 
 	{ // members, initial cards
-		members := []model.UserMemberInfo{}
+		members := []model.UserMember{}
 		cards := []model.UserCard{}
 
 		for _, member := range gamedata.Member {
-			members = append(members, model.UserMemberInfo{
+			members = append(members, model.UserMember{
 				UserID:                   userID,
 				MemberMasterID:           member.ID,
 				CustomBackgroundMasterID: member.MemberInit.CustomBackgroundMID,
@@ -169,7 +169,7 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			cid := [10]int{}
 			// this order isn't actually correct to the official server
 			for j := 1; j <= 9; j++ {
-				cid[j] = gamedata.Member[j + 100*((i-1)%3)].MemberInit.SuitMasterID
+				cid[j] = gamedata.Member[j+100*((i-1)%3)].MemberInit.SuitMasterID
 			}
 			liveDeck := model.UserLiveDeck{
 				UserID:         userID,

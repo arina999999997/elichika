@@ -53,6 +53,7 @@ func (session *Session) UpdateUserLiveParty(liveParty model.UserLiveParty) {
 func (session *Session) FinalizeUserLivePartyDiffs() []any {
 	userLivePartyByID := []any{}
 	for userLivePartyId, userLiveParty := range session.UserLivePartyDiffs {
+		session.UserModelCommon.UserLivePartyByID.PushBack(userLiveParty)
 		userLivePartyByID = append(userLivePartyByID, userLivePartyId)
 		userLivePartyByID = append(userLivePartyByID, userLiveParty)
 		affected, err := session.Db.Table("u_live_party").

@@ -30,7 +30,7 @@ func (gamedata *Gamedata) LoveLevelFromLovePoint(lovePoint int) int {
 		mid = (low + high) / 2
 		if gamedata.MemberLoveLevelLovePoint[mid] <= lovePoint {
 			res = mid
-			low = mid + 1		
+			low = mid + 1
 		} else {
 			high = mid - 1
 		}

@@ -10,7 +10,7 @@ type LastPlayLiveDifficultyDeck struct {
 	SquadDict        []any `xorm:"'squad_dict'" json:"squad_dict"`
 }
 
-type UserLiveDifficultyRecord struct {
+type UserLiveDifficulty struct {
 	UserID                        int  `xorm:"pk 'user_id'" json:"-"`
 	LiveDifficultyID              int  `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
 	MaxScore                      int  `xorm:"'max_score'" json:"max_score"`
@@ -26,4 +26,8 @@ type UserLiveDifficultyRecord struct {
 	EnableAutoplay                bool `xorm:"'enable_autoplay'" json:"enable_autoplay"`                                   // can autoplay?
 	IsAutoplay                    bool `xorm:"'is_autoplay'" json:"is_autoplay"`                                           // is using autoplay?
 	IsNew                         bool `xorm:"'is_new'" json:"is_new"`
+}
+
+func (uld *UserLiveDifficulty) ID() int64 {
+	return int64(uld.LiveDifficultyID)
 }

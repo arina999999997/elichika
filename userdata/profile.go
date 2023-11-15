@@ -30,7 +30,7 @@ func FetchPartnerCards(otherUserID int) []model.UserCard {
 }
 
 func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.PartnerCardInfo {
-	
+
 	memberID := session.Gamedata.Card[card.CardMasterID].Member.ID
 
 	partnerCard := model.PartnerCardInfo{}
@@ -159,7 +159,7 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	profile.ProfileInfo.BasicInfo.IsRequestPending = false
 
 	// other user's members
-	members := []model.UserMemberInfo{}
+	members := []model.UserMember{}
 	err = session.Db.Table("u_member").Where("user_id = ?", otherUserID).OrderBy("love_point DESC").Find(&members)
 	if err != nil {
 		panic(err)
@@ -210,16 +210,16 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 		OrderBy("active_skill_play_count DESC").Limit(3).Find(&profile.PlayInfo.PlaySkillCardRanking)
 
 	// custom profile
-	customProfile := GetOtherUserCustomSetProfile(otherUserID)
+	customProfile := GetOtherUserSetProfile(otherUserID)
 	if customProfile.VoltageLiveDifficultyID != 0 {
 		profile.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterID = customProfile.VoltageLiveDifficultyID
 		profile.PlayInfo.MaxScoreLiveDifficulty.Score =
-			session.GetOtherUserLiveRecord(otherUserID, customProfile.VoltageLiveDifficultyID).MaxScore
+			session.GetOtherUserLiveDifficulty(otherUserID, customProfile.VoltageLiveDifficultyID).MaxScore
 	}
 	if customProfile.ComboLiveDifficultyID != 0 {
 		profile.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterID = customProfile.ComboLiveDifficultyID
 		profile.PlayInfo.MaxComboLiveDifficulty.Score =
-			session.GetOtherUserLiveRecord(otherUserID, customProfile.ComboLiveDifficultyID).MaxCombo
+			session.GetOtherUserLiveDifficulty(otherUserID, customProfile.ComboLiveDifficultyID).MaxCombo
 	}
 
 	// can get from members[] to save sql
@@ -227,8 +227,8 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	return profile
 }
 
-func GetOtherUserCustomSetProfile(otherUserID int) model.UserCustomSetProfile {
-	p := model.UserCustomSetProfile{}
+func GetOtherUserSetProfile(otherUserID int) model.UserSetProfile {
+	p := model.UserSetProfile{}
 	exists, err := Engine.Table("u_custom_set_profile").Where("user_id = ?", otherUserID).Get(&p)
 	utils.CheckErr(err)
 	if !exists {
@@ -237,14 +237,17 @@ func GetOtherUserCustomSetProfile(otherUserID int) model.UserCustomSetProfile {
 	return p
 }
 
-func (session *Session) GetUserCustomSetProfile() model.UserCustomSetProfile {
-	return GetOtherUserCustomSetProfile(session.UserStatus.UserID)
+func (session *Session) GetUserSetProfile() model.UserSetProfile {
+	return GetOtherUserSetProfile(session.UserStatus.UserID)
 }
 
-func (session *Session) SetUserCustomSetProfile(p model.UserCustomSetProfile) {
+// this doesn't need to do delta patch because right after setting, we fetch profile
+func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
 	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserStatus.UserID).
 		AllCols().Update(&p)
 	utils.CheckErr(err)
+	// this is not necessary because we would be fetching profile or sending this at the start
+	// session.UserModelCommon.SetUserSetProfile.PushBack(p)
 	if affected == 0 {
 		// need to insert
 		affected, err = session.Db.Table("u_custom_set_profile").Insert(&p)

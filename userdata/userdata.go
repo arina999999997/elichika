@@ -41,14 +41,14 @@ func InitTables(overwrite bool) {
 	}
 
 	InitTable("u_info", DbUser{}, overwrite)
-	InitTable("u_custom_set_profile", model.UserCustomSetProfile{}, overwrite)
+	InitTable("u_custom_set_profile", model.UserSetProfile{}, overwrite)
 	InitTable("u_card", model.UserCard{}, overwrite)
 	InitTable("u_suit", model.UserSuit{}, overwrite)
 	InitTable("u_accessory", model.UserAccessory{}, overwrite)
 	InitTable("u_training_tree_cell", model.TrainingTreeCell{}, overwrite)
 
 	type DbMember struct {
-		model.UserMemberInfo      `xorm:"extends"`
+		model.UserMember          `xorm:"extends"`
 		LovePanelLevel            int   `xorm:"'love_panel_level' default 1"`
 		LovePanelLastLevelCellIds []int `xorm:"'love_panel_last_level_cell_ids' default '[]'"`
 	}
@@ -59,12 +59,12 @@ func InitTables(overwrite bool) {
 	InitTable("u_live_state", model.LiveState{}, overwrite)
 	InitTable("u_play_list", model.UserPlayListItem{}, overwrite)
 	type DbLiveRecord struct {
-		model.UserLiveDifficultyRecord `xorm:"extends"`
-		Voltage                        int   `xorm:"'last_clear_voltage'" json:"voltage"`
-		IsCleared                      bool  `xorm:"'last_clear_is_cleared'" json:"is_cleared"`
-		RecordedAt                     int64 `xorm:"'last_clear_recorded_at'" json:"recorded_at"`
-		CardWithSuitDict               []int `xorm:"'last_clear_cards_and_suits'" json:"card_with_suit_dict"`
-		SquadDict                      []any `xorm:"'squad_dict'" json:"squad_dict"`
+		model.UserLiveDifficulty `xorm:"extends"`
+		Voltage                  int   `xorm:"'last_clear_voltage'" json:"voltage"`
+		IsCleared                bool  `xorm:"'last_clear_is_cleared'" json:"is_cleared"`
+		RecordedAt               int64 `xorm:"'last_clear_recorded_at'" json:"recorded_at"`
+		CardWithSuitDict         []int `xorm:"'last_clear_cards_and_suits'" json:"card_with_suit_dict"`
+		SquadDict                []any `xorm:"'squad_dict'" json:"squad_dict"`
 	}
 	InitTable("u_live_record", DbLiveRecord{}, overwrite)
 	InitTable("u_trigger_basic", model.TriggerBasic{}, overwrite)

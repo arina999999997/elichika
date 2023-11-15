@@ -78,11 +78,11 @@ type Gamedata struct {
 	AccessoryMeltGroup     map[int]*AccessoryMeltGroup
 	AccessoryLevelUpItem   map[int]*AccessoryLevelUpItem
 
-	Member map[int]*Member
-	MemberLoveLevelLovePoint []int 
-	MemberLoveLevelCount int
-	MemberLovePanel map[int]*MemberLovePanel
-	MemberLovePanelCell map[int]*MemberLovePanelCell
+	Member                          map[int]*Member
+	MemberLoveLevelLovePoint        []int
+	MemberLoveLevelCount            int
+	MemberLovePanel                 map[int]*MemberLovePanel
+	MemberLovePanelCell             map[int]*MemberLovePanelCell
 	MemberLovePanelLevelAtLoveLevel []int
 
 	Live              map[int]*Live
@@ -101,6 +101,7 @@ type Gamedata struct {
 	Suit map[int]*Suit
 
 	Gacha          map[int]*Gacha
+	GachaList      []*Gacha
 	GachaDraw      map[int]*GachaDraw
 	GachaGroup     map[int]*GachaGroup
 	GachaGuarantee map[int]*GachaGuarantee

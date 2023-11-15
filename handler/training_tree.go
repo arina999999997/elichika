@@ -99,9 +99,7 @@ func GradeUpCard(ctx *gin.Context) {
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break
-	session.AddTriggerCardGradeUp(0, &model.TriggerCardGradeUp{
-		UserID:               userID,
-		TriggerID:            0,
+	session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
 		CardMasterID:         req.CardMasterID,
 		BeforeLoveLevelLimit: currentBondLevel - masterCard.CardRarityType/10,
 		AfterLoveLevelLimit:  currentBondLevel})

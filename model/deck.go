@@ -14,3 +14,7 @@ type UserLessonDeck struct {
 	CardMasterID8    *int   `xorm:"'card_master_id_8'" json:"card_master_id_8"`
 	CardMasterID9    *int   `xorm:"'card_master_id_9'" json:"card_master_id_9"`
 }
+
+func (uld *UserLessonDeck) ID() int64 {
+	return int64(uld.UserLessonDeckID)
+}

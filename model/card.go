@@ -38,6 +38,10 @@ type UserCard struct {
 	ActiveSkillPlayCount       int   `xorm:"'active_skill_play_count' default 0" json:"-"`
 }
 
+func (uc *UserCard) ID() int64 {
+	return int64(uc.CardMasterID)
+}
+
 // CardFavoriteReq ...
 type CardFavoriteReq struct {
 	CardMasterID int  `json:"card_master_id"`

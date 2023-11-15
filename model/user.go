@@ -130,9 +130,13 @@ type Profile struct {
 	} `xorm:"-" json:"member_info"`
 }
 
-type UserCustomSetProfile struct {
+type UserSetProfile struct {
 	UserID                  int `xorm:"'user_id'" json:"-"`
 	UserSetProfileID        int `xorm:"-" json:"user_set_profile_id"` // always 0
 	VoltageLiveDifficultyID int `xorm:"'voltage_live_difficulty_id'" json:"voltage_live_difficulty_id"`
 	ComboLiveDifficultyID   int `xorm:"'commbo_live_difficulty_id'" json:"commbo_live_difficulty_id"`
+}
+
+func (usp *UserSetProfile) ID() int64 {
+	return int64(usp.UserSetProfileID)
 }

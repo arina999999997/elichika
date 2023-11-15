@@ -36,6 +36,7 @@ func (session *Session) FinalizeUserSuitDiffs() []any {
 	session.InsertUserSuits(session.UserSuitDiffs)
 	diffs := []any{}
 	for _, suit := range session.UserSuitDiffs {
+		session.UserModelCommon.UserSuitBySuitID.PushBack(suit)
 		diffs = append(diffs, suit.SuitMasterID)
 		diffs = append(diffs, suit)
 	}

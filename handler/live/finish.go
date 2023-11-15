@@ -145,7 +145,7 @@ func LiveFinish(ctx *gin.Context) {
 	rewardCenterLovePoint := klab.CenterBondGainBasedOnBondGain(liveDifficulty.RewardBaseLovePoint) / len(centerPositions)
 
 	// record this live
-	liveRecord := session.GetLiveDifficultyRecord(session.UserStatus.LastLiveDifficultyID)
+	liveRecord := session.GetLiveDifficulty(session.UserStatus.LastLiveDifficultyID)
 	liveRecord.IsNew = false
 	lastPlayDeck := session.BuildLastPlayLiveDifficultyDeck(liveState.DeckID, liveState.LiveStage.LiveDifficultyID)
 	lastPlayDeck.Voltage = req.LiveScore.CurrentScore
@@ -266,7 +266,7 @@ func LiveFinish(ctx *gin.Context) {
 		liveResult.Partner = new(model.UserBasicInfo)
 		*liveResult.Partner = session.GetOtherUserBasicProfile(liveState.PartnerUserID)
 	}
-	session.UpdateLiveDifficultyRecord(liveRecord)
+	session.UpdateLiveDifficulty(liveRecord)
 	session.SetLastPlayLiveDifficultyDeck(lastPlayDeck)
 	liveFinishResp := session.Finalize(handler.GetData("userModelDiff.json"), "user_model_diff")
 	liveFinishResp, _ = sjson.Set(liveFinishResp, "live_result", liveResult)

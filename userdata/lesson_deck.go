@@ -30,11 +30,12 @@ func (session *Session) UpdateLessonDeck(userLessonDeck model.UserLessonDeck) {
 
 func (session *Session) FinalizeUserLessonDeckDiffs() []any {
 	userLessonDeckByID := []any{}
-	for userLessonDeckId, userLessonDeck := range session.UserLessonDeckDiffs {
-		userLessonDeckByID = append(userLessonDeckByID, userLessonDeckId)
+	for userLessonDeckID, userLessonDeck := range session.UserLessonDeckDiffs {
+		session.UserModelCommon.UserLessonDeckByID.PushBack(userLessonDeck)
+		userLessonDeckByID = append(userLessonDeckByID, userLessonDeckID)
 		userLessonDeckByID = append(userLessonDeckByID, userLessonDeck)
 		affected, err := session.Db.Table("u_lesson_deck").
-			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserID, userLessonDeckId).
+			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserID, userLessonDeckID).
 			AllCols().Update(userLessonDeck)
 		if (err != nil) || (affected != 1) {
 			panic(err)

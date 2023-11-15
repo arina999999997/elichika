@@ -141,7 +141,8 @@ func Router(r *gin.Engine) {
 		api.POST("/dailyTheaterArchive/fetchDailyTheaterArchive", handler.FetchDailyTheaterArchive)
 
 		// TODO
-		// api.POST("/ruleDescription/saveRuleDescription", )
+		// api.POST("/ruleDescription/saveRuleDescription", ) // happen when playing tutorial songs
+		// /shop/fetchShopSubscription // happen when trying to click on subscription without one active
 	}
 
 	webapi := r.Group("/webui", webui.Common)

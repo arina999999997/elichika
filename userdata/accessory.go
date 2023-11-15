@@ -57,9 +57,9 @@ func (session *Session) FinalizeUserAccessories() []any {
 	accessoryByUserAccessoryID := []any{}
 	for userAccessoryID, accessory := range session.UserAccessoryDiffs {
 		accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, userAccessoryID)
-		if accessory.AccessoryMasterID == 0 { // delete this accessories
+		session.UserModelCommon.UserAccessoryByUserAccessoryID.PushBack(accessory)
+		if accessory.IsNull {
 			accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, nil)
-			// fmt.Println(userAccessoryID)
 			affected, err := session.Db.Table("u_accessory").
 				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, userAccessoryID).Delete(&accessory)
 			utils.CheckErr(err)

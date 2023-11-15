@@ -100,7 +100,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 
-	liveDifficultyRecords := session.GetAllLiveDifficultyRecords()
+	liveDifficultyRecords := session.GetAllLiveDifficulties()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	for _, liveDifficultyRecord := range liveDifficultyRecords {
@@ -111,7 +111,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 		_, exists := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyID].Live.LiveMemberMapping[req.MemberMasterID]
 		if exists {
 			liveDifficultyRecord.IsNew = false
-			session.UpdateLiveDifficultyRecord(liveDifficultyRecord)
+			session.UpdateLiveDifficulty(liveDifficultyRecord)
 		}
 	}
 

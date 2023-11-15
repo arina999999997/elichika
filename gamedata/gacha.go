@@ -22,9 +22,10 @@ func populateGacha(gacha *Gacha, gamedata *Gamedata, masterdata_db, serverdata_d
 
 func loadGacha(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	gamedata.Gacha = make(map[int]*Gacha)
-	err := serverdata_db.Table("s_gacha").Find(&gamedata.Gacha)
+	err := serverdata_db.Table("s_gacha").OrderBy("gacha_master_id").Find(&gamedata.GachaList)
 	utils.CheckErr(err)
-	for _, gacha := range gamedata.Gacha {
+	for _, gacha := range gamedata.GachaList {
+		gamedata.Gacha[gacha.GachaMasterID] = gacha
 		populateGacha(gacha, gamedata, masterdata_db, serverdata_db, dictionary)
 	}
 }

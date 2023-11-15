@@ -27,6 +27,7 @@ func (session *Session) UpdateUserLiveDeck(liveDeck model.UserLiveDeck) {
 func (session *Session) FinalizeUserLiveDeckDiffs() []any {
 	userLiveDeckByID := []any{}
 	for userLiveDeckId, userLiveDeck := range session.UserLiveDeckDiffs {
+		session.UserModelCommon.UserLiveDeckByID.PushBack(userLiveDeck)
 		userLiveDeckByID = append(userLiveDeckByID, userLiveDeckId)
 		userLiveDeckByID = append(userLiveDeckByID, userLiveDeck)
 		affected, err := session.Db.Table("u_live_deck").

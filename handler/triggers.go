@@ -22,7 +22,10 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 		panic(err)
 	}
 
-	session.AddTriggerCardGradeUp(req.TriggerID, nil)
+	session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
+		TriggerID: req.TriggerID,
+		IsNull:    true,
+	})
 	resp := session.Finalize(GetData("userModel.json"), "user_model")
 	resp = SignResp(ctx, resp, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
@@ -40,7 +43,10 @@ func TriggerRead(ctx *gin.Context) {
 		panic(err)
 	}
 
-	session.AddTriggerBasic(req.TriggerID, nil)
+	session.AddTriggerBasic(model.TriggerBasic{
+		TriggerID: req.TriggerID,
+		IsNull:    true,
+	})
 	resp := session.Finalize(GetData("userModel.json"), "user_model")
 	resp = SignResp(ctx, resp, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
@@ -55,8 +61,9 @@ func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
 	defer session.Close()
 
 	triggers := session.GetAllTriggerMemberLoveLevelUps()
-	for _, trigger := range triggers.Objects {
-		session.AddTriggerMemberLoveLevelUp(trigger.TriggerID, nil)
+	for _, trigger := range triggers {
+		trigger.IsNull = true
+		session.AddTriggerMemberLoveLevelUp(trigger)
 	}
 
 	resp := session.Finalize(GetData("userModel.json"), "user_model")

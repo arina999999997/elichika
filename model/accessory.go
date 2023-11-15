@@ -15,4 +15,9 @@ type UserAccessory struct {
 	IsLock             bool  `json:"is_lock"`
 	IsNew              bool  `json:"is_new"`
 	AcquiredAt         int64 `json:"acquired_at"` // unix second
+	IsNull             bool  `json:"-" xorm:"-"`
+}
+
+func (ua *UserAccessory) ID() int64 {
+	return ua.UserAccessoryID
 }

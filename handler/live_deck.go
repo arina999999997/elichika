@@ -148,7 +148,7 @@ func SaveSuit(ctx *gin.Context) {
 	session.UpdateUserLiveDeck(deck)
 
 	// Rina-chan board toggle
-	if  session.Gamedata.Suit[req.SuitMasterID].Member.ID == enum.MemberMasterIDRina {
+	if session.Gamedata.Suit[req.SuitMasterID].Member.ID == enum.MemberMasterIDRina {
 		RinaChan := session.GetMember(enum.MemberMasterIDRina)
 		RinaChan.ViewStatus = req.ViewStatus
 		session.UpdateMember(RinaChan)

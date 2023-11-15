@@ -60,7 +60,7 @@ type Member struct {
 	// Unit int // subgroup
 
 	// from m_member_init
-	MemberInit MemberInit `xorm:"-"`	
+	MemberInit MemberInit `xorm:"-"`
 }
 
 type MemberInit struct {
@@ -96,7 +96,6 @@ func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, 
 		member.populate(gamedata, masterdata_db, serverdata_db, dictionary)
 	}
 }
-
 
 func init() {
 	addLoadFunc(loadMember)
