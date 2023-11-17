@@ -2,6 +2,7 @@ package userdata
 
 import (
 	"elichika/model"
+	"elichika/utils"
 
 	"fmt"
 )
@@ -27,7 +28,7 @@ func (session *Session) UpdateUserLiveDeck(liveDeck model.UserLiveDeck) {
 func (session *Session) FinalizeUserLiveDeckDiffs() []any {
 	userLiveDeckByID := []any{}
 	for userLiveDeckId, userLiveDeck := range session.UserLiveDeckDiffs {
-		session.UserModelCommon.UserLiveDeckByID.PushBack(userLiveDeck)
+		session.UserModel.UserLiveDeckByID.PushBack(userLiveDeck)
 		userLiveDeckByID = append(userLiveDeckByID, userLiveDeckId)
 		userLiveDeckByID = append(userLiveDeckByID, userLiveDeck)
 		affected, err := session.Db.Table("u_live_deck").
@@ -43,16 +44,16 @@ func (session *Session) FinalizeUserLiveDeckDiffs() []any {
 func (session *Session) GetAllLiveDecks() []model.UserLiveDeck {
 	decks := []model.UserLiveDeck{}
 	err := session.Db.Table("u_live_deck").Where("user_id = ?", session.UserStatus.UserID).Find(&decks)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	return decks
 }
 
 func (session *Session) InsertLiveDecks(decks []model.UserLiveDeck) {
 	count, err := session.Db.Table("u_live_deck").Insert(&decks)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	fmt.Println("Inserted ", count, " live decks")
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_live_deck", "UserLiveDeckByID")
 }

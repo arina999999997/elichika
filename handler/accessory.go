@@ -33,7 +33,7 @@ func AccessoryUpdateIsLock(ctx *gin.Context) {
 	accessory.IsLock = req.IsLock
 	session.UpdateUserAccessory(accessory)
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -76,7 +76,7 @@ func AccessoryMelt(ctx *gin.Context) {
 		session.UpdateUserAccessory(accessory)
 	}
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -189,7 +189,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 
 	session.RemoveGameMoney(int64(moneyUsed))
 
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	// not sure what this is, doesn't seem to do anything
 	// 10/20/30 but that's doesn't seems to be tied to rarity
 	// setting it up to rarity doesn't hurt
@@ -197,9 +197,6 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	signBody, _ = sjson.Set(signBody, "success", masterAccessory.RarityType)
 	signBody, _ = sjson.Set(signBody, "do_power_up", doPowerUp)
 
-	// fmt.Println("Money used: ", moneyUsed, "Skill plus percent: ", skillPlusPercent)
-	// fmt.Println("New level: ", userAccessory.Level, "New exp: ", userAccessory.Exp)
-	// fmt.Println(signBody)
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -251,10 +248,9 @@ func AccessoryRarityUp(ctx *gin.Context) {
 
 	// finalize and send the response
 
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "do_rarity_up", doRarityUp)
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
@@ -290,9 +286,8 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 			session.UpdateUserLiveParty(liveParty)
 		}
 	}
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }

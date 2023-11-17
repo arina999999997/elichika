@@ -3,7 +3,6 @@ package handler
 import (
 	"elichika/config"
 	"elichika/gamedata"
-	// "elichika/model"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
@@ -11,12 +10,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	// "fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	// "xorm.io/xorm"
 )
 
 func FetchCommunicationMemberDetail(ctx *gin.Context) {
@@ -49,7 +46,6 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	signBody, _ = sjson.Set(signBody, "weekday_state.weekday", weekday)
 	signBody, _ = sjson.Set(signBody, "weekday_state.next_weekday_at", tomorrow)
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
@@ -74,7 +70,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	// 	MemberMasterID: int(memberMasterId),
 	// })
 
-	// signBody := GetData("userModel.json")
+	// signBody := "{}"
 	// signBody, _ = sjson.Set(signBody, "user_model.user_status", GetUserStatus())
 	// signBody, _ = sjson.Set(signBody, "user_model.user_communication_member_detail_badge_by_id", userDetail)
 	// resp := SignResp(ctx, signBody, config.SessionKey)
@@ -115,32 +111,60 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 		}
 	}
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
 func FinishUserStorySide(ctx *gin.Context) {
-	// TODO: need to award items / mark as read
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.FinishUserStorySideRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+	
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
 
+	session.UserStatus.IsAutoMode = req.IsAutoMode
+	session.FinishStorySide(req.StorySideMasterID)
+
+	signBody := session.Finalize("{}", "user_model")
+	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
 func FinishUserStoryMember(ctx *gin.Context) {
-	// TODO: need to award items / mark as read
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.FinishUserStoryMemberRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
+	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
+	session.UserStatus.IsAutoMode = req.IsAutoMode
+	if session.FinishStoryMember(req.StoryMemberMasterID) {
+		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterID]
+		if storyMemberMaster.Reward != nil {
+			session.AddResource(*storyMemberMaster.Reward)
+		}
+		if storyMemberMaster.UnlockLiveID != nil {
+			masterLive := gamedata.Live[*storyMemberMaster.UnlockLiveID]
+			// insert empty record for relevant items
+			for _, masterLiveDifficulty := range masterLive.LiveDifficulties {
+				liveDifficulty := session.GetLiveDifficulty(masterLiveDifficulty.LiveDifficultyID)
+				session.UpdateLiveDifficulty(liveDifficulty)
+			}
+		}
+	}
+
+	signBody := session.Finalize("{}", "user_model")
+	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
@@ -160,7 +184,7 @@ func SetTheme(ctx *gin.Context) {
 	member.CustomBackgroundMasterID = req.CustomBackgroundMasterID
 	session.UpdateMember(member)
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -178,7 +202,7 @@ func SetFavoriteMember(ctx *gin.Context) {
 
 	session.UserStatus.FavoriteMemberID = req.MemberMasterID
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

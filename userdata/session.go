@@ -6,10 +6,11 @@ import (
 	"elichika/protocol/response"
 	"elichika/utils"
 
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"xorm.io/xorm"
 )
@@ -37,7 +38,9 @@ type Session struct {
 	TriggerCardGradeUps       []any
 	TriggerBasics             []any
 	TriggerMemberLoveLevelUps []any
-	UserModelCommon           response.UserModelCommon
+
+	// new version, handler should be supported for both version until the new version match the old one
+	UserModel response.UserModel
 }
 
 // Push update into the db and create the diff
@@ -57,23 +60,35 @@ func (session *Session) Finalize(jsonBody string, mainKey string) string {
 		jsonBody, _ = sjson.SetRaw(jsonBody, mainKey+"."+resourceKeys[i], resourceValues[i])
 	}
 	jsonBody, _ = sjson.Set(jsonBody, mainKey+".user_status", session.FinalizeUserInfo())
-	session.UserModelCommon.UserStatus = session.UserStatus
+	session.UserModel.UserStatus = session.UserStatus
 	memberLovePanels := session.FinalizeMemberLovePanelDiffs()
 	if len(memberLovePanels) != 0 {
 		jsonBody, _ = sjson.Set(jsonBody, "member_love_panels", memberLovePanels)
 	}
-	session.Db.Commit()
+	for _, finalizer := range finalizers {
+		finalizer(session)
+	}
 	jsonBody, _ = sjson.Set(jsonBody, mainKey+".user_info_trigger_card_grade_up_by_trigger_id", session.TriggerCardGradeUps)
 	jsonBody, _ = sjson.Set(jsonBody, mainKey+".user_info_trigger_basic_by_trigger_id", session.TriggerBasics)
 	jsonBody, _ = sjson.Set(jsonBody, mainKey+".user_info_trigger_member_love_level_up_by_trigger_id", session.TriggerMemberLoveLevelUps)
-	if len(jsonBody) < 100000 {
-	fmt.Println("Before\n", jsonBody)
-	jsonBody, _ = sjson.Set(jsonBody, mainKey, session.UserModelCommon)
-	fmt.Println("After\n", jsonBody)
-	}
-	// testJson, err := json.Marshal(session.UserModelCommon)
-	// utils.CheckErr(err)
-	// fmt.Println(string(testJson))
+	session.Db.Commit()
+	newJsonBytes, err := json.Marshal(session.UserModel)
+	utils.CheckErr(err)
+	newJson := gjson.Parse(string(newJsonBytes))
+	oldJson := gjson.Get(jsonBody, mainKey)
+
+	oldJson.ForEach(func(key, value gjson.Result) bool {
+		newValue := newJson.Get(key.String())
+		if value.String() != newValue.String() {
+			fmt.Println("Difference in key: ", key.String())
+			fmt.Println("Old value: ", value.String())
+			fmt.Println("New value: ", newValue.String())
+			return false
+		}
+		return true
+	})
+	// user the new values by default
+	jsonBody, _ = sjson.Set(jsonBody, mainKey, session.UserModel)
 	return jsonBody
 }
 
@@ -86,7 +101,7 @@ func (session *Session) Close() {
 }
 
 func (session *Session) FinalizeUserInfo() model.UserStatus {
-	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserID).Update(&session.UserStatus)
+	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserID).AllCols().Update(&session.UserStatus)
 	if err != nil {
 		panic(err)
 	}

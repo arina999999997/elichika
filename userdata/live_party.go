@@ -2,6 +2,7 @@ package userdata
 
 import (
 	"elichika/model"
+	"elichika/utils"
 
 	"fmt"
 )
@@ -53,7 +54,7 @@ func (session *Session) UpdateUserLiveParty(liveParty model.UserLiveParty) {
 func (session *Session) FinalizeUserLivePartyDiffs() []any {
 	userLivePartyByID := []any{}
 	for userLivePartyId, userLiveParty := range session.UserLivePartyDiffs {
-		session.UserModelCommon.UserLivePartyByID.PushBack(userLiveParty)
+		session.UserModel.UserLivePartyByID.PushBack(userLiveParty)
 		userLivePartyByID = append(userLivePartyByID, userLivePartyId)
 		userLivePartyByID = append(userLivePartyByID, userLiveParty)
 		affected, err := session.Db.Table("u_live_party").
@@ -69,16 +70,16 @@ func (session *Session) FinalizeUserLivePartyDiffs() []any {
 func (session *Session) GetAllLiveParties() []model.UserLiveParty {
 	parties := []model.UserLiveParty{}
 	err := session.Db.Table("u_live_party").Where("user_id = ?", session.UserStatus.UserID).Find(&parties)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	return parties
 }
 
 func (session *Session) InsertLiveParties(parties []model.UserLiveParty) {
 	count, err := session.Db.Table("u_live_party").Insert(&parties)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	fmt.Println("Inserted ", count, " live parties")
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_live_party", "UserLivePartyByID")
 }

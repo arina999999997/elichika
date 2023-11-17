@@ -57,6 +57,7 @@ func Router(r *gin.Engine) {
 		api.POST("/live/finish", handler_live.LiveFinish)
 		api.POST("/live/skip", handler_live.LiveSkip)
 		api.POST("/live/updatePlayList", handler_live.LiveUpdatePlayList)
+		api.POST("/live/finishTutorial", handler_live.LiveFinish) // this works
 
 		api.POST("/liveMv/saveDeck", handler.LiveMvSaveDeck)
 		api.POST("/liveMv/start", handler.LiveMvStart)
@@ -74,13 +75,21 @@ func Router(r *gin.Engine) {
 
 		api.POST("/present/fetch", handler.FetchPresent)
 
+		// /referenceBook/ all done
+		api.POST("/referenceBook/saveReferenceBook", handler.SaveReferenceBook)
+		api.POST("/ruleDescription/saveRuleDescription", handler.SaveRuleDescription)
+
 		api.POST("/sif2DataLink/dataLink", handler.Sif2DataLink)
 		api.POST("/still/fetch", handler.FetchStill)
 
-		api.POST("/storyEventHistory/finishStory", handler.FinishStory)
-
+		// /story/ all done
 		api.POST("/story/finishStoryLinkage", handler.FinishStoryLinkage)
 		api.POST("/story/finishUserStoryMain", handler.FinishStoryMain)
+		api.POST("/story/saveBrowseStoryMainDigestMovie", handler.SaveBrowseStoryMainDigestMovie)
+
+		// /storyEventHistory/ all done
+		api.POST("/storyEventHistory/unlockStory", handler.UnlockStory)
+		api.POST("/storyEventHistory/finishStory", handler.FinishStory)
 
 		api.POST("/subscription/fetchSubscriptionPass", handler.FetchSubscriptionPass)
 
@@ -140,8 +149,10 @@ func Router(r *gin.Engine) {
 		api.POST("/dailyTheater/setLike", handler.DailyTheaterSetLike)
 		api.POST("/dailyTheaterArchive/fetchDailyTheaterArchive", handler.FetchDailyTheaterArchive)
 
+		api.POST("/unlockScene/saveUnlockedScene", handler.SaveUnlockedScene)
+		api.POST("/sceneTips/saveSceneTipsType", handler.SaveSceneTipsType)
+
 		// TODO
-		// api.POST("/ruleDescription/saveRuleDescription", ) // happen when playing tutorial songs
 		// /shop/fetchShopSubscription // happen when trying to click on subscription without one active
 	}
 

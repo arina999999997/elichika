@@ -94,7 +94,7 @@ func GetOtherUserCard(otherUserID, cardMasterID int) model.UserCard {
 	return card
 }
 
-func (sesison *Session) GetOtherUserBasicProfile(otherUserID int) model.UserBasicInfo {
+func (session *Session) GetOtherUserBasicProfile(otherUserID int) model.UserBasicInfo {
 	basicInfo := model.UserBasicInfo{}
 	FetchDBProfile(otherUserID, &basicInfo)
 	recommendCard := GetOtherUserCard(otherUserID, basicInfo.RecommendCardMasterID)
@@ -241,13 +241,11 @@ func (session *Session) GetUserSetProfile() model.UserSetProfile {
 	return GetOtherUserSetProfile(session.UserStatus.UserID)
 }
 
-// this doesn't need to do delta patch because right after setting, we fetch profile
+// doesn't need to return delta patch or submit at the start because we would need to fetch profile everytime we need this thing
 func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
 	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserStatus.UserID).
 		AllCols().Update(&p)
 	utils.CheckErr(err)
-	// this is not necessary because we would be fetching profile or sending this at the start
-	// session.UserModelCommon.SetUserSetProfile.PushBack(p)
 	if affected == 0 {
 		// need to insert
 		affected, err = session.Db.Table("u_custom_set_profile").Insert(&p)

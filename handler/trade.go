@@ -16,7 +16,6 @@ import (
 
 func FetchTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type FetchTradeReq struct {
 		TradeType int `json:"trade_type"`
 	}
@@ -51,7 +50,7 @@ func ExecuteTrade(ctx *gin.Context) {
 
 	sentToPresentBox := session.ExecuteTrade(req.ProductID, req.TradeCount)
 
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	// this only decide whether there's a text saying that things were sent to present box
 	signBody, _ = sjson.Set(signBody, "is_send_present_box", sentToPresentBox)
 
@@ -87,7 +86,7 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 		}
 	}
 
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	// this only decide whether there's a text saying that things were sent to present box
 	signBody, _ = sjson.Set(signBody, "is_send_present_box", sentToPresentBox)
 

@@ -10,7 +10,6 @@ import (
 func FetchSubscriptionPass(ctx *gin.Context) {
 	signBody := GetData("fetchSubscriptionPass.json")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

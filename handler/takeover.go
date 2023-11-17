@@ -158,7 +158,6 @@ func SetTakeOver(ctx *gin.Context) {
 
 func UpdatePassWord(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type UpdatePassWordReq struct {
 		PassWord string `json:"pass_word"`
 	}

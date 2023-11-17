@@ -73,7 +73,6 @@ func ResultLesson(ctx *gin.Context) {
 	signBody := session.Finalize(GetData("resultLesson.json"), "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "selected_deck_id", session.UserStatus.MainLessonDeckID)
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -81,7 +80,6 @@ func ResultLesson(ctx *gin.Context) {
 
 func SkillEditResult(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	// fmt.Println(reqBody)
 
 	req := gjson.Parse(reqBody).Array()[0]
 
@@ -109,7 +107,6 @@ func SkillEditResult(ctx *gin.Context) {
 	})
 	signBody := session.Finalize(GetData("skillEditResult.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -117,7 +114,6 @@ func SkillEditResult(ctx *gin.Context) {
 
 func SaveDeckLesson(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type SaveDeckReq struct {
 		DeckID        int   `json:"deck_id"`
 		CardMasterIDs []int `json:"card_master_ids"`
@@ -140,9 +136,8 @@ func SaveDeckLesson(ctx *gin.Context) {
 		panic(err)
 	}
 	session.UpdateLessonDeck(userLessonDeck)
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -163,7 +158,7 @@ func ChangeDeckNameLessonDeck(ctx *gin.Context) {
 	lessonDeck := session.GetLessonDeck(req.DeckID)
 	lessonDeck.Name = req.DeckName
 	session.UpdateLessonDeck(lessonDeck)
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

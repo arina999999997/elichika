@@ -24,20 +24,16 @@ func FetchMemberGuildTop(ctx *gin.Context) {
 	// this does't work
 	signBody := session.Finalize(GetData("fetchMemberGuildTop.json"), "user_model_diff")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
 func FetchMemberGuildSelect(ctx *gin.Context) {
 	resp := SignResp(ctx, GetData("fetchMemberGuildSelect.json"), config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
-// doesn't work (kinda expected)
-// probably need to read the code more carefully
 func FetchMemberGuildRanking(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
@@ -104,7 +100,6 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 	respBytes, err := json.Marshal(respObj)
 	utils.CheckErr(err)
 	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
@@ -130,7 +125,6 @@ func CheerMemberGuild(ctx *gin.Context) {
 
 func JoinMemberGuild(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type JoinMemberGuildReq struct {
 		MemberMasterID int `json:"member_master_id"`
 	}
@@ -142,7 +136,7 @@ func JoinMemberGuild(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	session.UserStatus.MemberGuildMemberMasterID = req.MemberMasterID
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")

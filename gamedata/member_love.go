@@ -10,7 +10,7 @@ import (
 )
 
 func loadMemberLoveLevel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	fmt.Println("Loading member love level")
+	fmt.Println("Loading MemberLoveLevel")
 	err := masterdata_db.Table("m_member_love_level").OrderBy("love_level").Cols("love_point").Find(&gamedata.MemberLoveLevelLovePoint)
 	utils.CheckErr(err)
 	gamedata.MemberLoveLevelCount = len(gamedata.MemberLoveLevelLovePoint)

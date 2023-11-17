@@ -14,7 +14,6 @@ import (
 
 func GetPackUrl(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	// fmt.Println(reqBody)
 
 	var packNames []string
 	gjson.Parse(reqBody).ForEach(func(key, value gjson.Result) bool {
@@ -39,7 +38,6 @@ func GetPackUrl(ctx *gin.Context) {
 
 	packBody, _ := sjson.Set("{}", "url_list", packUrls)
 	resp := SignResp(ctx, packBody, config.SessionKey)
-	// fmt.Println("Response:", resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

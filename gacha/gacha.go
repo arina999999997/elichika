@@ -66,6 +66,7 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 		for i := cardRarity; i > 10; i -= 10 {
 			resultCard.Content.ContentAmount *= 5
 		}
+		session.AddResource(*resultCard.Content)
 	} else {
 		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + cardRarity/10
 		if resultCard.AfterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {

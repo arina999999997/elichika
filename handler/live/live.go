@@ -94,7 +94,6 @@ func FetchLivePartners(ctx *gin.Context) {
 	signBody, _ = sjson.Set(signBody, "partner_select_state.live_partners", livePartners)
 	signBody, _ = sjson.Set(signBody, "partner_select_state.friend_count", len(livePartners))
 	resp := handler.SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
@@ -143,7 +142,7 @@ func LiveStart(ctx *gin.Context) {
 			userdata.GetOtherUserCard(req.PartnerUserID, req.PartnerCardMasterID))
 	}
 
-	liveStartResp := session.Finalize(handler.GetData("userModelDiff.json"), "user_model_diff")
+	liveStartResp := session.Finalize("{}", "user_model_diff")
 	liveStartResp, _ = sjson.Set(liveStartResp, "live", liveState)
 	if req.PartnerUserID == 0 {
 		liveStartResp, _ = sjson.Set(liveStartResp, "live.live_partner_card", nil)

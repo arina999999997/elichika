@@ -29,6 +29,9 @@ type Live struct {
 	// JacketAssetPath string
 	// BackgroundAssetPath string
 	// DisplayOrder int
+
+	// from m_live_difficulty
+	LiveDifficulties []*LiveDifficulty `xorm:"-"`
 }
 
 func init() {

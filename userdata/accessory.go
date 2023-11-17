@@ -57,7 +57,7 @@ func (session *Session) FinalizeUserAccessories() []any {
 	accessoryByUserAccessoryID := []any{}
 	for userAccessoryID, accessory := range session.UserAccessoryDiffs {
 		accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, userAccessoryID)
-		session.UserModelCommon.UserAccessoryByUserAccessoryID.PushBack(accessory)
+		session.UserModel.UserAccessoryByUserAccessoryID.PushBack(accessory)
 		if accessory.IsNull {
 			accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, nil)
 			affected, err := session.Db.Table("u_accessory").
@@ -78,4 +78,8 @@ func (session *Session) FinalizeUserAccessories() []any {
 		}
 	}
 	return accessoryByUserAccessoryID
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_accessory", "UserAccessoryByUserAccessoryID")
 }

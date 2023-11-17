@@ -2,6 +2,7 @@ package userdata
 
 import (
 	"elichika/model"
+	"elichika/utils"
 
 	"fmt"
 )
@@ -15,9 +16,7 @@ func (session *Session) GetLessonDeck(userLessonDeckId int) model.UserLessonDeck
 	exists, err := session.Db.Table("u_lesson_deck").
 		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserID, userLessonDeckId).
 		Get(&deck)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	if !exists {
 		panic("deck not found")
 	}
@@ -31,7 +30,7 @@ func (session *Session) UpdateLessonDeck(userLessonDeck model.UserLessonDeck) {
 func (session *Session) FinalizeUserLessonDeckDiffs() []any {
 	userLessonDeckByID := []any{}
 	for userLessonDeckID, userLessonDeck := range session.UserLessonDeckDiffs {
-		session.UserModelCommon.UserLessonDeckByID.PushBack(userLessonDeck)
+		session.UserModel.UserLessonDeckByID.PushBack(userLessonDeck)
 		userLessonDeckByID = append(userLessonDeckByID, userLessonDeckID)
 		userLessonDeckByID = append(userLessonDeckByID, userLessonDeck)
 		affected, err := session.Db.Table("u_lesson_deck").
@@ -47,16 +46,16 @@ func (session *Session) FinalizeUserLessonDeckDiffs() []any {
 func (session *Session) GetAllLessonDecks() []model.UserLessonDeck {
 	decks := []model.UserLessonDeck{}
 	err := session.Db.Table("u_lesson_deck").Where("user_id = ?", session.UserStatus.UserID).Find(&decks)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	return decks
 }
 
 func (session *Session) InsertLessonDecks(decks []model.UserLessonDeck) {
 	count, err := session.Db.Table("u_lesson_deck").Insert(&decks)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	fmt.Println("Inserted ", count, " lesson decks")
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_lesson_deck", "UserLessonDeckByID")
 }

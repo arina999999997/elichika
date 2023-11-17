@@ -104,6 +104,7 @@ type ObjectByObjectID[T any] struct {
 // return an empty array if data is null
 func (oboid *ObjectByObjectID[T]) UnmarshalJSON(data []byte) error {
 	oboid.Objects = []T{}
+	oboid.Length = 0
 	if string(data) == "null" {
 		return nil
 	}
@@ -131,6 +132,7 @@ func (oboid *ObjectByObjectID[T]) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		oboid.Objects = append(oboid.Objects, obj) // append the pointer of the original type
+		oboid.Length += 1
 	}
 	return nil
 }

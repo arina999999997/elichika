@@ -35,7 +35,7 @@ func ActivateEmblem(ctx *gin.Context) {
 
 	session.UserStatus.EmblemID = req.EmblemMasterID
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

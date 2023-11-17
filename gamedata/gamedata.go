@@ -43,12 +43,12 @@ var (
 	loadOrder   []loadFunc
 )
 
-func addLoadFunc(name loadFunc) {
+func addLoadFunc(f loadFunc) {
 	if funcs == nil {
 		funcs = make(map[uintptr]loadFunc)
 		prequisites = make(map[uintptr][]uintptr)
 	}
-	funcs[reflect.ValueOf(name).Pointer()] = name
+	funcs[reflect.ValueOf(f).Pointer()] = f
 }
 
 func addPrequisite(function, prequisite loadFunc) {
@@ -99,6 +99,8 @@ type Gamedata struct {
 	CardLevel map[int]*CardLevel
 
 	Suit map[int]*Suit
+
+	StoryMember map[int]*StoryMember
 
 	Gacha          map[int]*Gacha
 	GachaList      []*Gacha

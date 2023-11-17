@@ -23,7 +23,7 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 			Where("user_id = ? AND card_master_id = ?", trigger.UserID, trigger.CardMasterID).Get(&dbTrigger)
 		utils.CheckErr(err)
 		currentPos := -1
-		userModelCommonPos := -1
+		UserModelPos := -1
 		if exists { // if the card has a trigger, we have to remove it
 			dbTrigger.IsNull = true
 			session.Db.Table("u_trigger_card_grade_up").
@@ -37,9 +37,9 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 					}
 				}
 			}
-			for i, obj := range session.UserModelCommon.UserInfoTriggerCardGradeUpByTriggerID.Objects {
+			for i, obj := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerID.Objects {
 				if obj.TriggerID == dbTrigger.TriggerID {
-					userModelCommonPos = i
+					UserModelPos = i
 					break
 				}
 			}
@@ -47,8 +47,8 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 				session.TriggerCardGradeUps = append(session.TriggerCardGradeUps, dbTrigger.TriggerID)
 				session.TriggerCardGradeUps = append(session.TriggerCardGradeUps, nil)
 			}
-			if userModelCommonPos == -1 {
-				session.UserModelCommon.UserInfoTriggerCardGradeUpByTriggerID.PushBack(dbTrigger)
+			if UserModelPos == -1 {
+				session.UserModel.UserInfoTriggerCardGradeUpByTriggerID.PushBack(dbTrigger)
 			}
 		}
 		if currentPos != -1 {
@@ -60,12 +60,12 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 			session.TriggerCardGradeUps = append(session.TriggerCardGradeUps, trigger.TriggerID)
 			session.TriggerCardGradeUps = append(session.TriggerCardGradeUps, trigger)
 		}
-		if userModelCommonPos != -1 {
+		if UserModelPos != -1 {
 			// overwrite the current trigger, this happen when we get 2 of the same card in gacha
-			session.UserModelCommon.UserInfoTriggerCardGradeUpByTriggerID.Objects[userModelCommonPos] = trigger
+			session.UserModel.UserInfoTriggerCardGradeUpByTriggerID.Objects[UserModelPos] = trigger
 		} else {
 			// insert the trigger
-			session.UserModelCommon.UserInfoTriggerCardGradeUpByTriggerID.PushBack(trigger)
+			session.UserModel.UserInfoTriggerCardGradeUpByTriggerID.PushBack(trigger)
 		}
 
 		// save the trigger in db
@@ -80,7 +80,7 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 		// this is only caused by infoTrigger/read
 		session.TriggerCardGradeUps = append(session.TriggerCardGradeUps, trigger.TriggerID)
 		session.TriggerCardGradeUps = append(session.TriggerCardGradeUps, nil)
-		session.UserModelCommon.UserInfoTriggerCardGradeUpByTriggerID.PushBack(trigger)
+		session.UserModel.UserInfoTriggerCardGradeUpByTriggerID.PushBack(trigger)
 		_, err := session.Db.Table("u_trigger_card_grade_up").Where("trigger_id = ?", trigger.TriggerID).Delete(
 			&model.TriggerCardGradeUp{})
 		utils.CheckErr(err)
@@ -101,7 +101,7 @@ func (session *Session) AddTriggerBasic(trigger model.TriggerBasic) {
 		trigger.TriggerID = time.Now().UnixNano()
 	}
 	trigger.UserID = session.UserStatus.UserID
-	session.UserModelCommon.UserInfoTriggerBasicByTriggerID.PushBack(trigger)
+	session.UserModel.UserInfoTriggerBasicByTriggerID.PushBack(trigger)
 	session.TriggerBasics = append(session.TriggerBasics, trigger.TriggerID)
 	if trigger.IsNull {
 		session.TriggerBasics = append(session.TriggerBasics, nil)
@@ -141,7 +141,7 @@ func (session *Session) AddTriggerMemberLoveLevelUp(trigger model.TriggerMemberL
 		session.TriggerMemberLoveLevelUps = append(session.TriggerMemberLoveLevelUps, trigger)
 	}
 
-	session.UserModelCommon.UserInfoTriggerMemberLoveLevelUpByTriggerID.PushBack(trigger)
+	session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerID.PushBack(trigger)
 	if !trigger.IsNull {
 		_, err := session.Db.Table("u_trigger_member_love_level_up").Insert(trigger)
 		utils.CheckErr(err)
@@ -158,4 +158,10 @@ func (session *Session) GetAllTriggerMemberLoveLevelUps() []model.TriggerMemberL
 		Where("user_id = ?", session.UserStatus.UserID).Find(&triggers)
 	utils.CheckErr(err)
 	return triggers
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_trigger_basic", "UserInfoTriggerBasicByTriggerID")
+	addGenericTableFieldPopulator("u_trigger_card_grade_up", "UserInfoTriggerCardGradeUpByTriggerID")
+	addGenericTableFieldPopulator("u_trigger_member_love_level_up", "UserInfoTriggerMemberLoveLevelUpByTriggerID")
 }

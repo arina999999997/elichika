@@ -32,7 +32,7 @@ func UpdateCardNewFlag(ctx *gin.Context) {
 		session.UpdateUserCard(card)
 	}
 
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -40,7 +40,6 @@ func UpdateCardNewFlag(ctx *gin.Context) {
 
 func ChangeIsAwakeningImage(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 
 	req := model.CardAwakeningReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -54,7 +53,7 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 	userCard.IsAwakeningImage = req.IsAwakeningImage
 	session.UpdateUserCard(userCard)
 
-	cardResp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	cardResp := session.Finalize("{}", "user_model_diff")
 	resp := SignResp(ctx, cardResp, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -63,7 +62,6 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 
 func ChangeFavorite(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 
 	req := model.CardFavoriteReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -77,7 +75,7 @@ func ChangeFavorite(ctx *gin.Context) {
 	userCard.IsFavorite = req.IsFavorite
 	session.UpdateUserCard(userCard)
 
-	cardResp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	cardResp := session.Finalize("{}", "user_model_diff")
 	resp := SignResp(ctx, cardResp, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -86,13 +84,11 @@ func ChangeFavorite(ctx *gin.Context) {
 
 func GetOtherUserCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type OtherUserCardReq struct {
 		UserID       int `json:"user_id"`
 		CardMasterID int `json:"card_master_id"`
 	}
 	req := OtherUserCardReq{}
-	// userCardReq := model.UserCardReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
@@ -102,7 +98,6 @@ func GetOtherUserCard(ctx *gin.Context) {
 	partnerCard := session.GetPartnerCardFromUserCard(userdata.GetOtherUserCard(req.UserID, req.CardMasterID))
 	userCardResp, _ := sjson.Set("{}", "other_user_card", partnerCard)
 	resp := SignResp(ctx, userCardResp, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

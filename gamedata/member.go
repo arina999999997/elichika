@@ -54,7 +54,7 @@ type Member struct {
 	// StandingThumbnailBackgroundBottomColor int
 
 	// from m_member_love_level_reward
-	LoveLevelRewards []model.Content `xorm:"-"` // 2 indexed for love level
+	LoveLevelRewards []([]model.Content) `xorm:"-"` // 2 indexed for love level
 
 	// from m_member_unit_detail
 	// Unit int // subgroup
@@ -76,9 +76,19 @@ type MemberInit struct {
 func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 
 	{
-		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.ID).OrderBy("love_level").Find(&member.LoveLevelRewards)
+		type LoveLevelReward struct {
+			LoveLevel int `xorm:"'love_level'"`
+			Content model.Content `xorm:"extends"`
+		}
+		rewards := []LoveLevelReward{}
+		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.ID).Find(&rewards)
 		utils.CheckErr(err)
-		member.LoveLevelRewards = append([]model.Content{model.Content{}, model.Content{}}, member.LoveLevelRewards...)
+		for i := 0; i <= gamedata.MemberLoveLevelCount; i++ {
+			member.LoveLevelRewards = append(member.LoveLevelRewards, []model.Content{})
+		}
+		for _, reward := range rewards {
+			member.LoveLevelRewards[reward.LoveLevel] = append(member.LoveLevelRewards[reward.LoveLevel], reward.Content)
+		}
 	}
 
 	{
@@ -99,4 +109,5 @@ func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, 
 
 func init() {
 	addLoadFunc(loadMember)
+	addPrequisite(loadMember, loadMemberLoveLevel)
 }

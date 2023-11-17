@@ -18,7 +18,7 @@ func FetchDailyTheater(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	respObj := response.DailyTheaterDetail{
 		DailyTheaterID: 1,
 		Year:           2021,
@@ -49,11 +49,10 @@ func DailyTheaterSetLike(ctx *gin.Context) {
 		IsLiked        bool `json:"is_liked"`
 	}
 
-	// fmt.Println(reqBody)
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 
 	response := []any{}
 	response = append(response, req.DailyTheaterID)

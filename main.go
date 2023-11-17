@@ -6,6 +6,7 @@ import (
 
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,7 +41,7 @@ func main() {
 		cli()
 		return
 	}
-
+	runtime.GC()
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()

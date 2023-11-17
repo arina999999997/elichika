@@ -38,9 +38,7 @@ func (session *Session) GetAllLiveDifficulties() []model.UserLiveDifficulty {
 	records := []model.UserLiveDifficulty{}
 	err := session.Db.Table("u_live_record").Where("user_id = ?", session.UserStatus.UserID).
 		Find(&records)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	return records
 }
 
@@ -51,7 +49,7 @@ func (session *Session) UpdateLiveDifficulty(userLiveDifficulty model.UserLiveDi
 func (session *Session) FinalizeLiveDifficulties() []any {
 	diffs := []any{}
 	for _, userLiveDifficulty := range session.UserLiveDifficultyDiffs {
-		session.UserModelCommon.UserLiveDifficultyByDifficultyID.PushBack(userLiveDifficulty)
+		session.UserModel.UserLiveDifficultyByDifficultyID.PushBack(userLiveDifficulty)
 		diffs = append(diffs, userLiveDifficulty.LiveDifficultyID)
 		diffs = append(diffs, userLiveDifficulty)
 		updated, err := session.Db.Table("u_live_record").
@@ -133,4 +131,8 @@ func (session *Session) SetLastPlayLiveDifficultyDeck(deck model.LastPlayLiveDif
 	if err != nil {
 		panic(err)
 	}
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_live_record", "UserLiveDifficultyByDifficultyID")
 }

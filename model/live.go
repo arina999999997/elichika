@@ -213,11 +213,11 @@ type LiveUpdatePlayListReq struct {
 }
 
 type UserPlayListItem struct {
-	UserID         int `xorm:"pk 'user_id'" json:"-"`
-	UserPlayListID int `xorm:"pk 'user_play_list_id'" json:"user_play_list_id"`
-	// set to 0 = doesn't exists
-	GroupNum int `xorm:"'group_num'" json:"group_num"` // UserPlayListID % 10
-	LiveID   int `xorm:"'live_id'" json:"live_id"`     // UserPlayListID / 10
+	UserID         int  `xorm:"pk 'user_id'" json:"-"`
+	UserPlayListID int  `xorm:"pk 'user_play_list_id'" json:"user_play_list_id"`
+	GroupNum       int  `xorm:"'group_num'" json:"group_num"` // UserPlayListID % 10
+	LiveID         int  `xorm:"'live_id'" json:"live_id"`     // UserPlayListID / 10
+	IsNull         bool `xorm:"-" json:"-"`
 }
 
 func (item UserPlayListItem) ID() int64 {

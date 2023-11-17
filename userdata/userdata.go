@@ -35,6 +35,10 @@ func InitTable(tableName string, structure interface{}, overwrite bool) {
 }
 
 func InitTables(overwrite bool) {
+	for tableName, interf := range model.TableNameToInterface {
+		InitTable(tableName, interf, overwrite)
+	}
+	// TODO: redesign this to not store merged data, maybe
 	type DbUser struct {
 		model.UserStatus           `xorm:"extends"`
 		model.UserProfileLiveStats `xorm:"extends"`

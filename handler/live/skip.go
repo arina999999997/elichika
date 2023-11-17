@@ -120,11 +120,10 @@ func LiveSkip(ctx *gin.Context) {
 		session.UpdateUserLiveStats(liveStats)
 	}
 
-	signBody := session.Finalize(handler.GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "skip_live_result", skipLiveResult)
 
 	resp := handler.SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }

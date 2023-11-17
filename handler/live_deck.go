@@ -21,7 +21,6 @@ import (
 
 func SaveDeckAll(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type SaveDeckAllReq struct {
 		DeckID       int   `json:"deck_id"`
 		CardWithSuit []int `json:"card_with_suit"`
@@ -55,7 +54,6 @@ func SaveDeckAll(ctx *gin.Context) {
 	if err := json.Unmarshal([]byte(deckJson), &deckInfo); err != nil {
 		panic(err)
 	}
-	// fmt.Println(deckInfo)
 
 	session.UpdateUserLiveDeck(deckInfo)
 
@@ -65,7 +63,6 @@ func SaveDeckAll(ctx *gin.Context) {
 			if err != nil {
 				panic(err)
 			}
-			// fmt.Println("Party ID:", partyId)
 
 			rDictInfo, err := json.Marshal(req.SquadDict[k+1])
 			utils.CheckErr(err)
@@ -93,7 +90,7 @@ func SaveDeckAll(ctx *gin.Context) {
 		}
 	}
 
-	respBody := session.Finalize(GetData("userModel.json"), "user_model")
+	respBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, respBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -154,16 +151,14 @@ func SaveSuit(ctx *gin.Context) {
 		session.UpdateMember(RinaChan)
 	}
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
 func SaveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// fmt.Println(reqBody)
 	type SaveDeckReq struct {
 		DeckID        int    `json:"deck_id"`
 		CardMasterIDs [2]int `json:"card_master_ids"`
@@ -257,9 +252,8 @@ func SaveDeck(ctx *gin.Context) {
 		session.UpdateUserLiveParty(party)
 	}
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -280,7 +274,7 @@ func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 	liveDeck := session.GetUserLiveDeck(req.DeckID)
 	liveDeck.Name.DotUnderText = req.DeckName
 	session.UpdateUserLiveDeck(liveDeck)
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

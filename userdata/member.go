@@ -27,9 +27,7 @@ func (session *Session) GetMember(memberMasterID int) model.UserMember {
 func (session *Session) GetAllMembers() []model.UserMember {
 	members := []model.UserMember{}
 	err := session.Db.Table("u_member").Where("user_id = ?", session.UserStatus.UserID).Find(&members)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	return members
 }
 
@@ -46,7 +44,7 @@ func (session *Session) InsertMembers(members []model.UserMember) {
 func (session *Session) FinalizeUserMemberDiffs() []any {
 	userMemberByMemberID := []any{}
 	for memberMasterID, member := range session.UserMemberDiffs {
-		session.UserModelCommon.UserMemberByMemberID.PushBack(member)
+		session.UserModel.UserMemberByMemberID.PushBack(member)
 		userMemberByMemberID = append(userMemberByMemberID, memberMasterID)
 		userMemberByMemberID = append(userMemberByMemberID, member)
 		affected, err := session.Db.Table("u_member").
@@ -73,7 +71,9 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
 		masterMember := gamedata.Member[memberID]
 		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
-			session.AddResource(masterMember.LoveLevelRewards[loveLevel])
+			for _, reward := range masterMember.LoveLevelRewards[loveLevel] {
+				session.AddResource(reward)
+			}
 		}
 
 		currentLovePanel := session.GetMemberLovePanel(memberID)
@@ -97,4 +97,8 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 	}
 	session.UpdateMember(member)
 	return point
+}
+
+func init() {
+	addGenericTableFieldPopulator("u_member", "UserMemberByMemberID")
 }

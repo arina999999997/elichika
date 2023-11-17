@@ -56,7 +56,10 @@ type LiveDifficulty struct {
 }
 
 func (liveDifficulty *LiveDifficulty) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+
 	liveDifficulty.Live = gamedata.Live[*liveDifficulty.LiveID]
+	// 2-way links
+	liveDifficulty.Live.LiveDifficulties = append(liveDifficulty.Live.LiveDifficulties, liveDifficulty)
 	liveDifficulty.LiveID = &gamedata.Live[*liveDifficulty.LiveID].LiveID
 	err := masterdata_db.Table("m_live_difficulty_mission").Where("live_difficulty_master_id = ?", liveDifficulty.LiveDifficultyID).
 		OrderBy("position").Find(&gamedata.LiveDifficulty[liveDifficulty.LiveDifficultyID].Missions)

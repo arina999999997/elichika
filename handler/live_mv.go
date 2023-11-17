@@ -21,7 +21,7 @@ func LiveMvStart(ctx *gin.Context) {
 	UserID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, UserID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "uniq_id", time.Now().UnixNano())
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
@@ -87,7 +87,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 	userLiveMvDeckCustomByID = append(userLiveMvDeckCustomByID, req.LiveMasterID)
 	userLiveMvDeckCustomByID = append(userLiveMvDeckCustomByID, userLiveMvDeck)
 
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	if req.LiveMvDeckType == 1 {
 		signBody, _ = sjson.Set(signBody, "user_model.user_live_mv_deck_by_id", userLiveMvDeckCustomByID)
 	} else {
@@ -95,7 +95,6 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 	}
 
 	resp := SignResp(ctx, signBody, config.SessionKey)
-	// fmt.Println(resp)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

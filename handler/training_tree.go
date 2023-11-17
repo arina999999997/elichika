@@ -61,7 +61,7 @@ func LevelUpCard(ctx *gin.Context) {
 		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.ExpPrefixSum[card.Level]))
 	card.Level += req.AdditionalLevel
 	session.UpdateUserCard(card)
-	signBody := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	signBody := session.Finalize("{}", "user_model_diff")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -104,7 +104,7 @@ func GradeUpCard(ctx *gin.Context) {
 		BeforeLoveLevelLimit: currentBondLevel - masterCard.CardRarityType/10,
 		AfterLoveLevelLimit:  currentBondLevel})
 
-	resp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	resp := session.Finalize("{}", "user_model_diff")
 	resp = SignResp(ctx, resp, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
@@ -155,28 +155,25 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 			}
 		case 3: // voice
 			naviActionID := trainingTree.NaviActionIDs[cell.TrainingContentNo]
-			session.AddNaviAction(naviActionID)
+			session.UpdateVoice(naviActionID, true)
 		case 4: // story cell
 			// training_content_type 11 in m_training_tree_card_story_side
 			storySideID, exists := trainingTree.TrainingTreeCardStorySides[11]
 			if !exists {
 				panic("story doesn't exists")
 			}
-			session.AddStorySide(storySideID)
+			session.InsertStorySide(storySideID)
 		case 5:
 			// idolize
 			card.IsAwakening = true
 			card.IsAwakeningImage = true
 			storySideID, exists := trainingTree.TrainingTreeCardStorySides[9]
 			if exists {
-				session.AddStorySide(storySideID)
+				session.InsertStorySide(storySideID)
 			}
 		case 6: // costume
 			// alternative suit is awarded based on amount of tile instead
-			session.InsertUserSuit(model.UserSuit{
-				UserID:       userID,
-				SuitMasterID: trainingTree.SuitMIDs[cell.TrainingContentNo],
-				IsNew:        true})
+			session.InsertUserSuit(trainingTree.SuitMIDs[cell.TrainingContentNo])
 		case 7: // skill
 			card.ActiveSkillLevel += 1
 		case 8: // insight
@@ -223,7 +220,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 
 	session.InsertTrainingCells(&unlockedCells)
 
-	jsonResp := session.Finalize(GetData("userModelDiff.json"), "user_model_diff")
+	jsonResp := session.Finalize("{}", "user_model_diff")
 	jsonResp, _ = sjson.Set(jsonResp, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterID))
 	resp := SignResp(ctx, jsonResp, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")

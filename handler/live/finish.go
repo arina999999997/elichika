@@ -119,15 +119,15 @@ type LiveDifficultyMission struct {
 }
 
 func LiveFinish(ctx *gin.Context) {
-	UserID := ctx.GetInt("user_id")
+	userID := ctx.GetInt("user_id")
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := LiveFinishReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	exists, liveState := userdata.LoadLiveState(UserID)
+	exists, liveState := userdata.LoadLiveState(userID)
 	utils.MustExist(exists)
 
-	session := userdata.GetSession(ctx, UserID)
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	liveState.DeckID = session.UserStatus.LatestLiveDeckID
 	liveState.LiveStage.LiveDifficultyID = session.UserStatus.LastLiveDifficultyID
@@ -170,6 +170,11 @@ func LiveFinish(ctx *gin.Context) {
 	(*liveResult.LiveResultAchievements.Objects[1]).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2 != nil
 	(*liveResult.LiveResultAchievements.Objects[2]).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3 != nil
 	if lastPlayDeck.IsCleared {
+		// add story if it is a story mode
+		if liveState.CellID != nil {
+			session.InsertUserStoryMain(*liveState.CellID)
+		}
+
 		// update clear record
 		liveRecord.ClearCount++
 		if liveRecord.MaxScore < req.LiveScore.CurrentScore { // if new high score
@@ -191,7 +196,7 @@ func LiveFinish(ctx *gin.Context) {
 
 		// and award items
 		for i, mission := range liveDifficulty.Missions {
-			// TODO: the
+			// TODO: the award condition is not checked totally correctly
 			if (i == 0) || (req.LiveScore.CurrentScore >= mission.TargetValue) {
 				(*liveResult.LiveResultAchievements.Objects[i]).IsCurrentlyAchieved = true
 				if !(*liveResult.LiveResultAchievements.Objects[i]).IsAlreadyAchieved { // new, add reward
@@ -268,11 +273,10 @@ func LiveFinish(ctx *gin.Context) {
 	}
 	session.UpdateLiveDifficulty(liveRecord)
 	session.SetLastPlayLiveDifficultyDeck(lastPlayDeck)
-	liveFinishResp := session.Finalize(handler.GetData("userModelDiff.json"), "user_model_diff")
+	liveFinishResp := session.Finalize("{}", "user_model_diff")
 	liveFinishResp, _ = sjson.Set(liveFinishResp, "live_result", liveResult)
 
 	resp := handler.SignResp(ctx, liveFinishResp, config.SessionKey)
-	// fmt.Println(resp)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }

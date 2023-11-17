@@ -3,6 +3,8 @@ package handler
 import (
 	"elichika/config"
 	"elichika/userdata"
+	"elichika/utils"
+	"elichika/protocol/request"
 
 	"encoding/json"
 	"net/http"
@@ -12,10 +14,20 @@ import (
 )
 
 func SaveUserNaviVoice(ctx *gin.Context) {
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SaveUserNaviVoiceRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+	
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+
+	for _, naviVoiceMasterID := range req.NaviVoiceMasterIDs {
+		session.UpdateVoice(naviVoiceMasterID, false)
+	}
+
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
 	ctx.Header("Content-Type", "application/json")
@@ -32,11 +44,11 @@ func TapLovePoint(ctx *gin.Context) {
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	session.AddLovePoint(req.MemberMasterID, config.Conf.TapBondGain)
-	signBody := session.Finalize(GetData("userModel.json"), "user_model")
+	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

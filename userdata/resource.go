@@ -5,59 +5,84 @@ package userdata
 // things like player bonds / exp are handled elsewhere
 
 import (
+	"elichika/enum"
 	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
+	"reflect"
+	"sort"
 
 	"github.com/tidwall/sjson"
 )
 
 type UserResource struct {
-	UserID        int   `xorm:"pk 'user_id'"`
-	ContentType   int   `xorm:"pk 'content_type'"`
-	ContentID     int   `xorm:"pk 'content_id'"`
-	ContentAmount int64 `xorm:"'content_amount'"`
+	UserID   int           `xorm:"pk 'user_id'"`
+	Resource model.Content `xorm:"extends"`
+	// ContentType   int   `xorm:"pk 'content_type'"`
+	// ContentID     int   `xorm:"pk 'content_id'"`
+	// ContentAmount int64 `xorm:"'content_amount'"`
 }
 
 var (
 	ResourceHandler   map[int]func(*Session, int, int, int64)
+	// old system
 	ResourceFinalizer map[int]func(*Session, int, map[int]UserResource) (string, string)
 	ResourceGroupKey  map[int]string
 	ResourceItemKey   map[int]string
+
+	// new system
+	userModelField map[int]string
 )
+
+func (session *Session) AddSnsCoin(coin int64) {
+	session.AddResource(model.Content{
+		ContentType:   enum.ContentTypeSnsCoin,
+		ContentID:     0,
+		ContentAmount: coin,
+	})
+}
+
+func (session *Session) RemoveSnsCoin(coin int64) {
+	session.RemoveResource(model.Content{
+		ContentType:   enum.ContentTypeSnsCoin,
+		ContentID:     0,
+		ContentAmount: coin,
+	})
+}
 
 func (session *Session) AddGameMoney(money int64) {
 	session.AddResource(model.Content{
-		ContentType:   10,
-		ContentID:     0,
+		ContentType:   enum.ContentTypeGameMoney,
+		ContentID:     1200,
 		ContentAmount: money,
 	})
 }
 
 func (session *Session) RemoveGameMoney(money int64) {
 	session.RemoveResource(model.Content{
-		ContentType:   10,
-		ContentID:     0,
+		ContentType:   enum.ContentTypeGameMoney,
+		ContentID:     1200,
 		ContentAmount: money,
 	})
 }
 
 func (session *Session) AddCardExp(exp int64) {
 	session.AddResource(model.Content{
-		ContentType:   4,
-		ContentID:     0,
+		ContentType:   enum.ContentTypeCardExp,
+		ContentID:     1100,
 		ContentAmount: exp,
 	})
 }
 
 func (session *Session) RemoveCardExp(exp int64) {
 	session.RemoveResource(model.Content{
-		ContentType:   4,
-		ContentID:     0,
+		ContentType:   enum.ContentTypeCardExp,
+		ContentID:     1100,
 		ContentAmount: exp,
 	})
 }
+
 func (session *Session) GetUserResource(contentType, contentID int) UserResource {
 	_, exists := session.UserResourceDiffs[contentType]
 	if !exists {
@@ -73,21 +98,23 @@ func (session *Session) GetUserResource(contentType, contentID int) UserResource
 	utils.CheckErr(err)
 	if !exists {
 		resource = UserResource{
-			UserID:        session.UserStatus.UserID,
-			ContentType:   contentType,
-			ContentID:     contentID,
-			ContentAmount: 100000,
+			UserID: session.UserStatus.UserID,
+			Resource: model.Content{
+				ContentType:   contentType,
+				ContentID:     contentID,
+				ContentAmount: 100000,
+			},
 		}
 	}
 	return resource
 }
 
 func (session *Session) UpdateUserResource(resource UserResource) {
-	_, exists := session.UserResourceDiffs[resource.ContentType]
+	_, exists := session.UserResourceDiffs[resource.Resource.ContentType]
 	if !exists {
-		session.UserResourceDiffs[resource.ContentType] = make(map[int]UserResource)
+		session.UserResourceDiffs[resource.Resource.ContentType] = make(map[int]UserResource)
 	}
-	session.UserResourceDiffs[resource.ContentType][resource.ContentID] = resource
+	session.UserResourceDiffs[resource.Resource.ContentType][resource.Resource.ContentID] = resource
 }
 
 func (session *Session) AddResource(resource model.Content) {
@@ -127,78 +154,93 @@ func (session *Session) FinalizeUserResources() ([]string, []string) {
 func init() {
 	// reference for type can be found in m_content_setting
 	ResourceHandler = make(map[int]func(*Session, int, int, int64))
-	ResourceHandler[1] = UserStatusResourceHandler  // sns coins (star gems)
-	ResourceHandler[4] = UserStatusResourceHandler  // card exp
-	ResourceHandler[10] = UserStatusResourceHandler // game money(gold)
-	ResourceHandler[32] = UserStatusResourceHandler // subscription coins (purple coin)
+	ResourceHandler[enum.ContentTypeSnsCoin] = UserStatusResourceHandler
+	ResourceHandler[enum.ContentTypeCardExp] = UserStatusResourceHandler
+	ResourceHandler[enum.ContentTypeGameMoney] = UserStatusResourceHandler
+	ResourceHandler[enum.ContentTypeSubscriptionCoin] = UserStatusResourceHandler
 
-	ResourceHandler[7] = SuitResourceHandler
+	ResourceHandler[enum.ContentTypeSuit] = SuitResourceHandler
 
 	ResourceFinalizer = make(map[int]func(*Session, int, map[int]UserResource) (string, string))
 	ResourceGroupKey = make(map[int]string)
 	ResourceItemKey = make(map[int]string)
+	userModelField = make(map[int]string)
 
-	ResourceHandler[5] = GenericResourceHandler // gacha point (quartz)
-	ResourceFinalizer[5] = GenericResourceFinalizer
-	ResourceGroupKey[5] = "user_gacha_point_by_point_id"
-	ResourceItemKey[5] = "point_master_id"
+	ResourceHandler[enum.ContentTypeGachaPoint] = GenericResourceHandler // gacha point (quartz)
+	ResourceFinalizer[enum.ContentTypeGachaPoint] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeGachaPoint] = "user_gacha_point_by_point_id"
+	ResourceItemKey[enum.ContentTypeGachaPoint] = "point_master_id"
+	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointID"
 
-	ResourceHandler[6] = GenericResourceHandler // gacha point (quartz)
-	ResourceFinalizer[6] = GenericResourceFinalizer
-	ResourceGroupKey[6] = "user_lesson_enhancing_item_by_item_id"
-	ResourceItemKey[6] = "enhancing_item_id"
+	ResourceHandler[enum.ContentTypeLessonEnhancingItem] = GenericResourceHandler // light bulbs
+	ResourceFinalizer[enum.ContentTypeLessonEnhancingItem] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeLessonEnhancingItem] = "user_lesson_enhancing_item_by_item_id"
+	ResourceItemKey[enum.ContentTypeLessonEnhancingItem] = "enhancing_item_id"
+	userModelField[enum.ContentTypeLessonEnhancingItem] = "UserLessonEnhancingItemByItemID"
 
-	ResourceHandler[12] = GenericResourceHandler // training items (macarons, memorials)
-	ResourceFinalizer[12] = GenericResourceFinalizer
-	ResourceGroupKey[12] = "user_training_material_by_item_id"
-	ResourceItemKey[12] = "training_material_master_id"
+	ResourceHandler[enum.ContentTypeTrainingMaterial] = GenericResourceHandler // training items (macarons, memorials)
+	ResourceFinalizer[enum.ContentTypeTrainingMaterial] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeTrainingMaterial] = "user_training_material_by_item_id"
+	ResourceItemKey[enum.ContentTypeTrainingMaterial] = "training_material_master_id"
+	userModelField[enum.ContentTypeTrainingMaterial] = "UserTrainingMaterialByItemID"
 
-	ResourceHandler[13] = GenericResourceHandler // card grade up items
-	ResourceFinalizer[13] = GenericResourceFinalizer
-	ResourceGroupKey[13] = "user_grade_up_item_by_item_id"
-	ResourceItemKey[13] = "item_master_id"
+	ResourceHandler[enum.ContentTypeCardExchange] = GenericResourceHandler // card grade up items
+	ResourceFinalizer[enum.ContentTypeCardExchange] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeCardExchange] = "user_grade_up_item_by_item_id"
+	ResourceItemKey[enum.ContentTypeCardExchange] = "item_master_id"
+	userModelField[enum.ContentTypeCardExchange] = "UserGradeUpItemByItemID"
 
-	ResourceHandler[16] = GenericResourceHandler // training ticket
-	ResourceFinalizer[16] = GenericResourceFinalizer
-	ResourceGroupKey[16] = "user_recovery_ap_by_id"
-	ResourceItemKey[16] = "recovery_ap_master_id"
+	ResourceHandler[enum.ContentTypeSheetRecoveryAP] = GenericResourceHandler // training ticket
+	ResourceFinalizer[enum.ContentTypeSheetRecoveryAP] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeSheetRecoveryAP] = "user_recovery_ap_by_id"
+	ResourceItemKey[enum.ContentTypeSheetRecoveryAP] = "recovery_ap_master_id"
+	userModelField[enum.ContentTypeSheetRecoveryAP] = "UserRecoveryApByID"
 
-	ResourceHandler[17] = GenericResourceHandler // candies
-	ResourceFinalizer[17] = GenericResourceFinalizer
-	ResourceGroupKey[17] = "user_recovery_lp_by_id"
-	ResourceItemKey[17] = "recovery_lp_master_id"
+	ResourceHandler[enum.ContentTypeRecoveryLP] = GenericResourceHandler // lp candies
+	ResourceFinalizer[enum.ContentTypeRecoveryLP] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeRecoveryLP] = "user_recovery_lp_by_id"
+	ResourceItemKey[enum.ContentTypeRecoveryLP] = "recovery_lp_master_id"
+	userModelField[enum.ContentTypeRecoveryLP] = "UserRecoveryLpByID"
 
 	// generics exchange point (SBL / DLP)
 	// also include channel exchanges
-	ResourceHandler[21] = GenericResourceHandler
-	ResourceFinalizer[21] = GenericResourceFinalizer
-	ResourceGroupKey[21] = "user_exchange_event_point_by_id"
-	ResourceItemKey[21] = "" // no need
+	ResourceHandler[enum.ContentTypeExchangeEventPoint] = GenericResourceHandler
+	ResourceFinalizer[enum.ContentTypeExchangeEventPoint] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeExchangeEventPoint] = "user_exchange_event_point_by_id"
+	ResourceItemKey[enum.ContentTypeExchangeEventPoint] = "" // no need
+	userModelField[enum.ContentTypeExchangeEventPoint] = "UserExchangeEventPointByID"
 
-	ResourceHandler[24] = GenericResourceHandler // accessory stickers
-	ResourceFinalizer[24] = GenericResourceFinalizer
-	ResourceGroupKey[24] = "user_accessory_level_up_item_by_id"
-	ResourceItemKey[24] = "accessory_level_up_item_master_id"
+	ResourceHandler[enum.ContentTypeAccessoryLevelUpItem] = GenericResourceHandler // accessory stickers
+	ResourceFinalizer[enum.ContentTypeAccessoryLevelUpItem] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeAccessoryLevelUpItem] = "user_accessory_level_up_item_by_id"
+	ResourceItemKey[enum.ContentTypeAccessoryLevelUpItem] = "accessory_level_up_item_master_id"
+	userModelField[enum.ContentTypeAccessoryLevelUpItem] = "UserAccessoryLevelUpItemByID"
 
-	ResourceHandler[25] = GenericResourceHandler // accessory rarity up items
-	ResourceFinalizer[25] = GenericResourceFinalizer
-	ResourceGroupKey[25] = "user_accessory_rarity_up_item_by_id"
-	ResourceItemKey[25] = "accessory_rarity_up_item_master_id"
+	ResourceHandler[enum.ContentTypeAccessoryRarityUpItem] = GenericResourceHandler // accessory rarity up items
+	ResourceFinalizer[enum.ContentTypeAccessoryRarityUpItem] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeAccessoryRarityUpItem] = "user_accessory_rarity_up_item_by_id"
+	ResourceItemKey[enum.ContentTypeAccessoryRarityUpItem] = "accessory_rarity_up_item_master_id"
+	userModelField[enum.ContentTypeAccessoryRarityUpItem] = "UserAccessoryRarityUpItemByID"
 
-	ResourceHandler[28] = GenericResourceHandler // skip tickets
-	ResourceFinalizer[28] = GenericResourceFinalizer
-	ResourceGroupKey[28] = "user_live_skip_ticket_by_id"
-	ResourceItemKey[28] = "ticket_master_id"
+	ResourceHandler[enum.ContentTypeSkipTicket] = GenericResourceHandler // skip tickets
+	ResourceFinalizer[enum.ContentTypeSkipTicket] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeSkipTicket] = "user_live_skip_ticket_by_id"
+	ResourceItemKey[enum.ContentTypeSkipTicket] = "ticket_master_id"
+	userModelField[enum.ContentTypeSkipTicket] = "UserLiveSkipTicketByID"
 
-	ResourceHandler[30] = GenericResourceHandler // event story unlock key
-	ResourceFinalizer[30] = GenericResourceFinalizer
-	ResourceGroupKey[30] = "user_story_event_unlock_item_by_id"
-	ResourceItemKey[30] = "story_event_unlock_item_master_id"
+	ResourceHandler[enum.ContentTypeStoryEventUnLock] = GenericResourceHandler // event story unlock key
+	ResourceFinalizer[enum.ContentTypeStoryEventUnLock] = GenericResourceFinalizer
+	ResourceGroupKey[enum.ContentTypeStoryEventUnLock] = "user_story_event_unlock_item_by_id"
+	ResourceItemKey[enum.ContentTypeStoryEventUnLock] = "story_event_unlock_item_master_id"
+	userModelField[enum.ContentTypeStoryEventUnLock] = "UserStoryEventUnlockItemByID"
+
+	ResourceHandler[enum.ContentTypeStoryMember] = memberStoryHandler
+	ResourceHandler[enum.ContentTypeVoice] = voiceHandler
 }
 
 func GenericResourceHandler(session *Session, contentType, contentID int, contentAmount int64) {
 	resource := session.GetUserResource(contentType, contentID)
-	resource.ContentAmount += contentAmount
+	resource.Resource.ContentAmount += contentAmount
 	session.UpdateUserResource(resource)
 }
 
@@ -208,10 +250,17 @@ func GenericResourceFinalizer(session *Session, contentType int,
 	itemKey := ResourceItemKey[contentType]
 	result := "[]"
 	index := 0
-	for contentID, resource := range resourceDiffByContentID {
+
+	keys := []int{}
+	for key := range resourceDiffByContentID {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+	for _, contentID := range keys {
+		resource := resourceDiffByContentID[contentID]
 		// update or insert the resource
 		affected, err := session.Db.Table("u_resource").Where("user_id = ? AND content_type = ? AND content_id = ?",
-			session.UserStatus.UserID, contentType, contentID).Update(resource)
+			session.UserStatus.UserID, contentType, contentID).AllCols().Update(resource)
 		utils.CheckErr(err)
 		if affected == 0 { // doesn't exists, insert
 			session.Db.Table("u_resource").Insert(resource)
@@ -223,31 +272,127 @@ func GenericResourceFinalizer(session *Session, contentType int,
 		if itemKey != "" {
 			result, _ = sjson.Set(result, fmt.Sprintf("%d.%s", index, itemKey), contentID)
 		}
-		result, _ = sjson.Set(result, fmt.Sprintf("%d.amount", index), resource.ContentAmount)
+		result, _ = sjson.Set(result, fmt.Sprintf("%d.amount", index), resource.Resource.ContentAmount)
 		index++
 	}
 	return groupKey, result
 }
 
-func SuitResourceHandler(session *Session, suitContentType, suitMasterID int, amount int64) {
-	session.InsertUserSuit(model.UserSuit{
-		UserID:       session.UserStatus.UserID,
-		SuitMasterID: suitMasterID,
-		IsNew:        true})
+func SuitResourceHandler(session *Session, _, suitMasterID int, _ int64) {
+	session.InsertUserSuit(suitMasterID)
+}
+
+func memberStoryHandler(session *Session, _, memberStoryID int, _ int64) {
+	session.InsertMemberStory(memberStoryID)
+}
+
+func voiceHandler(session *Session, _, naviVoiceMasterID int, _ int64) {
+	session.UpdateVoice(naviVoiceMasterID, false)
 }
 
 // these resources amount are stored in the user status
 func UserStatusResourceHandler(session *Session, resourceContentType, resourceContentID int, amount int64) {
 	switch resourceContentType {
-	case 1: // star gems
+	case enum.ContentTypeSnsCoin: // star gems
 		session.UserStatus.FreeSnsCoin += int(amount)
-	case 4: // card exp
+	case enum.ContentTypeCardExp: // card exp
 		session.UserStatus.CardExp += amount
-	case 10: // game money (gold)
+	case enum.ContentTypeGameMoney: // game money (gold)
 		session.UserStatus.GameMoney += amount
-	case 32: // subscription coin (purple coin)
+	case enum.ContentTypeSubscriptionCoin: // subscription coin (purple coin)
 		session.UserStatus.SubscriptionCoin += int(amount)
 	default:
 		fmt.Println("TODO: handle user status content type:", resourceContentType)
 	}
+}
+
+func genericResourceByResourceIDFinalizer(session *Session) {
+	rModel := reflect.ValueOf(&session.UserModel)
+	for contentType, resourceDiffByContentID := range session.UserResourceDiffs {
+		rObject := rModel.Elem().FieldByName(userModelField[contentType])
+		if !rObject.IsValid() {
+			fmt.Println("Invalid field: ", contentType, "->", userModelField[contentType])
+			continue
+		}
+		rObjectPtrType := reflect.PointerTo(rObject.Type())
+		rObjectPushBack, ok := rObjectPtrType.MethodByName("PushBack")
+		if !ok {
+			panic(fmt.Sprintln("Type ", rObjectPtrType, " must have method PushBack"))
+		}
+		rElementType := rObject.FieldByName("Objects").Type().Elem()
+		if rElementType == reflect.ValueOf(0).Type() {
+			fmt.Println("Not handled: ", contentType, userModelField[contentType])
+			continue
+		}
+		rElementPtrType := reflect.PointerTo(rElementType)
+		rElementFromContent, ok := rElementPtrType.MethodByName("FromContent")
+		if !ok {
+			panic(fmt.Sprintln("Type ", rElementPtrType, " must have method FromContent"))
+		}
+		// this is to produce a consistent order, to check against the other method
+		// TODO: remove once no longer necessary
+		keys := []int{}
+		for key := range resourceDiffByContentID {
+			keys = append(keys, key)
+		}
+		sort.Ints(keys)
+		for _, key := range keys {
+			resource := resourceDiffByContentID[key]
+			obj := reflect.New(rElementType)
+			rElementFromContent.Func.Call([]reflect.Value{obj, reflect.ValueOf(resource.Resource)})
+			rObjectPushBack.Func.Call([]reflect.Value{rObject.Addr(), reflect.Indirect(obj)})
+		}
+	}
+}
+
+func init() {
+	addFinalizer(genericResourceByResourceIDFinalizer)
+}
+
+func genericResourceByResourceIDPopulator(session *Session) {
+	rModel := reflect.ValueOf(&session.UserModel)
+	contents := []model.Content{}
+	// order by is not necessary
+	err := session.Db.Table("u_resource").Where("user_id = ?", session.UserStatus.UserID).
+		OrderBy("content_type, content_id").Find(&contents)
+	utils.CheckErr(err)
+	contentByType := make(map[int][]model.Content)
+	for _, content := range contents {
+		contentByType[content.ContentType] = append(contentByType[content.ContentType], content)
+	}
+	for contentType, fieldName := range userModelField {
+		contents, exists := contentByType[contentType]
+		if !exists {
+			continue
+		}
+		rObject := rModel.Elem().FieldByName(fieldName)
+		if !rObject.IsValid() {
+			fmt.Println("Invalid field: ", contentType, "->", fieldName)
+			continue
+		}
+		rObjectPtrType := reflect.PointerTo(rObject.Type())
+		rObjectPushBack, ok := rObjectPtrType.MethodByName("PushBack")
+		if !ok {
+			panic(fmt.Sprintln("Type ", rObjectPtrType, " must have method PushBack"))
+		}
+		rElementType := rObject.FieldByName("Objects").Type().Elem()
+		if rElementType == reflect.ValueOf(0).Type() {
+			fmt.Println("Not handled: ", contentType, fieldName)
+			continue
+		}
+		rElementPtrType := reflect.PointerTo(rElementType)
+		rElementFromContent, ok := rElementPtrType.MethodByName("FromContent")
+		if !ok {
+			panic(fmt.Sprintln("Type ", rElementPtrType, " must have method FromContent"))
+		}
+		for _, resource := range contents {
+			obj := reflect.New(rElementType)
+			rElementFromContent.Func.Call([]reflect.Value{obj, reflect.ValueOf(resource)})
+			rObjectPushBack.Func.Call([]reflect.Value{rObject.Addr(), reflect.Indirect(obj)})
+		}
+	}
+}
+
+func init() {
+	addPopulator(genericResourceByResourceIDPopulator)
 }
