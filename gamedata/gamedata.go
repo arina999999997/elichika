@@ -29,8 +29,9 @@ import (
 	"elichika/dictionary"
 	"elichika/model"
 
+	"fmt"
 	"reflect"
-	// "fmt"
+	"time"
 
 	"xorm.io/xorm"
 )
@@ -114,6 +115,7 @@ type Gamedata struct {
 }
 
 func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {
+	start := time.Now()
 	masterdata_session := masterdata.NewSession()
 	serverdata_session := serverdata.NewSession()
 	defer masterdata_session.Close()
@@ -130,4 +132,6 @@ func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine,
 	for _, loadFunc := range loadOrder {
 		loadFunc(gamedata, masterdata_session, serverdata_session, dictionary)
 	}
+	finish := time.Now()
+	fmt.Println("Finished loading database in: ", finish.Sub(start))
 }

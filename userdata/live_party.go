@@ -48,28 +48,27 @@ func (session *Session) GetUserLivePartyWithDeckAndCardID(deckID int, cardID int
 }
 
 func (session *Session) UpdateUserLiveParty(liveParty model.UserLiveParty) {
-	session.UserLivePartyDiffs[liveParty.PartyID] = liveParty
+	session.UserLivePartyMapping.SetList(&session.UserModel.UserLivePartyByID).Update(liveParty)
 }
 
-func (session *Session) FinalizeUserLivePartyDiffs() []any {
-	userLivePartyByID := []any{}
-	for userLivePartyId, userLiveParty := range session.UserLivePartyDiffs {
-		session.UserModel.UserLivePartyByID.PushBack(userLiveParty)
-		userLivePartyByID = append(userLivePartyByID, userLivePartyId)
-		userLivePartyByID = append(userLivePartyByID, userLiveParty)
+func livePartyFinalizer(session *Session) {
+	for _, party := range session.UserModel.UserLivePartyByID.Objects {
 		affected, err := session.Db.Table("u_live_party").
-			Where("user_id = ? AND party_id = ?", session.UserStatus.UserID, userLivePartyId).
-			AllCols().Update(userLiveParty)
-		if (err != nil) || (affected != 1) {
-			panic(err)
+			Where("user_id = ? AND party_id = ?", session.UserStatus.UserID, party.PartyID).AllCols().
+			Update(party)
+		utils.CheckErr(err)
+		if affected == 0 {
+			// all live party must be inserted at account creation
+			panic("user live party doesn't exists")
 		}
 	}
-	return userLivePartyByID
 }
 
-func (session *Session) GetAllLiveParties() []model.UserLiveParty {
+func (session *Session) GetAllLivePartiesWithAccessory(accessoryID int64) []model.UserLiveParty {
 	parties := []model.UserLiveParty{}
-	err := session.Db.Table("u_live_party").Where("user_id = ?", session.UserStatus.UserID).Find(&parties)
+	err := session.Db.Table("u_live_party").
+		Where("user_id = ? AND (user_accessory_id_1 = ? OR user_accessory_id_2 = ? OR user_accessory_id_3 = ? )",
+			session.UserStatus.UserID, accessoryID, accessoryID, accessoryID).Find(&parties)
 	utils.CheckErr(err)
 	return parties
 }
@@ -81,5 +80,6 @@ func (session *Session) InsertLiveParties(parties []model.UserLiveParty) {
 }
 
 func init() {
+	addFinalizer(livePartyFinalizer)
 	addGenericTableFieldPopulator("u_live_party", "UserLivePartyByID")
 }

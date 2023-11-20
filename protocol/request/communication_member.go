@@ -11,11 +11,11 @@ type SetThemeRequest struct {
 }
 
 type FinishUserStoryMemberRequest struct {
-	StoryMemberMasterID           int `json:"story_member_master_id"`
-	IsAutoMode bool `json:"is_auto_mode"`
+	StoryMemberMasterID int  `json:"story_member_master_id"`
+	IsAutoMode          bool `json:"is_auto_mode"`
 }
 
 type FinishUserStorySideRequest struct {
-	StorySideMasterID           int `json:"story_side_master_id"`
-	IsAutoMode bool `json:"is_auto_mode"`
+	StorySideMasterID int  `json:"story_side_master_id"`
+	IsAutoMode        bool `json:"is_auto_mode"`
 }

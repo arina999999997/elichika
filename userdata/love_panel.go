@@ -12,7 +12,7 @@ func (session *Session) GetAllMemberLovePanels() []model.UserMemberLovePanel {
 	if err != nil {
 		panic(err)
 	}
-	for i, _ := range lovePanels {
+	for i := range lovePanels {
 		lovePanels[i].Fill()
 	}
 	return lovePanels

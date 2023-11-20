@@ -1,8 +1,8 @@
 package gamedata
 
 import (
-	"elichika/model"
 	"elichika/dictionary"
+	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -14,9 +14,9 @@ type StoryMember struct {
 	// from m_story_member
 	ID int `xorm:"pk 'id'"`
 	// MemberMasterID int `xorm:"member_master_id"`
-	// StoryNo int 
+	// StoryNo int
 	// LoveLevel int
-	// Title string 
+	// Title string
 	// Description string
 	// ScenarioScriptAssetPath string
 	// CardImageAssetPath string
@@ -27,7 +27,7 @@ type StoryMember struct {
 	Reward *model.Content `xorm:"-"`
 }
 
-func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) { 
+func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	reward := model.Content{}
 	exists, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.ID).Get(&reward)
 	utils.CheckErr(err)

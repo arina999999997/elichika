@@ -18,3 +18,10 @@ type UserLessonDeck struct {
 func (uld *UserLessonDeck) ID() int64 {
 	return int64(uld.UserLessonDeckID)
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_lesson_deck"] = UserLessonDeck{}
+}

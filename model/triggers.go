@@ -43,3 +43,12 @@ func (obj *TriggerMemberLoveLevelUp) ID() int64 {
 type TriggerReadReq struct {
 	TriggerID int64 `json:"trigger_id"` // same for all trigger, for now
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_trigger_basic"] = TriggerBasic{}
+	TableNameToInterface["u_trigger_card_grade_up"] = TriggerCardGradeUp{}
+	TableNameToInterface["u_trigger_member_love_level_up"] = TriggerMemberLoveLevelUp{}
+}

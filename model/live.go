@@ -223,3 +223,13 @@ type UserPlayListItem struct {
 func (item UserPlayListItem) ID() int64 {
 	return int64(item.UserPlayListID)
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_live_deck"] = UserLiveDeck{}
+	TableNameToInterface["u_live_party"] = UserLiveParty{}
+	TableNameToInterface["u_live_state"] = LiveState{}
+	TableNameToInterface["u_play_list"] = UserPlayListItem{}
+}

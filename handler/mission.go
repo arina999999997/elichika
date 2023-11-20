@@ -11,8 +11,8 @@ import (
 )
 
 func FetchMission(ctx *gin.Context) {
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	signBody := session.Finalize("{}", "user_model")
 	signBody, _ = sjson.Set(signBody, "mission_master_id_list", []any{})
@@ -23,8 +23,8 @@ func FetchMission(ctx *gin.Context) {
 }
 
 func ClearMissionBadge(ctx *gin.Context) {
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)

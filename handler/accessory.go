@@ -267,24 +267,18 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	liveParties := session.GetAllLiveParties()
+	liveParties := session.GetAllLivePartiesWithAccessory(req.UserAccessoryID)
 	for _, liveParty := range liveParties {
-		updated := false
 		if (liveParty.UserAccessoryID1 != nil) && (*liveParty.UserAccessoryID1 == req.UserAccessoryID) {
 			liveParty.UserAccessoryID1 = nil
-			updated = true
 		}
 		if (liveParty.UserAccessoryID2 != nil) && (*liveParty.UserAccessoryID2 == req.UserAccessoryID) {
 			liveParty.UserAccessoryID2 = nil
-			updated = true
 		}
 		if (liveParty.UserAccessoryID3 != nil) && (*liveParty.UserAccessoryID3 == req.UserAccessoryID) {
 			liveParty.UserAccessoryID3 = nil
-			updated = true
 		}
-		if updated {
-			session.UpdateUserLiveParty(liveParty)
-		}
+		session.UpdateUserLiveParty(liveParty)
 	}
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)

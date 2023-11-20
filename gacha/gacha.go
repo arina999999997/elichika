@@ -50,11 +50,11 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 		BeforeLoveLevelLimit: session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit),
 		AfterLoveLevelLimit:  0,
 	}
-	if isGuaranteed {
-		// if more than 1 card have this then the the client might refuse to show the result.
-		// it's not doing anything visible, so might as well not set it
-		// resultCard.GachaLotType = 2
-	}
+	// if isGuaranteed {
+	// 	// if more than 1 card have this then the the client might refuse to show the result.
+	// 	// it's not doing anything visible, so might as well not set it
+	// 	// resultCard.GachaLotType = 2
+	// }
 	if resultCard.AfterGrade == 6 { // maxed out card
 		resultCard.AfterGrade = 5
 		resultCard.Content = &model.Content{

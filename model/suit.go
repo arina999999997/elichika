@@ -9,3 +9,10 @@ type UserSuit struct {
 func (us *UserSuit) ID() int64 {
 	return int64(us.SuitMasterID)
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_suit"] = UserSuit{}
+}

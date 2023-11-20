@@ -140,3 +140,17 @@ type UserSetProfile struct {
 func (usp *UserSetProfile) ID() int64 {
 	return int64(usp.UserSetProfileID)
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+
+	type DbUser struct {
+		UserStatus           `xorm:"extends"`
+		UserProfileLiveStats `xorm:"extends"`
+	}
+	TableNameToInterface["u_info"] = DbUser{}
+
+	TableNameToInterface["u_custom_set_profile"] = UserSetProfile{}
+}

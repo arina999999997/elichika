@@ -14,8 +14,8 @@ import (
 
 func TriggerReadCardGradeUp(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	req := model.TriggerReadReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -34,8 +34,8 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 
 func TriggerRead(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	req := model.TriggerReadReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -53,16 +53,12 @@ func TriggerRead(ctx *gin.Context) {
 }
 
 func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
-	// req is null, so we need to pull the triggers from db here
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 
-	triggers := session.GetAllTriggerMemberLoveLevelUps()
-	for _, trigger := range triggers {
-		trigger.IsNull = true
-		session.AddTriggerMemberLoveLevelUp(trigger)
-	}
+	session.ReadAllMemberLoveLevelUpTriggers()
 
 	resp := session.Finalize("{}", "user_model")
 	resp = SignResp(ctx, resp, config.SessionKey)

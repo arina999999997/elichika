@@ -18,13 +18,13 @@ func (session *Session) GetAllUserAccessories() []model.UserAccessory {
 
 func (session *Session) GetUserAccessory(userAccessoryID int64) model.UserAccessory {
 	// if exists then reuse
-	accessory, exist := session.UserAccessoryDiffs[userAccessoryID]
+	pos, exist := session.UserAccessoryMapping.Map[userAccessoryID]
 	if exist {
-		return accessory
+		return session.UserModel.UserAccessoryByUserAccessoryID.Objects[pos]
 	}
 
 	// if not look in db
-	accessory = model.UserAccessory{}
+	accessory := model.UserAccessory{}
 	exists, err := session.Db.Table("u_accessory").
 		Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, userAccessoryID).Get(&accessory)
 	utils.CheckErr(err)
@@ -34,14 +34,8 @@ func (session *Session) GetUserAccessory(userAccessoryID int64) model.UserAccess
 			UserID:             session.UserStatus.UserID,
 			UserAccessoryID:    userAccessoryID,
 			Level:              1,
-			Exp:                0,
-			Grade:              0,
-			Attribute:          0,
-			PassiveSkill1ID:    0,
 			PassiveSkill1Level: 1,
-			PassiveSkill2ID:    nil,
 			PassiveSkill2Level: 1,
-			IsLock:             false,
 			IsNew:              true,
 			AcquiredAt:         time.Now().Unix(),
 		}
@@ -50,26 +44,23 @@ func (session *Session) GetUserAccessory(userAccessoryID int64) model.UserAccess
 }
 
 func (session *Session) UpdateUserAccessory(accessory model.UserAccessory) {
-	session.UserAccessoryDiffs[accessory.UserAccessoryID] = accessory
+	session.UserAccessoryMapping.SetList(&session.UserModel.UserAccessoryByUserAccessoryID).Update(accessory)
 }
 
-func (session *Session) FinalizeUserAccessories() []any {
-	accessoryByUserAccessoryID := []any{}
-	for userAccessoryID, accessory := range session.UserAccessoryDiffs {
-		accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, userAccessoryID)
-		session.UserModel.UserAccessoryByUserAccessoryID.PushBack(accessory)
+func accessoryFinalizer(session *Session) {
+	for _, accessory := range session.UserModel.UserAccessoryByUserAccessoryID.Objects {
 		if accessory.IsNull {
-			accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, nil)
 			affected, err := session.Db.Table("u_accessory").
-				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, userAccessoryID).Delete(&accessory)
+				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, accessory.UserAccessoryID).
+				Delete(&accessory)
 			utils.CheckErr(err)
 			if affected != 1 {
-				panic("accessories doesn't exists")
+				panic("accessory doesn't exists")
 			}
 		} else {
-			accessoryByUserAccessoryID = append(accessoryByUserAccessoryID, accessory)
 			affected, err := session.Db.Table("u_accessory").
-				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, userAccessoryID).AllCols().Update(accessory)
+				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, accessory.UserAccessoryID).
+				AllCols().Update(accessory)
 			utils.CheckErr(err)
 			if affected == 0 {
 				_, err := session.Db.Table("u_accessory").AllCols().Insert(accessory)
@@ -77,9 +68,10 @@ func (session *Session) FinalizeUserAccessories() []any {
 			}
 		}
 	}
-	return accessoryByUserAccessoryID
+
 }
 
 func init() {
+	addFinalizer(accessoryFinalizer)
 	addGenericTableFieldPopulator("u_accessory", "UserAccessoryByUserAccessoryID")
 }

@@ -68,7 +68,7 @@ func Common(ctx *gin.Context) {
 	ctx.Next()
 }
 func Birthday(ctx *gin.Context) {
-	if ctx.MustGet("is_good").(bool) == false {
+	if !ctx.MustGet("is_good").(bool) {
 		return
 	}
 
@@ -98,7 +98,7 @@ func Birthday(ctx *gin.Context) {
 }
 
 func Accessory(ctx *gin.Context) {
-	if ctx.MustGet("is_good").(bool) == false {
+	if !ctx.MustGet("is_good").(bool) {
 		return
 	}
 	userID := ctx.MustGet("user_id").(int)
@@ -127,7 +127,7 @@ func Accessory(ctx *gin.Context) {
 		}
 	}
 	if len(accessoryIDs) == 0 {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: no accessory found, add a specific ID or choose at least one rarity"))
+		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+"Error: no accessory found, add a specific ID or choose at least one rarity")
 		return
 	}
 	amount, _ := strconv.Atoi(params["accessory_amount"])

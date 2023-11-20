@@ -69,3 +69,15 @@ func (x *UserMemberLovePanel) LevelUp() {
 	x.LovePanelLastLevelCellIDs = []int{}
 	x.LovePanelLevel++
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	type DbMember struct {
+		UserMember          `xorm:"extends"`
+		LovePanelLevel            int   `xorm:"'love_panel_level' default 1"`
+		LovePanelLastLevelCellIds []int `xorm:"'love_panel_last_level_cell_ids' default '[]'"`
+	}
+	TableNameToInterface["u_member"] = DbMember{}
+}

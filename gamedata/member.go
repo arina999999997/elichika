@@ -77,8 +77,8 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 	{
 		type LoveLevelReward struct {
-			LoveLevel int `xorm:"'love_level'"`
-			Content model.Content `xorm:"extends"`
+			LoveLevel int           `xorm:"'love_level'"`
+			Content   model.Content `xorm:"extends"`
 		}
 		rewards := []LoveLevelReward{}
 		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.ID).Find(&rewards)

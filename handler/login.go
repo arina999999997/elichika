@@ -82,12 +82,12 @@ func Login(ctx *gin.Context) {
 		}
 		return true
 	})
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	if session == nil {
-		userdata.CreateNewAccount(ctx, UserID, "")
-		session = userdata.GetSession(ctx, UserID)
+		userdata.CreateNewAccount(ctx, userID, "")
+		session = userdata.GetSession(ctx, userID)
 		defer session.Close()
 	}
 	session.Login()
@@ -99,7 +99,7 @@ func Login(ctx *gin.Context) {
 	loginBody, _ = sjson.Set(loginBody, "last_timestamp", time.Now().UnixMilli())
 
 	/* ======== UserData ======== */
-	fmt.Println("User logins: ", UserID)
+	fmt.Println("User logins: ", userID)
 
 	// member love panel settings
 	dbLovePanels := session.GetAllMemberLovePanels()

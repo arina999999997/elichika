@@ -224,7 +224,7 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 		}
 		session.InsertLessonDecks(lessonDecks)
 	}
-	session.Finalize("", "")
+	session.Finalize("{}", "user_model")
 
 	return userID
 }

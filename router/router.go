@@ -135,6 +135,7 @@ func Router(r *gin.Engine) {
 		api.POST("/shop/fetchShopTop", handler.FetchShopTop)
 		api.POST("/shop/fetchShopPack", handler.FetchShopPack)
 		api.POST("/shop/fetchShopSnsCoin", handler.FetchShopSnsCoin)
+		// /shop/fetchShopSubscription
 
 		api.POST("/loveRanking/fetch", handler.LoveRankingFetch)
 

@@ -43,15 +43,12 @@ func (session *Session) GetAllLiveDifficulties() []model.UserLiveDifficulty {
 }
 
 func (session *Session) UpdateLiveDifficulty(userLiveDifficulty model.UserLiveDifficulty) {
-	session.UserLiveDifficultyDiffs[userLiveDifficulty.LiveDifficultyID] = userLiveDifficulty
+	session.UserLiveDifficultyMapping.SetList(&session.UserModel.UserLiveDifficultyByDifficultyID).
+		Update(userLiveDifficulty)
 }
 
-func (session *Session) FinalizeLiveDifficulties() []any {
-	diffs := []any{}
-	for _, userLiveDifficulty := range session.UserLiveDifficultyDiffs {
-		session.UserModel.UserLiveDifficultyByDifficultyID.PushBack(userLiveDifficulty)
-		diffs = append(diffs, userLiveDifficulty.LiveDifficultyID)
-		diffs = append(diffs, userLiveDifficulty)
+func liveDifficultyFinalizer(session *Session) {
+	for _, userLiveDifficulty := range session.UserModel.UserLiveDifficultyByDifficultyID.Objects {
 		updated, err := session.Db.Table("u_live_record").
 			Where("user_id = ? AND live_difficulty_id = ?", userLiveDifficulty.UserID, userLiveDifficulty.LiveDifficultyID).
 			AllCols().Update(&userLiveDifficulty)
@@ -61,7 +58,7 @@ func (session *Session) FinalizeLiveDifficulties() []any {
 			utils.CheckErr(err)
 		}
 	}
-	return diffs
+
 }
 
 func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyID int) *model.LastPlayLiveDifficultyDeck {
@@ -69,9 +66,7 @@ func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyID int) *mod
 	exists, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", session.UserStatus.UserID, liveDifficultyID).
 		Get(&lastPlayDeck)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	if !exists {
 		return nil
 	}
@@ -128,11 +123,10 @@ func (session *Session) SetLastPlayLiveDifficultyDeck(deck model.LastPlayLiveDif
 	// always call after inserting the actual live play, so we can just update
 	_, err := session.Db.Table("u_live_record").Where("user_id = ? and live_difficulty_id = ?", deck.UserID, deck.LiveDifficultyID).
 		AllCols().Update(&deck)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 }
 
 func init() {
+	addFinalizer(liveDifficultyFinalizer)
 	addGenericTableFieldPopulator("u_live_record", "UserLiveDifficultyByDifficultyID")
 }

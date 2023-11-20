@@ -27,14 +27,14 @@ type DropWithTypes struct {
 }
 
 type SkipLiveResult struct {
-	LiveDifficultyMasterID        int                                              `json:"live_difficulty_master_id"`
-	LiveDeckID                    int                                              `json:"live_deck_id"`
-	Drops                         []DropWithTypes                                  `json:"drops"`
-	MemberLoveStatuses            generic.ObjectByObjectIDWrite[*MemberLoveStatus] `json:"member_love_statuses"`
-	GainUserExp                   int                                              `json:"gain_user_exp"`
-	IsRewardAccessoryInPresentBox bool                                             `json:"is_reward_accessory_in_present_box"`
-	ActiveEventResult             *int                                             `json:"active_event_result"`
-	LiveResultMemberGuild         *int                                             `json:"live_result_member_guild"`
+	LiveDifficultyMasterID        int                                            `json:"live_difficulty_master_id"`
+	LiveDeckID                    int                                            `json:"live_deck_id"`
+	Drops                         []DropWithTypes                                `json:"drops"`
+	MemberLoveStatuses            generic.ObjectByObjectIDList[MemberLoveStatus] `json:"member_love_statuses"`
+	GainUserExp                   int                                            `json:"gain_user_exp"`
+	IsRewardAccessoryInPresentBox bool                                           `json:"is_reward_accessory_in_present_box"`
+	ActiveEventResult             *int                                           `json:"active_event_result"`
+	LiveResultMemberGuild         *int                                           `json:"live_result_member_guild"`
 }
 
 func LiveSkip(ctx *gin.Context) {
@@ -83,8 +83,8 @@ func LiveSkip(ctx *gin.Context) {
 	})
 
 	bondCardPosition := make(map[int]int)
-	for i, cardMasterId := range cardMasterIDs {
-		userCard := session.GetUserCard(cardMasterId)
+	for i, cardMasterID := range cardMasterIDs {
+		userCard := session.GetUserCard(cardMasterID)
 		userCard.LiveJoinCount += req.TicketUseCount // count skip clear in pfp
 		session.UpdateUserCard(userCard)
 		// update member love point
@@ -94,23 +94,22 @@ func LiveSkip(ctx *gin.Context) {
 		if isCenter {
 			addedBond += rewardCenterLovePoint
 		}
-		memberMasterID := gamedata.Card[cardMasterId].Member.ID
+		memberMasterID := gamedata.Card[cardMasterID].Member.ID
 
 		pos, exists := bondCardPosition[memberMasterID]
 		// only use 1 card master id or an idol might be shown multiple times
 		if !exists {
-			memberLoveStatus := skipLiveResult.MemberLoveStatuses.AppendNew()
+			memberLoveStatus := skipLiveResult.MemberLoveStatuses.AppendNewWithID(int64(cardMasterID))
 			memberLoveStatus.RewardLovePoint = addedBond
-			memberLoveStatus.CardMasterID = cardMasterId
 			bondCardPosition[memberMasterID] = skipLiveResult.MemberLoveStatuses.Length - 1
 		} else {
-			(*skipLiveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint += addedBond
+			skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint += addedBond
 		}
 	}
 	for memberMasterID, pos := range bondCardPosition {
 		addedBond := session.AddLovePoint(memberMasterID,
-			req.TicketUseCount*(*skipLiveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint)
-		(*skipLiveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint = addedBond
+			req.TicketUseCount*skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint)
+		skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint = addedBond
 	}
 
 	if liveDifficulty.IsCountTarget { // counted toward target and profiles

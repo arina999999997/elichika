@@ -2,9 +2,9 @@ package handler
 
 import (
 	"elichika/config"
+	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
-	"elichika/protocol/request"
 
 	"encoding/json"
 	"net/http"
@@ -18,7 +18,7 @@ func SaveUserNaviVoice(ctx *gin.Context) {
 	req := request.SaveUserNaviVoiceRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	
+
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()

@@ -9,85 +9,8 @@ import (
 )
 
 // Common pattern of [object_1_id, object_1, object_2_id, object_2...]
-// if null give an empty array
-// need to pass the pointer type of a type because I don't know golang
 
-type ObjectByObjectIDReadInterface interface { // only unmarshal
-	SetID(int64)
-}
-
-type ObjectByObjectIDRead[T ObjectByObjectIDReadInterface] struct {
-	Objects []T
-}
-
-func (oboid *ObjectByObjectIDRead[T]) UnmarshalJSON(data []byte) error {
-	oboid.Objects = []T{}
-	if string(data) == "null" {
-		return nil
-	}
-	arr := []any{}
-	err := json.Unmarshal(data, &arr)
-	utils.CheckErr(err)
-	for i, _ := range arr {
-		if i%2 == 1 {
-			continue
-		}
-		bytes, err := json.Marshal(arr[i+1])
-		utils.CheckErr(err)
-		ptp := new(T)                         // pointer to pointer of the original type
-		err = json.Unmarshal(bytes, ptp)      // unmarshal into the pointer of pointer the original type, create a pointer and then an object
-		(*ptp).SetID(int64(arr[i].(float64))) // set the id
-		utils.CheckErr(err)
-		oboid.Objects = append(oboid.Objects, *ptp) // append the pointer of the original type
-	}
-	return nil
-}
-
-type ObjectByObjectIDWriteInterface interface { // only marshal
-	ID() int64
-}
-
-type ObjectByObjectIDWrite[T ObjectByObjectIDWriteInterface] struct {
-	Length  int
-	Objects []T
-}
-
-func (oboid ObjectByObjectIDWrite[T]) MarshalJSON() ([]byte, error) {
-	arr := []any{}
-	for _, object := range oboid.Objects {
-		arr = append(arr, object.ID())
-		arr = append(arr, object)
-	}
-	bytes, err := json.Marshal(&arr)
-	utils.CheckErr(err)
-	return bytes, nil
-}
-
-// append a pointer
-func (oboid *ObjectByObjectIDWrite[T]) PushBack(ptr T) {
-	oboid.Length += 1
-	oboid.Objects = append(oboid.Objects, ptr)
-}
-
-// append a new pointer at the end, the pointer point to a zero value
-// then return the pointer and the index
-func (oboid *ObjectByObjectIDWrite[T]) AppendNew() T {
-	ptp := new(T) // pointer to pointer, that hold nothing
-	// a bit dirty but it works
-	err := json.Unmarshal([]byte("{}"), ptp) // unmarshal into the pointer of pointer the original type, create a pointer and then an object
-	utils.CheckErr(err)
-
-	oboid.Objects = append(oboid.Objects, *ptp) // append the pointer and return it
-	oboid.Length += 1
-	return *ptp
-}
-
-type ObjectByObjectIDInterface interface { // only unmarshal
-	SetID(int64)
-	ID() int64
-}
-
-type ObjectByObjectID[T any] struct {
+type ObjectByObjectIDList[T any] struct {
 	Length  int // length
 	Objects []T // slice of items
 }
@@ -102,7 +25,7 @@ type ObjectByObjectID[T any] struct {
 // Unmarshal: from JSON bytes to value
 // require method SetID for the values
 // return an empty array if data is null
-func (oboid *ObjectByObjectID[T]) UnmarshalJSON(data []byte) error {
+func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
 	oboid.Objects = []T{}
 	oboid.Length = 0
 	if string(data) == "null" {
@@ -112,7 +35,7 @@ func (oboid *ObjectByObjectID[T]) UnmarshalJSON(data []byte) error {
 	err := json.Unmarshal(data, &arr) // first unmarshal into an array of raw json
 	utils.CheckErr(err)
 
-	for i, _ := range arr {
+	for i := range arr {
 		if i%2 == 1 { // this is an object
 			continue
 		}
@@ -127,7 +50,7 @@ func (oboid *ObjectByObjectID[T]) UnmarshalJSON(data []byte) error {
 		if err != nil {
 			return err
 		}
-		reflect.ValueOf(&obj).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(&id)})
+		reflect.ValueOf(&obj).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
 		if err != nil {
 			return err
 		}
@@ -139,7 +62,7 @@ func (oboid *ObjectByObjectID[T]) UnmarshalJSON(data []byte) error {
 
 // Convert object to ID
 // require method ID to get ID for the values
-func (oboid ObjectByObjectID[T]) MarshalJSON() ([]byte, error) {
+func (oboid ObjectByObjectIDList[T]) MarshalJSON() ([]byte, error) {
 	arr := []any{}
 	for _, object := range oboid.Objects {
 		id := reflect.ValueOf(&object).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64)
@@ -156,15 +79,77 @@ func (oboid ObjectByObjectID[T]) MarshalJSON() ([]byte, error) {
 }
 
 // append an object
-func (oboid *ObjectByObjectID[T]) PushBack(obj T) {
+func (oboid *ObjectByObjectIDList[T]) PushBack(obj T) {
 	oboid.Length += 1
 	oboid.Objects = append(oboid.Objects, obj)
 }
 
 // append a zero valued object and return a pointer to said object
-func (oboid *ObjectByObjectID[T]) AppendNew() *T {
-	var dummy T
-	oboid.Objects = append(oboid.Objects, dummy)
+func (oboid *ObjectByObjectIDList[T]) AppendNew() *T {
+	var object T
+	oboid.Objects = append(oboid.Objects, object)
 	oboid.Length += 1
 	return &oboid.Objects[oboid.Length-1]
+}
+
+// append a zero valued object and return a pointer to said object
+func (oboid *ObjectByObjectIDList[T]) AppendNewWithID(id int64) *T {
+	var object T
+	reflect.ValueOf(&object).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
+	oboid.Objects = append(oboid.Objects, object)
+	oboid.Length += 1
+	return &oboid.Objects[oboid.Length-1]
+}
+
+// handler for an array object, use a map to map to the value for easier selection / tracking
+// note that we don't store the object in the map itself because that lead to complication with xorm, as xorm can't use the ID function and rely on pk mapping
+type ObjectByObjectIDMapping[T any] struct {
+	List *ObjectByObjectIDList[T]
+	Map  map[int64]int
+}
+
+func (m *ObjectByObjectIDMapping[T]) SetList(list *ObjectByObjectIDList[T]) *ObjectByObjectIDMapping[T] {
+	if m.List != list {
+		// new list, reset the map
+		m.List = list
+		m.Map = make(map[int64]int)
+	}
+	return m
+}
+
+// create a new list if there is none
+func (m *ObjectByObjectIDMapping[T]) NewList() *ObjectByObjectIDMapping[T] {
+	if m.List == nil {
+		m.List = new(ObjectByObjectIDList[T])
+		m.Map = make(map[int64]int)
+	}
+	return m
+}
+
+// update or insert an object, require ID
+// copy the object and return the new pointer
+func (m *ObjectByObjectIDMapping[T]) Update(object T) {
+	id := reflect.ValueOf(&object).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64)
+	pos, exist := m.Map[id]
+	if exist {
+		m.List.Objects[pos] = object
+	} else {
+		m.List.PushBack(object)
+		m.Map[id] = m.List.Length - 1
+	}
+}
+
+// insert by ID and return the pointer to the object, require SetID
+func (m *ObjectByObjectIDMapping[T]) InsertNew(id int64) *T {
+	ptr := m.List.AppendNewWithID(id)
+	m.Map[id] = m.List.Length - 1
+	return ptr
+}
+
+func (m *ObjectByObjectIDMapping[T]) GetObject(id int64) *T {
+	pos, exists := m.Map[id]
+	if !exists {
+		panic("Item doesn't exists")
+	}
+	return &m.List.Objects[pos]
 }

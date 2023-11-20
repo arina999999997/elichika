@@ -22,30 +22,20 @@ func (session *Session) GetUserLiveDeck(userLiveDeckID int) model.UserLiveDeck {
 }
 
 func (session *Session) UpdateUserLiveDeck(liveDeck model.UserLiveDeck) {
-	session.UserLiveDeckDiffs[liveDeck.UserLiveDeckID] = liveDeck
+	session.UserLiveDeckMapping.SetList(&session.UserModel.UserLiveDeckByID).Update(liveDeck)
 }
 
-func (session *Session) FinalizeUserLiveDeckDiffs() []any {
-	userLiveDeckByID := []any{}
-	for userLiveDeckId, userLiveDeck := range session.UserLiveDeckDiffs {
-		session.UserModel.UserLiveDeckByID.PushBack(userLiveDeck)
-		userLiveDeckByID = append(userLiveDeckByID, userLiveDeckId)
-		userLiveDeckByID = append(userLiveDeckByID, userLiveDeck)
+func liveDeckFinalizer(session *Session) {
+	for _, deck := range session.UserModel.UserLiveDeckByID.Objects {
 		affected, err := session.Db.Table("u_live_deck").
-			Where("user_id = ? AND user_live_deck_id = ?", session.UserStatus.UserID, userLiveDeckId).
-			AllCols().Update(userLiveDeck)
-		if (err != nil) || (affected != 1) {
-			panic(err)
+			Where("user_id = ? AND user_live_deck_id = ?", session.UserStatus.UserID, deck.UserLiveDeckID).AllCols().
+			Update(deck)
+		utils.CheckErr(err)
+		if affected == 0 {
+			// all live deck must be inserted at account creation
+			panic("user lesson deck doesn't exists")
 		}
 	}
-	return userLiveDeckByID
-}
-
-func (session *Session) GetAllLiveDecks() []model.UserLiveDeck {
-	decks := []model.UserLiveDeck{}
-	err := session.Db.Table("u_live_deck").Where("user_id = ?", session.UserStatus.UserID).Find(&decks)
-	utils.CheckErr(err)
-	return decks
 }
 
 func (session *Session) InsertLiveDecks(decks []model.UserLiveDeck) {
@@ -55,5 +45,6 @@ func (session *Session) InsertLiveDecks(decks []model.UserLiveDeck) {
 }
 
 func init() {
+	addFinalizer(liveDeckFinalizer)
 	addGenericTableFieldPopulator("u_live_deck", "UserLiveDeckByID")
 }

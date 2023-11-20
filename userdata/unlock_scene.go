@@ -23,7 +23,7 @@ func (session *Session) UnlockScene(unlockSceneType, status int) {
 		Update(userUnlockScene)
 	utils.CheckErr(err)
 	if affected == 0 { // need to insert
-		affected, err = session.Db.Table("u_unlock_scene").Insert(userUnlockScene)
+		_, err = session.Db.Table("u_unlock_scene").Insert(userUnlockScene)
 		utils.CheckErr(err)
 	}
 	session.UserModel.UserUnlockScenesByEnum.PushBack(userUnlockScene)

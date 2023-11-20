@@ -21,3 +21,10 @@ type UserAccessory struct {
 func (ua *UserAccessory) ID() int64 {
 	return ua.UserAccessoryID
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_accessory"] = UserAccessory{}
+}

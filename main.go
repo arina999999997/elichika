@@ -32,7 +32,6 @@ func cli() {
 	// 	fmt.Println("Invalid params:", os.Args)
 	// 	return
 	}
-	return
 }
 
 func main() {

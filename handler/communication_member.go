@@ -100,7 +100,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	for _, liveDifficultyRecord := range liveDifficultyRecords {
-		if liveDifficultyRecord.IsNew == false { // no need to update
+		if !liveDifficultyRecord.IsNew { // no need to update
 			continue
 		}
 		// update if it feature this member
@@ -122,7 +122,7 @@ func FinishUserStorySide(ctx *gin.Context) {
 	req := request.FinishUserStorySideRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	
+
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()

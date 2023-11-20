@@ -106,11 +106,11 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 
 func CheerMemberGuild(ctx *gin.Context) {
 	// this is extracted from Serialization_DeserializeCheerMemberGuildResponse
-	type CheerMemberGuildResp struct {
-		Rewards              []model.Content `json:"rewards"`
-		MemberGuildTopStatus []any           `json:"member_guild_top_status"`
-		UserModelDiff        []any           `json:"user_model_diff"`
-	}
+	// type CheerMemberGuildResp struct {
+	// 	Rewards              []model.Content `json:"rewards"`
+	// 	MemberGuildTopStatus []any           `json:"member_guild_top_status"`
+	// 	UserModelDiff        []any           `json:"user_model_diff"`
+	// }
 
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)

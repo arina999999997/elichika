@@ -7,12 +7,12 @@ const (
 )
 
 const (
-	// it's not known clearly what 4 5 6 7 does
+	// it's not known clearly what 5 6 7 does
 	// There are mention of ShopEventExchange and ShopItemExchange, so maybe once they were used but no longer
 	UnlockSceneTypeLessonMenuSelect = 1
 	UnlockSceneTypeLiveMusicSelect  = 2
 	UnlockSceneTypeAccessoryList    = 3
-	UnlockSceneTypeStoryMember     = 4
+	UnlockSceneTypeStoryMember      = 4
 	// 5
 	// 6
 	// 7

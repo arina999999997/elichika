@@ -7,43 +7,25 @@ import (
 	"fmt"
 )
 
-func (session *Session) GetAllSuits() []model.UserSuit {
-	suits := []model.UserSuit{}
-	err := session.Db.Table("u_suit").Where("user_id = ?", session.UserStatus.UserID).Find(&suits)
-	utils.CheckErr(err)
-	return suits
-}
+// suit are inserted when the function is called as suit is unique and doesn't change
 
 func (session *Session) InsertUserSuits(suits []model.UserSuit) {
-	if len(suits) == 0 {
-		return
-	}
 	count, err := session.Db.Table("u_suit").AllCols().Insert(suits)
 	utils.CheckErr(err)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Inserted ", count, "suits")
+	fmt.Println("Inserted ", count, "suit(s)")
 }
 
 func (session *Session) InsertUserSuit(suitMasterID int) {
-	session.UserSuitDiffs = append(session.UserSuitDiffs,
-		model.UserSuit{
-			UserID:       session.UserStatus.UserID,
-			SuitMasterID: suitMasterID,
-			IsNew:        true,
-		})
-}
-
-func (session *Session) FinalizeUserSuitDiffs() []any {
-	session.InsertUserSuits(session.UserSuitDiffs)
-	diffs := []any{}
-	for _, suit := range session.UserSuitDiffs {
-		session.UserModel.UserSuitBySuitID.PushBack(suit)
-		diffs = append(diffs, suit.SuitMasterID)
-		diffs = append(diffs, suit)
+	suit := model.UserSuit{
+		UserID:       session.UserStatus.UserID,
+		SuitMasterID: suitMasterID,
+		IsNew:        true,
 	}
-	return diffs
+	session.UserModel.UserSuitBySuitID.PushBack(suit)
+	count, err := session.Db.Table("u_suit").AllCols().Insert(suit)
+	utils.CheckErr(err)
+	fmt.Println("Inserted ", count, "suit(s)")
+
 }
 
 func init() {

@@ -39,6 +39,10 @@ func (obj *MemberLoveStatus) ID() int64 {
 	return int64(obj.CardMasterID)
 }
 
+func (obj *MemberLoveStatus) SetID(id int64) {
+	obj.CardMasterID = int(id)
+}
+
 type LiveResultAchievement struct {
 	Position            int  `json:"position"`
 	IsAlreadyAchieved   bool `json:"is_already_achieved"`
@@ -49,53 +53,57 @@ func (obj *LiveResultAchievement) ID() int64 {
 	return int64(obj.Position)
 }
 
+func (obj *LiveResultAchievement) SetID(id int64) {
+	obj.Position = int(id)
+}
+
 type LiveFinishReq struct {
 	LiveID           int64 `json:"live_id"`
 	LiveFinishStatus int   `json:"live_finish_status"`
 	LiveScore        struct {
-		StartInfo                  any                                           `json:"start_info"`
-		FinishInfo                 any                                           `json:"finish_info"`
-		ResultDict                 []any                                         `json:"result_dict"`
-		WaveStatDict               []any                                         `json:"wave_stat_dict"`
-		TurnStatDict               []any                                         `json:"turn_stat_dict"`
-		CardStatDict               generic.ObjectByObjectIDRead[*LiveFinishCard] `json:"card_stat_dict"`
-		TargetScore                int                                           `json:"target_score"`
-		CurrentScore               int                                           `json:"current_score"`
-		ComboCount                 int                                           `json:"combo_count"`
-		ChangeSquadCount           int                                           `json:"change_squad_count"`
-		HighestComboCount          int                                           `json:"highest_combo_count"`
-		RemainingStamina           int                                           `json:"remaining_stamina"`
-		IsPerfectLive              bool                                          `json:"is_perfect_live"`
-		IsPerfectFullCombo         bool                                          `json:"is_perfect_full_combo"`
-		UseVoltageActiveSkillCount int                                           `json:"use_voltage_active_skill_count"`
-		UseHealActiveSkillCount    int                                           `json:"use_heal_active_skill_count"`
-		UseDebufActiveSkillCount   int                                           `json:"use_debuf_active_skill_count"`
-		UseBufActiveSkillCount     int                                           `json:"use_buf_active_skill_count"`
-		UseSpSkillCount            int                                           `json:"use_sp_skill_count"`
-		CompleteAppealChanceCount  int                                           `json:"complete_appeal_chance_count"`
-		TriggerCriticalCount       int                                           `json:"triggered_critical_count"`
-		LivePower                  int                                           `json:"live_power"`
-		SpSkillScoreList           []int                                         `json:"sp_skill_score_list"`
+		StartInfo                  any                                          `json:"start_info"`
+		FinishInfo                 any                                          `json:"finish_info"`
+		ResultDict                 []any                                        `json:"result_dict"`
+		WaveStatDict               []any                                        `json:"wave_stat_dict"`
+		TurnStatDict               []any                                        `json:"turn_stat_dict"`
+		CardStatDict               generic.ObjectByObjectIDList[LiveFinishCard] `json:"card_stat_dict"`
+		TargetScore                int                                          `json:"target_score"`
+		CurrentScore               int                                          `json:"current_score"`
+		ComboCount                 int                                          `json:"combo_count"`
+		ChangeSquadCount           int                                          `json:"change_squad_count"`
+		HighestComboCount          int                                          `json:"highest_combo_count"`
+		RemainingStamina           int                                          `json:"remaining_stamina"`
+		IsPerfectLive              bool                                         `json:"is_perfect_live"`
+		IsPerfectFullCombo         bool                                         `json:"is_perfect_full_combo"`
+		UseVoltageActiveSkillCount int                                          `json:"use_voltage_active_skill_count"`
+		UseHealActiveSkillCount    int                                          `json:"use_heal_active_skill_count"`
+		UseDebufActiveSkillCount   int                                          `json:"use_debuf_active_skill_count"`
+		UseBufActiveSkillCount     int                                          `json:"use_buf_active_skill_count"`
+		UseSpSkillCount            int                                          `json:"use_sp_skill_count"`
+		CompleteAppealChanceCount  int                                          `json:"complete_appeal_chance_count"`
+		TriggerCriticalCount       int                                          `json:"triggered_critical_count"`
+		LivePower                  int                                          `json:"live_power"`
+		SpSkillScoreList           []int                                        `json:"sp_skill_score_list"`
 	} `json:"live_score"`
 	ResumeFinishInfo any `json:"resume_finish_info"`
 	RoomID           int `json:"room_id"`
 }
 
 type LiveFinishLiveResult struct {
-	LiveDifficultyMasterID int                                              `json:"live_difficulty_master_id"`
-	LiveDeckID             int                                              `json:"live_deck_id"`
-	StandardDrops          []any                                            `json:"standard_drops"`
-	AdditionalDrops        []any                                            `json:"additional_drops"`
-	GimmickDrops           []any                                            `json:"gimmick_drops"`
-	MemberLoveStatuses     generic.ObjectByObjectIDWrite[*MemberLoveStatus] `json:"member_love_statuses"`
+	LiveDifficultyMasterID int                                            `json:"live_difficulty_master_id"`
+	LiveDeckID             int                                            `json:"live_deck_id"`
+	StandardDrops          []any                                          `json:"standard_drops"`
+	AdditionalDrops        []any                                          `json:"additional_drops"`
+	GimmickDrops           []any                                          `json:"gimmick_drops"`
+	MemberLoveStatuses     generic.ObjectByObjectIDList[MemberLoveStatus] `json:"member_love_statuses"`
 	MVP                    struct {
 		CardMasterID        int `json:"card_master_id"`
 		GetVoltage          int `json:"get_voltage"`
 		SkillTriggeredCount int `json:"skill_triggered_count"`
 		AppealCount         int `json:"appeal_count"`
 	} `json:"mvp"`
-	Partner                     *model.UserBasicInfo                                  `json:"partner"`
-	LiveResultAchievements      generic.ObjectByObjectIDWrite[*LiveResultAchievement] `json:"live_result_achievements"`
+	Partner                     *model.UserBasicInfo                                `json:"partner"`
+	LiveResultAchievements      generic.ObjectByObjectIDList[LiveResultAchievement] `json:"live_result_achievements"`
 	LiveResultAchievementStatus struct {
 		ClearCount       int `json:"clear_count"`
 		GotVoltage       int `json:"got_voltage"`
@@ -163,12 +171,9 @@ func LiveFinish(ctx *gin.Context) {
 
 	liveRecord.PlayCount++
 	lastPlayDeck.IsCleared = req.LiveFinishStatus == enum.LiveFinishStatusCleared
-	for i := 1; i <= 3; i++ {
-		(*liveResult.LiveResultAchievements.AppendNew()).Position = i
-	}
-	(*liveResult.LiveResultAchievements.Objects[0]).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement1 != nil
-	(*liveResult.LiveResultAchievements.Objects[1]).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2 != nil
-	(*liveResult.LiveResultAchievements.Objects[2]).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3 != nil
+	liveResult.LiveResultAchievements.AppendNewWithID(1).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement1 != nil
+	liveResult.LiveResultAchievements.AppendNewWithID(2).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2 != nil
+	liveResult.LiveResultAchievements.AppendNewWithID(3).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3 != nil
 	if lastPlayDeck.IsCleared {
 		// add story if it is a story mode
 		if liveState.CellID != nil {
@@ -198,8 +203,8 @@ func LiveFinish(ctx *gin.Context) {
 		for i, mission := range liveDifficulty.Missions {
 			// TODO: the award condition is not checked totally correctly
 			if (i == 0) || (req.LiveScore.CurrentScore >= mission.TargetValue) {
-				(*liveResult.LiveResultAchievements.Objects[i]).IsCurrentlyAchieved = true
-				if !(*liveResult.LiveResultAchievements.Objects[i]).IsAlreadyAchieved { // new, add reward
+				liveResult.LiveResultAchievements.Objects[i].IsCurrentlyAchieved = true
+				if !liveResult.LiveResultAchievements.Objects[i].IsAlreadyAchieved { // new, add reward
 					session.AddResource(mission.Reward)
 					switch i {
 					case 0:
@@ -219,7 +224,7 @@ func LiveFinish(ctx *gin.Context) {
 	}
 
 	bondCardPosition := make(map[int]int)
-	for i, _ := range req.LiveScore.CardStatDict.Objects {
+	for i := range req.LiveScore.CardStatDict.Objects {
 		liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
 
 		// calculate mvp
@@ -249,19 +254,17 @@ func LiveFinish(ctx *gin.Context) {
 			pos, exists := bondCardPosition[memberMasterID]
 			// only use 1 card master id or an idol might be shown multiple times
 			if !exists {
-				memberLoveStatus := liveResult.MemberLoveStatuses.AppendNew()
+				memberLoveStatus := liveResult.MemberLoveStatuses.AppendNewWithID(int64(liveFinishCard.CardMasterID))
 				memberLoveStatus.RewardLovePoint = addedBond
-				memberLoveStatus.CardMasterID = liveFinishCard.CardMasterID
 				bondCardPosition[memberMasterID] = liveResult.MemberLoveStatuses.Length - 1
 			} else {
-				(*liveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint += addedBond
+				liveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint += addedBond
 			}
 		}
 	}
 	for memberMasterID, pos := range bondCardPosition {
-		addedBond := session.AddLovePoint(memberMasterID,
-			(*liveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint)
-		(*liveResult.MemberLoveStatuses.Objects[pos]).RewardLovePoint = addedBond
+		addedBond := session.AddLovePoint(memberMasterID, liveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint)
+		liveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint = addedBond
 	}
 
 	liveResult.LiveResultAchievementStatus.ClearCount = liveRecord.ClearCount

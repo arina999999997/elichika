@@ -23,8 +23,8 @@ func FetchProfile(ctx *gin.Context) {
 		panic(err)
 	}
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	profile := session.FetchProfile(req.UserID)
 
@@ -41,8 +41,8 @@ func FetchProfile(ctx *gin.Context) {
 
 func SetProfile(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 
 	req := gjson.Parse(reqBody).Array()[0]
@@ -63,8 +63,8 @@ func SetProfile(ctx *gin.Context) {
 
 func SetRecommendCard(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	cardMasterId := int(gjson.Parse(reqBody).Array()[0].Get("card_master_id").Int())
 	session.UserStatus.RecommendCardMasterID = cardMasterId
@@ -88,15 +88,15 @@ func SetLivePartner(ctx *gin.Context) {
 	}
 
 	// set the bit on the correct card
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	newCard := session.GetUserCard(req.CardMasterID)
 	newCard.LivePartnerCategories |= (1 << req.LivePartnerCategoryID)
 	session.UpdateUserCard(newCard)
 
 	// remove the bit on the other cards
-	partnerCards := userdata.FetchPartnerCards(UserID)
+	partnerCards := userdata.FetchPartnerCards(userID)
 	for _, card := range partnerCards {
 		if card.CardMasterID == req.CardMasterID {
 			continue

@@ -7,7 +7,7 @@ import (
 
 func (session *Session) UpdateVoice(naviVoiceMasterID int, isNew bool) {
 	userVoice := model.UserVoice{}
-	exists, err := session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?", 
+	exists, err := session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?",
 		session.UserStatus.UserID, naviVoiceMasterID).Get(&userVoice)
 	utils.CheckErr(err)
 	if exists {
@@ -15,14 +15,14 @@ func (session *Session) UpdateVoice(naviVoiceMasterID int, isNew bool) {
 			return
 		}
 		userVoice.IsNew = isNew
-		_, err = session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?", 
+		_, err = session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?",
 			session.UserStatus.UserID, naviVoiceMasterID).AllCols().Update(userVoice)
 		utils.CheckErr(err)
 	} else {
-		userVoice = model.UserVoice {
-			UserID: session.UserStatus.UserID,
+		userVoice = model.UserVoice{
+			UserID:            session.UserStatus.UserID,
 			NaviVoiceMasterID: naviVoiceMasterID,
-			IsNew: isNew,
+			IsNew:             isNew,
 		}
 		_, err = session.Db.Table("u_voice").Insert(userVoice)
 		utils.CheckErr(err)

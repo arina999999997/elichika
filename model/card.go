@@ -81,3 +81,11 @@ type CardPlayInfo struct {
 	LiveJoinCount          int  `xorm:"'live_join_count' default 0" json:"live_join_count"`
 	ActiveSkillPlayCount   int  `xorm:"'active_skill_play_count' default 0" json:"active_skill_play_count"`
 }
+
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_card"] = UserCard{}
+}

@@ -38,7 +38,7 @@ func (tree_mapping *TrainingTreeMapping) populate(gamedata *Gamedata, masterdata
 	err := masterdata_db.Table("m_training_tree_cell_content").Where("id = ?", tree_mapping.TrainingTreeCellContentMID).
 		OrderBy("cell_id").Find(&tree_mapping.TrainingTreeCellContents)
 	utils.CheckErr(err)
-	for i, _ := range tree_mapping.TrainingTreeCellContents {
+	for i := range tree_mapping.TrainingTreeCellContents {
 		tree_mapping.TrainingTreeCellContents[i].populate(gamedata, masterdata_db, serverdata_db, dictionary)
 	}
 }

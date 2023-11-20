@@ -18,8 +18,8 @@ import (
 )
 
 func LiveMvStart(ctx *gin.Context) {
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	signBody := session.Finalize("{}", "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "uniq_id", time.Now().UnixNano())
@@ -43,9 +43,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 
 	req := LiveSaveDeckReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 
 	userLiveMvDeck := model.UserLiveMvDeck{
 		LiveMasterID: req.LiveMasterID,
@@ -58,20 +56,22 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 		if k%2 == 0 {
 			memberId := req.MemberMasterIDByPos[k+1]
 			deckJson, err = sjson.Set(deckJson, fmt.Sprintf("member_master_id_%d", v), memberId)
+			utils.CheckErr(err)
 		}
 	}
 	for k, v := range req.SuitMasterIDByPos {
 		if k%2 == 0 {
 			suitId := req.SuitMasterIDByPos[k+1]
 			deckJson, err = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", v), suitId)
+			utils.CheckErr(err)
 		}
 	}
 	err = json.Unmarshal([]byte(deckJson), &userLiveMvDeck)
 	utils.CheckErr(err)
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	for k, _ := range req.ViewStatusByPos {
+	for k := range req.ViewStatusByPos {
 		if k%2 == 0 {
 			memberID := req.MemberMasterIDByPos[k+1]
 			// Rina-chan board toggle

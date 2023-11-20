@@ -248,7 +248,7 @@ func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
 	utils.CheckErr(err)
 	if affected == 0 {
 		// need to insert
-		affected, err = session.Db.Table("u_custom_set_profile").Insert(&p)
+		_, err = session.Db.Table("u_custom_set_profile").Insert(&p)
 		utils.CheckErr(err)
 	}
 }

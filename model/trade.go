@@ -42,3 +42,10 @@ type Trade struct {
 
 	Products []TradeProduct `xorm:"-" json:"products"`
 }
+
+func init() {
+	if TableNameToInterface == nil {
+		TableNameToInterface = make(map[string]interface{})
+	}
+	TableNameToInterface["u_trade_product"] = TradeProductUser{}
+}

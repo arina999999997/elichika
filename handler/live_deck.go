@@ -107,13 +107,12 @@ func FetchLiveDeckSelect(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	deck := session.GetLastPlayLiveDifficultyDeck(req.LiveDifficultyID)
 	signBody, err := sjson.Set("{}", "last_play_live_difficulty_deck", deck)
-
-	// utils.CheckErr(err)
+	utils.CheckErr(err)
 
 	resp := SignResp(ctx, signBody, config.SessionKey)
 
@@ -134,14 +133,16 @@ func SaveSuit(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	deck := session.GetUserLiveDeck(req.DeckID)
 	deckJsonByte, err := json.Marshal(deck)
+	utils.CheckErr(err)
 	deckJson := string(deckJsonByte)
 	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", req.CardIndex), req.SuitMasterID)
 	err = json.Unmarshal([]byte(deckJson), &deck)
+	utils.CheckErr(err)
 	session.UpdateUserLiveDeck(deck)
 
 	// Rina-chan board toggle
@@ -171,8 +172,8 @@ func SaveDeck(ctx *gin.Context) {
 	newCardMasterID := req.CardMasterIDs[1]
 	newSuitMasterID := newCardMasterID
 
-	UserID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, UserID)
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 

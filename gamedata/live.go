@@ -44,7 +44,7 @@ func loadLive(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, di
 	gamedata.Live = make(map[int]*Live)
 	err := masterdata_db.Table("m_live").Find(&gamedata.Live)
 	utils.CheckErr(err)
-	for id, _ := range gamedata.Live {
+	for id := range gamedata.Live {
 		gamedata.Live[id].LiveMemberMapping = gamedata.LiveMemberMapping[*gamedata.Live[id].LiveMemberMappingID]
 	}
 }

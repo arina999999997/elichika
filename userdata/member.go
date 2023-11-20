@@ -10,29 +10,23 @@ import (
 )
 
 func (session *Session) GetMember(memberMasterID int) model.UserMember {
-	member, exist := session.UserMemberDiffs[memberMasterID]
+	pos, exist := session.UserMemberMapping.Map[int64(memberMasterID)]
 	if exist {
-		return member
+		return session.UserModel.UserMemberByMemberID.Objects[pos]
 	}
+	member := model.UserMember{}
 	exists, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).Get(&member)
-	// inserted at login if not exist
 	utils.CheckErr(err)
 	if !exists {
+		// always inserted at login if not exist
 		panic("member not found")
 	}
 	return member
 }
 
-func (session *Session) GetAllMembers() []model.UserMember {
-	members := []model.UserMember{}
-	err := session.Db.Table("u_member").Where("user_id = ?", session.UserStatus.UserID).Find(&members)
-	utils.CheckErr(err)
-	return members
-}
-
 func (session *Session) UpdateMember(member model.UserMember) {
-	session.UserMemberDiffs[member.MemberMasterID] = member
+	session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberID).Update(member)
 }
 
 func (session *Session) InsertMembers(members []model.UserMember) {
@@ -41,19 +35,16 @@ func (session *Session) InsertMembers(members []model.UserMember) {
 	fmt.Println("Inserted ", affected, " members")
 }
 
-func (session *Session) FinalizeUserMemberDiffs() []any {
-	userMemberByMemberID := []any{}
-	for memberMasterID, member := range session.UserMemberDiffs {
-		session.UserModel.UserMemberByMemberID.PushBack(member)
-		userMemberByMemberID = append(userMemberByMemberID, memberMasterID)
-		userMemberByMemberID = append(userMemberByMemberID, member)
+func memberFinalizer(session *Session) {
+	for _, member := range session.UserModel.UserMemberByMemberID.Objects {
 		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).AllCols().Update(member)
-		if (err != nil) || (affected != 1) {
-			panic(err)
+			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, member.MemberMasterID).AllCols().Update(member)
+		utils.CheckErr(err)
+		if affected == 0 {
+			_, err = session.Db.Table("u_member").Insert(member)
+			utils.CheckErr(err)
 		}
 	}
-	return userMemberByMemberID
 }
 
 // add love point and return the love point added (in case maxed out)
@@ -101,4 +92,5 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 
 func init() {
 	addGenericTableFieldPopulator("u_member", "UserMemberByMemberID")
+	addFinalizer(memberFinalizer)
 }

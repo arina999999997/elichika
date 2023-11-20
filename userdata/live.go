@@ -2,18 +2,17 @@ package userdata
 
 import (
 	"elichika/model"
+	"elichika/utils"
 )
 
 func SaveLiveState(live model.LiveState) {
 	// delete whatever is there
-	affected, err := Engine.Table("u_live_state").Where("user_id = ?", live.UserID).Delete(&model.LiveState{})
+	_, err := Engine.Table("u_live_state").Where("user_id = ?", live.UserID).Delete(&model.LiveState{})
 	if err != nil {
 		panic(err)
 	}
-	affected, err = Engine.Table("u_live_state").AllCols().Insert(live)
-	if err != nil {
-		panic(err)
-	}
+	affected, err := Engine.Table("u_live_state").AllCols().Insert(live)
+	utils.CheckErr(err)
 	if affected != 1 {
 		panic("failed to insert")
 	}
