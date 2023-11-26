@@ -5,20 +5,18 @@ import (
 	"elichika/gamedata"
 	"elichika/model"
 	"elichika/utils"
-
-	"fmt"
 )
 
 func (session *Session) GetMember(memberMasterID int) model.UserMember {
-	pos, exist := session.UserMemberMapping.Map[int64(memberMasterID)]
+	pos, exist := session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberID).Map[int64(memberMasterID)]
 	if exist {
 		return session.UserModel.UserMemberByMemberID.Objects[pos]
 	}
 	member := model.UserMember{}
-	exists, err := session.Db.Table("u_member").
+	exist, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).Get(&member)
 	utils.CheckErr(err)
-	if !exists {
+	if !exist {
 		// always inserted at login if not exist
 		panic("member not found")
 	}
@@ -30,9 +28,9 @@ func (session *Session) UpdateMember(member model.UserMember) {
 }
 
 func (session *Session) InsertMembers(members []model.UserMember) {
-	affected, err := session.Db.Table("u_member").Insert(&members)
-	utils.CheckErr(err)
-	fmt.Println("Inserted ", affected, " members")
+	for _, member := range members {
+		session.UpdateMember(member)
+	}
 }
 
 func memberFinalizer(session *Session) {
@@ -42,6 +40,42 @@ func memberFinalizer(session *Session) {
 		utils.CheckErr(err)
 		if affected == 0 {
 			_, err = session.Db.Table("u_member").Insert(member)
+			utils.CheckErr(err)
+		}
+	}
+}
+
+func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterID int) model.UserCommunicationMemberDetailBadge {
+	pos, exist := session.UserCommunicationMemberDetailBadgeMapping.
+		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeByID).Map[int64(memberMasterID)]
+	if exist {
+		return session.UserModel.UserCommunicationMemberDetailBadgeByID.Objects[pos]
+	}
+	badge := model.UserCommunicationMemberDetailBadge{}
+	exist, err := session.Db.Table("u_communication_member_detail_badge").
+		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).Get(&badge)
+	utils.CheckErr(err)
+	if !exist {
+		// always inserted at login if not exist
+		panic("member not found")
+	}
+	return badge
+}
+
+func (session *Session) UpdateUserCommunicationMemberDetailBadge(badge model.UserCommunicationMemberDetailBadge) {
+	session.UserCommunicationMemberDetailBadgeMapping.
+		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeByID).Update(badge)
+}
+
+func communicationMemberDetailBadgeFinalizer(session *Session) {
+	// TODO: this is only handled on the read side, new items won't change the badge
+	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeByID.Objects {
+		affected, err := session.Db.Table("u_communication_member_detail_badge").
+			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, detailBadge.MemberMasterID).
+			AllCols().Update(detailBadge)
+		utils.CheckErr(err)
+		if affected == 0 {
+			_, err = session.Db.Table("u_communication_member_detail_badge").Insert(detailBadge)
 			utils.CheckErr(err)
 		}
 	}
@@ -93,4 +127,6 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 func init() {
 	addGenericTableFieldPopulator("u_member", "UserMemberByMemberID")
 	addFinalizer(memberFinalizer)
+	addGenericTableFieldPopulator("u_communication_member_detail_badge", "UserCommunicationMemberDetailBadgeByID")
+	addFinalizer(communicationMemberDetailBadgeFinalizer)
 }

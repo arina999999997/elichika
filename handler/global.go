@@ -34,7 +34,7 @@ func SignResp(ctx *gin.Context, body, key string) (resp string) {
 func GetData(fileName string) string {
 	presetDataFile := presetDataPath + fileName
 	if !utils.PathExists(presetDataFile) {
-		panic("File not exists: " + fileName)
+		panic("File not exist: " + fileName)
 	}
 
 	return utils.ReadAllText(presetDataFile)

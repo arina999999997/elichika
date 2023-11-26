@@ -6,17 +6,23 @@ import (
 )
 
 func (session *Session) UpdateUserPlayList(item model.UserPlayListItem) {
-	exists, err := session.Db.Table("u_play_list").
-		Where("user_id = ? AND user_play_list_id = ?", session.UserStatus.UserID, item.UserPlayListID).
-		AllCols().Update(&item)
 	session.UserModel.UserPlayListByID.PushBack(item)
-	utils.CheckErr(err)
-	if exists == 0 {
-		exists, err := session.Db.Table("u_play_list").Insert(item)
-		utils.CheckErrMustExist(err, exists != 0)
+}
+
+func userPlayListFinalizer(session *Session) {
+	for _, item := range session.UserModel.UserPlayListByID.Objects {
+		exist, err := session.Db.Table("u_play_list").
+			Where("user_id = ? AND user_play_list_id = ?", session.UserStatus.UserID, item.UserPlayListID).
+			AllCols().Update(&item)
+		utils.CheckErr(err)
+		if exist == 0 {
+			exist, err = session.Db.Table("u_play_list").Insert(item)
+			utils.CheckErrMustExist(err, exist != 0)
+		}
 	}
 }
 
 func init() {
+	addFinalizer(userPlayListFinalizer)
 	addGenericTableFieldPopulator("u_play_list", "UserPlayListByID")
 }

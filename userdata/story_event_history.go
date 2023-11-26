@@ -10,12 +10,17 @@ func (session *Session) UnlockEventStory(eventStoryMasterID int) {
 		UserID:       session.UserStatus.UserID,
 		StoryEventID: eventStoryMasterID,
 	}
-
-	_, err := session.Db.Table("u_story_event_history").Insert(userStoryEventHistory)
 	session.UserModel.UserStoryEventHistoryByID.PushBack(userStoryEventHistory)
-	utils.CheckErr(err)
+}
+
+func eventStoryFinalizer(session *Session) {
+	for _, userStoryEventHistory := range session.UserModel.UserStoryEventHistoryByID.Objects {
+		_, err := session.Db.Table("u_story_event_history").Insert(userStoryEventHistory)
+		utils.CheckErr(err)
+	}
 }
 
 func init() {
+	addFinalizer(eventStoryFinalizer)
 	addGenericTableFieldPopulator("u_story_event_history", "UserStoryEventHistoryByID")
 }

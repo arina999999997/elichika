@@ -15,13 +15,13 @@ import (
 
 func (session *Session) GetOtherUserLiveDifficulty(otherUserID, liveDifficultyID int) model.UserLiveDifficulty {
 	userLiveDifficulty := model.UserLiveDifficulty{}
-	exists, err := session.Db.Table("u_live_record").
+	exist, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", otherUserID, liveDifficultyID).
 		Get(&userLiveDifficulty)
 	if err != nil {
 		panic(err)
 	}
-	if !exists {
+	if !exist {
 		userLiveDifficulty.UserID = otherUserID
 		userLiveDifficulty.LiveDifficultyID = liveDifficultyID
 		userLiveDifficulty.EnableAutoplay = true
@@ -63,11 +63,11 @@ func liveDifficultyFinalizer(session *Session) {
 
 func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyID int) *model.LastPlayLiveDifficultyDeck {
 	lastPlayDeck := model.LastPlayLiveDifficultyDeck{}
-	exists, err := session.Db.Table("u_live_record").
+	exist, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", session.UserStatus.UserID, liveDifficultyID).
 		Get(&lastPlayDeck)
 	utils.CheckErr(err)
-	if !exists {
+	if !exist {
 		return nil
 	}
 	return &lastPlayDeck
@@ -120,6 +120,7 @@ func (session *Session) BuildLastPlayLiveDifficultyDeck(deckID, liveDifficultyID
 }
 
 func (session *Session) SetLastPlayLiveDifficultyDeck(deck model.LastPlayLiveDifficultyDeck) {
+	// TODO: maybe this can be put in finalizer
 	// always call after inserting the actual live play, so we can just update
 	_, err := session.Db.Table("u_live_record").Where("user_id = ? and live_difficulty_id = ?", deck.UserID, deck.LiveDifficultyID).
 		AllCols().Update(&deck)

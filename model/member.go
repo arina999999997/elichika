@@ -1,14 +1,22 @@
 package model
 
-// UserCommunicationMemberDetailBadgeByID ...
-type UserCommunicationMemberDetailBadgeByID struct {
-	MemberMasterID     int  `json:"member_master_id"`
-	IsStoryMemberBadge bool `json:"is_story_member_badge"`
-	IsStorySideBadge   bool `json:"is_story_side_badge"`
-	IsVoiceBadge       bool `json:"is_voice_badge"`
-	IsThemeBadge       bool `json:"is_theme_badge"`
-	IsCardBadge        bool `json:"is_card_badge"`
-	IsMusicBadge       bool `json:"is_music_badge"`
+import (
+	"sort"
+)
+
+type UserCommunicationMemberDetailBadge struct {
+	UserID             int  `xorm:"pk 'user_id'" json:"-"`
+	MemberMasterID     int  `xorm:"pk 'member_master_id'" json:"member_master_id"`
+	IsStoryMemberBadge bool `xorm:"'is_story_member_badge'" json:"is_story_member_badge"`
+	IsStorySideBadge   bool `xorm:"'is_story_side_badge'" json:"is_story_side_badge"`
+	IsVoiceBadge       bool `xorm:"'is_voice_badge'" json:"is_voice_badge"`
+	IsThemeBadge       bool `xorm:"'is_theme_badge'" json:"is_theme_badge"`
+	IsCardBadge        bool `xorm:"'is_card_badge'" json:"is_card_badge"`
+	IsMusicBadge       bool `xorm:"'is_music_badge'" json:"is_music_badge"`
+}
+
+func (ucmdb *UserCommunicationMemberDetailBadge) ID() int64 {
+	return int64(ucmdb.MemberMasterID)
 }
 
 // UserMember ...
@@ -22,8 +30,9 @@ type UserMember struct {
 	LoveLevel                int  `json:"love_level"`
 	ViewStatus               int  `json:"view_status"`
 	IsNew                    bool `json:"is_new"`
-	OwnedCardCount           int  `json:"-"`
-	AllTrainingCardCount     int  `json:"-"`
+	// TODO: split this into owning stats
+	OwnedCardCount       int `json:"-"`
+	AllTrainingCardCount int `json:"-"`
 }
 
 func (um *UserMember) ID() int64 {
@@ -52,6 +61,27 @@ type UserMemberLovePanel struct {
 	// - otherwise, LovePanelLevel stay the same, and LovePanelLastLevelCellIDs has 5 tiles.
 }
 
+func (x *UserMemberLovePanel) SetUserID(uid int) {
+	x.UserID = uid
+}
+
+func (x *UserMemberLovePanel) Normalize() {
+	if x.LovePanelLevel > 0 { // already calculated
+		return
+	}
+	l := len(x.MemberLovePanelCellIDs)
+	if l == 0 {
+		return
+	}
+	sort.Ints(x.MemberLovePanelCellIDs)
+	i := l - l%5
+	if i == l {
+		i -= 5
+	}
+	x.LovePanelLevel = (i / 5) + 1
+	x.LovePanelLastLevelCellIDs = x.MemberLovePanelCellIDs[i:l]
+}
+
 func (x *UserMemberLovePanel) Fill() {
 	x.MemberLovePanelCellIDs = []int{} // [] instead of null
 	for l := 1; l < x.LovePanelLevel; l++ {
@@ -75,9 +105,10 @@ func init() {
 		TableNameToInterface = make(map[string]interface{})
 	}
 	type DbMember struct {
-		UserMember          `xorm:"extends"`
+		UserMember                `xorm:"extends"`
 		LovePanelLevel            int   `xorm:"'love_panel_level' default 1"`
 		LovePanelLastLevelCellIds []int `xorm:"'love_panel_last_level_cell_ids' default '[]'"`
 	}
 	TableNameToInterface["u_member"] = DbMember{}
+	TableNameToInterface["u_communication_member_detail_badge"] = UserCommunicationMemberDetailBadge{}
 }

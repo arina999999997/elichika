@@ -17,8 +17,6 @@ func (session *Session) InsertUserStoryMain(storyMainMasterID int) bool {
 		return false
 	}
 
-	_, err = session.Db.Table("u_story_main").Insert(userStoryMain)
-	utils.CheckErr(err)
 	session.UserModel.UserStoryMainByStoryMainID.PushBack(userStoryMain)
 	// also handle unlocking scene (feature)
 	// use m_scene_unlock_hint for guide as this seems to be entirely server sided
@@ -36,21 +34,36 @@ func (session *Session) InsertUserStoryMain(storyMainMasterID int) bool {
 	return true
 }
 
+func storyMainFinalizer(session *Session) {
+	for _, userStoryMain := range session.UserModel.UserStoryMainByStoryMainID.Objects {
+		exist, err := session.Db.Table("u_story_main").Exist(&userStoryMain)
+		utils.CheckErr(err)
+		if !exist {
+			_, err = session.Db.Table("u_story_main").Insert(userStoryMain)
+			utils.CheckErr(err)
+		}
+	}
+}
+
 func (session *Session) UpdateUserStoryMainSelected(storyMainCellID, selectedID int) {
 	userStoryMainSelected := model.UserStoryMainSelected{
 		UserID:          session.UserStatus.UserID,
 		StoryMainCellID: storyMainCellID,
 		SelectedID:      selectedID,
 	}
-	affected, err := session.Db.Table("u_story_main_selected").Where("user_id = ? AND story_main_cell_id = ?",
-		userStoryMainSelected.UserID, userStoryMainSelected.StoryMainCellID).AllCols().Update(userStoryMainSelected)
-	utils.CheckErr(err)
-	if affected == 0 {
-		_, err := session.Db.Table("u_story_main_selected").Insert(userStoryMainSelected)
-		utils.CheckErr(err)
-	}
 	session.UserModel.UserStoryMainSelectedByStoryMainCellID.PushBack(userStoryMainSelected)
+}
 
+func storyMainSelectedFinalizer(session *Session) {
+	for _, userStoryMainSelected := range session.UserModel.UserStoryMainSelectedByStoryMainCellID.Objects {
+		affected, err := session.Db.Table("u_story_main_selected").Where("user_id = ? AND story_main_cell_id = ?",
+			userStoryMainSelected.UserID, userStoryMainSelected.StoryMainCellID).AllCols().Update(userStoryMainSelected)
+		utils.CheckErr(err)
+		if affected == 0 {
+			_, err := session.Db.Table("u_story_main_selected").Insert(userStoryMainSelected)
+			utils.CheckErr(err)
+		}
+	}
 }
 
 func (session *Session) InsertUserStoryMainPartDigestMovie(partID int) {
@@ -58,14 +71,18 @@ func (session *Session) InsertUserStoryMainPartDigestMovie(partID int) {
 		UserID:                session.UserStatus.UserID,
 		StoryMainPartMasterID: partID,
 	}
-	has, err := session.Db.Table("u_story_main_part_digest_movie").Exist(&userStoryMainPartDigestMovie)
-	utils.CheckErr(err)
-	if has { // already have it
-		return
-	}
-	_, err = session.Db.Table("u_story_main_part_digest_movie").Insert(userStoryMainPartDigestMovie)
-	utils.CheckErr(err)
 	session.UserModel.UserStoryMainPartDigestMovieByID.PushBack(userStoryMainPartDigestMovie)
+}
+
+func storyMainPartDigestMovieFinalizer(session *Session) {
+	for _, userStoryMainPartDigestMovie := range session.UserModel.UserStoryMainPartDigestMovieByID.Objects {
+		exist, err := session.Db.Table("u_story_main_part_digest_movie").Exist(&userStoryMainPartDigestMovie)
+		utils.CheckErr(err)
+		if !exist {
+			_, err = session.Db.Table("u_story_main_part_digest_movie").Insert(userStoryMainPartDigestMovie)
+			utils.CheckErr(err)
+		}
+	}
 }
 
 func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterID int) {
@@ -78,13 +95,25 @@ func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterID int) {
 	if has {
 		return
 	}
-
-	_, err = session.Db.Table("u_story_linkage").Insert(userStoryLinkage)
-	utils.CheckErr(err)
 	session.UserModel.UserStoryLinkageByID.PushBack(userStoryLinkage)
 }
 
+func storyLinkageFinalizer(session *Session) {
+	for _, userStoryLinkage := range session.UserModel.UserStoryLinkageByID.Objects {
+		exist, err := session.Db.Table("u_story_linkage").Exist(&userStoryLinkage)
+		utils.CheckErr(err)
+		if !exist {
+			_, err := session.Db.Table("u_story_linkage").Insert(userStoryLinkage)
+			utils.CheckErr(err)
+		}
+	}
+}
+
 func init() {
+	addFinalizer(storyMainFinalizer)
+	addFinalizer(storyMainSelectedFinalizer)
+	addFinalizer(storyMainPartDigestMovieFinalizer)
+	addFinalizer(storyLinkageFinalizer)
 	addGenericTableFieldPopulator("u_story_main", "UserStoryMainByStoryMainID")
 	addGenericTableFieldPopulator("u_story_main_selected", "UserStoryMainSelectedByStoryMainCellID")
 	addGenericTableFieldPopulator("u_story_main_part_digest_movie", "UserStoryMainPartDigestMovieByID")

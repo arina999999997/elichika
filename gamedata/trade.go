@@ -35,12 +35,12 @@ func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 	utils.CheckErr(err)
 
 	for id, trade := range gamedata.Trade {
-		exists, err := masterdata_db.Table("m_trade").Where("id = ?", id).
+		exist, err := masterdata_db.Table("m_trade").Where("id = ?", id).
 			Cols("trade_type", "source_content_type", "source_content_id").Get(
 			&trade.TradeType, &trade.SourceContentType, &trade.SourceContentID)
 		utils.CheckErr(err)
-		if !exists {
-			fmt.Println("Warning: Skipped trade ", id, " (did not exists in masterdata.db)")
+		if !exist {
+			fmt.Println("Warning: Skipped trade ", id, " (did not exist in masterdata.db)")
 			delete(gamedata.Trade, id)
 			continue
 		}

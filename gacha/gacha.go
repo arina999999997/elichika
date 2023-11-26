@@ -18,8 +18,8 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int 
 	groups := map[int]([]int){}
 	totalWeight := int64(0)
 	for _, card := range cards {
-		_, exists := groups[card.GroupMasterID]
-		if !exists {
+		_, exist := groups[card.GroupMasterID]
+		if !exist {
 			totalWeight += gamedata.GachaGroup[card.GroupMasterID].GroupWeight
 		}
 		groups[card.GroupMasterID] = append(groups[card.GroupMasterID], card.CardMasterID)

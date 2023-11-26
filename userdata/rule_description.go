@@ -16,18 +16,23 @@ func (session *Session) UpdateUserRuleDescription(ruleDescriptionID int) {
 		DisplayStatus:     2,
 	}
 	session.UserModel.UserRuleDescriptionByID.PushBack(userRuleDescription)
-	affected, err := session.Db.Table("u_rule_description").Where("user_id = ? AND rule_description_id = ?",
-		userRuleDescription.UserID, userRuleDescription.RuleDescriptionID).AllCols().
-		Update(userRuleDescription)
-	utils.CheckErr(err)
-	if affected > 0 {
-		return
+}
+
+func ruleDescriptionFinalizer(session *Session) {
+	for _, userRuleDescription := range session.UserModel.UserRuleDescriptionByID.Objects {
+		affected, err := session.Db.Table("u_rule_description").Where("user_id = ? AND rule_description_id = ?",
+			userRuleDescription.UserID, userRuleDescription.RuleDescriptionID).AllCols().
+			Update(userRuleDescription)
+		utils.CheckErr(err)
+		if affected == 0 {
+			// need to insert
+			_, err = session.Db.Table("u_rule_description").Insert(userRuleDescription)
+			utils.CheckErr(err)
+		}
 	}
-	// need to insert
-	_, err = session.Db.Table("u_rule_description").Insert(userRuleDescription)
-	utils.CheckErr(err)
 }
 
 func init() {
+	addFinalizer(ruleDescriptionFinalizer)
 	addGenericTableFieldPopulator("u_rule_description", "UserRuleDescriptionByID")
 }

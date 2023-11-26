@@ -17,6 +17,7 @@ func FetchEmblem(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
+	// TODO: This correctly displayed things, but not sure if the giantic list is necessary
 	signBody := session.Finalize(GetData("fetchEmblem.json"), "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")

@@ -29,7 +29,7 @@ func UnlockStory(ctx *gin.Context) {
 	// remove a memory key
 	// maybe don't hardcode the ID
 	session.RemoveResource(model.Content{
-		ContentType:   enum.ContentTypeStoryEventUnLock,
+		ContentType:   enum.ContentTypeStoryEventUnlock,
 		ContentID:     17001,
 		ContentAmount: 1,
 	})

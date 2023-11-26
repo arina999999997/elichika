@@ -5,22 +5,21 @@ import (
 	"elichika/model"
 	"elichika/utils"
 
-	"fmt"
 	"time"
 )
 
 // fetch a card, use the value in diff is present, otherwise fetch from db
 func (session *Session) GetUserCard(cardMasterID int) model.UserCard {
-	pos, exist := session.UserCardMapping.Map[int64(cardMasterID)]
+	pos, exist := session.UserCardMapping.SetList(&session.UserModel.UserCardByCardID).Map[int64(cardMasterID)]
 	if exist {
 		return session.UserModel.UserCardByCardID.Objects[pos]
 	}
 	card := model.UserCard{}
-	exists, err := session.Db.Table("u_card").
+	exist, err := session.Db.Table("u_card").
 		Where("user_id = ? AND card_master_id = ?", session.UserStatus.UserID, cardMasterID).Get(&card)
 	utils.CheckErr(err)
 
-	if !exists {
+	if !exist {
 		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
 		masterCard := gamedata.Card[cardMasterID]
 		card = model.UserCard{
@@ -58,11 +57,7 @@ func cardFinalizer(session *Session) {
 
 // insert all the cards
 func (session *Session) InsertCards(cards []model.UserCard) {
-	affected, err := session.Db.Table("u_card").Insert(&cards)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Inserted ", affected, " cards")
+	session.UserModel.UserCardByCardID.Objects = append(session.UserModel.UserCardByCardID.Objects, cards...)
 }
 
 func init() {

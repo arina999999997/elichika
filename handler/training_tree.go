@@ -85,7 +85,7 @@ func GradeUpCard(ctx *gin.Context) {
 	masterCard := gamedata.Card[req.CardMasterID]
 	card := session.GetUserCard(req.CardMasterID)
 	member := session.GetMember(*masterCard.MemberMasterID)
-	card.Grade += 1
+	card.Grade++
 	currentBondLevel := gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
 	currentBondLevel += masterCard.CardRarityType / 10 // TODO: Do not hard code this
 	if currentBondLevel > gamedata.MemberLoveLevelCount {
@@ -158,28 +158,28 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 			session.UpdateVoice(naviActionID, true)
 		case 4: // story cell
 			// training_content_type 11 in m_training_tree_card_story_side
-			storySideID, exists := trainingTree.TrainingTreeCardStorySides[11]
-			if !exists {
-				panic("story doesn't exists")
+			storySideID, exist := trainingTree.TrainingTreeCardStorySides[11]
+			if !exist {
+				panic("story doesn't exist")
 			}
 			session.InsertStorySide(storySideID)
 		case 5:
 			// idolize
 			card.IsAwakening = true
 			card.IsAwakeningImage = true
-			storySideID, exists := trainingTree.TrainingTreeCardStorySides[9]
-			if exists {
+			storySideID, exist := trainingTree.TrainingTreeCardStorySides[9]
+			if exist {
 				session.InsertStorySide(storySideID)
 			}
 		case 6: // costume
 			// alternative suit is awarded based on amount of tile instead
 			session.InsertUserSuit(trainingTree.SuitMIDs[cell.TrainingContentNo])
 		case 7: // skill
-			card.ActiveSkillLevel += 1
+			card.ActiveSkillLevel++
 		case 8: // insight
-			card.MaxFreePassiveSkill += 1
+			card.MaxFreePassiveSkill++
 		case 9: // ability
-			card.PassiveSkillALevel += 1
+			card.PassiveSkillALevel++
 		default:
 			panic("Unknown cell type")
 		}
@@ -218,7 +218,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 				ActivatedAt:  timeStamp})
 	}
 
-	session.InsertTrainingCells(&unlockedCells)
+	session.InsertTrainingTreeCells(unlockedCells)
 
 	jsonResp := session.Finalize("{}", "user_model_diff")
 	jsonResp, _ = sjson.Set(jsonResp, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterID))

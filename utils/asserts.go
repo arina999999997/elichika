@@ -6,13 +6,13 @@ func CheckErr(err error) {
 	}
 }
 
-func MustExist(exists bool) {
-	if !exists {
-		panic("doesn't exists")
+func MustExist(exist bool) {
+	if !exist {
+		panic("doesn't exist")
 	}
 }
 
-func CheckErrMustExist(err error, exists bool) {
+func CheckErrMustExist(err error, exist bool) {
 	CheckErr(err)
-	MustExist(exists)
+	MustExist(exist)
 }

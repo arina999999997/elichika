@@ -4,7 +4,6 @@ import (
 	"elichika/model"
 	"elichika/utils"
 
-	// "fmt"
 	"time"
 )
 
@@ -17,19 +16,19 @@ func (session *Session) GetAllUserAccessories() []model.UserAccessory {
 }
 
 func (session *Session) GetUserAccessory(userAccessoryID int64) model.UserAccessory {
-	// if exists then reuse
-	pos, exist := session.UserAccessoryMapping.Map[userAccessoryID]
+	// if exist then reuse
+	pos, exist := session.UserAccessoryMapping.SetList(&session.UserModel.UserAccessoryByUserAccessoryID).Map[userAccessoryID]
 	if exist {
 		return session.UserModel.UserAccessoryByUserAccessoryID.Objects[pos]
 	}
 
 	// if not look in db
 	accessory := model.UserAccessory{}
-	exists, err := session.Db.Table("u_accessory").
+	exist, err := session.Db.Table("u_accessory").
 		Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserID, userAccessoryID).Get(&accessory)
 	utils.CheckErr(err)
-	if !exists {
-		// if not exists, create new one
+	if !exist {
+		// if not exist, create new one
 		accessory = model.UserAccessory{
 			UserID:             session.UserStatus.UserID,
 			UserAccessoryID:    userAccessoryID,
@@ -55,7 +54,7 @@ func accessoryFinalizer(session *Session) {
 				Delete(&accessory)
 			utils.CheckErr(err)
 			if affected != 1 {
-				panic("accessory doesn't exists")
+				panic("accessory doesn't exist")
 			}
 		} else {
 			affected, err := session.Db.Table("u_accessory").
@@ -63,7 +62,7 @@ func accessoryFinalizer(session *Session) {
 				AllCols().Update(accessory)
 			utils.CheckErr(err)
 			if affected == 0 {
-				_, err := session.Db.Table("u_accessory").AllCols().Insert(accessory)
+				_, err = session.Db.Table("u_accessory").AllCols().Insert(accessory)
 				utils.CheckErr(err)
 			}
 		}

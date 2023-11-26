@@ -18,15 +18,15 @@ type Member struct {
 
 	// colors use rgba, 8 bits each
 	// ThemeColor int `xorm:"'theme_color'"`
-	// ThemeLightColor int
-	// ThemeDarkColor int
-	// BackgroundUpperLeftColor int
-	// BackgroundBottomRightColor int
+	// ThemeLightColor int `xorm:"'theme_light_color'"`
+	// ThemeDarkColor int `xorm:"'theme_dark_color'"`
+	// BackgroundUpperLeftColor int `xorm:"'background_upper_left_color'"`
+	// BackgroundBottomRightColor int `xorm:"'background_bottom_right_color'"`
 
 	// names and info are strings to dictionary_k
-	// Name string
-	// NameHiragana string
-	// NameRomanji string
+	// Name string `xorm:"'name'"`
+	// NameHiragana string `xorm:"'name_hiragana'"`
+	// NameRomaji string `xorm:"'name_romaji'"`
 	// Height string
 	// Birthday string
 
@@ -92,9 +92,16 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	}
 
 	{
-		exists, err := masterdata_db.Table("m_member_init").Where("member_m_id = ?", member.ID).Get(&member.MemberInit)
-		utils.CheckErrMustExist(err, exists)
+		exist, err := masterdata_db.Table("m_member_init").Where("member_m_id = ?", member.ID).Get(&member.MemberInit)
+		utils.CheckErrMustExist(err, exist)
 	}
+
+	// member.Name = dictionary.Resolve(member.Name)
+	// member.NameHiragana = dictionary.Resolve(member.NameHiragana)
+	// member.NameRomaji = dictionary.Resolve(member.NameRomaji)
+	// fmt.Println(member.ID, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
+	// 	member.ThemeColor, "\t", member.ThemeLightColor, "\t", member.ThemeDarkColor, "\t",
+	// 	member.BackgroundUpperLeftColor, "\t", member.BackgroundBottomRightColor)
 }
 
 func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

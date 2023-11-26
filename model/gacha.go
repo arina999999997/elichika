@@ -84,17 +84,6 @@ type Gacha struct { // s_gacha
 	DbGachaGroups       []int                  `xorm:"gacha_groups" json:"-"`
 }
 
-type GachaTicket struct {
-	TicketMasterID int `json:"ticket_master_id"`
-	NormalAmount   int `json:"normal_amount"`
-	AppleAmount    int `json:"apple_amount"`
-	GoogleAmount   int `json:"google_amount"`
-}
-
-func (obj *GachaTicket) ID() int {
-	return obj.TicketMasterID
-}
-
 type GachaDrawReq struct {
 	GachaDrawMasterID int `json:"gacha_draw_master_id"`
 	ButtonDrawCount   int `json:"button_draw_count"`

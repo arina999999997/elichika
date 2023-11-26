@@ -1,12 +1,15 @@
 package generic
 
 import (
+	"elichika/model"
 	"elichika/utils"
 
 	"reflect"
 
 	"encoding/json"
 )
+
+// TODO: there might be some optimization that can be done here
 
 // Common pattern of [object_1_id, object_1, object_2_id, object_2...]
 
@@ -31,6 +34,10 @@ func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		return nil
 	}
+	// TODO: remove this once done with placeholders
+	if reflect.TypeOf(oboid.Objects).Elem() == reflect.ValueOf(0).Type() {
+		return nil
+	}
 	arr := []json.RawMessage{}
 	err := json.Unmarshal(data, &arr) // first unmarshal into an array of raw json
 	utils.CheckErr(err)
@@ -50,12 +57,19 @@ func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
 		if err != nil {
 			return err
 		}
-		reflect.ValueOf(&obj).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
-		if err != nil {
-			return err
+		setID := reflect.ValueOf(&obj).MethodByName("SetID")
+		if setID.IsValid() {
+			// if there's a SetID method then call it
+			// this should only be done for structs where the ID are not present in json
+			reflect.ValueOf(&obj).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
+		} else {
+			// make sure we have things correctly by calling ID
+			if id != reflect.ValueOf(&obj).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64) {
+				panic("ID doesn't match list provided id")
+			}
 		}
 		oboid.Objects = append(oboid.Objects, obj) // append the pointer of the original type
-		oboid.Length += 1
+		oboid.Length++
 	}
 	return nil
 }
@@ -80,7 +94,7 @@ func (oboid ObjectByObjectIDList[T]) MarshalJSON() ([]byte, error) {
 
 // append an object
 func (oboid *ObjectByObjectIDList[T]) PushBack(obj T) {
-	oboid.Length += 1
+	oboid.Length++
 	oboid.Objects = append(oboid.Objects, obj)
 }
 
@@ -88,7 +102,7 @@ func (oboid *ObjectByObjectIDList[T]) PushBack(obj T) {
 func (oboid *ObjectByObjectIDList[T]) AppendNew() *T {
 	var object T
 	oboid.Objects = append(oboid.Objects, object)
-	oboid.Length += 1
+	oboid.Length++
 	return &oboid.Objects[oboid.Length-1]
 }
 
@@ -97,8 +111,29 @@ func (oboid *ObjectByObjectIDList[T]) AppendNewWithID(id int64) *T {
 	var object T
 	reflect.ValueOf(&object).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
 	oboid.Objects = append(oboid.Objects, object)
-	oboid.Length += 1
+	oboid.Length++
 	return &oboid.Objects[oboid.Length-1]
+}
+
+func (oboid *ObjectByObjectIDList[T]) ToContents() []model.Content {
+	contents := []model.Content{}
+	for i := range oboid.Objects {
+		contents = append(contents, reflect.ValueOf(&oboid.Objects[i]).MethodByName("ToContent").
+			Call([]reflect.Value{})[0].Interface().(model.Content))
+	}
+	return contents
+}
+
+func (oboid *ObjectByObjectIDList[T]) SetUserID(uid int) {
+	for i := range oboid.Objects {
+		rUserID := reflect.Indirect(reflect.ValueOf(&oboid.Objects[i])).FieldByName("UserID")
+		if rUserID.IsValid() {
+			rUserID.Set(reflect.ValueOf(uid))
+		} else {
+			// fmt.Println("skip UserID for",  reflect.ValueOf(&oboid.Objects[i]).Type())
+			return
+		}
+	}
 }
 
 // handler for an array object, use a map to map to the value for easier selection / tracking
@@ -110,9 +145,12 @@ type ObjectByObjectIDMapping[T any] struct {
 
 func (m *ObjectByObjectIDMapping[T]) SetList(list *ObjectByObjectIDList[T]) *ObjectByObjectIDMapping[T] {
 	if m.List != list {
-		// new list, reset the map
+		// new list, reset the map, and recalculate the mapping too (needed for importing account)
 		m.List = list
 		m.Map = make(map[int64]int)
+		for i := range list.Objects {
+			m.Map[reflect.ValueOf(&list.Objects[i]).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64)] = i
+		}
 	}
 	return m
 }
@@ -147,9 +185,9 @@ func (m *ObjectByObjectIDMapping[T]) InsertNew(id int64) *T {
 }
 
 func (m *ObjectByObjectIDMapping[T]) GetObject(id int64) *T {
-	pos, exists := m.Map[id]
-	if !exists {
-		panic("Item doesn't exists")
+	pos, exist := m.Map[id]
+	if !exist {
+		panic("Item doesn't exist")
 	}
 	return &m.List.Objects[pos]
 }

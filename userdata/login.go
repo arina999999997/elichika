@@ -1,15 +1,39 @@
 package userdata
 
 import (
-	// "fmt"
+	"elichika/protocol/response"
+	"elichika/utils"
+
 	"time"
 )
 
-func (session *Session) Login() {
-	// perform a login, load the relevant data into user model common
+func (session *Session) Login() response.Login {
+	// perform a login, load the relevant data into UserModel and load login data into login
+	login := response.Login{}
+	exists, err := session.Db.Table("u_login").Where("user_id = ?", session.UserStatus.UserID).Get(&login)
+	utils.CheckErr(err)
+	if !exists {
+		login = response.Login{
+			UserID:                  session.UserStatus.UserID,
+			IsPlatformServiceLinked: true,
+			LastTimestamp:           time.Now().UnixMilli(),
+			Cautions:                []int{},
+			CheckMaintenance:        true,
+			FromEea:                 true,
+		}
+		login.ReproInfo.GroupNo = 1
+		_, err = session.Db.Table("u_login").Insert(login)
+		utils.CheckErr(err)
+	}
+
+	login.UserModel = &session.UserModel
 	session.UserStatus.LastLoginAt = time.Now().Unix()
+	session.SessionType = SessionTypeLogin
+
 	for _, populator := range populators {
 		populator(session)
 	}
-	// fmt.Println(session.UserModel)
+	// only this part is necessary
+	login.MemberLovePanels = session.UserMemberLovePanels
+	return login
 }

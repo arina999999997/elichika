@@ -2,34 +2,19 @@ package userdata
 
 import (
 	"elichika/model"
-	// "fmt"
+	"elichika/utils"
 )
 
-func (session *Session) GetAllMemberLovePanels() []model.UserMemberLovePanel {
-	lovePanels := []model.UserMemberLovePanel{}
-	err := session.Db.Table("u_member").
-		Where("user_id = ?", session.UserStatus.UserID).Find(&lovePanels)
-	if err != nil {
-		panic(err)
-	}
-	for i := range lovePanels {
-		lovePanels[i].Fill()
-	}
-	return lovePanels
-}
-
 func (session *Session) GetMemberLovePanel(memberMasterID int) model.UserMemberLovePanel {
-	panel, exists := session.UserMemberLovePanelDiffs[memberMasterID]
-	if exists {
+	panel, exist := session.UserMemberLovePanelDiffs[memberMasterID]
+	if exist {
 		return panel
 	}
-	exists, err := session.Db.Table("u_member").
+	exist, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).
 		Get(&panel)
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
+	utils.CheckErr(err)
+	if !exist {
 		panic("doesn't exist")
 	}
 	panel.Fill()
@@ -46,17 +31,35 @@ func (session *Session) UpdateMemberLovePanel(panel model.UserMemberLovePanel) {
 	session.UserMemberLovePanelDiffs[panel.MemberID] = panel
 }
 
-func (session *Session) FinalizeMemberLovePanelDiffs() []model.UserMemberLovePanel {
-	panels := []model.UserMemberLovePanel{}
+func finalizeMemberLovePanelDiffs(session *Session) {
 	for _, panel := range session.UserMemberLovePanelDiffs {
-		_, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", panel.UserID, panel.MemberID).
-			AllCols().Update(panel)
-		if err != nil {
-			panic(err)
-		}
-		panel.Fill()
-		panels = append(panels, panel)
+		session.UserMemberLovePanels = append(session.UserMemberLovePanels, panel)
 	}
-	return panels
+	for i := range session.UserMemberLovePanels {
+		// TODO: this is not necessary after we split the database
+		session.UserMemberLovePanels[i].Normalize()
+		affected, err := session.Db.Table("u_member").
+			Where("user_id = ? AND member_master_id = ?", session.UserMemberLovePanels[i].UserID,
+				session.UserMemberLovePanels[i].MemberID).AllCols().Update(session.UserMemberLovePanels[i])
+		utils.CheckErr(err)
+		if affected != 1 {
+			panic("wrong number of member affected!")
+		}
+		session.UserMemberLovePanels[i].Fill()
+	}
+}
+
+func memberLovePanelPopulator(session *Session) {
+	err := session.Db.Table("u_member").
+		Where("user_id = ?", session.UserStatus.UserID).Find(&session.UserMemberLovePanels)
+	utils.CheckErr(err)
+	for i := range session.UserMemberLovePanels {
+		session.UserMemberLovePanels[i].Fill()
+	}
+}
+
+func init() {
+	addPopulator(memberLovePanelPopulator)
+	// TODO: separate the database so we can use this finalizer instead of calling it manually
+	// addFinalizer(finalizeMemberLovePanelDiffs)
 }

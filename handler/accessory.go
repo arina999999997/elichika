@@ -50,7 +50,7 @@ func AccessoryUpdateIsNew(ctx *gin.Context) {
 		accessory.IsNew = false
 		session.UpdateUserAccessory(accessory)
 	}
-	session.Finalize("", "")
+	session.Finalize("{}", "dummy")
 	resp := SignResp(ctx, "{}", config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

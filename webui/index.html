@@ -4,7 +4,7 @@
 Changes might require a fresh login to take effect. It's also recommended to fully close the game before using this.
 </text></div>
 <br>
-<form action="/webui" method="POST">
+<form action="/webui" method="POST" enctype="multipart/form-data">
 <div><text style="font-size:50px;">
 Enter user (player) ID:
 </text></div>
@@ -66,6 +66,11 @@ Alternatively, enter a specific accessory's id (from the "m_accessory" table) to
 	<input type="number" id="accessory_amount" name="accessory_amount" min="1" max="20" value="1" style="font-size:50px;height:10%;width:100%"  />
 </div>
 <button type="submit" formaction="accessory" style="font-size:50px;height:10%;width:100%" >Add accessories</button>
+
+<label for="account_data">Account data (json):</label>
+<input type="file" id="account_data" name="account_data"> 
+<button type="submit" formaction="import_account" style="font-size:50px;height:10%;width:100%" >Import account</button>
+
 <div>
 <br><br><br>
 <input type="reset" id="reset_button"  style="font-size:50px;height:10%;width:100%" />
@@ -73,21 +78,3 @@ Alternatively, enter a specific accessory's id (from the "m_accessory" table) to
 </form>
 </body>
 </html>
-
-<script>
-function refill_data() {
-	document.getElementById('birthday').value = new Date().toISOString().substring(0, 10)
-
-	let params = (new URL(document.location)).searchParams;
-	
-	const checkbox_keys = new Set(['ur_accessories', 'sr_accessories', 'r_accessories'])
-	
-	for(const [ key, value ] of params) {
-		element = document.getElementById(key)
-		if (element == null) continue
-		if (checkbox_keys.has(key)) element.checked = true
-		else element.value = value 
-	}
-	document.getElementById(params.get('client')).checked = true;	
-}
-</script>

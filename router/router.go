@@ -11,8 +11,8 @@ import (
 
 func Router(r *gin.Engine) {
 	r.Static("/static", "static")
-	api := r.Use(middleware.Common)
 	{
+		api := r.Group("/", middleware.Common)
 		api.POST("/asset/getPackUrl", handler.GetPackUrl)
 		api.POST("/billing/fetchBillingHistory", handler.FetchBillingHistory)
 		api.POST("/bootstrap/fetchBootstrap", handler.FetchBootstrap)
@@ -155,13 +155,16 @@ func Router(r *gin.Engine) {
 
 		// TODO
 		// /shop/fetchShopSubscription // happen when trying to click on subscription without one active
+		// /infoTrigger/readMemberGuildSupportItemExpired
+		// /billing/updateSubscription
 	}
 
-	webapi := r.Group("/webui", webui.Common)
-	r.Static("/webui", "webui")
 	{
+		webapi := r.Group("/webui", webui.Common)
+		r.Static("/webui", "webui")
 		// the web ui cover for functionality that can't be done by the client or is currently missing
 		webapi.POST("/birthday", webui.Birthday)
 		webapi.POST("/accessory", webui.Accessory)
+		webapi.POST("/import_account", webui.ImportAccount)
 	}
 }

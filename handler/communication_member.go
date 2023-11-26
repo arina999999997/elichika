@@ -2,12 +2,14 @@ package handler
 
 import (
 	"elichika/config"
+	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -53,30 +55,38 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 // where is this called?
 // called when checked a thing that is marked as new?
 func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
-	panic("UpdateUserCommunicationMemberDetailBadge")
-	// reqBody := ctx.GetString("reqBody")
-	// var memberMasterId int64
-	// gjson.Parse(reqBody).ForEach(func(key, value gjson.Result) bool {
-	// 	if value.Get("member_master_id").String() != "" {
-	// 		memberMasterId = value.Get("member_master_id").Int()
-	// 		return false
-	// 	}
-	// 	return true
-	// })
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.UpdateUserCommunicationMemberDetailBadgeRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
-	// userDetail := []any{}
-	// userDetail = append(userDetail, memberMasterId)
-	// userDetail = append(userDetail, model.UserCommunicationMemberDetailBadgeByID{
-	// 	MemberMasterID: int(memberMasterId),
-	// })
+	userID := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userID)
+	defer session.Close()
+	fmt.Println(req)
+	detailBadge := session.GetUserCommunicationMemberDetailBadge(req.MemberMasterID)
+	switch req.CommunicationMemberDetailBadgeType {
+	case enum.CommunicationMemberDetailBadgeTypeStoryMember:
+		detailBadge.IsStoryMemberBadge = false
+	case enum.CommunicationMemberDetailBadgeTypeStorySide:
+		detailBadge.IsStorySideBadge = false
+	case enum.CommunicationMemberDetailBadgeTypeVoice:
+		detailBadge.IsVoiceBadge = false
+	case enum.CommunicationMemberDetailBadgeTypeTheme:
+		detailBadge.IsThemeBadge = false
+	case enum.CommunicationMemberDetailBadgeTypeCard:
+		detailBadge.IsCardBadge = false
+	case enum.CommunicationMemberDetailBadgeTypeMusic:
+		detailBadge.IsMusicBadge = false
+	default:
+		panic("unknown type")
+	}
+	session.UpdateUserCommunicationMemberDetailBadge(detailBadge)
 
-	// signBody := "{}"
-	// signBody, _ = sjson.Set(signBody, "user_model.user_status", GetUserStatus())
-	// signBody, _ = sjson.Set(signBody, "user_model.user_communication_member_detail_badge_by_id", userDetail)
-	// resp := SignResp(ctx, signBody, config.SessionKey)
-
-	// ctx.Header("Content-Type", "application/json")
-	// ctx.String(http.StatusOK, resp)
+	signBody := session.Finalize("{}", "user_model")
+	resp := SignResp(ctx, signBody, config.SessionKey)
+	ctx.Header("Content-Type", "application/json")
+	ctx.String(http.StatusOK, resp)
 }
 
 func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
@@ -104,8 +114,14 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 			continue
 		}
 		// update if it feature this member
-		_, exists := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyID].Live.LiveMemberMapping[req.MemberMasterID]
-		if exists {
+		liveDifficultyMaster := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyID]
+		if liveDifficultyMaster == nil {
+			// some song no longer exists but official server still send them
+			// it's ok to ignore these for now
+			continue
+		}
+		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[req.MemberMasterID]
+		if exist {
 			liveDifficultyRecord.IsNew = false
 			session.UpdateLiveDifficulty(liveDifficultyRecord)
 		}

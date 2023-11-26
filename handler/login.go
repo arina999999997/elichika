@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"elichika/account"
 	"elichika/config"
 	"elichika/encrypt"
 	"elichika/locale"
@@ -13,11 +14,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 func StartUpAuthorizationKey(mask64 string) string {
@@ -90,26 +88,14 @@ func Login(ctx *gin.Context) {
 		session = userdata.GetSession(ctx, userID)
 		defer session.Close()
 	}
-	session.Login()
-
-	loginBody := session.Finalize(GetData("login.json"), "user_model")
-
-	loginBody, _ = sjson.Set(loginBody, "user_model", session.UserModel)
-	loginBody, _ = sjson.Set(loginBody, "session_key", LoginSessionKey(mask64))
-	loginBody, _ = sjson.Set(loginBody, "last_timestamp", time.Now().UnixMilli())
-
-	/* ======== UserData ======== */
 	fmt.Println("User logins: ", userID)
-
-	// member love panel settings
-	dbLovePanels := session.GetAllMemberLovePanels()
-	if len(dbLovePanels) == 0 {
-		panic("no member love panel found")
-	}
-	loginBody, _ = sjson.Set(loginBody, "member_love_panels", dbLovePanels)
-
-	/* ======== UserData ======== */
-	resp := SignResp(ctx, loginBody, config.SessionKey)
+	loginResponse := session.Login()
+	loginResponse.SessionKey = LoginSessionKey(mask64)
+	session.Finalize("{}", "user_model")
+	loginBody, err := json.Marshal(loginResponse)
+	utils.CheckErr(err)
+	resp := SignResp(ctx, string(loginBody), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
+	utils.WriteAllText(fmt.Sprint("login_", userID, ".json"), account.ExportUser(ctx))
 }

@@ -152,5 +152,6 @@ func init() {
 	}
 	TableNameToInterface["u_info"] = DbUser{}
 
+	// TODO: change this database name
 	TableNameToInterface["u_custom_set_profile"] = UserSetProfile{}
 }

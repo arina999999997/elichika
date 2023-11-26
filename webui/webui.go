@@ -1,6 +1,7 @@
 package webui
 
 import (
+	"elichika/account"
 	"elichika/gamedata"
 	"elichika/locale"
 	"elichika/userdata"
@@ -8,67 +9,44 @@ import (
 
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/tidwall/gjson"
-	// "github.com/tidwall/sjson"
+	// "mime/multipart"
 )
 
-const CommonPrefix = "/webui/response.html?"
-
-func BuildPrefix(ctx *gin.Context) string {
-	var res string
-	res = CommonPrefix
-	for key, value := range *ctx.MustGet("params").(*map[string]string) {
-		res += key + "=" + value + "&"
-	}
-	return res + "response="
-}
+const commonPrefix = "/webui/response.html?response="
 
 func Common(ctx *gin.Context) {
 	var err error
-	ctx.Set("is_good", true)
-	params := make(map[string]string)
-	temp, _ := url.ParseQuery(ctx.GetString("reqBody"))
-	for key, value := range temp {
-		if len(value) > 0 {
-			if value[0] == "" {
-				continue
-			}
-			params[key] = value[0]
-		}
-	}
-	ctx.Set("params", &params)
+	ctx.Set("has_user_id", true)
+	form, err := ctx.MultipartForm()
+	utils.CheckErr(err)
 
-	lang := params["client"]
+	lang := form.Value["client"][0]
 	ctx.Set("locale", locale.Locales[lang])
 	ctx.Set("gamedata", locale.Locales[lang].Gamedata)
 	ctx.Set("dictionary", locale.Locales[lang].Dictionary)
 
-	userIDString := params["user_id"]
-	userID := 0
+	userIDString := form.Value["user_id"][0]
+	userID := -1
 	userID, err = strconv.Atoi(userIDString)
 	if err != nil {
-		exists, err := userdata.Engine.Table("u_info").OrderBy("last_login_at DESC").Limit(1).Cols("user_id").Get(&userID)
+		exist, err := userdata.Engine.Table("u_info").OrderBy("last_login_at DESC").Limit(1).Cols("user_id").Get(&userID)
 		utils.CheckErr(err)
-		if !exists {
-			ctx.Set("is_good", false)
-			ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+"Error: there is no user in the database, start playing first")
+		if !exist {
+			ctx.Set("has_user_id", false)
+			ctx.Redirect(http.StatusFound, commonPrefix+"Error: there is no user in the database, start playing first")
 			return
 		}
 	}
-
 	ctx.Set("user_id", userID)
-	params["user_id"] = fmt.Sprint(userID)
-
 	ctx.Next()
 }
 func Birthday(ctx *gin.Context) {
-	if !ctx.MustGet("is_good").(bool) {
+	if !ctx.MustGet("has_user_id").(bool) {
 		return
 	}
 
@@ -76,14 +54,15 @@ func Birthday(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: user ", userID, " doesn't exists"))
+		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userID, " doesn't exist"))
 		return
 	}
-	// var err error
-	params := *ctx.MustGet("params").(*map[string]string)
-	birthdayString, exists := params["birthday"]
-	if !exists {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+"Error: no birthday given")
+	session.UserStatus.LastLoginAt = time.Now().Unix()
+	form, _ := ctx.MultipartForm()
+
+	birthdayString := form.Value["birthday"][0]
+	if birthdayString == "" {
+		ctx.Redirect(http.StatusFound, commonPrefix+"Error: no birthday given")
 		return
 	}
 	tokens := strings.Split(birthdayString, "-")
@@ -93,33 +72,34 @@ func Birthday(ctx *gin.Context) {
 	session.UserStatus.BirthDate = year*10000 + month*100 + day
 	session.UserStatus.BirthDay = day
 	session.UserStatus.BirthMonth = month
-	session.Finalize("", "")
-	ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userID, year, month, day))
+	session.Finalize("{}", "dummy")
+	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userID, year, month, day))
 }
 
 func Accessory(ctx *gin.Context) {
-	if !ctx.MustGet("is_good").(bool) {
+	if !ctx.MustGet("has_user_id").(bool) {
 		return
 	}
 	userID := ctx.MustGet("user_id").(int)
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: user ", userID, " doesn't exists"))
+		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userID, " doesn't exist"))
 		return
 	}
-	params := *ctx.MustGet("params").(*map[string]string)
-	specificAccessoryString, exists := params["accessory_id"]
+	session.UserStatus.LastLoginAt = time.Now().Unix()
+	form, _ := ctx.MultipartForm()
+	specificAccessoryString := form.Value["accessory_id"][0]
 	accessoryIDs := []int{}
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	if exists {
+	if specificAccessoryString != "" {
 		value, _ := strconv.Atoi(specificAccessoryString)
 		accessoryIDs = append(accessoryIDs, value)
 	} else {
 		getRarity := make(map[int]bool)
-		_, getRarity[30] = params["ur_accessories"]
-		_, getRarity[20] = params["sr_accessories"]
-		_, getRarity[10] = params["r_accessories"]
+		getRarity[30] = len(form.Value["ur_accessories"]) > 0
+		getRarity[20] = len(form.Value["sr_accessories"]) > 0
+		getRarity[10] = len(form.Value["r_accessories"]) > 0
 		for _, accessory := range gamedata.Accessory {
 			if getRarity[accessory.RarityType] {
 				accessoryIDs = append(accessoryIDs, accessory.ID)
@@ -127,16 +107,16 @@ func Accessory(ctx *gin.Context) {
 		}
 	}
 	if len(accessoryIDs) == 0 {
-		ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+"Error: no accessory found, add a specific ID or choose at least one rarity")
+		ctx.Redirect(http.StatusFound, commonPrefix+"Error: no accessory found, add a specific ID or choose at least one rarity")
 		return
 	}
-	amount, _ := strconv.Atoi(params["accessory_amount"])
+	amount, _ := strconv.Atoi(form.Value["accessory_amount"][0])
 	index := time.Now().UnixNano()
 	total := 0
 	for _, accessoryMasterID := range accessoryIDs {
-		masterAccessory, exists := gamedata.Accessory[accessoryMasterID]
-		if !exists {
-			ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Error: invalid accessory id ", accessoryMasterID))
+		masterAccessory, exist := gamedata.Accessory[accessoryMasterID]
+		if !exist {
+			ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: invalid accessory id ", accessoryMasterID))
 			return
 		}
 		for i := 1; i <= amount; i++ {
@@ -152,6 +132,31 @@ func Accessory(ctx *gin.Context) {
 			session.UpdateUserAccessory(accessory)
 		}
 	}
-	session.Finalize("", "")
-	ctx.Redirect(http.StatusFound, BuildPrefix(ctx)+fmt.Sprint("Success: Added ", total, " accessories"))
+	session.Finalize("{}", "dummy")
+	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Success: Added ", total, " accessories"))
+}
+
+func ImportAccount(ctx *gin.Context) {
+	userID := ctx.GetInt("user_id")
+	{
+		session := userdata.GetSession(ctx, userID)
+		defer session.Close()
+		if session != nil {
+			ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: User ", userID, " already exists, select a different user ID or delete that account first"))
+			return
+		}
+	}
+
+	form, _ := ctx.MultipartForm()
+	for _, fileHeader := range form.File["account_data"] {
+		file, err := fileHeader.Open()
+		utils.CheckErr(err)
+		bytes := make([]byte, fileHeader.Size)
+		length, err := file.Read(bytes)
+		utils.CheckErr(err)
+		if int64(length) != fileHeader.Size {
+			panic("error reading file")
+		}
+		ctx.Redirect(http.StatusFound, commonPrefix+account.ImportUser(ctx, string(bytes), userID))
+	}
 }

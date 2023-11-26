@@ -96,9 +96,9 @@ func LiveSkip(ctx *gin.Context) {
 		}
 		memberMasterID := gamedata.Card[cardMasterID].Member.ID
 
-		pos, exists := bondCardPosition[memberMasterID]
+		pos, exist := bondCardPosition[memberMasterID]
 		// only use 1 card master id or an idol might be shown multiple times
-		if !exists {
+		if !exist {
 			memberLoveStatus := skipLiveResult.MemberLoveStatuses.AppendNewWithID(int64(cardMasterID))
 			memberLoveStatus.RewardLovePoint = addedBond
 			bondCardPosition[memberMasterID] = skipLiveResult.MemberLoveStatuses.Length - 1

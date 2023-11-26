@@ -4,14 +4,7 @@
 function confirm_and_redirect() {
 	let params = (new URL(document.location)).searchParams;
 	alert(params.get("response"))
-	var remain_params = new URLSearchParams()
-	const keys_to_discards = new Set(['response', 'birthday'])
-
-	for(const [ key, value ] of params) {
-		if (keys_to_discards.has(key)) continue
-		remain_params.append(key, value)
-	}
-	window.location.href = '/webui/?' + remain_params.toString()
+	history.back()
 }
 </script>
 </body>

@@ -56,8 +56,8 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 		err := masterdata_db.Table("m_card_grade_up_item").Where("card_id = ?", card.ID).Find(&gradeUps)
 		utils.CheckErr(err)
 		for _, gradeUp := range gradeUps {
-			_, exists := card.CardGradeUpItem[gradeUp.Grade]
-			if !exists {
+			_, exist := card.CardGradeUpItem[gradeUp.Grade]
+			if !exist {
 				card.CardGradeUpItem[gradeUp.Grade] = make(map[int]model.Content)
 			}
 			card.CardGradeUpItem[gradeUp.Grade][gradeUp.Resource.ContentID] = gradeUp.Resource

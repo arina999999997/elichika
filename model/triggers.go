@@ -40,6 +40,18 @@ func (obj *TriggerMemberLoveLevelUp) ID() int64 {
 	return obj.TriggerID
 }
 
+type TriggerMemberGuildSupportItemExpired struct {
+	// always present even if it's not actually expire
+	UserID    int   `xorm:"pk 'user_id'" json:"-"`
+	TriggerID int64 `xorm:"pk 'trigger_id'" json:"trigger_id"` // use nano timestamp
+	ResetAt   int   `xorm:"'reset_at'" json:"reset_at"`        // use unit timestamp
+	IsNull    bool  `json:"-" xorm:"-"`
+}
+
+func (obj *TriggerMemberGuildSupportItemExpired) ID() int64 {
+	return obj.TriggerID
+}
+
 type TriggerReadReq struct {
 	TriggerID int64 `json:"trigger_id"` // same for all trigger, for now
 }
@@ -51,4 +63,5 @@ func init() {
 	TableNameToInterface["u_trigger_basic"] = TriggerBasic{}
 	TableNameToInterface["u_trigger_card_grade_up"] = TriggerCardGradeUp{}
 	TableNameToInterface["u_trigger_member_love_level_up"] = TriggerMemberLoveLevelUp{}
+	TableNameToInterface["u_trigger_member_guild_support_item_expired"] = TriggerMemberGuildSupportItemExpired{}
 }

@@ -78,9 +78,9 @@ func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverda
 
 	{
 		rarityUp := AccessoryRarityUp{}
-		exists, err := masterdata_db.Table("m_accessory_rarity_up").Where("accessory_master_id = ?", accessory.ID).Get(&rarityUp)
+		exist, err := masterdata_db.Table("m_accessory_rarity_up").Where("accessory_master_id = ?", accessory.ID).Get(&rarityUp)
 		utils.CheckErr(err)
-		if exists {
+		if exist {
 
 			rarityUp.populate(gamedata, masterdata_db, serverdata_db, dictionary)
 			accessory.RarityUp = &rarityUp

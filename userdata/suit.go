@@ -3,16 +3,12 @@ package userdata
 import (
 	"elichika/model"
 	"elichika/utils"
-
-	"fmt"
 )
 
 // suit are inserted when the function is called as suit is unique and doesn't change
 
 func (session *Session) InsertUserSuits(suits []model.UserSuit) {
-	count, err := session.Db.Table("u_suit").AllCols().Insert(suits)
-	utils.CheckErr(err)
-	fmt.Println("Inserted ", count, "suit(s)")
+	session.UserModel.UserSuitBySuitID.Objects = append(session.UserModel.UserSuitBySuitID.Objects, suits...)
 }
 
 func (session *Session) InsertUserSuit(suitMasterID int) {
@@ -22,12 +18,20 @@ func (session *Session) InsertUserSuit(suitMasterID int) {
 		IsNew:        true,
 	}
 	session.UserModel.UserSuitBySuitID.PushBack(suit)
-	count, err := session.Db.Table("u_suit").AllCols().Insert(suit)
-	utils.CheckErr(err)
-	fmt.Println("Inserted ", count, "suit(s)")
+}
 
+func suitFinalizer(session *Session) {
+	for _, suit := range session.UserModel.UserSuitBySuitID.Objects {
+		exist, err := session.Db.Table("u_suit").Exist(&suit)
+		utils.CheckErr(err)
+		if !exist {
+			_, err := session.Db.Table("u_suit").AllCols().Insert(suit)
+			utils.CheckErr(err)
+		}
+	}
 }
 
 func init() {
+	addFinalizer(suitFinalizer)
 	addGenericTableFieldPopulator("u_suit", "UserSuitBySuitID")
 }

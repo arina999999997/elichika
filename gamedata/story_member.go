@@ -29,9 +29,9 @@ type StoryMember struct {
 
 func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	reward := model.Content{}
-	exists, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.ID).Get(&reward)
+	exist, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.ID).Get(&reward)
 	utils.CheckErr(err)
-	if exists {
+	if exist {
 		story.Reward = &reward
 	}
 }

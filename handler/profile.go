@@ -29,9 +29,7 @@ func FetchProfile(ctx *gin.Context) {
 	profile := session.FetchProfile(req.UserID)
 
 	signBody, err := json.Marshal(profile)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 
 	resp := SignResp(ctx, string(signBody), config.SessionKey)
 
@@ -135,7 +133,7 @@ func SetScoreOrComboLive(ctx *gin.Context) {
 		setProfile.ComboLiveDifficultyID = req.LiveDifficultyMasterID
 	}
 	session.SetUserSetProfile(setProfile)
-	session.Finalize("{}", "")
+	session.Finalize("{}", "dummy")
 	resp := SignResp(ctx, reqBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

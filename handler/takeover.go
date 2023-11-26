@@ -83,7 +83,7 @@ func CheckTakeOver(ctx *gin.Context) {
 		resp.CurrentData.SnsCoin = currentSession.UserStatus.FreeSnsCoin +
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
 	}
-	if linkedSession != nil { // user exists
+	if linkedSession != nil { // user exist
 		if linkedSession.UserStatus.PassWord != req.PassWord { // incorrect password
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
@@ -97,7 +97,7 @@ func CheckTakeOver(ctx *gin.Context) {
 			linkedSession.UserStatus.AppleSnsCoin + linkedSession.UserStatus.GoogleSnsCoin
 		resp.LinkedData.TermsOfUseVersion = linkedSession.UserStatus.TermsOfUseVersion
 
-	} else { // user doesn't exists, but we won't create an account until setTakeOver is called
+	} else { // user doesn't exist, but we won't create an account until setTakeOver is called
 		resp.LinkedData.UserID = linkedUserID
 		resp.LinkedData.AuthorizationKey = LoginSessionKey(req.Mask)
 		resp.LinkedData.ServiceUserCommonKey = nil
@@ -172,7 +172,7 @@ func UpdatePassWord(ctx *gin.Context) {
 		TakeOverID string `json:"take_over_id"`
 	}
 	session.UserStatus.PassWord = req.PassWord
-	session.Finalize("", "")
+	session.Finalize("{}", "dummy")
 	respObj := UpdatePassWordResp{}
 	respObj.TakeOverID = fmt.Sprintf("%09d", userID)
 	startupBody, _ := json.Marshal(respObj)

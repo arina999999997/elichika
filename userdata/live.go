@@ -20,15 +20,15 @@ func SaveLiveState(live model.LiveState) {
 
 func LoadLiveState(userID int) (bool, model.LiveState) {
 	live := model.LiveState{}
-	exists, err := Engine.Table("u_live_state").Where("user_id = ?", userID).Get(&live)
+	exist, err := Engine.Table("u_live_state").Where("user_id = ?", userID).Get(&live)
 	if err != nil {
 		panic(err)
 	}
-	if exists {
+	if exist {
 		_, err = Engine.Table("u_live_state").Where("user_id = ?", userID).Delete(&model.LiveState{})
 		if err != nil {
 			panic(err)
 		}
 	}
-	return exists, live
+	return exist, live
 }

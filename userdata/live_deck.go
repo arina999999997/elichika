@@ -3,19 +3,17 @@ package userdata
 import (
 	"elichika/model"
 	"elichika/utils"
-
-	"fmt"
 )
 
 func (session *Session) GetUserLiveDeck(userLiveDeckID int) model.UserLiveDeck {
 	liveDeck := model.UserLiveDeck{}
-	exists, err := session.Db.Table("u_live_deck").
+	exist, err := session.Db.Table("u_live_deck").
 		Where("user_id = ? AND user_live_deck_id = ?", session.UserStatus.UserID, userLiveDeckID).
 		Get(&liveDeck)
 	if err != nil {
 		panic(err)
 	}
-	if !exists {
+	if !exist {
 		panic("Deck doesn't exist")
 	}
 	return liveDeck
@@ -32,16 +30,14 @@ func liveDeckFinalizer(session *Session) {
 			Update(deck)
 		utils.CheckErr(err)
 		if affected == 0 {
-			// all live deck must be inserted at account creation
-			panic("user lesson deck doesn't exists")
+			_, err := session.Db.Table("u_live_deck").Insert(deck)
+			utils.CheckErr(err)
 		}
 	}
 }
 
 func (session *Session) InsertLiveDecks(decks []model.UserLiveDeck) {
-	count, err := session.Db.Table("u_live_deck").Insert(&decks)
-	utils.CheckErr(err)
-	fmt.Println("Inserted ", count, " live decks")
+	session.UserModel.UserLiveDeckByID.Objects = append(session.UserModel.UserLiveDeckByID.Objects, decks...)
 }
 
 func init() {

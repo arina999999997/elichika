@@ -125,38 +125,6 @@ type LiveState struct {
 	TowerLive       *int            `json:"tower_live"`
 }
 
-type UserLiveMvDeck struct {
-	LiveMasterID     int  `json:"live_master_id"`
-	MemberMasterID1  *int `json:"member_master_id_1"`
-	MemberMasterID2  *int `json:"member_master_id_2"`
-	MemberMasterID3  *int `json:"member_master_id_3"`
-	MemberMasterID4  *int `json:"member_master_id_4"`
-	MemberMasterID5  *int `json:"member_master_id_5"`
-	MemberMasterID6  *int `json:"member_master_id_6"`
-	MemberMasterID7  *int `json:"member_master_id_7"`
-	MemberMasterID8  *int `json:"member_master_id_8"`
-	MemberMasterID9  *int `json:"member_master_id_9"`
-	MemberMasterID10 *int `json:"member_master_id_10"`
-	MemberMasterID11 *int `json:"member_master_id_11"`
-	MemberMasterID12 *int `json:"member_master_id_12"`
-	SuitMasterID1    *int `json:"suit_master_id_1"`
-	SuitMasterID2    *int `json:"suit_master_id_2"`
-	SuitMasterID3    *int `json:"suit_master_id_3"`
-	SuitMasterID4    *int `json:"suit_master_id_4"`
-	SuitMasterID5    *int `json:"suit_master_id_5"`
-	SuitMasterID6    *int `json:"suit_master_id_6"`
-	SuitMasterID7    *int `json:"suit_master_id_7"`
-	SuitMasterID8    *int `json:"suit_master_id_8"`
-	SuitMasterID9    *int `json:"suit_master_id_9"`
-	SuitMasterID10   *int `json:"suit_master_id_10"`
-	SuitMasterID11   *int `json:"suit_master_id_11"`
-	SuitMasterID12   *int `json:"suit_master_id_12"`
-}
-
-func (ulmd *UserLiveMvDeck) ID() int64 {
-	return int64(ulmd.LiveMasterID)
-}
-
 // LiveStageInfo ...
 type LiveStageInfo struct {
 	LiveDifficultyID int               `json:"live_difficulty_id"`

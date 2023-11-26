@@ -60,8 +60,8 @@ func addPrequisite(function, prequisite loadFunc) {
 }
 
 func generateLoadOrder(fid uintptr) {
-	_, exists := funcs[fid]
-	if !exists {
+	_, exist := funcs[fid]
+	if !exist {
 		return // done
 	}
 	for _, prequisite := range prequisites[fid] {
@@ -93,6 +93,7 @@ type Gamedata struct {
 	LiveDifficulty    map[int]*LiveDifficulty
 
 	TrainingTreeCellItemSet map[int]*TrainingTreeCellItemSet
+	TrainingTreeDesign      map[int]*TrainingTreeDesign
 	TrainingTreeMapping     map[int]*TrainingTreeMapping
 	TrainingTree            map[int]*TrainingTree
 

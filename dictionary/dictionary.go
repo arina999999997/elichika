@@ -40,7 +40,7 @@ func (dictionary *Dictionary) Init(path string, language string) {
 func (dictionary *Dictionary) Resolve(id string) string {
 	keys := strings.Split(id, ".")
 	res := ""
-	exists, err := dictionary.Dictionaries[keys[0]].Table("m_dictionary").Where("id = ?", keys[1]).Cols("message").Get(&res)
-	utils.CheckErrMustExist(err, exists)
+	exist, err := dictionary.Dictionaries[keys[0]].Table("m_dictionary").Where("id = ?", keys[1]).Cols("message").Get(&res)
+	utils.CheckErrMustExist(err, exist)
 	return res
 }

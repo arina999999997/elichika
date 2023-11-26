@@ -82,7 +82,6 @@ type CardPlayInfo struct {
 	ActiveSkillPlayCount   int  `xorm:"'active_skill_play_count' default 0" json:"active_skill_play_count"`
 }
 
-
 func init() {
 	if TableNameToInterface == nil {
 		TableNameToInterface = make(map[string]interface{})

@@ -38,7 +38,6 @@ type MemberLoveStatus struct {
 func (obj *MemberLoveStatus) ID() int64 {
 	return int64(obj.CardMasterID)
 }
-
 func (obj *MemberLoveStatus) SetID(id int64) {
 	obj.CardMasterID = int(id)
 }
@@ -52,7 +51,6 @@ type LiveResultAchievement struct {
 func (obj *LiveResultAchievement) ID() int64 {
 	return int64(obj.Position)
 }
-
 func (obj *LiveResultAchievement) SetID(id int64) {
 	obj.Position = int(id)
 }
@@ -132,8 +130,8 @@ func LiveFinish(ctx *gin.Context) {
 	req := LiveFinishReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	exists, liveState := userdata.LoadLiveState(userID)
-	utils.MustExist(exists)
+	exist, liveState := userdata.LoadLiveState(userID)
+	utils.MustExist(exist)
 
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
@@ -251,9 +249,9 @@ func LiveFinish(ctx *gin.Context) {
 			// update member love point
 			memberMasterID := gamedata.Card[liveFinishCard.CardMasterID].Member.ID
 
-			pos, exists := bondCardPosition[memberMasterID]
+			pos, exist := bondCardPosition[memberMasterID]
 			// only use 1 card master id or an idol might be shown multiple times
-			if !exists {
+			if !exist {
 				memberLoveStatus := liveResult.MemberLoveStatuses.AppendNewWithID(int64(liveFinishCard.CardMasterID))
 				memberLoveStatus.RewardLovePoint = addedBond
 				bondCardPosition[memberMasterID] = liveResult.MemberLoveStatuses.Length - 1

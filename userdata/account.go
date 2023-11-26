@@ -12,8 +12,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/tidwall/gjson"
-	// "github.com/tidwall/sjson"
 )
 
 // return the userID if it is not given
@@ -34,7 +32,6 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			PassWord:                                passWord,
 			LastLoginAt:                             time.Now().Unix(),
 			Rank:                                    1,
-			Exp:                                     0,
 			RecommendCardMasterID:                   100011001, // Honoka
 			MaxFriendNum:                            99,
 			LivePointFullAt:                         time.Now().Unix(),
@@ -60,17 +57,12 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			LastLiveDifficultyID:                      10001101,
 			LpMagnification:                           1,
 			EmblemID:                                  10500521, // new player
-			DeviceToken:                               "",
 			TutorialPhase:                             99,
 			TutorialEndAt:                             1622217482,
 			LoginDays:                                 1221,
-			NaviTapCount:                              0,
 			NaviTapRecoverAt:                          1688137200,
-			IsAutoMode:                                false,
 			MaxScoreLiveDifficultyMasterID:            10001101,
-			LiveMaxScore:                              0,
 			MaxComboLiveDifficultyMasterID:            10001101,
-			LiveMaxCombo:                              0,
 			LessonResumeStatus:                        1,
 			AccessoryBoxAdditional:                    400,
 			TermsOfUseVersion:                         2,
@@ -78,7 +70,6 @@ func CreateNewAccount(ctx *gin.Context, userID int, passWord string) int {
 			GdprVersion:                               4,
 			MemberGuildMemberMasterID:                 1,
 			MemberGuildLastUpdatedAt:                  1659485328,
-			Cash:                                      0,
 		}
 		status.Name.DotUnderText = "Newcomer"
 		status.Nickname.DotUnderText = "Newcomer"

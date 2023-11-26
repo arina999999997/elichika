@@ -118,6 +118,9 @@ type UserRuleDescription struct {
 func (urd *UserRuleDescription) ID() int64 {
 	return int64(urd.RuleDescriptionID)
 }
+func (urd *UserRuleDescription) SetID(id int64) {
+	urd.RuleDescriptionID = int(id)
+}
 
 type UserReferenceBook struct {
 	UserID          int `xorm:"pk 'user_id'" json:"-"`

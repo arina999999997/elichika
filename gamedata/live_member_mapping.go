@@ -29,8 +29,8 @@ func loadLiveMemberMapping(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	utils.CheckErr(err)
 	gamedata.LiveMemberMapping = make(map[int]LiveMemberMapping)
 	for _, memberMapping := range memberMappings {
-		_, exists := gamedata.LiveMemberMapping[*memberMapping.MappingID]
-		if !exists {
+		_, exist := gamedata.LiveMemberMapping[*memberMapping.MappingID]
+		if !exist {
 			gamedata.LiveMemberMapping[*memberMapping.MappingID] = make(LiveMemberMapping)
 		}
 		gamedata.LiveMemberMapping[*memberMapping.MappingID][memberMapping.MemberMasterID] = memberMapping

@@ -9,13 +9,8 @@ import (
 )
 
 func FetchDBProfile(userID int, result interface{}) {
-	exists, err := Engine.Table("u_info").Where("user_id = ?", userID).Get(result)
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
-		panic("user doesn't exist")
-	}
+	exist, err := Engine.Table("u_info").Where("user_id = ?", userID).Get(result)
+	utils.CheckErrMustExist(err, exist)
 }
 
 func FetchPartnerCards(otherUserID int) []model.UserCard {
@@ -44,14 +39,9 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 		panic(err)
 	}
 
-	exists, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserID, memberID).
+	exist, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserID, memberID).
 		Cols("love_level").Get(&partnerCard.LoveLevel)
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
-		panic("member doesn't exist")
-	}
+	utils.CheckErrMustExist(err, exist)
 
 	partnerCard.PassiveSkillLevels = []int{}
 	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, card.PassiveSkillALevel)
@@ -68,12 +58,12 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 	// TODO: revisit after implmenting friends
 
 	// lovePanel := model.UserMemberLovePanel{}
-	// exists, err = Engine.Table("u_member").
+	// exist, err = Engine.Table("u_member").
 	// 	Where("user_id = ? AND member_master_id = ?", card.UserID, memberId).Get(&lovePanel)
 	// if err != nil {
 	// 	panic(err)
 	// }
-	// if !exists {
+	// if !exist {
 	// 	panic("member doesn't exist")
 	// }
 	// partnerCard.MemberLovePanels = lovePanel.MemberLovePanelCellIDs
@@ -83,14 +73,9 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 
 func GetOtherUserCard(otherUserID, cardMasterID int) model.UserCard {
 	card := model.UserCard{}
-	exists, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserID, cardMasterID).
+	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserID, cardMasterID).
 		Get(&card)
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
-		panic("user card doesn't exist")
-	}
+	utils.CheckErrMustExist(err, exist)
 	return card
 }
 
@@ -132,22 +117,12 @@ func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
 func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	profile := model.Profile{}
 
-	exists, err := session.Db.Table("u_info").Where("user_id = ?", otherUserID).Get(&profile)
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
-		panic("user doesn't exist")
-	}
+	exist, err := session.Db.Table("u_info").Where("user_id = ?", otherUserID).Get(&profile)
+	utils.CheckErrMustExist(err, exist)
 
 	// recommend card
 	recommendCard := GetOtherUserCard(otherUserID, profile.ProfileInfo.BasicInfo.RecommendCardMasterID)
-	if err != nil {
-		panic(err)
-	}
-	if !exists {
-		panic("card doesn't exist")
-	}
+
 	profile.ProfileInfo.BasicInfo.RecommendCardLevel = recommendCard.Level
 	profile.ProfileInfo.BasicInfo.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
 	profile.ProfileInfo.BasicInfo.IsRecommendCardAllTrainingActivated = recommendCard.IsAllTrainingActivated
@@ -161,9 +136,7 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	// other user's members
 	members := []model.UserMember{}
 	err = session.Db.Table("u_member").Where("user_id = ?", otherUserID).OrderBy("love_point DESC").Find(&members)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	profile.ProfileInfo.TotalLovePoint = 0
 	for _, member := range members {
 		profile.ProfileInfo.TotalLovePoint += member.LovePoint
@@ -229,9 +202,9 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 
 func GetOtherUserSetProfile(otherUserID int) model.UserSetProfile {
 	p := model.UserSetProfile{}
-	exists, err := Engine.Table("u_custom_set_profile").Where("user_id = ?", otherUserID).Get(&p)
+	exist, err := Engine.Table("u_custom_set_profile").Where("user_id = ?", otherUserID).Get(&p)
 	utils.CheckErr(err)
-	if !exists {
+	if !exist {
 		p.UserID = otherUserID
 	}
 	return p
@@ -251,4 +224,21 @@ func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
 		_, err = session.Db.Table("u_custom_set_profile").Insert(&p)
 		utils.CheckErr(err)
 	}
+}
+
+func userSetProfileFinalizer(session *Session) {
+	for _, userSetProfile := range session.UserModel.UserSetProfileByID.Objects {
+		affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?",
+			session.UserStatus.UserID).AllCols().Update(userSetProfile)
+		utils.CheckErr(err)
+		if affected == 0 {
+			_, err = session.Db.Table("u_custom_set_profile").Insert(userSetProfile)
+			utils.CheckErr(err)
+		}
+	}
+}
+
+func init() {
+	addFinalizer(userSetProfileFinalizer)
+	addGenericTableFieldPopulator("u_custom_set_profile", "UserSetProfileByID")
 }
