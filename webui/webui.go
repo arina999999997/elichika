@@ -1,7 +1,6 @@
 package webui
 
 import (
-	"elichika/account"
 	"elichika/gamedata"
 	"elichika/locale"
 	"elichika/userdata"
@@ -14,9 +13,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	// "mime/multipart"
 )
 
+// TODO: it's possible to replace serial.llas.bushimo.jp and use that button to redirect here from inside the game, maybe I'll do it one day
 const commonPrefix = "/webui/response.html?response="
 
 func Common(ctx *gin.Context) {
@@ -24,8 +23,11 @@ func Common(ctx *gin.Context) {
 	ctx.Set("has_user_id", true)
 	form, err := ctx.MultipartForm()
 	utils.CheckErr(err)
-
-	lang := form.Value["client"][0]
+	lang := "en"
+	if len(form.Value["client"]) > 0 {
+		lang = form.Value["client"][0]
+	}
+	// some request don't actually need these, but a session expect them so we provide some stuff anyway
 	ctx.Set("locale", locale.Locales[lang])
 	ctx.Set("gamedata", locale.Locales[lang].Gamedata)
 	ctx.Set("dictionary", locale.Locales[lang].Dictionary)
@@ -134,29 +136,4 @@ func Accessory(ctx *gin.Context) {
 	}
 	session.Finalize("{}", "dummy")
 	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Success: Added ", total, " accessories"))
-}
-
-func ImportAccount(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	{
-		session := userdata.GetSession(ctx, userID)
-		defer session.Close()
-		if session != nil {
-			ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: User ", userID, " already exists, select a different user ID or delete that account first"))
-			return
-		}
-	}
-
-	form, _ := ctx.MultipartForm()
-	for _, fileHeader := range form.File["account_data"] {
-		file, err := fileHeader.Open()
-		utils.CheckErr(err)
-		bytes := make([]byte, fileHeader.Size)
-		length, err := file.Read(bytes)
-		utils.CheckErr(err)
-		if int64(length) != fileHeader.Size {
-			panic("error reading file")
-		}
-		ctx.Redirect(http.StatusFound, commonPrefix+account.ImportUser(ctx, string(bytes), userID))
-	}
 }

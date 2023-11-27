@@ -1,0 +1,43 @@
+<div>
+    <text style="font-size:50px;">
+        Update player profile. Only has birthday for now but in the future you can expect live clear stats here too.
+    </text>
+</div>
+<br>
+<form action="/webui" method="POST" enctype="multipart/form-data">
+
+    <div class="flex-container" style="display: flex; flex-wrap: nowrap; justify-content: space-between;">
+        <text style="font-size:50px;flex-grow:1;">
+            Enter user (player) ID:
+        </text>
+        <input type="number" id="user_id" name="user_id" min="0" max="999999999" style="font-size:50px;height:10%;flex-grow:1;"> 
+    </div>
+
+    <div>
+        <text style="font-size:20px;">
+            User id is required for all action, if left empty, the user who logged in most recently will be used.
+        </text>
+    </div>
+    <br>    <br>
+    
+    <div class="flex-container" style="display: flex; flex-wrap: wrap; justify-content: space-between">
+        <text style="font-size:50px;">
+            Enter birthday: 
+        </text>
+        <input type="date" id="birthday" name="birthday" style="font-size:50px;height:10%;" value="today">
+    
+    </div>
+    <br>
+    <div>
+        <text style="font-size:20px;">
+            There's no need to get the correct year, in fact, don't enter the correct year.
+        </text>
+    </div>
+
+
+    <button type="submit" formaction="birthday" style="font-size:50px;">
+        Update birthday
+    </button>
+
+    <br><br><br>
+</form>

@@ -1,80 +1,27 @@
-<html>
-<body onload="refill_data()">
-<div><text style="font-size:50px;">
-Changes might require a fresh login to take effect. It's also recommended to fully close the game before using this.
-</text></div>
-<br>
-<form action="/webui" method="POST" enctype="multipart/form-data">
-<div><text style="font-size:50px;">
-Enter user (player) ID:
-</text></div>
-<input type="number" id="user_id" name="user_id" min="0" max="999999999" style="font-size:50px;height:10%;width:100%" > 
-
-<div><text style="font-size:20px;"> (user id is required for all action, if left empty, the user who logged in most recently will be used). </text></div>
-<br>
-<div><text style="font-size:50px;">Choose client type</text></div>
-<div><text style="font-size:20px;">(using japanese server data on global client can lead to issues)</text></div>
-<br>
-<input type="radio" id="ja" name="client" value="ja" style="height:5%;vertical-align:middle"> 
-<label for="ja" style="font-size:50px;vertical-align:middle" > Japanese </label>
-<br><input type="radio" id="en" name="client" value="en" style="height:5%;vertical-align:middle" checked >
-<label for="en" style="font-size:50px;vertical-align:middle" > Global </label>
-
- 
-
-<div><text style="font-size:50px;">
-<br>
-Update player birthday (no need to get the correct year, in fact, don't enter the correct year)
-</text></div>
-
-<input type="date" id="birthday" name="birthday" style="font-size:50px;height:10%;width:100%" value="today">
-<br>
-<button type="submit" formaction="birthday" style="font-size:50px;height:10%;width:100%">Update birthday</button>
-<br><br><br>
-
-<div><text style="font-size:50px;">
-<br>
-Add accessories
-</text></div>
-
-<div><text style="font-size:20px;">
-Select the accessories rarity and the amount, to get that amount of each accessories of that rarity.
-<br>
-Alternatively, enter a specific accessory's id (from the "m_accessory" table) to get only that accessory
-(leave empty to skip, will override checkboxes if present).
-</text></div>
 <div>
-	<input type="checkbox" id="r_accessories" name="r_accessories" style="height:5%;vertical-align:middle" />
-	<label for="r_accessories" style="font-size:50px;vertical-align:middle" >R rarity accessories</label>
+	<text style="font-size:50px;">
+		WebUI handle things that the client-server interaction can't do, as well as some other features.
+		<br>
+		Note that changes might require a fresh client login or even a server restart to take effect.
+		<br>
+		It's also recommended to fully close the game before using this.
+	</text>
 </div>
-
-<div>
-	<input type="checkbox" id="sr_accessories" name="sr_accessories" style="height:5%;vertical-align:middle" />
-	<label for="sr_accessories" style="font-size:50px;vertical-align:middle" >SR rarity accessories</label>
-</div>
-
-<div>
-	<input type="checkbox" id="ur_accessories" name="ur_accessories" style="height:5%;vertical-align:middle" checked />
-	<label for="ur_accessories" style="font-size:50px;vertical-align:middle" >UR rarity accessories</label>
-</div>
-<div>
-	<label for="accessory_id" style="font-size:50px;vertical-align:middle" >Specific accessory ID:</label>
-	<input type="number" id="accessory_id" name="accessory_id" style="font-size:50px;height:10%;width:100%" />
-</div> 
-<div>
-	<label for="accessory_amount" style="font-size:50px;vertical-align:middle" >Amount of copies: </label>
-	<input type="number" id="accessory_amount" name="accessory_amount" min="1" max="20" value="1" style="font-size:50px;height:10%;width:100%"  />
-</div>
-<button type="submit" formaction="accessory" style="font-size:50px;height:10%;width:100%" >Add accessories</button>
-
-<label for="account_data">Account data (json):</label>
-<input type="file" id="account_data" name="account_data"> 
-<button type="submit" formaction="import_account" style="font-size:50px;height:10%;width:100%" >Import account</button>
-
-<div>
-<br><br><br>
-<input type="reset" id="reset_button"  style="font-size:50px;height:10%;width:100%" />
-</div>
+<br>
+<br>
+<form action="/webui">
+	<div class="flex-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+		<div>
+			<text style="font-size:50px;">Select feature: </text>
+		</div>
+		<button type="submit" formaction="account.html" style="font-size: 50px; width: 100%;">
+			Import / export account data
+		</button>
+		<button type="submit" formaction="profile.html" style="font-size: 50px; width: 100%;">
+			Modifying profile data (birthday and such)
+		</button>
+		<button type="submit" formaction="accessory.html" style="font-size: 50px; width: 100%;">
+			Adding accessory
+		</button>
+	</div>
 </form>
-</body>
-</html>

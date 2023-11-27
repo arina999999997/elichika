@@ -89,6 +89,18 @@ func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
 	}
 }
 
+func (session *Session) ReadMemberGuildSupportItemExpired() {
+	err := session.Db.Table("u_trigger_member_guild_support_item_expired").
+		Where("user_id = ?", session.UserStatus.UserID).
+		Find(&session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerID.Objects)
+	utils.CheckErr(err)
+	for i := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerID.Objects {
+		session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerID.Objects[i].IsNull = true
+	}
+	// already marked as removed, the finalizer will take care of things
+	// there's also no need to remove the item, the client won't show them if they're expired
+}
+
 // TODO: Trigger member love level up isn't really that persistent, so it's probably better to only keep it in ram
 // This could be done by keeping a full user model in ram too.
 

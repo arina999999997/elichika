@@ -6,7 +6,6 @@ import (
 	"elichika/utils"
 
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,12 +13,7 @@ import (
 
 var (
 	presetDataPath = "assets/preset/"
-	userDataPath   = "assets/userdata/"
 )
-
-func init() {
-	os.Mkdir(userDataPath, 0755)
-}
 
 func SignResp(ctx *gin.Context, body, key string) (resp string) {
 	ep := ctx.MustGet("ep").(string)

@@ -14,3 +14,7 @@ serverdata.db
 *.backup
 
 .vscode/
+
+*.txt
+
+backup/

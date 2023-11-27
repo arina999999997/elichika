@@ -24,8 +24,8 @@ var (
 	ServerdataDbPath = "assets/db/serverdata.db"
 	UserdataDbPath   = "assets/db/userdata.db"
 
-	PresetDataPath = "assets/preset/"
-	UserDataPath   = "assets/userdata/"
+	PresetDataPath     = "assets/preset/"
+	UserDataBackupPath = "backup/"
 
 	MasterVersionGl = "2d61e7b4e89961c7" // read from GL database, so user can update db just by changing that
 	MasterVersionJp = "b66ec2295e9a00aa" // ditto
@@ -52,6 +52,7 @@ func readMasterdataManinest(path string) string {
 }
 
 func init() {
+	os.Mkdir(UserDataBackupPath, 0755)
 	Conf = Load("./config.json")
 
 	MasterVersionGl = readMasterdataManinest(GlDatabasePath + "masterdata_a_en")

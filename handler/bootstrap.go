@@ -29,6 +29,7 @@ func FetchBootstrap(ctx *gin.Context) {
 	defer session.Close()
 	session.UserStatus.BootstrapSifidCheckAt = time.Now().UnixMilli()
 	session.UserStatus.DeviceToken = req.DeviceToken
+	session.UserModel.UserSubscriptionStatusByID.PushBack(session.GetSubsriptionStatus())
 	signBody := session.Finalize(GetData("fetchBootstrap.json"), "user_model_diff")
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")

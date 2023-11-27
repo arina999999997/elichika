@@ -9,7 +9,6 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -52,8 +51,6 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
-// where is this called?
-// called when checked a thing that is marked as new?
 func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UpdateUserCommunicationMemberDetailBadgeRequest{}
@@ -63,7 +60,6 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	userID := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userID)
 	defer session.Close()
-	fmt.Println(req)
 	detailBadge := session.GetUserCommunicationMemberDetailBadge(req.MemberMasterID)
 	switch req.CommunicationMemberDetailBadgeType {
 	case enum.CommunicationMemberDetailBadgeTypeStoryMember:
@@ -92,7 +88,6 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	// mark all the song that this member is featured in as not new
 	// only choose from the song user has access to, so no bond song and story locked songs
-	// TODO: also need to mark some flag to get rid of the ! on the button
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type UpdateUserLiveDifficultyNewFlag struct {
 		MemberMasterID int `json:"member_master_id"`

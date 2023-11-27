@@ -14,7 +14,10 @@ func Router(r *gin.Engine) {
 	{
 		api := r.Group("/", middleware.Common)
 		api.POST("/asset/getPackUrl", handler.GetPackUrl)
+
 		api.POST("/billing/fetchBillingHistory", handler.FetchBillingHistory)
+		api.POST("/billing/updateSubscription", handler.UpdateSubscription)
+
 		api.POST("/bootstrap/fetchBootstrap", handler.FetchBootstrap)
 		api.POST("/bootstrap/getClearedPlatformAchievement", handler.GetClearedPlatformAchievement)
 
@@ -98,6 +101,7 @@ func Router(r *gin.Engine) {
 		api.POST("/infoTrigger/read", handler.TriggerRead)
 		api.POST("/infoTrigger/readCardGradeUp", handler.TriggerReadCardGradeUp)
 		api.POST("/infoTrigger/readMemberLoveLevelUp", handler.TriggerReadMemberLoveLevelUp)
+		api.POST("/infoTrigger/readMemberGuildSupportItemExpired", handler.TriggerReadMemberGuildSupportItemExpired)
 
 		api.POST("/trainingTree/fetchTrainingTree", handler.FetchTrainingTree)
 		api.POST("/trainingTree/levelUpCard", handler.LevelUpCard)
@@ -135,7 +139,7 @@ func Router(r *gin.Engine) {
 		api.POST("/shop/fetchShopTop", handler.FetchShopTop)
 		api.POST("/shop/fetchShopPack", handler.FetchShopPack)
 		api.POST("/shop/fetchShopSnsCoin", handler.FetchShopSnsCoin)
-		// /shop/fetchShopSubscription
+		api.POST("/shop/fetchShopSubscription", handler.FetchShopSubscription)
 
 		api.POST("/loveRanking/fetch", handler.LoveRankingFetch)
 
@@ -153,10 +157,9 @@ func Router(r *gin.Engine) {
 		api.POST("/unlockScene/saveUnlockedScene", handler.SaveUnlockedScene)
 		api.POST("/sceneTips/saveSceneTipsType", handler.SaveSceneTipsType)
 
-		// TODO
-		// /shop/fetchShopSubscription // happen when trying to click on subscription without one active
-		// /infoTrigger/readMemberGuildSupportItemExpired
-		// /billing/updateSubscription
+		// TODO:
+		// /schoolIdolFestivalIdReward/fetch: this can be accessed by unlocking a button, cool to see this again especially if you kept your data
+		//
 	}
 
 	{
@@ -166,5 +169,6 @@ func Router(r *gin.Engine) {
 		webapi.POST("/birthday", webui.Birthday)
 		webapi.POST("/accessory", webui.Accessory)
 		webapi.POST("/import_account", webui.ImportAccount)
+		webapi.POST("/export_account", webui.ExportAccount)
 	}
 }

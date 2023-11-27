@@ -97,5 +97,5 @@ func Login(ctx *gin.Context) {
 	resp := SignResp(ctx, string(loginBody), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
-	utils.WriteAllText(fmt.Sprint("login_", userID, ".json"), account.ExportUser(ctx))
+	utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", userID, ".json"), account.ExportUser(ctx))
 }

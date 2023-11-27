@@ -1,0 +1,78 @@
+<div>
+    <text style="font-size:50px;">
+        Import and export account from login json.
+    <br>
+        For extracting account from pcap, extract it to a json first, learn about it <a href="https://github.com/arina999999997/elichika/tree/master/docs">here.</a>
+    </text>
+</div>
+<br>
+
+<form action="/webui" method="POST" enctype="multipart/form-data">
+    <div class="flex-container" style="display: flex; flex-wrap: nowrap; justify-content: space-between;">
+        <text style="font-size:50px;flex-grow:1;">
+            Enter user (player) ID:
+        </text>
+        <input type="number" id="user_id" name="user_id" min="0" max="999999999" style="font-size:50px;height:10%;flex-grow:1;" > 
+    </div>
+    <br><br>
+    <div>
+        <text style="font-size:20px;">
+            For importing account, user ID is just the ID you want to have, it can be the same or different from the actual ID of the account data.
+        </text>
+    </div>
+    <div>
+        <text style="font-size:20px;">
+            For exporting account, user ID is the ID of the account you want to extract, left empty for the last logged in account.
+        </text>
+    </div>
+    <br><br>
+
+    <div class="flex-container" style="display: flex; flex-wrap: nowrap;justify-content: space-between;">
+        <div>
+            <text style="font-size:50px;">Choose client type: </text>
+        </div>
+        <div>
+            <input type="radio" id="ja" name="client" value="ja" style="vertical-align:middle"> 
+            <label for="ja" style="font-size:50px;vertical-align:middle"> 
+                Japanese
+            </label>
+        </div>
+        <div>
+            <input type="radio" id="en" name="client" value="en" style="vertical-align:middle" checked >
+            <label for="en" style="font-size:50px;vertical-align:middle">
+                Global
+            </label>
+        </div>
+    </div>
+    <br>
+    <div>
+        <text style="font-size:20px;">
+            Using japanese server data on global client can lead to issues, but you can import GL account to JP server and it should still work.
+        </text>
+    </div>
+
+    <br>
+
+    <div>
+        <text style="font-size:50px;">Import account: select file and click the button:</text>
+    </div>
+
+    <div class="flex-container" style="display: flex; flex-wrap: wrap; justify-content: start">
+        <input type="file" id="account_data" name="account_data" style="font-size:50px;height:10%;">
+        <button type="submit" formaction="import_account" style="font-size:50px;height:10%;">
+            Import account
+        </button>
+    </div>
+
+    <br>
+    <br>
+
+    <div class="flex-container" style="display: flex; flex-wrap: wrap; justify-content: space-between">
+        <text style="font-size:50px;">
+            Export account:
+        </text>
+        <button type="submit" formaction="export_account" style="font-size:50px;">
+            Download json
+        </button>
+    </div>
+</form>
