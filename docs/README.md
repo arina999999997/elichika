@@ -19,41 +19,39 @@ TODO: Add specific docs for specific contents if necessary.
     - [x] Fully working normal live, skip ticket, and 3DMV mode.
     - [x] Correctly award bond points.
     - [ ] There isn't any item drops being handled.
-- [ ] Story
+- [x] Story
     - [x] Fully working, you can read all kind of stories and play story songs.
-    - [ ] There is no tracker for which is read and which isn't.
+    - [x] You can start from fresh and progress through the story, unlocking things that would be unlocked by story normally.
 - [ ] Gacha
     - [x] Working gacha with one banner for each group.
     - [ ] Things like scouting tickets are not implemented as of now.
 - [ ] Training
-    - [ ] Training works but always return a set of commonly used insight skills.
+    - [x] Training works but always return a set of commonly used insight skills.
     - [ ] No drop from training.
 - [ ] Member bond
     - [x] Working member bond system.
     - [x] Fully working bond board system.
-    - [ ] Bond stories are unlocked by default instead of at specific levels.
-    - [ ] Bond sonds need to be unlocked by clicking the "Featured songs" button, instead of at specific levels.
+    - [x] Bond stories are unlocked by default once you unlock the bond story feature for one member. (This might change at end of 2023 due to the database period running out).
+    - [x] Bond songs unlocked at spefiic levels.
 - [ ] Bond ranking
-    - [ ] Working but return fixed data, eventually should return actual data.
+    - [x] Working but return fixed data, eventually should return actual data.
 - [x] Membership
-    - [x] Working by returning fixed data, there is no intend to implement this further.
+    - [x] Keep whatever membership user has in place.
+    - [ ] Maybe implement a way to set the month.
 - [x] Shop
     - [x] Working by returning fixed data, there is no intend to implement this further.
-- [ ] Exchange
+- [x] Exchange
     - [x] Working exchanges implementation.
     - [x] Exchange data depends on the database, by default it has items that was in the global server at the EOS.
-    - [ ] Exchange currency display aren't always correct.
 - [x] School idol / Practice
     - [x] Fully working card grade up, level up, and practice system.
-    - [x] Practice rewards implemented, although some might not be handled by the economy system.
-    - [x] There is no material consumption for now.
 - [ ] Accessores
     - [x] Fully working accessory power up system.
     - [ ] There is no way to obtain accessories except from the WebUI, as there is no drop, and exchange for accessories doesn't work.
 - [ ] Channel
     - [x] Working channel system by returning fixed data.
     - [x] User can join specific member channels.
-    - [ ] User can use the cheer system, but drops are not handled.
+    - [x] User can use the cheer system, but drops are not handled.
     - [ ] Megaphones are not dropped from trainings.
 - [ ] Present box
     - [x] Always empty, works by returning fixed data.
@@ -68,8 +66,8 @@ TODO: Add specific docs for specific contents if necessary.
     - [x] Works by returing fixed data.
     - [ ] The server allow for separate account, but implementation of social systems are not planned.
 - [ ] Title List
-    - [x] Works by returning fixed data, user have all titles by default.
-    - [ ] Might store in database later on.
+    - [x] Stored and fetch from database.
+    - [ ] There's no proper handling of adding a title yet.
 - [x] Datalink
     - [x] The datalink system is used as account creation / account transfer, things should work properly.
     - [x] Password is stored in plaintext in DB because cba.
@@ -80,9 +78,37 @@ TODO: Add specific docs for specific contents if necessary.
 - [ ] User model
     - [x] Working user model.
     - [ ] Level up are not handled properly.
-    - [ ] The server keep track of items that player own pretty well, but sometime the amount is not correctly reflected.
-    
-## Modifying database
+
+## Importing/Exporting account
+You can import account from the login json or export account to json. This help with recovering your account, moving it, or update to a new server version that has a breaking change with the old database structure.
+
+You can access this feature from the WebUI (check repository main page):
+
+- Upload json data to import.
+- Download json data for moving / backup.
+
+Other than that, the server also generate a backup exported data everytime you login. You can find the backup in `elichika/backup`.
+
+The import / exporting process keep 100% of the login response data, even the things that shouldn't matter by now, so you should be safe to make progress and still upgrade to the newer server version later.
+
+For recovering data from network data (pcap), you can check out this [guide](https://github.com/arina999999997/elichika/blob/master/docs/extracting_pcap.md) on how to do that.
+
+### How it work
+
+- This is done using the login response from the server, which contain almost (but not quite) everything relevant to your account.
+- For the information not contained in login, they are sometime can be reconstructed from context, but sometime they are just lost.
+
+    - For example, card practice data are reconstructed from the stat of the cards given in login.
+
+        - Note that we also only reconstruct a possible set of practice tiles, not the specific set as there could have been many.
+    - Member stats on how many card they have and how many training tree filled are also reconstructed.
+    - But things like how many time you used a card or how many time a card's skill was activated are not present.
+
+        - This is avalable for at most 6 card if you have captured your profile data or have a screenshot of it, but it is just not accessible to players.
+
+- For now we don't care that much about those data as it's not core to the gameplay experience. 
+
+## Modifying client database
 
 This server by default provide the databases as they were at EOS, but if necessary, you can modify the databases that the game and the server use.
 
@@ -91,10 +117,12 @@ This can be done to achieve the following:
 - Daily songs contain all songs instead of the 3 songs per day that we have.
 - Use more than 20 skip tickets at once.
 - Add contents that were only in JP to WW or adding new content entirely.
+- Model swap to make 12 of an idol doing a song.
 
-The server provide a script to handle encoding the database for you, but (for now) it's up to you to understand the database structure and add things correctly.
+The server provide a script to handle encoding the database for you, but (for now) it's up to you to understand the database structure and add / modify things correctly.
 
 For more information, check [how to modify database](https://github.com/arina999999997/elichika/blob/master/docs/modify_database.md)
+
 
 ## How the server work
 

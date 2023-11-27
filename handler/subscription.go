@@ -76,8 +76,6 @@ func FetchShopSubscription(ctx *gin.Context) {
 			StartDate:            int(time.Now().Unix()),
 			ExpireDate:           1<<31 - 1,
 			PlatformExpireDate:   1<<31 - 1,
-			RenewalCount:         0,
-			ContinueCount:        0,
 			SubscriptionPassID:   time.Now().UnixNano(),
 			AttachID:             "miraizura",
 			IsAutoRenew:          true,

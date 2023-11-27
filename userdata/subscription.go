@@ -3,6 +3,8 @@ package userdata
 import (
 	"elichika/model"
 	"elichika/utils"
+
+	"time"
 )
 
 func (session *Session) GetSubsriptionStatus() model.UserSubscriptionStatus {
@@ -11,7 +13,17 @@ func (session *Session) GetSubsriptionStatus() model.UserSubscriptionStatus {
 		Where("user_id = ?", session.UserStatus.UserID).Get(&status)
 	utils.CheckErr(err)
 	if !exists {
-		panic("subscription doesn't exist")
+		status = model.UserSubscriptionStatus{
+			UserID:               session.UserStatus.UserID,
+			SubscriptionMasterID: 13001,
+			StartDate:            int(time.Now().Unix()),
+			ExpireDate:           1<<31 - 1,
+			PlatformExpireDate:   1<<31 - 1,
+			SubscriptionPassID:   time.Now().UnixNano(),
+			AttachID:             "miraizura",
+			IsAutoRenew:          true,
+			IsDoneTrial:          true,
+		}
 	}
 	return status
 }
