@@ -103,9 +103,11 @@ So you can switch accounts and things should work, but logging in with multiple 
 ## WebUI
 The WebUI for the sever can be located at `<server_address>/webui`.
 - By default, this is http://127.0.0.1:8080/webui
+- The WebUI can import and export account data.
 - The WebUI can be used to do stuff that the client can't do on its own.
     - For example, the birthday can only be set during tutorial. The WebUI can change the birthday.
-- For now, the WebUI can also be used to add accessories, as drop aren't implemented properly.
+- The WebUI also has some account editing functions.
+
 
 ## More docs
 Checkout the [docs](https://github.com/arina999999997/elichika/tree/master/docs) for more details on the server and how to do more advanced stuffs. 
