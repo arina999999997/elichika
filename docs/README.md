@@ -119,7 +119,7 @@ This can be done to achieve the following:
 - Add contents that were only in JP to WW or adding new content entirely.
 - Model swap to make 12 of an idol doing a song.
 
-The server provide a script to handle encoding the database for you, but (for now) it's up to you to understand the database structure and add / modify things correctly.
+You only have to modify the unencrypted database, the server will handle the rest, although it's up to you to understand the database structure and add / modify things correctly.
 
 For more information, check [how to modify database](https://github.com/arina999999997/elichika/blob/master/docs/modify_database.md)
 

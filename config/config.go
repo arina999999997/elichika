@@ -1,9 +1,6 @@
 package config
 
 import (
-	"elichika/utils"
-
-	"fmt"
 	"os"
 
 	_ "modernc.org/sqlite"
@@ -33,31 +30,17 @@ var (
 	GlStartUpKey = "TxQFwgNcKDlesb93"
 	JpStartUpKey = "5f7IZY1QrAX0D49g"
 
+	StaticDataPath = "static/"
+
+	Platforms   = []string{"a", "i"}
+	GlLanguages = []string{"en", "ko", "zh"}
+	JpLanguages = []string{"ja"}
+
 	ServerInitJsons = "server init jsons/"
 	Conf            = &AppConfigs{}
 )
 
-func readMasterdataManinest(path string) string {
-	file, err := os.Open(path)
-	utils.CheckErr(err)
-	buff := make([]byte, 1024)
-	count, err := file.Read(buff)
-	utils.CheckErr(err)
-	if count < 21 {
-		panic("file too short")
-	}
-	length := int(buff[20])
-	version := string(buff[21 : 21+length])
-	return version
-}
-
 func init() {
-	os.Mkdir(UserDataBackupPath, 0755)
+	os.MkdirAll(UserDataBackupPath, 0755)
 	Conf = Load("./config.json")
-
-	MasterVersionGl = readMasterdataManinest(GlDatabasePath + "masterdata_a_en")
-	MasterVersionJp = readMasterdataManinest(JpDatabasePath + "masterdata_a_ja")
-
-	fmt.Println("gl master version:", MasterVersionGl)
-	fmt.Println("jp master version:", MasterVersionJp)
 }

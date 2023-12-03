@@ -2,6 +2,7 @@
 package dictionary
 
 import (
+	_ "elichika/clientdb"
 	"elichika/utils"
 
 	"strings"
