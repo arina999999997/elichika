@@ -1,6 +1,7 @@
 package gamedata
 
 import (
+	_ "elichika/clientdb"
 	"elichika/dictionary"
 	"elichika/utils"
 
