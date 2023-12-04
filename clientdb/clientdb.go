@@ -29,13 +29,21 @@ func versionString(shaInHex string) string {
 }
 
 func fileSha1(fileName string) []byte {
-
 	file, err := os.ReadFile(fileName)
 	if err != nil {
 		file = []byte{}
 	}
 	sha1 := sha1.Sum(file)
 	return sha1[:]
+}
+
+func fileSha1AndSize(fileName string) ([]byte, int) {
+	file, err := os.ReadFile(fileName)
+	if err != nil {
+		file = []byte{}
+	}
+	sha1 := sha1.Sum(file)
+	return sha1[:], len(file)
 }
 
 func updateClientDb(baseDir string, masterdataRefs []string) {

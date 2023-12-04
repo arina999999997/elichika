@@ -25,6 +25,10 @@ func rekey(inPath, outPath string, fromFile *FileReference, keySpec hwdecrypt.Hw
 		// skip if this file already exists. Most of the time it will be masterdata.db.
 		// note that if we have to correct a file, we would delete that file before calling this
 		fmt.Println("Skipping already generated file: ", outPath)
+		// still need to update the file reference
+		var bytes []byte
+		bytes, fromFile.Size = fileSha1AndSize(outPath)
+		fromFile.EncryptedSHA = hex.EncodeToString(bytes)
 		return
 	}
 	clear_buf, err := os.ReadFile(inPath)
