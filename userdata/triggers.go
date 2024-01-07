@@ -17,7 +17,6 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
 	}
-	trigger.UserId = session.UserStatus.UserId
 	// update the trigger
 	session.UpdateTriggerCardGradeUp(trigger)
 }
@@ -27,19 +26,18 @@ func triggerCardGradeUpFinalizer(session *Session) {
 		if !trigger.IsNull {
 			dbTrigger := model.TriggerCardGradeUp{}
 			exist, err := session.Db.Table("u_trigger_card_grade_up").
-				Where("user_id = ? AND card_master_id = ?", trigger.UserId, trigger.CardMasterId).Get(&dbTrigger)
+				Where("user_id = ? AND card_master_id = ?", session.UserId, trigger.CardMasterId).Get(&dbTrigger)
 			utils.CheckErr(err)
-			if exist { // if the card has a trigger, we have to remove it
+			if exist { // if the card has a trigger, we have to remove it first
 				dbTrigger.IsNull = true
 				session.UpdateTriggerCardGradeUp(dbTrigger)
 				session.Db.Table("u_trigger_card_grade_up").
-					Where("user_id = ? AND card_master_id = ?", trigger.UserId, trigger.CardMasterId).Delete(&dbTrigger)
+					Where("user_id = ? AND card_master_id = ?", session.UserId, trigger.CardMasterId).Delete(&dbTrigger)
 			}
 			trigger.BeforeLoveLevelLimit = trigger.AfterLoveLevelLimit
 			// db trigger when login have BeforeLoveLevelLimit = AfterLoveLevelLimit
 			// if the 2 numbers are equal the level up isn't shown when we open the card.
-			_, err = session.Db.Table("u_trigger_card_grade_up").Insert(&trigger)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_trigger_card_grade_up", trigger)
 		} else {
 			// remove from db
 			// this is only caused by infoTrigger/read
@@ -59,7 +57,6 @@ func (session *Session) AddTriggerBasic(trigger model.TriggerBasic) {
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
 	}
-	trigger.UserId = session.UserStatus.UserId
 	session.UpdateTriggerBasic(trigger)
 }
 
@@ -70,8 +67,7 @@ func triggerBasicFinalizer(session *Session) {
 				&model.TriggerBasic{})
 			utils.CheckErr(err)
 		} else { // add
-			_, err := session.Db.Table("u_trigger_basic").Insert(trigger)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_trigger_basic", trigger)
 		}
 	}
 }
@@ -83,15 +79,14 @@ func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
 				&model.TriggerMemberGuildSupportItemExpired{})
 			utils.CheckErr(err)
 		} else { // add
-			_, err := session.Db.Table("u_trigger_member_guild_support_item_expired").Insert(trigger)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_trigger_member_guild_support_item_expired", trigger)
 		}
 	}
 }
 
 func (session *Session) ReadMemberGuildSupportItemExpired() {
 	err := session.Db.Table("u_trigger_member_guild_support_item_expired").
-		Where("user_id = ?", session.UserStatus.UserId).
+		Where("user_id = ?", session.UserId).
 		Find(&session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Objects)
 	utils.CheckErr(err)
 	for i := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Objects {
@@ -113,11 +108,9 @@ func (session *Session) AddTriggerMemberLoveLevelUp(trigger model.TriggerMemberL
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
 	}
-	trigger.UserId = session.UserStatus.UserId
 	session.UpdateTriggerMemberLoveLevelUp(trigger)
 	if !trigger.IsNull {
-		_, err := session.Db.Table("u_trigger_member_love_level_up").Insert(trigger)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_trigger_member_love_level_up", trigger)
 	} else {
 		_, err := session.Db.Table("u_trigger_member_love_level_up").Where("trigger_id = ?", trigger.TriggerId).Delete(
 			&model.TriggerMemberLoveLevelUp{})
@@ -128,12 +121,12 @@ func (session *Session) AddTriggerMemberLoveLevelUp(trigger model.TriggerMemberL
 func (session *Session) ReadAllMemberLoveLevelUpTriggers() {
 
 	err := session.Db.Table("u_trigger_member_love_level_up").
-		Where("user_id = ?", session.UserStatus.UserId).Find(&session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Objects)
+		Where("user_id = ?", session.UserId).Find(&session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Objects)
 	utils.CheckErr(err)
 	for i := range session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Objects {
 		session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Objects[i].IsNull = true
 	}
-	_, err = session.Db.Table("u_trigger_member_love_level_up").Where("user_id = ?", session.UserStatus.UserId).Delete(
+	_, err = session.Db.Table("u_trigger_member_love_level_up").Where("user_id = ?", session.UserId).Delete(
 		&model.TriggerMemberLoveLevelUp{})
 	utils.CheckErr(err)
 }

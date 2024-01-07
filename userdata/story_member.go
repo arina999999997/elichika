@@ -12,7 +12,6 @@ func (session *Session) InsertMemberStory(storyMemberMasterId int) {
 	// setting UnlockSceneStatusOpen also works but there's no fancy animation so might as well save 1 request
 	session.UnlockScene(enum.UnlockSceneTypeStoryMember, enum.UnlockSceneStatusOpened)
 	userStoryMember := model.UserStoryMember{
-		UserId:              session.UserStatus.UserId,
 		StoryMemberMasterId: storyMemberMasterId,
 		IsNew:               true,
 		AcquiredAt:          session.Time.Unix(),
@@ -23,11 +22,10 @@ func (session *Session) InsertMemberStory(storyMemberMasterId int) {
 func memberStoryFinalizer(session *Session) {
 	for _, userStoryMember := range session.UserModel.UserStoryMemberById.Objects {
 		affected, err := session.Db.Table("u_story_member").Where("user_id = ? AND story_member_master_id = ?",
-			userStoryMember.UserId, userStoryMember.StoryMemberMasterId).AllCols().Update(userStoryMember)
+			session.UserId, userStoryMember.StoryMemberMasterId).AllCols().Update(userStoryMember)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_story_member").Insert(userStoryMember)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_story_member", userStoryMember)
 		}
 	}
 }
@@ -37,11 +35,10 @@ func memberStoryFinalizer(session *Session) {
 func (session *Session) FinishStoryMember(storyMemberMasterId int) bool {
 	userStoryMember := model.UserStoryMember{}
 	exist, err := session.Db.Table("u_story_member").Where("user_id = ? AND story_member_master_id = ?",
-		session.UserStatus.UserId, storyMemberMasterId).Get(&userStoryMember)
+		session.UserId, storyMemberMasterId).Get(&userStoryMember)
 	utils.CheckErr(err)
 	if !exist {
 		userStoryMember = model.UserStoryMember{
-			UserId:              session.UserStatus.UserId,
 			StoryMemberMasterId: storyMemberMasterId,
 			IsNew:               false,
 			AcquiredAt:          session.Time.Unix(),

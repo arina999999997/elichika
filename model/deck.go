@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type UserLessonDeck struct {
-	UserId           int    `xorm:"pk 'user_id'" json:"-"`
 	UserLessonDeckId int    `xorm:"pk 'user_lesson_deck_id'" json:"user_lesson_deck_id"`
 	Name             string `json:"name"`
 	CardMasterId1    *int   `xorm:"'card_master_id_1'" json:"card_master_id_1"`
@@ -23,8 +26,6 @@ func (uld *UserLessonDeck) SetId(id int64) {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_lesson_deck"] = UserLessonDeck{}
+
+	TableNameToInterface["u_lesson_deck"] = generic.UserIdWrapper[UserLessonDeck]{}
 }

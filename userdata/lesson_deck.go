@@ -12,7 +12,7 @@ func (session *Session) GetUserLessonDeck(userLessonDeckId int) model.UserLesson
 	}
 	deck := model.UserLessonDeck{}
 	exist, err := session.Db.Table("u_lesson_deck").
-		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserId, userLessonDeckId).
+		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserId, userLessonDeckId).
 		Get(&deck)
 	utils.CheckErr(err)
 	if !exist {
@@ -28,12 +28,11 @@ func (session *Session) UpdateLessonDeck(userLessonDeck model.UserLessonDeck) {
 func lessonDeckFinalizer(session *Session) {
 	for _, deck := range session.UserModel.UserLessonDeckById.Objects {
 		affected, err := session.Db.Table("u_lesson_deck").
-			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserId, deck.UserLessonDeckId).AllCols().
+			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserId, deck.UserLessonDeckId).AllCols().
 			Update(deck)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_lesson_deck").Insert(deck)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_lesson_deck", deck)
 		}
 	}
 }

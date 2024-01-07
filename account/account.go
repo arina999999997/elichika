@@ -48,7 +48,6 @@ func ExportUser(ctx *gin.Context) string {
 func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
 	loginData := response.Login{}
 	loginData.UserModel = new(response.UserModel)
-	loginData.UserModel.UserStatus.UserId = userId // userId is not stored in the json response
 	err := json.Unmarshal([]byte(loginJson), &loginData)
 	if err != nil {
 		if jsonErr, ok := err.(*json.SyntaxError); ok {
@@ -57,9 +56,7 @@ func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
 		}
 	}
 	utils.CheckErr(err)
-	// insert an account based on the login data, not actually inserted into database until finalize is called
-	loginData.SetUserId(userId)
-	session := userdata.SessionFromImportedLoginData(ctx, &loginData)
+	session := userdata.SessionFromImportedLoginData(ctx, &loginData, userId)
 	defer session.Close()
 	// insert training tree data to make training consistent
 	solver := TrainingTreeSolver{}

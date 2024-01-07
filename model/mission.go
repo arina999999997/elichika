@@ -1,9 +1,12 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 // TODO: saved in database but not handled
 
 type UserMission struct {
-	UserId           int  `xorm:"pk 'user_id'" json:"-"`
 	MissionMId       int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
 	IsNew            bool `xorm:"'is_new'" json:"is_new"`
 	MissionCount     int  `xorm:"'mission_count'" json:"mission_count"`
@@ -17,7 +20,6 @@ func (um *UserMission) Id() int64 {
 }
 
 type UserDailyMission struct {
-	UserId            int  `xorm:"pk 'user_id'" json:"-"`
 	MissionMId        int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
 	IsNew             bool `xorm:"'is_new'" json:"is_new"`
 	MissionStartCount int  `xorm:"'mission_start_count'" json:"mission_start_count"`
@@ -32,7 +34,6 @@ func (udm *UserDailyMission) Id() int64 {
 }
 
 type UserWeeklyMission struct {
-	UserId            int  `xorm:"pk 'user_id'" json:"-"`
 	MissionMId        int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
 	IsNew             bool `xorm:"'is_new'" json:"is_new"`
 	MissionStartCount int  `xorm:"'mission_start_count'" json:"mission_start_count"`
@@ -48,10 +49,8 @@ func (uwm *UserWeeklyMission) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_mission"] = UserMission{}
-	TableNameToInterface["u_daily_mission"] = UserDailyMission{}
-	TableNameToInterface["u_weekly_mission"] = UserWeeklyMission{}
+
+	TableNameToInterface["u_mission"] = generic.UserIdWrapper[UserMission]{}
+	TableNameToInterface["u_daily_mission"] = generic.UserIdWrapper[UserDailyMission]{}
+	TableNameToInterface["u_weekly_mission"] = generic.UserIdWrapper[UserWeeklyMission]{}
 }

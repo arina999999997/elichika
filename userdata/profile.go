@@ -39,7 +39,8 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 		panic(err)
 	}
 
-	exist, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserId, memberId).
+	// TODO(friend): This doesn't work totally correctly because the card is isn't totally attached to the user anymore
+	exist, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", session.UserId, memberId).
 		Cols("love_level").Get(&partnerCard.LoveLevel)
 	utils.CheckErrMustExist(err, exist)
 
@@ -104,16 +105,16 @@ func (session *Session) GetOtherUserLiveStats(otherUserId int) model.UserProfile
 }
 
 func (session *Session) GetUserLiveStats() model.UserProfileLiveStats {
-	return session.GetOtherUserLiveStats(session.UserStatus.UserId)
+	return session.GetOtherUserLiveStats(session.UserId)
 }
 
 func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
-	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserId).AllCols().Update(&stats)
+	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserId).AllCols().Update(&stats)
 	utils.CheckErr(err)
 }
 
-// fetch profile of another user, from session.UserStatus.UserId's perspective
-// it's possible that otherUserId == session.UserStatus.UserId
+// fetch profile of another user, from session.UserId's perspective
+// it's possible that otherUserId == session.UserId
 func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	profile := model.Profile{}
 
@@ -183,7 +184,7 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 		OrderBy("active_skill_play_count DESC").Limit(3).Find(&profile.PlayInfo.PlaySkillCardRanking)
 
 	// custom profile
-	customProfile := GetOtherUserSetProfile(otherUserId)
+	customProfile := session.GetOtherUserSetProfile(otherUserId)
 	if customProfile.VoltageLiveDifficultyId != 0 {
 		profile.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterId = customProfile.VoltageLiveDifficultyId
 		profile.PlayInfo.MaxScoreLiveDifficulty.Score =
@@ -200,40 +201,35 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	return profile
 }
 
-func GetOtherUserSetProfile(otherUserId int) model.UserSetProfile {
+func (session *Session) GetOtherUserSetProfile(otherUserId int) model.UserSetProfile {
 	p := model.UserSetProfile{}
-	exist, err := Engine.Table("u_custom_set_profile").Where("user_id = ?", otherUserId).Get(&p)
+	_, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", otherUserId).Get(&p)
 	utils.CheckErr(err)
-	if !exist {
-		p.UserId = otherUserId
-	}
 	return p
 }
 
 func (session *Session) GetUserSetProfile() model.UserSetProfile {
-	return GetOtherUserSetProfile(session.UserStatus.UserId)
+	return session.GetOtherUserSetProfile(session.UserId)
 }
 
 // doesn't need to return delta patch or submit at the start because we would need to fetch profile everytime we need this thing
-func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
-	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserStatus.UserId).
-		AllCols().Update(&p)
+func (session *Session) SetUserSetProfile(userSetProfile model.UserSetProfile) {
+	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserId).
+		AllCols().Update(&userSetProfile)
 	utils.CheckErr(err)
 	if affected == 0 {
 		// need to insert
-		_, err = session.Db.Table("u_custom_set_profile").Insert(&p)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_custom_set_profile", userSetProfile)
 	}
 }
 
 func userSetProfileFinalizer(session *Session) {
 	for _, userSetProfile := range session.UserModel.UserSetProfileById.Objects {
 		affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?",
-			session.UserStatus.UserId).AllCols().Update(userSetProfile)
+			session.UserId).AllCols().Update(userSetProfile)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_custom_set_profile").Insert(userSetProfile)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_custom_set_profile", userSetProfile)
 		}
 	}
 }

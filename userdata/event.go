@@ -7,29 +7,26 @@ import (
 func userEventFinalizer(session *Session) {
 	for _, userEvent := range session.UserModel.UserEventMarathonByEventMasterId.Objects {
 		affected, err := session.Db.Table("u_event_marathon").Where("user_id = ? AND event_master_id = ?",
-			session.UserStatus.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
+			session.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_event_marathon").Insert(userEvent)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_event_marathon", userEvent)
 		}
 	}
 	for _, userEvent := range session.UserModel.UserEventMiningByEventMasterId.Objects {
 		affected, err := session.Db.Table("u_event_mining").Where("user_id = ? AND event_master_id = ?",
-			session.UserStatus.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
+			session.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_event_mining").Insert(userEvent)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_event_mining", userEvent)
 		}
 	}
 	for _, userEvent := range session.UserModel.UserEventCoopByEventMasterId.Objects {
 		affected, err := session.Db.Table("u_event_coop").Where("user_id = ? AND event_master_id = ?",
-			session.UserStatus.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
+			session.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_event_coop").Insert(userEvent)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_event_coop", userEvent)
 		}
 	}
 }

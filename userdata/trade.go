@@ -9,7 +9,7 @@ import (
 func (session *Session) GetTradeProductUser(productId int) int {
 	result := 0
 	exist, err := session.Db.Table("u_trade_product").
-		Where("user_id = ? AND product_id = ?", session.UserStatus.UserId, productId).
+		Where("user_id = ? AND product_id = ?", session.UserId, productId).
 		Cols("traded_count").Get(&result)
 	utils.CheckErr(err)
 	if !exist {
@@ -20,18 +20,15 @@ func (session *Session) GetTradeProductUser(productId int) int {
 
 func (session *Session) SetTradeProductUser(productId, newTradedCount int) {
 	record := model.TradeProductUser{
-		UserId:      session.UserStatus.UserId,
 		ProductId:   productId,
 		TradedCount: newTradedCount,
 	}
-
 	exist, err := session.Db.Table("u_trade_product").
-		Where("user_id = ? AND product_id = ?", session.UserStatus.UserId, productId).
+		Where("user_id = ? AND product_id = ?", session.UserId, productId).
 		Update(record)
 	utils.CheckErr(err)
 	if exist == 0 {
-		_, err := session.Db.Table("u_trade_product").Insert(record)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_trade_product", record)
 	}
 }
 
@@ -62,10 +59,9 @@ func (session *Session) ExecuteTrade(productId int, tradeCount int) bool {
 	content.ContentAmount *= int32(tradeCount)
 	session.AddResource(content)
 	session.RemoveResource(client.Content{
-		ContentType:   int32(trade.SourceContentType),
+		ContentType:   trade.SourceContentType,
 		ContentId:     int32(trade.SourceContentId),
 		ContentAmount: int32(product.SourceAmount) * int32(tradeCount),
 	})
-
 	return true
 }

@@ -1,7 +1,6 @@
 package model
 
 type UserLiveDeck struct {
-	UserId         int `xorm:"pk 'user_id'" json:"-"`
 	UserLiveDeckId int `xorm:"pk 'user_live_deck_id'" json:"user_live_deck_id"`
 	Name           struct {
 		DotUnderText string `xorm:"name" json:"dot_under_text"`
@@ -31,7 +30,6 @@ func (uld *UserLiveDeck) Id() int64 {
 }
 
 type UserLiveParty struct {
-	UserId         int `xorm:"pk 'user_id'" json:"-"`
 	PartyId        int `xorm:"pk 'party_id'" json:"party_id"`
 	UserLiveDeckId int `xorm:"'user_live_deck_id'" json:"user_live_deck_id"`
 	Name           struct {

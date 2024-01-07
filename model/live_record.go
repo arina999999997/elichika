@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type LastPlayLiveDifficultyDeck struct {
-	UserId           int   `xorm:"pk 'user_id'" json:"-"`
 	LiveDifficultyId int   `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
 	Voltage          int   `xorm:"'last_clear_voltage'" json:"voltage"`
 	IsCleared        bool  `xorm:"'last_clear_is_cleared'" json:"is_cleared"`
@@ -11,7 +14,6 @@ type LastPlayLiveDifficultyDeck struct {
 }
 
 type UserLiveDifficulty struct {
-	UserId                        int   `xorm:"pk 'user_id'" json:"-"`
 	LiveDifficultyId              int32 `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
 	MaxScore                      int32 `xorm:"'max_score'" json:"max_score"`
 	MaxCombo                      int32 `xorm:"'max_combo'" json:"max_combo"`
@@ -33,9 +35,7 @@ func (uld *UserLiveDifficulty) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
+
 	type DbLiveRecord struct {
 		UserLiveDifficulty `xorm:"extends"`
 		Voltage            int   `xorm:"'last_clear_voltage'" json:"voltage"`
@@ -44,5 +44,5 @@ func init() {
 		CardWithSuitDict   []int `xorm:"'last_clear_cards_and_suits'" json:"card_with_suit_dict"`
 		SquadDict          []any `xorm:"'squad_dict'" json:"squad_dict"`
 	}
-	TableNameToInterface["u_live_record"] = DbLiveRecord{}
+	TableNameToInterface["u_live_record"] = generic.UserIdWrapper[DbLiveRecord]{}
 }

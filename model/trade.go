@@ -2,10 +2,10 @@ package model
 
 import (
 	"elichika/client"
+	"elichika/generic"
 )
 
 type TradeProductUser struct {
-	UserId      int `xorm:"pk 'user_id'"`
 	ProductId   int `xorm:"pk 'product_id'"`
 	TradedCount int `xorm:"'traded_count'"`
 }
@@ -48,8 +48,6 @@ type Trade struct {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_trade_product"] = TradeProductUser{}
+
+	TableNameToInterface["u_trade_product"] = generic.UserIdWrapper[TradeProductUser]{}
 }

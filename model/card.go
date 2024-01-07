@@ -1,5 +1,9 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 // CardAwakeningReq ...
 type CardAwakeningReq struct {
 	CardMasterId     int  `json:"card_master_id"`
@@ -8,7 +12,6 @@ type CardAwakeningReq struct {
 
 // UserCard ...
 type UserCard struct {
-	UserId                     int   `xorm:"pk 'user_id'" json:"-"`
 	CardMasterId               int   `xorm:"pk 'card_master_id'" json:"card_master_id"`
 	Level                      int   `json:"level"`
 	Exp                        int   `json:"exp"`
@@ -83,8 +86,5 @@ type CardPlayInfo struct {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_card"] = UserCard{}
+	TableNameToInterface["u_card"] = generic.UserIdWrapper[UserCard]{}
 }

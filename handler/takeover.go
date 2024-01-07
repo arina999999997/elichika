@@ -78,7 +78,7 @@ func CheckTakeOver(ctx *gin.Context) {
 
 	if currentSession != nil { // has current session, fill in current user
 		resp.CurrentData = new(TakeOverData)
-		resp.CurrentData.UserId = currentSession.UserStatus.UserId
+		resp.CurrentData.UserId = currentSession.UserId
 		resp.CurrentData.LastLoginAt = currentSession.UserStatus.LastLoginAt
 		resp.CurrentData.SnsCoin = int(currentSession.UserStatus.FreeSnsCoin +
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin)
@@ -88,7 +88,7 @@ func CheckTakeOver(ctx *gin.Context) {
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
 		}
-		resp.LinkedData.UserId = linkedSession.UserStatus.UserId
+		resp.LinkedData.UserId = linkedSession.UserId
 		resp.LinkedData.AuthorizationKey = LoginSessionKey(req.Mask)
 		resp.LinkedData.ServiceUserCommonKey = nil
 		resp.LinkedData.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText
@@ -138,7 +138,7 @@ func SetTakeOver(ctx *gin.Context) {
 		}
 	}
 	resp := TakeOverData{}
-	resp.UserId = linkedSession.UserStatus.UserId
+	resp.UserId = linkedSession.UserId
 	resp.AuthorizationKey = StartUpAuthorizationKey(req.Mask)
 	resp.ServiceUserCommonKey = nil
 	resp.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText

@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type UserTower struct {
-	UserId                      int `xorm:"pk 'user_id'" json:"-"`
 	TowerId                     int `xorm:"pk 'tower_id'" json:"tower_id"`
 	ClearedFloor                int `xorm:"'cleared_floor'" json:"cleared_floor"`
 	ReadFloor                   int `xorm:"'read_floor'" json:"read_floor"`
@@ -15,7 +18,6 @@ func (ut *UserTower) Id() int64 {
 }
 
 type UserTowerCardUsedCount struct {
-	UserId         int   `xorm:"pk 'user_id'" json:"-"`
 	TowerId        int   `xorm:"pk 'tower_id'" json:"-"`
 	CardMasterId   int   `xorm:"pk 'card_master_id'" json:"card_master_id"`
 	UsedCount      int   `xorm:"'used_count'" json:"used_count"`
@@ -24,7 +26,6 @@ type UserTowerCardUsedCount struct {
 }
 
 type UserTowerVoltageRankingScore struct {
-	UserId  int `xorm:"pk 'user_id'"`
 	TowerId int `xorm:"pk 'tower_id'"`
 	FloorNo int `xorm:"pk 'floor_no'"`
 	Voltage int `xorm:"'voltage'"`
@@ -43,10 +44,8 @@ type TowerLive struct {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_tower"] = UserTower{}
-	TableNameToInterface["u_tower_card_used"] = UserTowerCardUsedCount{}
-	TableNameToInterface["u_tower_voltage_ranking_score"] = UserTowerVoltageRankingScore{}
+
+	TableNameToInterface["u_tower"] = generic.UserIdWrapper[UserTower]{}
+	TableNameToInterface["u_tower_card_used"] = generic.UserIdWrapper[UserTowerCardUsedCount]{}
+	TableNameToInterface["u_tower_voltage_ranking_score"] = generic.UserIdWrapper[UserTowerVoltageRankingScore]{}
 }

@@ -8,7 +8,7 @@ import (
 func (session *Session) GetRankingUser() response.RankingUser {
 	card := session.GetUserCard(int(session.UserStatus.RecommendCardMasterId))
 	return response.RankingUser{
-		UserId: session.UserStatus.UserId,
+		UserId: session.UserId,
 		UserName: client.LocalizedText{
 			DotUnderText: session.UserStatus.Name.DotUnderText,
 		},

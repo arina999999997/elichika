@@ -1,6 +1,8 @@
 package model
 
 import (
+	"elichika/generic"
+
 	"encoding/json"
 	"reflect"
 )
@@ -35,7 +37,6 @@ type LiveStartLivePartner struct {
 
 // the live being played
 type UserLive struct {
-	UserId          int             `xorm:"pk 'user_id'" json:"-"`
 	LiveId          int64           `xorm:"'live_id'" json:"live_id"`
 	LiveType        int             `xorm:"'live_type'" json:"live_type"`
 	DeckId          int             `xorm:"'deck_id'" json:"deck_id"`
@@ -99,7 +100,6 @@ type LiveUpdatePlayListReq struct {
 }
 
 type UserPlayListItem struct {
-	UserId         int  `xorm:"pk 'user_id'" json:"-"`
 	UserPlayListId int  `xorm:"pk 'user_play_list_id'" json:"user_play_list_id"`
 	GroupNum       int  `xorm:"'group_num'" json:"group_num"` // UserPlayListId % 10
 	LiveId         int  `xorm:"'live_id'" json:"live_id"`     // UserPlayListId / 10
@@ -111,11 +111,9 @@ func (item UserPlayListItem) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_live_deck"] = UserLiveDeck{}
-	TableNameToInterface["u_live_party"] = UserLiveParty{}
+
+	TableNameToInterface["u_live_deck"] = generic.UserIdWrapper[UserLiveDeck]{}
+	TableNameToInterface["u_live_party"] = generic.UserIdWrapper[UserLiveParty]{}
 	// TableNameToInterface["u_live_state"] = LiveState{}
-	TableNameToInterface["u_play_list"] = UserPlayListItem{}
+	TableNameToInterface["u_play_list"] = generic.UserIdWrapper[UserPlayListItem]{}
 }

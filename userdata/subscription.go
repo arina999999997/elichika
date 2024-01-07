@@ -8,11 +8,10 @@ import (
 func (session *Session) GetSubsriptionStatus() model.UserSubscriptionStatus {
 	status := model.UserSubscriptionStatus{}
 	exists, err := session.Db.Table("u_subscription_status").
-		Where("user_id = ?", session.UserStatus.UserId).Get(&status)
+		Where("user_id = ?", session.UserId).Get(&status)
 	utils.CheckErr(err)
 	if !exists {
 		status = model.UserSubscriptionStatus{
-			UserId:               session.UserStatus.UserId,
 			SubscriptionMasterId: 13001,
 			StartDate:            int(session.Time.Unix()),
 			ExpireDate:           1<<31 - 1,
@@ -32,13 +31,11 @@ func subscriptionStatusFinalizer(session *Session) {
 		// userSubscriptionStatus.PlatformExpireDate = (1 << 31) - 1
 		affected, err := session.Db.Table("u_subscription_status").
 			Where("user_id = ? AND subscription_master_id = ?",
-				session.UserStatus.UserId, userSubscriptionStatus.SubscriptionMasterId).
+				session.UserId, userSubscriptionStatus.SubscriptionMasterId).
 			AllCols().Update(userSubscriptionStatus)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_subscription_status").
-				Insert(userSubscriptionStatus)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_subscription_status", userSubscriptionStatus)
 		}
 	}
 }

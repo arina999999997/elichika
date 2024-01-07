@@ -1,7 +1,6 @@
 package serverdata
 
 import (
-	"elichika/client"
 	"elichika/config"
 	"elichika/model"
 	"elichika/utils"
@@ -44,9 +43,9 @@ func InitTables(overwrite bool) {
 	InitTable("s_gacha_guarantee", model.GachaGuarantee{}, overwrite)
 	InitTable("s_trade", model.Trade{}, overwrite)
 	InitTable("s_trade_product", model.TradeProduct{}, overwrite)
-	InitTable("s_login_bonus", client.LoginBonus{}, overwrite)
-	InitTable("s_login_bonus_reward_day", client.LoginBonusRewardDay{}, overwrite)
-	InitTable("s_login_bonus_reward_content", client.LoginBonusRewardContent{}, overwrite)
+	InitTable("s_login_bonus", model.LoginBonus{}, overwrite)
+	InitTable("s_login_bonus_reward_day", model.LoginBonusRewardDay{}, overwrite)
+	InitTable("s_login_bonus_reward_content", model.LoginBonusRewardContent{}, overwrite)
 
 }
 

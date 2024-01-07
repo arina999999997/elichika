@@ -26,7 +26,6 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 	} else if !solver.SolveForTileSet() { // otherwise we solve for a possible set of tiles
 		fmt.Println("Solving failed for card", card.CardMasterId, ", reseting to default")
 		*card = model.UserCard{
-			UserId:              session.UserStatus.UserId,
 			CardMasterId:        card.CardMasterId,
 			Level:               card.Level,
 			MaxFreePassiveSkill: solver.MasterCard.PassiveSkillSlot,

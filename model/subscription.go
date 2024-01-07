@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type UserSubscriptionStatus struct {
-	UserId               int    `xorm:"pk 'user_id'" json:"-"`
 	SubscriptionMasterId int    `xorm:"pk 'subscription_master_id'" json:"subscription_master_id"`
 	StartDate            int    `xorm:"'start_date'" json:"start_date"`
 	ExpireDate           int    `xorm:"'expire_date'" json:"expire_date"`
@@ -19,8 +22,5 @@ func (uss *UserSubscriptionStatus) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_subscription_status"] = UserSubscriptionStatus{}
+	TableNameToInterface["u_subscription_status"] = generic.UserIdWrapper[UserSubscriptionStatus]{}
 }

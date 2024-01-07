@@ -72,7 +72,7 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 		MemberGuildId: 1,
 	}
 	userData := response.MemberGuildUserRankingUserData{
-		UserId:                 session.UserStatus.UserId,
+		UserId:                 session.UserId,
 		UserRank:               int(session.UserStatus.Rank),
 		CardMasterId:           int(session.UserStatus.RecommendCardMasterId),
 		Level:                  80,

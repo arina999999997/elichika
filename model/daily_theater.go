@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type UserDailyTheater struct {
-	UserId         int  `xorm:"pk 'user_id'" json:"-"`
 	DailyTheaterId int  `xorm:"pk 'daily_theater_id'" json:"daily_theater_id"`
 	IsLiked        bool `xorm:"'is_liked'" json:"is_liked"`
 }
@@ -11,8 +14,5 @@ func (udt *UserDailyTheater) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_daily_theater"] = UserDailyTheater{}
+	TableNameToInterface["u_daily_theater"] = generic.UserIdWrapper[UserDailyTheater]{}
 }

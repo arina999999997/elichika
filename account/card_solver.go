@@ -222,7 +222,6 @@ func (solver *TrainingTreeSolver) AddCell(cellId int) {
 	}
 	solver.Cells = append(solver.Cells,
 		model.TrainingTreeCell{
-			UserId:       solver.Session.UserStatus.UserId,
 			CardMasterId: solver.Card.CardMasterId,
 			CellId:       cellId,
 			ActivatedAt:  solver.TimeStamp})

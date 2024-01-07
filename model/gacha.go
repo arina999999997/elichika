@@ -52,7 +52,6 @@ type GachaDraw struct { // s_gacha_draw
 }
 
 type GachaDrawStepupDetail struct { // u_gacha_draw_stepup
-	UserId        int  `json:"-"`
 	GachaMasterId int  `json:"-"`
 	CurrentStep   int  `json:"current_step"`
 	LoopCount     int  `json:"loop_count"`

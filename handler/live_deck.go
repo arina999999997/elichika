@@ -78,7 +78,6 @@ func SaveDeckAll(ctx *gin.Context) {
 			utils.CheckErr(err)
 
 			partyInfo := model.UserLiveParty{}
-			partyInfo.UserId = userId
 			partyInfo.PartyId = int(partyId)
 			partyInfo.IconMasterId, partyInfo.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIds(
 				dictInfo.CardMasterIds[0], dictInfo.CardMasterIds[1], dictInfo.CardMasterIds[2],

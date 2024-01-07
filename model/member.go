@@ -1,11 +1,12 @@
 package model
 
 import (
+	"elichika/generic"
+
 	"sort"
 )
 
 type UserCommunicationMemberDetailBadge struct {
-	UserId             int  `xorm:"pk 'user_id'" json:"-"`
 	MemberMasterId     int  `xorm:"pk 'member_master_id'" json:"member_master_id"`
 	IsStoryMemberBadge bool `xorm:"'is_story_member_badge'" json:"is_story_member_badge"`
 	IsStorySideBadge   bool `xorm:"'is_story_side_badge'" json:"is_story_side_badge"`
@@ -21,7 +22,6 @@ func (ucmdb *UserCommunicationMemberDetailBadge) Id() int64 {
 
 // UserMember ...
 type UserMember struct {
-	UserId                   int  `xorm:"pk 'user_id'" json:"-"`
 	MemberMasterId           int  `xorm:"pk 'member_master_id'" json:"member_master_id"`
 	CustomBackgroundMasterId int  `xorm:"'custom_background_master_id'" json:"custom_background_master_id"`
 	SuitMasterId             int  `xorm:"'suit_master_id'" json:"suit_master_id"`
@@ -51,7 +51,6 @@ type MemberPublicInfo struct {
 type UserMemberLovePanel struct {
 	// love panel level = m_member_love_panel[id] / 1000
 	// SELECT * FROM m_member_love_panel_cell WHERE id != (member_love_panel_master_id / 1000 - 1) * 10000 + (panel_index + 1) * 1000 + (member_love_panel_master_id % 1000); -> 0
-	UserId                    int   `xorm:"pk <- 'user_id'" json:"-"`
 	MemberId                  int   `xorm:"pk <- 'member_master_id'" json:"member_id"` // member_love_panel_master_id % 1000
 	MemberLovePanelCellIds    []int `xorm:"-" json:"member_love_panel_cell_ids"`
 	LovePanelLevel            int   `json:"-"` // member_love_panel_master_id / 1000
@@ -59,10 +58,6 @@ type UserMemberLovePanel struct {
 	// there is no ambiguous representation
 	// - When the last level is filled, if there is a next level then LovePanelLevel is increased, and LovePanelLastLevelCellIds is cleared
 	// - otherwise, LovePanelLevel stay the same, and LovePanelLastLevelCellIds has 5 tiles.
-}
-
-func (x *UserMemberLovePanel) SetUserId(userId int) {
-	x.UserId = userId
 }
 
 func (x *UserMemberLovePanel) Normalize() {
@@ -101,14 +96,12 @@ func (x *UserMemberLovePanel) LevelUp() {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
+
 	type DbMember struct {
 		UserMember                `xorm:"extends"`
 		LovePanelLevel            int   `xorm:"'love_panel_level' default 1"`
 		LovePanelLastLevelCellIds []int `xorm:"'love_panel_last_level_cell_ids' default '[]'"`
 	}
-	TableNameToInterface["u_member"] = DbMember{}
-	TableNameToInterface["u_communication_member_detail_badge"] = UserCommunicationMemberDetailBadge{}
+	TableNameToInterface["u_member"] = generic.UserIdWrapper[DbMember]{}
+	TableNameToInterface["u_communication_member_detail_badge"] = generic.UserIdWrapper[UserCommunicationMemberDetailBadge]{}
 }

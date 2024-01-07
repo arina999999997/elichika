@@ -1,8 +1,11 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 // type LiveMVDeck struct {
 // 	// unused, LiveMVDeck is not saved in server db
-// 	UserId              int   `xorm:"pk 'user_id'" json:"-"`
 // 	LiveMasterId        int   `xorm:"pk 'live_master_id'" json:"live_master_id"`
 // 	LiveMvDeckType      int   `json:"live_mv_deck_type"` // 1 for original deck, 2 for custom deck
 // 	MemberMasterIdByPos []int `xorm:"'member_master_id_by_pos'" json:"member_master_id_by_pos"`
@@ -11,7 +14,6 @@ package model
 // }
 
 type UserLiveMvDeck struct {
-	UserId           int  `xorm:"pk 'user_id'" json:"-"`
 	LiveMasterId     int  `xorm:"pk 'live_master_id'" json:"live_master_id"`
 	MemberMasterId1  *int `xorm:"'member_master_id_1'" json:"member_master_id_1"`
 	MemberMasterId2  *int `xorm:"'member_master_id_2'" json:"member_master_id_2"`
@@ -44,9 +46,7 @@ func (ulmd *UserLiveMvDeck) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_live_mv_deck"] = UserLiveMvDeck{}
-	TableNameToInterface["u_live_mv_deck_custom"] = UserLiveMvDeck{}
+
+	TableNameToInterface["u_live_mv_deck"] = generic.UserIdWrapper[UserLiveMvDeck]{}
+	TableNameToInterface["u_live_mv_deck_custom"] = generic.UserIdWrapper[UserLiveMvDeck]{}
 }

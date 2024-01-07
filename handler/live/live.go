@@ -116,7 +116,6 @@ func LiveStart(ctx *gin.Context) {
 	// 保存请求包因为 /live/finish 接口的响应包里有部分字段不在该接口的请求包里
 	// live is stored in db
 	live := model.UserLive{
-		UserId:          userId,
 		PartnerUserId:   req.PartnerUserId,
 		LiveId:          time.Now().UnixNano(),
 		LiveType:        enum.LiveTypeManual,

@@ -26,6 +26,7 @@ type Session struct {
 	Time                                      time.Time
 	Db                                        *xorm.Session
 	Ctx                                       *gin.Context
+	UserId                                    int
 	Gamedata                                  *gamedata.Gamedata
 	UserStatus                                *model.UserStatus // link to UserModel.UserStatus
 	UserCardMapping                           generic.ObjectByObjectIdMapping[model.UserCard]
@@ -43,7 +44,7 @@ type Session struct {
 	// TODO: change the map to index map?
 	UserMemberLovePanelDiffs map[int]model.UserMemberLovePanel
 	UserMemberLovePanels     []model.UserMemberLovePanel
-	UserResourceDiffs        map[int32](map[int32]UserResource) // content_type then content_id
+	UserResourceDiffs        map[int](map[int32]UserResource) // content_type then content_id
 
 	UserTrainingTreeCellDiffs []model.TrainingTreeCell
 	// for now only store delta patch, i.e. user_model_diff
@@ -91,13 +92,13 @@ func (session *Session) Close() {
 }
 
 func userStatusFinalizer(session *Session) {
-	affected, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserId).AllCols().Update(session.UserStatus)
+	affected, err := session.Db.Table("u_info").Where("user_id = ?", session.UserId).AllCols().Update(session.UserStatus)
 	utils.CheckErr(err)
 	if affected != 1 {
 		if session.SessionType != SessionTypeImportAccount {
 			panic("user doesn't exist in u_info")
 		} else {
-			session.Db.Table("u_info").Insert(session.UserStatus)
+			genericDatabaseInsert(session, "u_info", *session.UserStatus)
 		}
 	}
 }
@@ -109,6 +110,7 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.Ctx = ctx
+	s.UserId = userId
 	s.Gamedata = ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	s.Db = Engine.NewSession()
 	err := s.Db.Begin()
@@ -121,27 +123,29 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 		return nil
 	}
 	s.UserStatus = &s.UserModel.UserStatus
-	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
+	s.UserResourceDiffs = make(map[int](map[int32]UserResource))
 
 	s.UserMemberLovePanelDiffs = make(map[int]model.UserMemberLovePanel)
 	return &s
 }
 
-func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login) *Session {
+func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login, userId int) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.SessionType = SessionTypeImportAccount
 	s.Ctx = ctx
+	s.UserId = userId
 	s.Gamedata = ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	s.Db = Engine.NewSession()
 	err := s.Db.Begin()
 	utils.CheckErr(err)
 	s.UserModel = *loginData.UserModel
 	s.UserStatus = &s.UserModel.UserStatus
-	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
+
+	s.UserResourceDiffs = make(map[int](map[int32]UserResource))
 
 	s.UserMemberLovePanels = loginData.MemberLovePanels
-	_, err = s.Db.Table("u_login").Insert(loginData)
+	genericDatabaseInsert(&s, "u_login", *loginData)
 	utils.CheckErr(err)
 	return &s
 }

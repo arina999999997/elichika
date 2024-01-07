@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type TriggerBasic struct {
-	UserId          int     `xorm:"pk 'user_id'" json:"-"`
 	TriggerId       int64   `xorm:"pk 'trigger_id'" json:"trigger_id"` // use nano timestamp
 	InfoTriggerType int     `json:"info_trigger_type"`
 	LimitAt         *int64  `json:"limit_at"` // seems like some sort of timed timestamp, probably for event popup
@@ -15,7 +18,6 @@ func (obj *TriggerBasic) Id() int64 {
 }
 
 type TriggerCardGradeUp struct {
-	UserId               int   `xorm:"pk 'user_id'" json:"-"`
 	TriggerId            int64 `xorm:"pk 'trigger_id'" json:"trigger_id"` // use nano timestamp
 	CardMasterId         int   `xorm:"pk 'card_master_id'" json:"card_master_id"`
 	BeforeLoveLevelLimit int   `json:"before_love_level_limit"`
@@ -29,7 +31,6 @@ func (obj *TriggerCardGradeUp) Id() int64 {
 
 type TriggerMemberLoveLevelUp struct {
 	// special thanks to https://github.com/Francesco149/todokete/blob/master/Todokete.kt
-	UserId          int   `xorm:"pk 'user_id'" json:"-"`
 	TriggerId       int64 `xorm:"pk 'trigger_id'" json:"trigger_id"` // use nano timestamp
 	MemberMasterId  int   `xorm:"'member_master_id'" json:"member_master_id"`
 	BeforeLoveLevel int   `json:"before_love_level"`
@@ -42,7 +43,6 @@ func (obj *TriggerMemberLoveLevelUp) Id() int64 {
 
 type TriggerMemberGuildSupportItemExpired struct {
 	// always present even if it's not actually expire
-	UserId    int   `xorm:"pk 'user_id'" json:"-"`
 	TriggerId int64 `xorm:"pk 'trigger_id'" json:"trigger_id"` // use nano timestamp
 	ResetAt   int   `xorm:"'reset_at'" json:"reset_at"`        // use unit timestamp
 	IsNull    bool  `json:"-" xorm:"-"`
@@ -57,11 +57,9 @@ type TriggerReadReq struct {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_trigger_basic"] = TriggerBasic{}
-	TableNameToInterface["u_trigger_card_grade_up"] = TriggerCardGradeUp{}
-	TableNameToInterface["u_trigger_member_love_level_up"] = TriggerMemberLoveLevelUp{}
-	TableNameToInterface["u_trigger_member_guild_support_item_expired"] = TriggerMemberGuildSupportItemExpired{}
+
+	TableNameToInterface["u_trigger_basic"] = generic.UserIdWrapper[TriggerBasic]{}
+	TableNameToInterface["u_trigger_card_grade_up"] = generic.UserIdWrapper[TriggerCardGradeUp]{}
+	TableNameToInterface["u_trigger_member_love_level_up"] = generic.UserIdWrapper[TriggerMemberLoveLevelUp]{}
+	TableNameToInterface["u_trigger_member_guild_support_item_expired"] = generic.UserIdWrapper[TriggerMemberGuildSupportItemExpired]{}
 }

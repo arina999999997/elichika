@@ -5,6 +5,7 @@ import (
 	"elichika/dictionary"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/model"
 	"elichika/utils"
 
@@ -36,7 +37,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			tutorialEndAt = 0
 		}
 		status := model.UserStatus{
-			UserId:                                  userId,
 			PassWord:                                passWord,
 			LastLoginAt:                             time.Now().Unix(),
 			Rank:                                    1,
@@ -83,10 +83,14 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		status.Nickname.DotUnderText = "Newcomer"
 		status.Message.DotUnderText = "Hello!"
 		// insert into the db
-		_, err = db.Table("u_info").AllCols().Insert(&status)
+		wrapper := generic.UserIdWrapper[model.UserStatus]{
+			UserId: userId,
+			Object: &status,
+		}
+		_, err = db.Table("u_info").AllCols().Insert(wrapper)
 		if (err != nil) && (isRandomId) { // reroll once for random userId
 			userId = rand.Intn(1000000000)
-			status.UserId = userId
+			wrapper.UserId = userId
 			_, err = db.Table("u_info").AllCols().Insert(&status)
 		}
 		utils.CheckErr(err)
@@ -101,7 +105,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 
 		for _, member := range gamedata.Member {
 			members = append(members, model.UserMember{
-				UserId:                   userId,
 				MemberMasterId:           member.Id,
 				CustomBackgroundMasterId: member.MemberInit.CustomBackgroundMId,
 				SuitMasterId:             member.MemberInit.SuitMasterId,
@@ -114,7 +117,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				AllTrainingCardCount:     0,
 			})
 			cards = append(cards, model.UserCard{
-				UserId:                     userId,
 				CardMasterId:               member.MemberInit.SuitMasterId,
 				Level:                      1,
 				Exp:                        0,
@@ -153,7 +155,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		for _, suit := range gamedata.Suit {
 			if suit.SuitReleaseRoute == 2 {
 				suits = append(suits, model.UserSuit{
-					UserId:       userId,
 					SuitMasterId: suit.Id,
 					IsNew:        false,
 				})
@@ -173,7 +174,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 					cid[j] = gamedata.Member[j+100*((i-1)%3)].MemberInit.SuitMasterId
 				}
 				liveDeck := model.UserLiveDeck{
-					UserId:         userId,
 					UserLiveDeckId: i,
 					CardMasterId1:  cid[1],
 					CardMasterId2:  cid[2],
@@ -198,7 +198,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				liveDecks = append(liveDecks, liveDeck)
 				for j := 1; j <= 3; j++ {
 					liveParty := model.UserLiveParty{
-						UserId:         userId,
 						PartyId:        i*100 + j,
 						UserLiveDeckId: i,
 						CardMasterId1:  cid[(j-1)*3+1],
@@ -219,7 +218,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		lessonDecks := []model.UserLessonDeck{}
 		for i := 1; i <= 20; i++ {
 			lessonDecks = append(lessonDecks, model.UserLessonDeck{
-				UserId:           userId,
 				UserLessonDeckId: i,
 				Name:             fmt.Sprintf(dictionary.Resolve("k.m_sorter_deck_lesson")+" %d", i),
 			})

@@ -13,7 +13,6 @@ func (session *Session) InsertUserSuits(suits []model.UserSuit) {
 
 func (session *Session) InsertUserSuit(suitMasterId int) {
 	suit := model.UserSuit{
-		UserId:       session.UserStatus.UserId,
 		SuitMasterId: suitMasterId,
 		IsNew:        true,
 	}
@@ -25,8 +24,7 @@ func suitFinalizer(session *Session) {
 		exist, err := session.Db.Table("u_suit").Exist(&suit)
 		utils.CheckErr(err)
 		if !exist {
-			_, err := session.Db.Table("u_suit").AllCols().Insert(suit)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_suit", suit)
 		}
 	}
 }

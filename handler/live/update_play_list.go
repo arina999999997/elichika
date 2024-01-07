@@ -25,7 +25,6 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UpdateUserPlayList(model.UserPlayListItem{
-		UserId:         userId,
 		UserPlayListId: req.GroupNum + req.LiveMasterId*10,
 		GroupNum:       req.GroupNum,
 		LiveId:         req.LiveMasterId,

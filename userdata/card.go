@@ -14,14 +14,13 @@ func (session *Session) GetUserCard(cardMasterId int) model.UserCard {
 	}
 	card := model.UserCard{}
 	exist, err := session.Db.Table("u_card").
-		Where("user_id = ? AND card_master_id = ?", session.UserStatus.UserId, cardMasterId).Get(&card)
+		Where("user_id = ? AND card_master_id = ?", session.UserId, cardMasterId).Get(&card)
 	utils.CheckErr(err)
 
 	if !exist {
 		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
 		masterCard := gamedata.Card[cardMasterId]
 		card = model.UserCard{
-			UserId:              session.UserStatus.UserId,
 			CardMasterId:        cardMasterId,
 			Level:               1,
 			MaxFreePassiveSkill: masterCard.PassiveSkillSlot,
@@ -44,11 +43,10 @@ func (session *Session) UpdateUserCard(card model.UserCard) {
 func cardFinalizer(session *Session) {
 	for _, card := range session.UserModel.UserCardByCardId.Objects {
 		affected, err := session.Db.Table("u_card").
-			Where("user_id = ? AND card_master_id = ?", session.UserStatus.UserId, card.CardMasterId).AllCols().Update(card)
+			Where("user_id = ? AND card_master_id = ?", session.UserId, card.CardMasterId).AllCols().Update(card)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_card").Insert(card)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_card", card)
 		}
 	}
 }

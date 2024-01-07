@@ -69,7 +69,6 @@ func FetchShopSubscription(ctx *gin.Context) {
 
 	session.UserModel.UserSubscriptionStatusById.PushBack(
 		model.UserSubscriptionStatus{
-			UserId:               userId,
 			SubscriptionMasterId: 13001,
 			StartDate:            int(session.Time.Unix()),
 			ExpireDate:           1<<31 - 1,

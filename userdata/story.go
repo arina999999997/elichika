@@ -8,7 +8,6 @@ import (
 
 func (session *Session) InsertUserStoryMain(storyMainMasterId int) bool {
 	userStoryMain := model.UserStoryMain{
-		UserId:            session.UserStatus.UserId,
 		StoryMainMasterId: storyMainMasterId,
 	}
 	has, err := session.Db.Table("u_story_main").Exist(&userStoryMain)
@@ -39,15 +38,13 @@ func storyMainFinalizer(session *Session) {
 		exist, err := session.Db.Table("u_story_main").Exist(&userStoryMain)
 		utils.CheckErr(err)
 		if !exist {
-			_, err = session.Db.Table("u_story_main").Insert(userStoryMain)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_story_main", userStoryMain)
 		}
 	}
 }
 
 func (session *Session) UpdateUserStoryMainSelected(storyMainCellId, selectedId int) {
 	userStoryMainSelected := model.UserStoryMainSelected{
-		UserId:          session.UserStatus.UserId,
 		StoryMainCellId: storyMainCellId,
 		SelectedId:      selectedId,
 	}
@@ -57,18 +54,16 @@ func (session *Session) UpdateUserStoryMainSelected(storyMainCellId, selectedId 
 func storyMainSelectedFinalizer(session *Session) {
 	for _, userStoryMainSelected := range session.UserModel.UserStoryMainSelectedByStoryMainCellId.Objects {
 		affected, err := session.Db.Table("u_story_main_selected").Where("user_id = ? AND story_main_cell_id = ?",
-			userStoryMainSelected.UserId, userStoryMainSelected.StoryMainCellId).AllCols().Update(userStoryMainSelected)
+			session.UserId, userStoryMainSelected.StoryMainCellId).AllCols().Update(userStoryMainSelected)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err := session.Db.Table("u_story_main_selected").Insert(userStoryMainSelected)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_story_main_selected", userStoryMainSelected)
 		}
 	}
 }
 
 func (session *Session) InsertUserStoryMainPartDigestMovie(partId int) {
 	userStoryMainPartDigestMovie := model.UserStoryMainPartDigestMovie{
-		UserId:                session.UserStatus.UserId,
 		StoryMainPartMasterId: partId,
 	}
 	session.UserModel.UserStoryMainPartDigestMovieById.PushBack(userStoryMainPartDigestMovie)
@@ -79,15 +74,13 @@ func storyMainPartDigestMovieFinalizer(session *Session) {
 		exist, err := session.Db.Table("u_story_main_part_digest_movie").Exist(&userStoryMainPartDigestMovie)
 		utils.CheckErr(err)
 		if !exist {
-			_, err = session.Db.Table("u_story_main_part_digest_movie").Insert(userStoryMainPartDigestMovie)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_story_main_part_digest_movie", userStoryMainPartDigestMovie)
 		}
 	}
 }
 
 func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterId int) {
 	userStoryLinkage := model.UserStoryLinkage{
-		UserId:                   session.UserStatus.UserId,
 		StoryLinkageCellMasterId: storyLinkageCellMasterId,
 	}
 	has, err := session.Db.Table("u_story_linkage").Exist(&userStoryLinkage)
@@ -103,8 +96,7 @@ func storyLinkageFinalizer(session *Session) {
 		exist, err := session.Db.Table("u_story_linkage").Exist(&userStoryLinkage)
 		utils.CheckErr(err)
 		if !exist {
-			_, err := session.Db.Table("u_story_linkage").Insert(userStoryLinkage)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_story_linkage", userStoryLinkage)
 		}
 	}
 }

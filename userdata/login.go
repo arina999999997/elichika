@@ -10,11 +10,10 @@ import (
 func (session *Session) Login() response.Login {
 	// perform a login, load the relevant data into UserModel and load login data into login
 	login := response.Login{}
-	exists, err := session.Db.Table("u_login").Where("user_id = ?", session.UserStatus.UserId).Get(&login)
+	exists, err := session.Db.Table("u_login").Where("user_id = ?", session.UserId).Get(&login)
 	utils.CheckErr(err)
 	if !exists {
 		login = response.Login{
-			UserId:                  session.UserStatus.UserId,
 			IsPlatformServiceLinked: true,
 			LastTimestamp:           time.Now().UnixMilli(),
 			Cautions:                []int{},
@@ -22,8 +21,7 @@ func (session *Session) Login() response.Login {
 			FromEea:                 true,
 		}
 		login.ReproInfo.GroupNo = 1
-		_, err = session.Db.Table("u_login").Insert(login)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_login", login)
 	}
 
 	login.UserModel = &session.UserModel

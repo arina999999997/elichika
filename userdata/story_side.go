@@ -7,7 +7,6 @@ import (
 
 func (session *Session) InsertStorySide(storySideMasterId int) {
 	userStorySide := model.UserStorySide{
-		UserId:            session.UserStatus.UserId,
 		StorySideMasterId: storySideMasterId,
 		IsNew:             true,
 		AcquiredAt:        session.Time.Unix(),
@@ -18,7 +17,7 @@ func (session *Session) InsertStorySide(storySideMasterId int) {
 func (session *Session) FinishStorySide(storySideMasterId int) {
 	userStorySide := model.UserStorySide{}
 	exist, err := session.Db.Table("u_story_side").Where("user_id = ? AND story_side_master_id = ?",
-		session.UserStatus.UserId, storySideMasterId).Get(&userStorySide)
+		session.UserId, storySideMasterId).Get(&userStorySide)
 	utils.CheckErr(err)
 	if !exist {
 		panic("side story must exist to be read")
@@ -33,13 +32,11 @@ func (session *Session) FinishStorySide(storySideMasterId int) {
 func storySideFinalizer(session *Session) {
 	for _, userStorySide := range session.UserModel.UserStorySideById.Objects {
 		affected, err := session.Db.Table("u_story_side").Where("user_id = ? AND story_side_master_id = ?",
-			userStorySide.UserId, userStorySide.StorySideMasterId).AllCols().Update(userStorySide)
+			session.UserId, userStorySide.StorySideMasterId).AllCols().Update(userStorySide)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
-			_, err = session.Db.Table("u_story_side").Insert(userStorySide)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_story_side", userStorySide)
 		}
-
 	}
 }
 

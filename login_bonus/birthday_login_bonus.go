@@ -74,10 +74,10 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 			panic("not supported")
 		}
 		target.BirthdayMember = append(target.BirthdayMember, client.LoginBonusBirthDayMember{
-			MemberMasterId: member.Id,
-			SuitMasterId:   memberLoginBonusBirthday.SuitMasterId,
+			MemberMasterId: int32(member.Id),
+			SuitMasterId:   int32(memberLoginBonusBirthday.SuitMasterId),
 		})
-		naviLoginBonus.BackgroundId = memberLoginBonusBirthday.Id
+		naviLoginBonus.BackgroundId = int32(memberLoginBonusBirthday.Id)
 		target.BirthdayLoginBonuses = append(target.BirthdayLoginBonuses, naviLoginBonus)
 	}
 	session.UpdateUserLoginBonus(userLoginBonus)

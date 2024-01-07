@@ -3,6 +3,7 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/dictionary"
+	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -11,11 +12,11 @@ import (
 )
 
 type LoginBonus struct {
-	LoginBonusId            int                        `xorm:"pk 'login_bonus_id'"`
+	LoginBonusId            int32                      `xorm:"pk 'login_bonus_id'"`
 	LoginBonusType          int                        `xorm:"'login_bonus_type'"`
 	StartAt                 int64                      `xorm:"'start_at'"`
 	EndAt                   int64                      `xorm:"'end_at'"`
-	BackgroundId            int                        `xorm:"'background_id'"`
+	BackgroundId            int32                      `xorm:"'background_id'"`
 	WhiteboardTextureAsset  client.TextureStruktur     `xorm:"'whiteboard_texture_asset'"`
 	LoginBonusHandler       string                     `xorm:"'login_bonus_handler'"`
 	LoginBonusHandlerConfig string                     `xorm:"'login_bonus_handler_config'"`
@@ -23,7 +24,7 @@ type LoginBonus struct {
 }
 
 func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	rewardDays := []client.LoginBonusRewardDay{}
+	rewardDays := []model.LoginBonusRewardDay{}
 	err := serverdata_db.Table("s_login_bonus_reward_day").Where("login_bonus_id = ?", lb.LoginBonusId).
 		OrderBy("day").Find(&rewardDays)
 	utils.CheckErr(err)

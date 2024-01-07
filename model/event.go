@@ -1,8 +1,11 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 // TODO: not actually implemented, just for archival purpose
 type UserEventMarathon struct { // Story ranking event
-	UserId             int `xorm:"pk 'user_id'" json:"-"`
 	EventMasterId      int `xorm:"pk 'event_master_id'" json:"event_master_id"`
 	EventPoint         int `xorm:"'event_point'" json:"event_point"`
 	OpennedStoryNumber int `xorm:"'opened_story_number'" json:"opened_story_number"`
@@ -14,7 +17,6 @@ func (uem *UserEventMarathon) Id() int64 {
 }
 
 type UserEventMining struct { // Voltage ranking event
-	UserId             int `xorm:"pk 'user_id'" json:"-"`
 	EventMasterId      int `xorm:"pk 'event_master_id'" json:"event_master_id"`
 	EventPoint         int `xorm:"'event_point'" json:"event_point"`
 	EventVoltagePoint  int `xorm:"'event_voltage_point'" json:"event_voltage_point"`
@@ -27,7 +29,6 @@ func (uem *UserEventMining) Id() int64 {
 }
 
 type UserEventCoop struct { // SBL
-	UserId            int `xorm:"pk 'user_id'" json:"-"`
 	EventMasterId     int `xorm:"pk 'event_master_id'" json:"event_master_id"`
 	CurrentRoomId     int `xorm:"pk 'current_room_id'" json:"current_room_id"`
 	EventPoint        int `xorm:"'event_point'" json:"event_point"`
@@ -45,10 +46,8 @@ func (uec *UserEventCoop) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_event_marathon"] = UserEventMarathon{}
-	TableNameToInterface["u_event_mining"] = UserEventMining{}
-	TableNameToInterface["u_event_coop"] = UserEventCoop{}
+
+	TableNameToInterface["u_event_marathon"] = generic.UserIdWrapper[UserEventMarathon]{}
+	TableNameToInterface["u_event_mining"] = generic.UserIdWrapper[UserEventMining]{}
+	TableNameToInterface["u_event_coop"] = generic.UserIdWrapper[UserEventCoop]{}
 }

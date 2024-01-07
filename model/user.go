@@ -2,10 +2,10 @@ package model
 
 import (
 	"elichika/client"
+	"elichika/generic"
 )
 
 type UserStatus struct {
-	UserId   int    `xorm:"pk 'user_id'" json:"-"`
 	PassWord string `xorm:"'pass_word'" json:"-"`
 
 	Name                                      client.LocalizedText `xorm:"'name'" json:"name"`                                         // player name
@@ -129,7 +129,6 @@ type Profile struct {
 }
 
 type UserSetProfile struct {
-	UserId                  int   `xorm:"'user_id'" json:"-"`
 	UserSetProfileId        int   `xorm:"-" json:"user_set_profile_id"` // always 0
 	VoltageLiveDifficultyId int32 `xorm:"'voltage_live_difficulty_id'" json:"voltage_live_difficulty_id"`
 	ComboLiveDifficultyId   int32 `xorm:"'commbo_live_difficulty_id'" json:"commbo_live_difficulty_id"`
@@ -140,16 +139,13 @@ func (usp *UserSetProfile) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
 
 	type DbUser struct {
 		UserStatus           `xorm:"extends"`
 		UserProfileLiveStats `xorm:"extends"`
 	}
-	TableNameToInterface["u_info"] = DbUser{}
+	TableNameToInterface["u_info"] = generic.UserIdWrapper[DbUser]{}
 
 	// TODO: change this database name
-	TableNameToInterface["u_custom_set_profile"] = UserSetProfile{}
+	TableNameToInterface["u_custom_set_profile"] = generic.UserIdWrapper[UserSetProfile]{}
 }

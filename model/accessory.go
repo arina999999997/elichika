@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type UserAccessory struct {
-	UserId             int   `xorm:"pk 'user_id'" json:"-"`
 	UserAccessoryId    int64 `xorm:"pk 'user_accessory_id'" json:"user_accessory_id"`
 	AccessoryMasterId  int   `xorm:"'accessory_master_id'" json:"accessory_master_id"`
 	Level              int   `json:"level"`
@@ -23,8 +26,5 @@ func (ua *UserAccessory) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_accessory"] = UserAccessory{}
+	TableNameToInterface["u_accessory"] = generic.UserIdWrapper[UserAccessory]{}
 }

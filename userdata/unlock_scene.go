@@ -15,7 +15,6 @@ func (session *Session) UnlockScene(unlockSceneType, status int) {
 	// status = 1 is the initial unlock process, it will show an animation
 	// status = 2 is actually unlocked
 	userUnlockScene := model.UserUnlockScene{
-		UserId:          session.UserStatus.UserId,
 		UnlockSceneType: unlockSceneType, // not sure what this is
 		Status:          status,
 	}
@@ -25,18 +24,16 @@ func (session *Session) UnlockScene(unlockSceneType, status int) {
 func unlockSceneFinalizer(session *Session) {
 	for _, userUnlockScene := range session.UserModel.UserUnlockScenesByEnum.Objects {
 		affected, err := session.Db.Table("u_unlock_scene").Where("user_id = ? AND unlock_scene_type = ?",
-			userUnlockScene.UserId, userUnlockScene.UnlockSceneType).Update(userUnlockScene)
+			session.UserId, userUnlockScene.UnlockSceneType).Update(userUnlockScene)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
-			_, err = session.Db.Table("u_unlock_scene").Insert(userUnlockScene)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_unlock_scene", userUnlockScene)
 		}
 	}
 }
 
 func (session *Session) SaveSceneTips(sceneTipsType int) {
 	userSceneTips := model.UserSceneTips{
-		UserId:        session.UserStatus.UserId,
 		SceneTipsType: sceneTipsType,
 	}
 	session.UserModel.UserSceneTipsByEnum.PushBack(userSceneTips)
@@ -44,8 +41,7 @@ func (session *Session) SaveSceneTips(sceneTipsType int) {
 
 func sceneTipsFinalizer(session *Session) {
 	for _, userSceneTips := range session.UserModel.UserSceneTipsByEnum.Objects {
-		_, err := session.Db.Table("u_scene_tips").Insert(userSceneTips)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_scene_tips", userSceneTips)
 	}
 }
 

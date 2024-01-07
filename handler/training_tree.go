@@ -219,7 +219,6 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	for _, cellId := range req.CellMasterIds {
 		unlockedCells = append(unlockedCells,
 			model.TrainingTreeCell{
-				UserId:       userId,
 				CardMasterId: req.CardMasterId,
 				CellId:       cellId,
 				ActivatedAt:  session.Time.Unix()})

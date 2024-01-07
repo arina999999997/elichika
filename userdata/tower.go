@@ -9,11 +9,10 @@ import (
 func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int) model.UserTowerCardUsedCount {
 	cardUsed := model.UserTowerCardUsedCount{}
 	exist, err := session.Db.Table("u_tower_card_used").
-		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserStatus.UserId, towerId, cardMasterId).Get(&cardUsed)
+		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, towerId, cardMasterId).Get(&cardUsed)
 	utils.CheckErr(err)
 	if !exist {
 		cardUsed = model.UserTowerCardUsedCount{
-			UserId:         session.UserStatus.UserId,
 			TowerId:        towerId,
 			CardMasterId:   cardMasterId,
 			UsedCount:      0,
@@ -26,19 +25,18 @@ func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int) model.Us
 
 func (session *Session) UpdateUserTowerCardUsed(card model.UserTowerCardUsedCount) {
 	affected, err := session.Db.Table("u_tower_card_used").
-		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserStatus.UserId, card.TowerId, card.CardMasterId).
+		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, card.TowerId, card.CardMasterId).
 		AllCols().Update(card)
 	utils.CheckErr(err)
 	if affected == 0 {
-		_, err := session.Db.Table("u_tower_card_used").Insert(card)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_tower_card_used", card)
 	}
 }
 
 func (session *Session) GetUserTowerCardUsedList(towerId int) []model.UserTowerCardUsedCount {
 	list := []model.UserTowerCardUsedCount{}
 	err := session.Db.Table("u_tower_card_used").
-		Where("user_id = ? AND tower_id = ?", session.UserStatus.UserId, towerId).Find(&list)
+		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&list)
 	utils.CheckErr(err)
 	return list
 }
@@ -50,11 +48,10 @@ func (session *Session) GetUserTower(towerId int) model.UserTower {
 	}
 	tower := model.UserTower{}
 	exist, err := session.Db.Table("u_tower").
-		Where("user_id = ? AND tower_id = ?", session.UserStatus.UserId, towerId).Get(&tower)
+		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Get(&tower)
 	utils.CheckErr(err)
 	if !exist {
 		tower = model.UserTower{
-			UserId:                      session.UserStatus.UserId,
 			TowerId:                     towerId,
 			ClearedFloor:                0,
 			ReadFloor:                   0,
@@ -79,7 +76,7 @@ func (session *Session) UpdateUserTower(tower model.UserTower) {
 func (session *Session) GetUserTowerVoltageRankingScores(towerId int) []model.UserTowerVoltageRankingScore {
 	scores := []model.UserTowerVoltageRankingScore{}
 	err := session.Db.Table("u_tower_voltage_ranking_score").
-		Where("user_id = ? AND tower_id = ?", session.UserStatus.UserId, towerId).Find(&scores)
+		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&scores)
 	utils.CheckErr(err)
 	return scores
 }
@@ -87,11 +84,10 @@ func (session *Session) GetUserTowerVoltageRankingScores(towerId int) []model.Us
 func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int) model.UserTowerVoltageRankingScore {
 	score := model.UserTowerVoltageRankingScore{}
 	exists, err := session.Db.Table("u_tower_voltage_ranking_score").
-		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserStatus.UserId, towerId, floorNo).Get(&score)
+		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserId, towerId, floorNo).Get(&score)
 	utils.CheckErr(err)
 	if !exists {
 		score = model.UserTowerVoltageRankingScore{
-			UserId:  session.UserStatus.UserId,
 			TowerId: towerId,
 			FloorNo: floorNo,
 			Voltage: 0,
@@ -102,12 +98,11 @@ func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int) mo
 
 func (session *Session) UpdateUserTowerVoltageRankingScore(score model.UserTowerVoltageRankingScore) {
 	affected, err := session.Db.Table("u_tower_voltage_ranking_score").
-		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserStatus.UserId, score.TowerId, score.FloorNo).AllCols().
+		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserId, score.TowerId, score.FloorNo).AllCols().
 		Update(score)
 	utils.CheckErr(err)
 	if affected == 0 {
-		_, err := session.Db.Table("u_tower_voltage_ranking_score").Insert(score)
-		utils.CheckErr(err)
+		genericDatabaseInsert(session, "u_tower_voltage_ranking_score", score)
 	}
 }
 
@@ -127,12 +122,11 @@ func (session *Session) GetTowerRankingCell(towerId int) response.TowerRankingCe
 func towerFinalizer(session *Session) {
 	for _, userTower := range session.UserModel.UserTowerByTowerId.Objects {
 		affected, err := session.Db.Table("u_tower").
-			Where("user_id = ? AND tower_id = ?", session.UserStatus.UserId, userTower.TowerId).
+			Where("user_id = ? AND tower_id = ?", session.UserId, userTower.TowerId).
 			AllCols().Update(userTower)
 		utils.CheckErr(err)
 		if affected == 0 {
-			_, err = session.Db.Table("u_tower").Insert(userTower)
-			utils.CheckErr(err)
+			genericDatabaseInsert(session, "u_tower", userTower)
 		}
 	}
 }

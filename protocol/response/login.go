@@ -1,11 +1,11 @@
 package response
 
 import (
+	"elichika/generic"
 	"elichika/model"
 )
 
 type Login struct {
-	UserId                  int        `xorm:"pk 'user_id'" json:"-"`
 	SessionKey              string     `xorm:"-" json:"session_key"`
 	UserModel               *UserModel `xorm:"-" json:"user_model"`
 	IsPlatformServiceLinked bool       `xorm:"'is_platform_service_linked'" json:"is_platform_service_linked"`
@@ -25,14 +25,6 @@ type Login struct {
 	} `xorm:"extends" json:"repro_info"`
 }
 
-func (login *Login) SetUserId(userId int) {
-	login.UserId = userId
-	login.UserModel.SetUserId(userId)
-	for i := range login.MemberLovePanels {
-		login.MemberLovePanels[i].SetUserId(userId)
-	}
-}
-
 func init() {
-	model.TableNameToInterface["u_login"] = Login{}
+	model.TableNameToInterface["u_login"] = generic.UserIdWrapper[Login]{}
 }

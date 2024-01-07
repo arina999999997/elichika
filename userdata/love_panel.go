@@ -11,7 +11,7 @@ func (session *Session) GetMemberLovePanel(memberMasterId int) model.UserMemberL
 		return panel
 	}
 	exist, err := session.Db.Table("u_member").
-		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserId, memberMasterId).
+		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).
 		Get(&panel)
 	utils.CheckErr(err)
 	if !exist {
@@ -39,7 +39,7 @@ func finalizeMemberLovePanelDiffs(session *Session) {
 		// TODO: this is not necessary after we split the database
 		session.UserMemberLovePanels[i].Normalize()
 		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserMemberLovePanels[i].UserId,
+			Where("user_id = ? AND member_master_id = ?", session.UserId,
 				session.UserMemberLovePanels[i].MemberId).AllCols().Update(session.UserMemberLovePanels[i])
 		utils.CheckErr(err)
 		if affected != 1 {
@@ -51,7 +51,7 @@ func finalizeMemberLovePanelDiffs(session *Session) {
 
 func memberLovePanelPopulator(session *Session) {
 	err := session.Db.Table("u_member").
-		Where("user_id = ?", session.UserStatus.UserId).Find(&session.UserMemberLovePanels)
+		Where("user_id = ?", session.UserId).Find(&session.UserMemberLovePanels)
 	utils.CheckErr(err)
 	for i := range session.UserMemberLovePanels {
 		session.UserMemberLovePanels[i].Fill()

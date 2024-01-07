@@ -1,7 +1,10 @@
 package model
 
+import (
+	"elichika/generic"
+)
+
 type UserMemberGuild struct {
-	UserId                   int `xorm:"pk 'user_id'" json:"-"`
 	MemberGuildId            int `xorm:"pk 'member_guild_id'" json:"member_guild_id"`
 	MemberMasterId           int `xorm:"'member_master_id'" json:"member_master_id"`
 	TotalPoint               int `xorm:"'total_point'" json:"total_point"`
@@ -21,7 +24,6 @@ func (umg *UserMemberGuild) Id() int64 {
 }
 
 type UserMemberGuildSupportItem struct {
-	UserId             int   `xorm:"user_id" json:"-"`
 	SupportItemId      int   `xorm:"'support_item_id'" json:"support_item_id"`
 	Amount             int64 `xorm:"'amount'" json:"amount"`
 	SupportItemResetAt int   `xorm:"'support_item_reset_at'" json:"support_item_reset_at"`
@@ -32,9 +34,7 @@ func (umgsi *UserMemberGuildSupportItem) Id() int64 {
 }
 
 func init() {
-	if TableNameToInterface == nil {
-		TableNameToInterface = make(map[string]interface{})
-	}
-	TableNameToInterface["u_member_guild"] = UserMemberGuild{}
-	TableNameToInterface["u_member_guild_support_item"] = UserMemberGuildSupportItem{}
+
+	TableNameToInterface["u_member_guild"] = generic.UserIdWrapper[UserMemberGuild]{}
+	TableNameToInterface["u_member_guild_support_item"] = generic.UserIdWrapper[UserMemberGuildSupportItem]{}
 }

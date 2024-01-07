@@ -7,7 +7,7 @@ import (
 
 func (session *Session) GetAllUserAccessories() []model.UserAccessory {
 	accessories := []model.UserAccessory{}
-	err := session.Db.Table("u_accessory").Where("user_id = ?", session.UserStatus.UserId).
+	err := session.Db.Table("u_accessory").Where("user_id = ?", session.UserId).
 		Find(&accessories)
 	utils.CheckErr(err)
 	return accessories
@@ -23,12 +23,12 @@ func (session *Session) GetUserAccessory(userAccessoryId int64) model.UserAccess
 	// if not look in db
 	accessory := model.UserAccessory{}
 	exist, err := session.Db.Table("u_accessory").
-		Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserId, userAccessoryId).Get(&accessory)
+		Where("user_id = ? AND user_accessory_id = ?", session.UserId, userAccessoryId).Get(&accessory)
 	utils.CheckErr(err)
 	if !exist {
 		// if not exist, create new one
 		accessory = model.UserAccessory{
-			UserId:             session.UserStatus.UserId,
+			// UserId:             session.UserId,
 			UserAccessoryId:    userAccessoryId,
 			Level:              1,
 			PassiveSkill1Level: 1,
@@ -48,7 +48,7 @@ func accessoryFinalizer(session *Session) {
 	for _, accessory := range session.UserModel.UserAccessoryByUserAccessoryId.Objects {
 		if accessory.IsNull {
 			affected, err := session.Db.Table("u_accessory").
-				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserId, accessory.UserAccessoryId).
+				Where("user_id = ? AND user_accessory_id = ?", session.UserId, accessory.UserAccessoryId).
 				Delete(&accessory)
 			utils.CheckErr(err)
 			if affected != 1 {
@@ -56,12 +56,11 @@ func accessoryFinalizer(session *Session) {
 			}
 		} else {
 			affected, err := session.Db.Table("u_accessory").
-				Where("user_id = ? AND user_accessory_id = ?", session.UserStatus.UserId, accessory.UserAccessoryId).
+				Where("user_id = ? AND user_accessory_id = ?", session.UserId, accessory.UserAccessoryId).
 				AllCols().Update(accessory)
 			utils.CheckErr(err)
 			if affected == 0 {
-				_, err = session.Db.Table("u_accessory").AllCols().Insert(accessory)
-				utils.CheckErr(err)
+				genericDatabaseInsert(session, "u_accessory", accessory)
 			}
 		}
 	}
