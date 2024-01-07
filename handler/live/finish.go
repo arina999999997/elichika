@@ -1,6 +1,7 @@
 package live
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
@@ -87,13 +88,13 @@ type LiveFinishLiveResult struct {
 type LiveDifficultyMission struct {
 	Position    int
 	TargetValue int
-	Reward      model.Content `xorm:"extends"`
+	Reward      client.Content `xorm:"extends"`
 }
 
 func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, session *userdata.Session, live model.UserLive) {
 	liveDifficultyId := session.UserStatus.LastLiveDifficultyId
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	liveDifficulty := gamedata.LiveDifficulty[liveDifficultyId]
+	liveDifficulty := gamedata.LiveDifficulty[int(liveDifficultyId)]
 	isCenter := map[int]bool{}
 	for _, memberMapping := range liveDifficulty.Live.LiveMemberMapping {
 		if memberMapping.IsCenter && (memberMapping.Position <= 9) {
@@ -109,18 +110,18 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 	// record this live
 	liveRecord := session.GetLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
 	liveRecord.IsNew = false
-	lastPlayDeck := session.BuildLastPlayLiveDifficultyDeck(live.DeckId, liveDifficultyId)
+	lastPlayDeck := session.BuildLastPlayLiveDifficultyDeck(live.DeckId, int(liveDifficultyId))
 	lastPlayDeck.Voltage = req.LiveScore.CurrentScore
 
 	liveResult := LiveFinishLiveResult{
-		LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
-		LiveDeckId:             session.UserStatus.LatestLiveDeckId,
+		LiveDifficultyMasterId: int(session.UserStatus.LastLiveDifficultyId),
+		LiveDeckId:             int(session.UserStatus.LatestLiveDeckId),
 		StandardDrops:          []any{},
 		AdditionalDrops:        []any{},
 		GimmickDrops:           []any{},
 		Voltage:                req.LiveScore.CurrentScore,
-		LastBestVoltage:        liveRecord.MaxScore,
-		BeforeUserExp:          session.UserStatus.Exp,
+		LastBestVoltage:        int(liveRecord.MaxScore),
+		BeforeUserExp:          int(session.UserStatus.Exp),
 		LiveFinishStatus:       req.LiveFinishStatus}
 
 	liveRecord.PlayCount++
@@ -136,11 +137,11 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 
 		// update clear record
 		liveRecord.ClearCount++
-		if liveRecord.MaxScore < req.LiveScore.CurrentScore { // if new high score
-			liveRecord.MaxScore = req.LiveScore.CurrentScore
+		if liveRecord.MaxScore < int32(req.LiveScore.CurrentScore) { // if new high score
+			liveRecord.MaxScore = int32(req.LiveScore.CurrentScore)
 		}
-		if liveRecord.MaxCombo < req.LiveScore.HighestComboCount {
-			liveRecord.MaxCombo = req.LiveScore.HighestComboCount
+		if liveRecord.MaxCombo < int32(req.LiveScore.HighestComboCount) {
+			liveRecord.MaxCombo = int32(req.LiveScore.HighestComboCount)
 		}
 		if liveDifficulty.IsCountTarget { // counted toward target and profiles
 			liveStats := session.GetUserLiveStats()
@@ -229,7 +230,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 			})
 	}
 
-	liveResult.LiveResultAchievementStatus.ClearCount = liveRecord.ClearCount
+	liveResult.LiveResultAchievementStatus.ClearCount = int(liveRecord.ClearCount)
 	liveResult.LiveResultAchievementStatus.GotVoltage = req.LiveScore.CurrentScore
 	liveResult.LiveResultAchievementStatus.RemainingStamina = req.LiveScore.RemainingStamina
 	if live.PartnerUserId != 0 {
@@ -255,14 +256,14 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 	liveRecord.IsNew = false
 	liveRecord.IsAutoplay = live.IsAutoplay
 	liveResult := LiveFinishLiveResult{
-		LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
-		LiveDeckId:             session.UserStatus.LatestLiveDeckId,
+		LiveDifficultyMasterId: int(session.UserStatus.LastLiveDifficultyId),
+		LiveDeckId:             int(session.UserStatus.LatestLiveDeckId),
 		StandardDrops:          []any{},
 		AdditionalDrops:        []any{},
 		GimmickDrops:           []any{},
 		Voltage:                req.LiveScore.CurrentScore,
-		LastBestVoltage:        liveRecord.MaxScore,
-		BeforeUserExp:          session.UserStatus.Exp,
+		LastBestVoltage:        int(liveRecord.MaxScore),
+		BeforeUserExp:          int(session.UserStatus.Exp),
 		LiveFinishStatus:       req.LiveFinishStatus,
 		LiveResultTower: &LiveResultTower{
 			TowerId:             *live.TowerLive.TowerId,

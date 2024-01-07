@@ -59,9 +59,9 @@ func LevelUpCard(ctx *gin.Context) {
 
 	cardLevel := gamedata.CardLevel[gamedata.Card[req.CardMasterId].CardRarityType]
 	card := session.GetUserCard(req.CardMasterId)
-	session.RemoveGameMoney(int64(
+	session.RemoveGameMoney(int32(
 		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.GameMoneyPrefixSum[card.Level]))
-	session.RemoveCardExp(int64(
+	session.RemoveCardExp(int32(
 		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.ExpPrefixSum[card.Level]))
 	card.Level += req.AdditionalLevel
 	session.UpdateUserCard(card)
@@ -99,7 +99,7 @@ func GradeUpCard(ctx *gin.Context) {
 	session.UpdateUserCard(card)
 	member.IsNew = true
 	session.UpdateMember(member)
-	session.RemoveResource(masterCard.CardGradeUpItem[card.Grade][req.ContentId])
+	session.RemoveResource(masterCard.CardGradeUpItem[card.Grade][int32(req.ContentId)])
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break

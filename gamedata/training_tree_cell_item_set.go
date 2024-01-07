@@ -1,8 +1,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -12,8 +12,8 @@ import (
 
 type TrainingTreeCellItemSet struct {
 	// from m_training_tree_cell_item_set
-	Id        int             `xorm:"pk 'id'"`
-	Resources []model.Content `xorm:"-"`
+	Id        int              `xorm:"pk 'id'"`
+	Resources []client.Content `xorm:"-"`
 }
 
 func (set *TrainingTreeCellItemSet) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

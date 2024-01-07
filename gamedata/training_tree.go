@@ -1,8 +1,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -22,8 +22,8 @@ type TrainingTreeCardStorySide struct {
 }
 
 type TrainingTreeProgressReward struct {
-	ActivateNum int           `xorm:"'activate_num'"`
-	Reward      model.Content `xorm:"extends"`
+	ActivateNum int            `xorm:"'activate_num'"`
+	Reward      client.Content `xorm:"extends"`
 }
 
 type TrainingTree struct {

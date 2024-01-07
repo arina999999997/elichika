@@ -12,7 +12,7 @@ import (
 
 // TODO: rename table "u_live_record" to "u_live_difficulty"
 
-func (session *Session) GetOtherUserLiveDifficulty(otherUserId, liveDifficultyId int) model.UserLiveDifficulty {
+func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficultyId int32) model.UserLiveDifficulty {
 	userLiveDifficulty := model.UserLiveDifficulty{}
 	exist, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", otherUserId, liveDifficultyId).
@@ -29,7 +29,7 @@ func (session *Session) GetOtherUserLiveDifficulty(otherUserId, liveDifficultyId
 	return userLiveDifficulty
 }
 
-func (session *Session) GetLiveDifficulty(liveDifficultyId int) model.UserLiveDifficulty {
+func (session *Session) GetLiveDifficulty(liveDifficultyId int32) model.UserLiveDifficulty {
 	return session.GetOtherUserLiveDifficulty(session.UserStatus.UserId, liveDifficultyId)
 }
 

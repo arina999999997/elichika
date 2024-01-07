@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/login_bonus"
-	"elichika/model"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
@@ -26,15 +26,15 @@ func ReadLoginBonus(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
-func GetBootstrapLoginBonus(ctx *gin.Context, session *userdata.Session) model.BootstrapLoginBonus {
-	res := model.BootstrapLoginBonus{
-		Event2DLoginBonuses:    []model.IllustLoginBonus{},
-		LoginBonuses:           []model.NaviLoginBonus{},
-		Event3DLoginBonus:      []model.NaviLoginBonus{},
-		BeginnerLoginBonuses:   []model.NaviLoginBonus{},
-		ComebackLoginBonuses:   []model.IllustLoginBonus{},
-		BirthdayLoginBonuses:   []model.NaviLoginBonus{},
-		BirthdayMember:         []model.LoginBonusBirthDayMember{},
+func GetBootstrapLoginBonus(ctx *gin.Context, session *userdata.Session) client.BootstrapLoginBonus {
+	res := client.BootstrapLoginBonus{
+		Event2DLoginBonuses:    []client.IllustLoginBonus{},
+		LoginBonuses:           []client.NaviLoginBonus{},
+		Event3DLoginBonus:      []client.NaviLoginBonus{},
+		BeginnerLoginBonuses:   []client.NaviLoginBonus{},
+		ComebackLoginBonuses:   []client.IllustLoginBonus{},
+		BirthdayLoginBonuses:   []client.NaviLoginBonus{},
+		BirthdayMember:         []client.LoginBonusBirthDayMember{},
 		NextLoginBonsReceiveAt: login_bonus.NextLoginBonusTime(session.Time).Unix(),
 	}
 

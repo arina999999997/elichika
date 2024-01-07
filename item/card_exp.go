@@ -1,12 +1,12 @@
 package item
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 )
 
 var (
-	EXP = model.Content{
+	EXP = client.Content{
 		ContentType:   enum.ContentTypeCardExp,
 		ContentId:     0,
 		ContentAmount: 1,

@@ -1,9 +1,9 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
 	"elichika/enum"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -26,10 +26,10 @@ type TowerFloor struct {
 	// SuperStageAssetPath *string `xorm:"'super_stage_asset_path'"`
 	// StillAssetPath *string `xorm:"'still_asset_path'"`
 	// MusicId *int  `xorm:"'music_id'"`
-	TowerClearRewardId    *int            `xorm:"'tower_clear_reward_id'"`
-	TowerClearRewards     []model.Content `xorm:"-"` // from: m_tower_clear_reward
-	TowerProgressRewardId *int            `xorm:"'tower_progress_reward_id'"`
-	TowerProgressRewards  []model.Content `xorm:"-"` // from: m_tower_progress_reward
+	TowerClearRewardId    *int             `xorm:"'tower_clear_reward_id'"`
+	TowerClearRewards     []client.Content `xorm:"-"` // from: m_tower_clear_reward
+	TowerProgressRewardId *int             `xorm:"'tower_progress_reward_id'"`
+	TowerProgressRewards  []client.Content `xorm:"-"` // from: m_tower_progress_reward
 }
 
 func (tf *TowerFloor) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

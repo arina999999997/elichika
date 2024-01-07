@@ -1,22 +1,22 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/protocol/response"
 )
 
 func (session *Session) GetRankingUser() response.RankingUser {
-	card := session.GetUserCard(session.UserStatus.RecommendCardMasterId)
+	card := session.GetUserCard(int(session.UserStatus.RecommendCardMasterId))
 	return response.RankingUser{
 		UserId: session.UserStatus.UserId,
-		UserName: model.LocalizedText{
+		UserName: client.LocalizedText{
 			DotUnderText: session.UserStatus.Name.DotUnderText,
 		},
-		UserRank:               session.UserStatus.Rank,
+		UserRank:               int(session.UserStatus.Rank),
 		CardMasterId:           card.CardMasterId,
 		Level:                  card.Level,
 		IsAwakening:            card.IsAwakening,
 		IsAllTrainingActivated: card.IsAllTrainingActivated,
-		EmblemMasterId:         session.UserStatus.EmblemId,
+		EmblemMasterId:         int(session.UserStatus.EmblemId),
 	}
 }

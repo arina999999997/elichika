@@ -2,15 +2,16 @@ package gamedata
 
 import (
 	"elichika/dictionary"
-	"elichika/model"
+	// "elichika/model"
+	"elichika/client"
 	"elichika/utils"
 
 	"xorm.io/xorm"
 )
 
 type AccessoryMeltGroup struct {
-	Id     int           `xorm:"pk 'id'"`
-	Reward model.Content `xorm:"extends"`
+	Id     int            `xorm:"pk 'id'"`
+	Reward client.Content `xorm:"extends"`
 }
 
 func loadAccessoryMeltGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

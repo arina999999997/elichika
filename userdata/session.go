@@ -43,7 +43,7 @@ type Session struct {
 	// TODO: change the map to index map?
 	UserMemberLovePanelDiffs map[int]model.UserMemberLovePanel
 	UserMemberLovePanels     []model.UserMemberLovePanel
-	UserResourceDiffs        map[int](map[int]UserResource) // content_type then content_id
+	UserResourceDiffs        map[int32](map[int32]UserResource) // content_type then content_id
 
 	UserTrainingTreeCellDiffs []model.TrainingTreeCell
 	// for now only store delta patch, i.e. user_model_diff
@@ -121,7 +121,7 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 		return nil
 	}
 	s.UserStatus = &s.UserModel.UserStatus
-	s.UserResourceDiffs = make(map[int](map[int]UserResource))
+	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
 	s.UserMemberLovePanelDiffs = make(map[int]model.UserMemberLovePanel)
 	return &s
@@ -138,7 +138,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login) *
 	utils.CheckErr(err)
 	s.UserModel = *loginData.UserModel
 	s.UserStatus = &s.UserModel.UserStatus
-	s.UserResourceDiffs = make(map[int](map[int]UserResource))
+	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
 	s.UserMemberLovePanels = loginData.MemberLovePanels
 	_, err = s.Db.Table("u_login").Insert(loginData)

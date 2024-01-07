@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
-	"elichika/model"
 	"elichika/protocol/response"
 	"elichika/userdata"
 	"elichika/utils"
@@ -73,12 +73,12 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 	}
 	userData := response.MemberGuildUserRankingUserData{
 		UserId:                 session.UserStatus.UserId,
-		UserRank:               session.UserStatus.Rank,
-		CardMasterId:           session.UserStatus.RecommendCardMasterId,
+		UserRank:               int(session.UserStatus.Rank),
+		CardMasterId:           int(session.UserStatus.RecommendCardMasterId),
 		Level:                  80,
 		IsAwakening:            true,
 		IsAllTrainingActivated: true,
-		EmblemMasterId:         session.UserStatus.EmblemId,
+		EmblemMasterId:         int(session.UserStatus.EmblemId),
 	}
 	userData.UserName.DotUnderText = session.UserStatus.Name.DotUnderText
 	userRankingCell := response.MemberGuildUserRankingCell{
@@ -107,7 +107,7 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 func CheerMemberGuild(ctx *gin.Context) {
 	// this is extracted from Serialization_DeserializeCheerMemberGuildResponse
 	// type CheerMemberGuildResp struct {
-	// 	Rewards              []model.Content `json:"rewards"`
+	// 	Rewards              []client.Content `json:"rewards"`
 	// 	MemberGuildTopStatus []any           `json:"member_guild_top_status"`
 	// 	UserModelDiff        []any           `json:"user_model_diff"`
 	// }
@@ -116,7 +116,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	signBody := session.Finalize(GetData("fetchMemberGuildTop.json"), "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "rewards", []model.Content{})
+	signBody, _ = sjson.Set(signBody, "rewards", []client.Content{})
 
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
@@ -135,7 +135,8 @@ func JoinMemberGuild(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.MemberGuildMemberMasterId = req.MemberMasterId
+	session.UserStatus.MemberGuildMemberMasterId = new(int32)
+	*session.UserStatus.MemberGuildMemberMasterId = int32(req.MemberMasterId)
 	signBody := session.Finalize("{}", "user_model")
 
 	resp := SignResp(ctx, signBody, config.SessionKey)

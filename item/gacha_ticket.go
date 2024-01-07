@@ -1,22 +1,22 @@
 package item
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 )
 
 var (
-	NormalScoutingTicket = model.Content{
+	NormalScoutingTicket = client.Content{
 		ContentType:   enum.ContentTypeGachaTicket,
 		ContentId:     9000,
 		ContentAmount: 1,
 	}
-	SRScoutingTicket = model.Content{
+	SRScoutingTicket = client.Content{
 		ContentType:   enum.ContentTypeGachaTicket,
 		ContentId:     9002,
 		ContentAmount: 1,
 	}
-	URScoutingTicket = model.Content{
+	URScoutingTicket = client.Content{
 		ContentType:   enum.ContentTypeGachaTicket,
 		ContentId:     9015,
 		ContentAmount: 1,

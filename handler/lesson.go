@@ -53,7 +53,7 @@ func ExecuteLesson(ctx *gin.Context) {
 		return true
 	})
 
-	session.UserStatus.MainLessonDeckId = req.SelectedDeckId
+	session.UserStatus.MainLessonDeckId = int32(req.SelectedDeckId)
 	signBody := session.Finalize(GetData("executeLesson.json"), "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "lesson_menu_actions.1", actionList)
 	signBody, _ = sjson.Set(signBody, "lesson_menu_actions.3", actionList)

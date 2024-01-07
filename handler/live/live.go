@@ -110,8 +110,8 @@ func LiveStart(ctx *gin.Context) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	masterLiveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyId]
 	masterLiveDifficulty.ConstructLiveStage(gamedata)
-	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyId
-	session.UserStatus.LatestLiveDeckId = req.DeckId
+	session.UserStatus.LastLiveDifficultyId = int32(req.LiveDifficultyId)
+	session.UserStatus.LatestLiveDeckId = int32(req.DeckId)
 
 	// 保存请求包因为 /live/finish 接口的响应包里有部分字段不在该接口的请求包里
 	// live is stored in db

@@ -2,8 +2,7 @@ package handler
 
 import (
 	"elichika/config"
-	"elichika/enum"
-	"elichika/model"
+	"elichika/item"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
@@ -26,13 +25,7 @@ func UnlockStory(ctx *gin.Context) {
 	defer session.Close()
 
 	session.UnlockEventStory(req.EventStoryMasterId)
-	// remove a memory key
-	// maybe don't hardcode the Id
-	session.RemoveResource(model.Content{
-		ContentType:   enum.ContentTypeStoryEventUnlock,
-		ContentId:     17001,
-		ContentAmount: 1,
-	})
+	session.RemoveResource(item.MemoryKey)
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)

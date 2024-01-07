@@ -12,7 +12,7 @@ func UpdateConsentState(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.GdprVersion = int(reqBody.Get("version").Int())
+	session.UserStatus.GdprVersion = int32(reqBody.Get("version").Int())
 	session.Finalize("{}", "user_model")
 	// Don't know the format of this response, but we can set gdpr version to 4 to skip it.
 	// TODO(very_low): read the decompiled code and see what the format is

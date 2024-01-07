@@ -1,5 +1,9 @@
 package model
 
+import (
+	"elichika/client"
+)
+
 type TradeProductUser struct {
 	UserId      int `xorm:"pk 'user_id'"`
 	ProductId   int `xorm:"pk 'product_id'"`
@@ -12,12 +16,12 @@ type TradeProduct struct {
 	// TradeId inside json is the same as ProductId
 	DummyId int `xorm:"-" json:"trade_id"`
 	// TradeId inside db is the actual TradeId that this product belong to
-	TradeId       int       `xorm:"'trade_id'" json:"-"`
-	SourceAmount  int       `json:"source_amount"`         // cost
-	StockAmount   *int      `json:"stock_amount"`          // max exchange time, set to null for unlimited
-	TradedCount   int       `xorm:"-" json:"traded_count"` // amount traded, store per user
-	Contents      []Content `xorm:"-" json:"contents"`     // array but the length is always 1
-	ActualContent Content   `xorm:"extends" json:"-" `     // actual content
+	TradeId       int              `xorm:"'trade_id'" json:"-"`
+	SourceAmount  int              `json:"source_amount"`         // cost
+	StockAmount   *int             `json:"stock_amount"`          // max exchange time, set to null for unlimited
+	TradedCount   int              `xorm:"-" json:"traded_count"` // amount traded, store per user
+	Contents      []client.Content `xorm:"-" json:"contents"`     // array but the length is always 1
+	ActualContent client.Content   `xorm:"extends" json:"-" `     // actual content
 }
 
 // represent exchange or channel exchange banner

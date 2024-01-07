@@ -12,6 +12,7 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
 	"elichika/model"
 	"elichika/utils"
@@ -63,7 +64,7 @@ func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 					TradeId:      id,
 					SourceAmount: 1,
 					StockAmount:  nil,
-					ActualContent: model.Content{
+					ActualContent: client.Content{
 						ContentType:   10,
 						ContentId:     0,
 						ContentAmount: 1,

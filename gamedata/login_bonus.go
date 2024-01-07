@@ -1,8 +1,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -11,24 +11,24 @@ import (
 )
 
 type LoginBonus struct {
-	LoginBonusId            int                       `xorm:"pk 'login_bonus_id'"`
-	LoginBonusType          int                       `xorm:"'login_bonus_type'"`
-	StartAt                 int64                     `xorm:"'start_at'"`
-	EndAt                   int64                     `xorm:"'end_at'"`
-	BackgroundId            int                       `xorm:"'background_id'"`
-	WhiteboardTextureAsset  model.TextureStruktur     `xorm:"'whiteboard_texture_asset'"`
-	LoginBonusHandler       string                    `xorm:"'login_bonus_handler'"`
-	LoginBonusHandlerConfig string                    `xorm:"'login_bonus_handler_config'"`
-	LoginBonusRewards       []model.LoginBonusRewards `xorm:"-"`
+	LoginBonusId            int                        `xorm:"pk 'login_bonus_id'"`
+	LoginBonusType          int                        `xorm:"'login_bonus_type'"`
+	StartAt                 int64                      `xorm:"'start_at'"`
+	EndAt                   int64                      `xorm:"'end_at'"`
+	BackgroundId            int                        `xorm:"'background_id'"`
+	WhiteboardTextureAsset  client.TextureStruktur     `xorm:"'whiteboard_texture_asset'"`
+	LoginBonusHandler       string                     `xorm:"'login_bonus_handler'"`
+	LoginBonusHandlerConfig string                     `xorm:"'login_bonus_handler_config'"`
+	LoginBonusRewards       []client.LoginBonusRewards `xorm:"-"`
 }
 
 func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	rewardDays := []model.LoginBonusRewardDay{}
+	rewardDays := []client.LoginBonusRewardDay{}
 	err := serverdata_db.Table("s_login_bonus_reward_day").Where("login_bonus_id = ?", lb.LoginBonusId).
 		OrderBy("day").Find(&rewardDays)
 	utils.CheckErr(err)
 	for _, day := range rewardDays {
-		reward := model.LoginBonusRewards{
+		reward := client.LoginBonusRewards{
 			Day:          day.Day,
 			ContentGrade: day.ContentGrade,
 		}
@@ -53,10 +53,10 @@ func init() {
 	addLoadFunc(loadLoginBonus)
 }
 
-func (lb *LoginBonus) NaviLoginBonus() model.NaviLoginBonus {
-	return model.NaviLoginBonus{
+func (lb *LoginBonus) NaviLoginBonus() client.NaviLoginBonus {
+	return client.NaviLoginBonus{
 		LoginBonusId:           lb.LoginBonusId,
-		LoginBonusRewards:      append([]model.LoginBonusRewards{}, lb.LoginBonusRewards...), // copy the list
+		LoginBonusRewards:      append([]client.LoginBonusRewards{}, lb.LoginBonusRewards...), // copy the list
 		BackgroundId:           lb.BackgroundId,
 		WhiteboardTextureAsset: &lb.WhiteboardTextureAsset,
 		StartAt:                lb.StartAt,

@@ -1,13 +1,13 @@
 package login_bonus
 
 import (
+	"elichika/client"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/userdata"
 )
 
-func beginnerLoginBonusHandler(_ string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *model.BootstrapLoginBonus) {
+func beginnerLoginBonusHandler(_ string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *client.BootstrapLoginBonus) {
 	if loginBonus.LoginBonusType != enum.LoginBonusTypeNormal {
 		panic("wrong handler used")
 	}

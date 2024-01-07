@@ -1,7 +1,7 @@
 package response
 
 import (
-	"elichika/model"
+	"elichika/client"
 )
 
 // TODO(temporary types): some types or file names are different from client's
@@ -17,12 +17,12 @@ type UserInfoTrigger struct {
 }
 
 type Banner struct {
-	BannerMasterId       int                   `json:"banner_master_id"`
-	BannerImageAssetPath model.TextureStruktur `json:"banner_image_asset_path"`
-	BannerType           int                   `json:"banner_type"`
-	ExpireAt             int64                 `json:"expire_at"`
-	TransitionId         int                   `json:"transition_id"`
-	TransitionParameter  int                   `json:"transition_parameter"`
+	BannerMasterId       int                    `json:"banner_master_id"`
+	BannerImageAssetPath client.TextureStruktur `json:"banner_image_asset_path"`
+	BannerType           int                    `json:"banner_type"`
+	ExpireAt             int64                  `json:"expire_at"`
+	TransitionId         int                    `json:"transition_id"`
+	TransitionParameter  int                    `json:"transition_parameter"`
 }
 
 type BootstrapBanner struct {
@@ -48,16 +48,16 @@ type LiveCampaignInfo struct {
 }
 
 type BootstrapPickupInfo struct {
-	ActiveEvent      *any                    `json:"active_event"`
-	LiveCampaignInfo LiveCampaignInfo        `json:"live_campaign_info"`
-	IsLessonCampaign bool                    `json:"is_lesson_campaign"`
-	AppealGachas     []model.TextureStruktur `json:"appeal_gachas"`
-	IsShopSale       bool                    `json:"is_shop_sale"`
-	IsSnsCoinSale    bool                    `json:"is_sns_coin_sale"`
+	ActiveEvent      *any                     `json:"active_event"`
+	LiveCampaignInfo LiveCampaignInfo         `json:"live_campaign_info"`
+	IsLessonCampaign bool                     `json:"is_lesson_campaign"`
+	AppealGachas     []client.TextureStruktur `json:"appeal_gachas"`
+	IsShopSale       bool                     `json:"is_shop_sale"`
+	IsSnsCoinSale    bool                     `json:"is_sns_coin_sale"`
 }
 
 type BootstrapExpiredItem struct {
-	ExpiredItems []model.Content `json:"expired_items"`
+	ExpiredItems []client.Content `json:"expired_items"`
 }
 
 type BootstrapNotice struct {
@@ -72,17 +72,17 @@ type BootstrapSubscription struct {
 }
 
 type FetchBootstrapResponse struct {
-	UserModelDiff                      *UserModel                `json:"user_model_diff"`
-	UserInfoTrigger                    UserInfoTrigger           `json:"user_info_trigger"`                     // TODO(not_really_handled)
-	BillingStateInfo                   BillingStateInfo          `json:"billing_state_info"`                    // TODO(not_really_handled)
-	FetchBootstrapBannerResponse       BootstrapBanner           `json:"fetch_bootstrap_banner_response"`       // TODO(not_really_handled)
-	FetchBootstrapNewBadgeResponse     BootstrapNewBadge         `json:"fetch_bootstrap_new_badge_response"`    // TODO(not_really_handled)
-	FetchBootstrapPickupInfoResponse   BootstrapPickupInfo       `json:"fetch_bootstrap_pickup_info_response"`  // TODO(not_really_handled)
-	FetchBootstrapExpiredItemResponse  BootstrapExpiredItem      `json:"fetch_bootstrap_expired_item_response"` // TODO(not_really_handled)
-	FetchBootstrapLoginBonusResponse   model.BootstrapLoginBonus `json:"fetch_bootstrap_login_bonus_response"`
-	FetchBootstrapNoticeResponse       BootstrapNotice           `json:"fetch_bootstrap_notice_response"`       // TODO(not_really_handled)
-	FetchBootstrapSubscriptionResponse BootstrapSubscription     `json:"fetch_bootstrap_subscription_response"` // TODO(not_really_handled)
-	MissionBeginnerMasterId            *int                      `json:"mission_beginner_master_id"`
-	ShowChallengeBeginnerButton        bool                      `json:"show_challenge_beginner_button"`
-	ChallengeBeginnerCompletedIds      []int                     `json:"challenge_beginner_completed_ids"`
+	UserModelDiff                      *UserModel                 `json:"user_model_diff"`
+	UserInfoTrigger                    UserInfoTrigger            `json:"user_info_trigger"`                     // TODO(not_really_handled)
+	BillingStateInfo                   BillingStateInfo           `json:"billing_state_info"`                    // TODO(not_really_handled)
+	FetchBootstrapBannerResponse       BootstrapBanner            `json:"fetch_bootstrap_banner_response"`       // TODO(not_really_handled)
+	FetchBootstrapNewBadgeResponse     BootstrapNewBadge          `json:"fetch_bootstrap_new_badge_response"`    // TODO(not_really_handled)
+	FetchBootstrapPickupInfoResponse   BootstrapPickupInfo        `json:"fetch_bootstrap_pickup_info_response"`  // TODO(not_really_handled)
+	FetchBootstrapExpiredItemResponse  BootstrapExpiredItem       `json:"fetch_bootstrap_expired_item_response"` // TODO(not_really_handled)
+	FetchBootstrapLoginBonusResponse   client.BootstrapLoginBonus `json:"fetch_bootstrap_login_bonus_response"`
+	FetchBootstrapNoticeResponse       BootstrapNotice            `json:"fetch_bootstrap_notice_response"`       // TODO(not_really_handled)
+	FetchBootstrapSubscriptionResponse BootstrapSubscription      `json:"fetch_bootstrap_subscription_response"` // TODO(not_really_handled)
+	MissionBeginnerMasterId            *int                       `json:"mission_beginner_master_id"`
+	ShowChallengeBeginnerButton        bool                       `json:"show_challenge_beginner_button"`
+	ChallengeBeginnerCompletedIds      []int                      `json:"challenge_beginner_completed_ids"`
 }

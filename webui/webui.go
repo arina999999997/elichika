@@ -72,9 +72,12 @@ func Birthday(ctx *gin.Context) {
 	year, _ := strconv.Atoi(tokens[0])
 	month, _ := strconv.Atoi(tokens[1])
 	day, _ := strconv.Atoi(tokens[2])
-	session.UserStatus.BirthDate = year*10000 + month*100 + day
-	session.UserStatus.BirthDay = day
-	session.UserStatus.BirthMonth = month
+	session.UserStatus.BirthDate = new(int32)
+	*session.UserStatus.BirthDate = int32(year*10000 + month*100 + day)
+	session.UserStatus.BirthDay = new(int32)
+	*session.UserStatus.BirthDay = int32(day)
+	session.UserStatus.BirthMonth = new(int32)
+	*session.UserStatus.BirthMonth = int32(month)
 	session.Finalize("{}", "dummy")
 	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userId, year, month, day))
 }

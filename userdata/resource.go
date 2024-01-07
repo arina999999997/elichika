@@ -5,8 +5,8 @@ package userdata
 // things like player bonds / exp are handled elsewhere
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -14,68 +14,44 @@ import (
 )
 
 type UserResource struct {
-	UserId  int           `xorm:"'user_id'"`
-	Content model.Content `xorm:"extends"`
+	UserId  int            `xorm:"'user_id'"`
+	Content client.Content `xorm:"extends"`
 }
 
 var (
-	resourceHandler map[int]func(*Session, int, int, int64)
+	resourceHandler map[int32]func(*Session, int32, int32, int32)
 	// new system
-	userModelField map[int]string
+	userModelField map[int32]string
 )
 
-func (session *Session) AddSnsCoin(coin int64) {
-	session.AddResource(model.Content{
-		ContentType:   enum.ContentTypeSnsCoin,
-		ContentId:     0,
-		ContentAmount: coin,
-	})
+func (session *Session) AddSnsCoin(coin int32) {
+	session.UserStatus.FreeSnsCoin += coin
 }
 
-func (session *Session) RemoveSnsCoin(coin int64) {
-	session.RemoveResource(model.Content{
-		ContentType:   enum.ContentTypeSnsCoin,
-		ContentId:     0,
-		ContentAmount: coin,
-	})
+func (session *Session) RemoveSnsCoin(coin int32) {
+	session.UserStatus.FreeSnsCoin -= coin
 }
 
-func (session *Session) AddGameMoney(money int64) {
-	session.AddResource(model.Content{
-		ContentType:   enum.ContentTypeGameMoney,
-		ContentId:     1200,
-		ContentAmount: money,
-	})
+func (session *Session) AddGameMoney(money int32) {
+	session.UserStatus.GameMoney += money
 }
 
-func (session *Session) RemoveGameMoney(money int64) {
-	session.RemoveResource(model.Content{
-		ContentType:   enum.ContentTypeGameMoney,
-		ContentId:     1200,
-		ContentAmount: money,
-	})
+func (session *Session) RemoveGameMoney(money int32) {
+	session.UserStatus.GameMoney -= money
 }
 
-func (session *Session) AddCardExp(exp int64) {
-	session.AddResource(model.Content{
-		ContentType:   enum.ContentTypeCardExp,
-		ContentId:     1100,
-		ContentAmount: exp,
-	})
+func (session *Session) AddCardExp(exp int32) {
+	session.UserStatus.CardExp += exp
 }
 
-func (session *Session) RemoveCardExp(exp int64) {
-	session.RemoveResource(model.Content{
-		ContentType:   enum.ContentTypeCardExp,
-		ContentId:     1100,
-		ContentAmount: exp,
-	})
+func (session *Session) RemoveCardExp(exp int32) {
+	session.UserStatus.CardExp -= exp
 }
 
-func (session *Session) GetUserResource(contentType, contentId int) UserResource {
+func (session *Session) GetUserResource(contentType, contentId int32) UserResource {
 	_, exist := session.UserResourceDiffs[contentType]
 	if !exist {
-		session.UserResourceDiffs[contentType] = make(map[int]UserResource)
+		session.UserResourceDiffs[contentType] = make(map[int32]UserResource)
 	}
 	resource, exist := session.UserResourceDiffs[contentType][contentId]
 	if exist {
@@ -88,7 +64,7 @@ func (session *Session) GetUserResource(contentType, contentId int) UserResource
 	if !exist {
 		resource = UserResource{
 			UserId: session.UserStatus.UserId,
-			Content: model.Content{
+			Content: client.Content{
 				ContentType:   contentType,
 				ContentId:     contentId,
 				ContentAmount: 10000000,
@@ -101,12 +77,12 @@ func (session *Session) GetUserResource(contentType, contentId int) UserResource
 func (session *Session) UpdateUserResource(resource UserResource) {
 	_, exist := session.UserResourceDiffs[resource.Content.ContentType]
 	if !exist {
-		session.UserResourceDiffs[resource.Content.ContentType] = make(map[int]UserResource)
+		session.UserResourceDiffs[resource.Content.ContentType] = make(map[int32]UserResource)
 	}
 	session.UserResourceDiffs[resource.Content.ContentType][resource.Content.ContentId] = resource
 }
 
-func (session *Session) AddResource(resource model.Content) {
+func (session *Session) AddResource(resource client.Content) {
 	handler, exist := resourceHandler[resource.ContentType]
 	if !exist {
 		fmt.Println("TODO: Add handler for content type ", resource.ContentType)
@@ -115,7 +91,7 @@ func (session *Session) AddResource(resource model.Content) {
 	handler(session, resource.ContentType, resource.ContentId, resource.ContentAmount)
 }
 
-func (session *Session) RemoveResource(resource model.Content) {
+func (session *Session) RemoveResource(resource client.Content) {
 	handler, exist := resourceHandler[resource.ContentType]
 	if !exist {
 		fmt.Println("TODO: Add handler for content type ", resource.ContentType)
@@ -126,7 +102,7 @@ func (session *Session) RemoveResource(resource model.Content) {
 
 func init() {
 	// reference for type can be found in m_content_setting
-	resourceHandler = make(map[int]func(*Session, int, int, int64))
+	resourceHandler = make(map[int32]func(*Session, int32, int32, int32))
 	resourceHandler[enum.ContentTypeSnsCoin] = userStatusResourceHandler
 	resourceHandler[enum.ContentTypeCardExp] = userStatusResourceHandler
 	resourceHandler[enum.ContentTypeGameMoney] = userStatusResourceHandler
@@ -134,7 +110,7 @@ func init() {
 
 	resourceHandler[enum.ContentTypeSuit] = suitResourceHandler
 
-	userModelField = make(map[int]string)
+	userModelField = make(map[int32]string)
 
 	resourceHandler[enum.ContentTypeGachaPoint] = genericResourceHandler // gacha point (quartz)
 	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointId"
@@ -184,35 +160,35 @@ func init() {
 	resourceHandler[enum.ContentTypeVoice] = voiceHandler
 }
 
-func genericResourceHandler(session *Session, contentType, contentId int, contentAmount int64) {
+func genericResourceHandler(session *Session, contentType, contentId, contentAmount int32) {
 	resource := session.GetUserResource(contentType, contentId)
 	resource.Content.ContentAmount += contentAmount
 	session.UpdateUserResource(resource)
 }
 
-func suitResourceHandler(session *Session, _, suitMasterId int, _ int64) {
-	session.InsertUserSuit(suitMasterId)
+func suitResourceHandler(session *Session, _, suitMasterId, _ int32) {
+	session.InsertUserSuit(int(suitMasterId))
 }
 
-func memberStoryHandler(session *Session, _, memberStoryId int, _ int64) {
-	session.InsertMemberStory(memberStoryId)
+func memberStoryHandler(session *Session, _, memberStoryId, _ int32) {
+	session.InsertMemberStory(int(memberStoryId))
 }
 
-func voiceHandler(session *Session, _, naviVoiceMasterId int, _ int64) {
-	session.UpdateVoice(naviVoiceMasterId, false)
+func voiceHandler(session *Session, _, naviVoiceMasterId, _ int32) {
+	session.UpdateVoice(int(naviVoiceMasterId), false)
 }
 
 // these resources amount are stored in the user status
-func userStatusResourceHandler(session *Session, resourceContentType, resourceContentId int, amount int64) {
+func userStatusResourceHandler(session *Session, resourceContentType, resourceContentId, amount int32) {
 	switch resourceContentType {
 	case enum.ContentTypeSnsCoin: // star gems
-		session.UserStatus.FreeSnsCoin += int(amount)
+		session.AddSnsCoin(amount)
 	case enum.ContentTypeCardExp: // card exp
-		session.UserStatus.CardExp += amount
+		session.AddCardExp(amount)
 	case enum.ContentTypeGameMoney: // game money (gold)
-		session.UserStatus.GameMoney += amount
+		session.AddGameMoney(amount)
 	case enum.ContentTypeSubscriptionCoin: // subscription coin (purple coin)
-		session.UserStatus.SubscriptionCoin += int(amount)
+		session.UserStatus.SubscriptionCoin += amount
 	default:
 		fmt.Println("TODO: handle user status content type:", resourceContentType)
 	}
@@ -262,11 +238,11 @@ func genericResourceByResourceIdFinalizer(session *Session) {
 
 func genericResourceByResourceIdPopulator(session *Session) {
 	rModel := reflect.ValueOf(&session.UserModel)
-	contents := []model.Content{}
+	contents := []client.Content{}
 	// order by is not necessary
 	err := session.Db.Table("u_resource").Where("user_id = ?", session.UserStatus.UserId).Find(&contents)
 	utils.CheckErr(err)
-	contentByType := make(map[int][]model.Content)
+	contentByType := make(map[int32][]client.Content)
 	for _, content := range contents {
 		contentByType[content.ContentType] = append(contentByType[content.ContentType], content)
 	}
@@ -326,7 +302,7 @@ func (session *Session) populateGenericResourceDiffFromUserModel() {
 		for _, content := range contents {
 			session.UpdateUserResource(UserResource{
 				UserId:  session.UserStatus.UserId,
-				Content: content.(model.Content),
+				Content: content.(client.Content),
 			})
 		}
 	}

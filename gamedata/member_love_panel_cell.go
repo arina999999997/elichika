@@ -1,8 +1,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -20,7 +20,7 @@ type MemberLovePanelCell struct {
 	// BonusValue
 
 	// from m_member_love_panel_cell_source_content
-	Resources []model.Content `xorm:"-"`
+	Resources []client.Content `xorm:"-"`
 }
 
 func (cell *MemberLovePanelCell) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

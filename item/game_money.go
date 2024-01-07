@@ -1,12 +1,12 @@
 package item
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 )
 
 var (
-	Gold = model.Content{
+	Gold = client.Content{
 		ContentType:   enum.ContentTypeGameMoney,
 		ContentId:     0,
 		ContentAmount: 1,

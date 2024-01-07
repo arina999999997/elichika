@@ -1,8 +1,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -24,11 +24,11 @@ type StoryMember struct {
 	UnlockLiveId *int `xorm:"'unlock_live_id'"`
 
 	// from m_story_member_rewards
-	Reward *model.Content `xorm:"-"`
+	Reward *client.Content `xorm:"-"`
 }
 
 func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	reward := model.Content{}
+	reward := client.Content{}
 	exist, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.Id).Get(&reward)
 	utils.CheckErr(err)
 	if exist {

@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
-	"elichika/model"
 	"elichika/protocol/request"
 	"elichika/protocol/response"
 	"elichika/userdata"
@@ -66,14 +66,14 @@ func FetchBootstrap(ctx *gin.Context) {
 				LiveChallengeCampaignEndAt: nil,
 			},
 			IsLessonCampaign: false,
-			AppealGachas:     []model.TextureStruktur{},
+			AppealGachas:     []client.TextureStruktur{},
 			IsShopSale:       false,
 			IsSnsCoinSale:    false,
 		},
 		FetchBootstrapExpiredItemResponse: response.BootstrapExpiredItem{
-			ExpiredItems: []model.Content{},
+			ExpiredItems: []client.Content{},
 		},
-		FetchBootstrapLoginBonusResponse: model.BootstrapLoginBonus{},
+		FetchBootstrapLoginBonusResponse: client.BootstrapLoginBonus{},
 		FetchBootstrapNoticeResponse: response.BootstrapNotice{
 			SuperNotices:        []any{},
 			FetchedAt:           1688014785,

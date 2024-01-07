@@ -4,7 +4,7 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/model"
+	"elichika/item"
 	"elichika/protocol/request"
 	"elichika/protocol/response"
 	"elichika/userdata"
@@ -144,19 +144,11 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 	}
 	// remove the item
 	has := session.GetUserResource(enum.ContentTypeRecoveryTowerCardUsedCount, 24001).Content.ContentAmount
-	if has >= int64(len(req.CardMasterIds)) {
-		session.RemoveResource(model.Content{
-			ContentType:   enum.ContentTypeRecoveryTowerCardUsedCount,
-			ContentId:     24001,
-			ContentAmount: int64(len(req.CardMasterIds)),
-		})
+	if has >= int32(len(req.CardMasterIds)) {
+		session.RemoveResource(item.PerformanceDrink.Amount(int32(len(req.CardMasterIds))))
 	} else {
-		session.RemoveResource(model.Content{
-			ContentType:   enum.ContentTypeRecoveryTowerCardUsedCount,
-			ContentId:     24001,
-			ContentAmount: has,
-		})
-		session.RemoveSnsCoin((int64(len(req.CardMasterIds)) - has) * int64(tower.RecoverCostBySnsCoin))
+		session.RemoveResource(item.PerformanceDrink.Amount(has))
+		session.RemoveSnsCoin((int32(len(req.CardMasterIds)) - has) * int32(tower.RecoverCostBySnsCoin))
 
 	}
 	session.Finalize("", "dummy")

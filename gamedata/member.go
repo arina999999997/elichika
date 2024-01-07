@@ -1,8 +1,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 	"elichika/utils"
 
 	"fmt"
@@ -54,7 +54,7 @@ type Member struct {
 	// StandingThumbnailBackgroundBottomColor int
 
 	// from m_member_love_level_reward
-	LoveLevelRewards []([]model.Content) `xorm:"-"` // 2 indexed for love level
+	LoveLevelRewards []([]client.Content) `xorm:"-"` // 2 indexed for love level
 
 	// from m_member_unit_detail
 	// Unit int // subgroup
@@ -80,14 +80,14 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 	{
 		type LoveLevelReward struct {
-			LoveLevel int           `xorm:"'love_level'"`
-			Content   model.Content `xorm:"extends"`
+			LoveLevel int            `xorm:"'love_level'"`
+			Content   client.Content `xorm:"extends"`
 		}
 		rewards := []LoveLevelReward{}
 		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).Find(&rewards)
 		utils.CheckErr(err)
 		for i := 0; i <= gamedata.MemberLoveLevelCount; i++ {
-			member.LoveLevelRewards = append(member.LoveLevelRewards, []model.Content{})
+			member.LoveLevelRewards = append(member.LoveLevelRewards, []client.Content{})
 		}
 		for _, reward := range rewards {
 			member.LoveLevelRewards[reward.LoveLevel] = append(member.LoveLevelRewards[reward.LoveLevel], reward.Content)

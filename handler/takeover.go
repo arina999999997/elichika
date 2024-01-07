@@ -80,8 +80,8 @@ func CheckTakeOver(ctx *gin.Context) {
 		resp.CurrentData = new(TakeOverData)
 		resp.CurrentData.UserId = currentSession.UserStatus.UserId
 		resp.CurrentData.LastLoginAt = currentSession.UserStatus.LastLoginAt
-		resp.CurrentData.SnsCoin = currentSession.UserStatus.FreeSnsCoin +
-			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
+		resp.CurrentData.SnsCoin = int(currentSession.UserStatus.FreeSnsCoin +
+			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin)
 	}
 	if linkedSession != nil { // user exist
 		if linkedSession.UserStatus.PassWord != req.PassWord { // incorrect password
@@ -93,9 +93,9 @@ func CheckTakeOver(ctx *gin.Context) {
 		resp.LinkedData.ServiceUserCommonKey = nil
 		resp.LinkedData.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText
 		resp.LinkedData.LastLoginAt = linkedSession.UserStatus.LastLoginAt
-		resp.LinkedData.SnsCoin = linkedSession.UserStatus.FreeSnsCoin +
-			linkedSession.UserStatus.AppleSnsCoin + linkedSession.UserStatus.GoogleSnsCoin
-		resp.LinkedData.TermsOfUseVersion = linkedSession.UserStatus.TermsOfUseVersion
+		resp.LinkedData.SnsCoin = int(linkedSession.UserStatus.FreeSnsCoin +
+			linkedSession.UserStatus.AppleSnsCoin + linkedSession.UserStatus.GoogleSnsCoin)
+		resp.LinkedData.TermsOfUseVersion = int(linkedSession.UserStatus.TermsOfUseVersion)
 
 	} else { // user doesn't exist, but we won't create an account until setTakeOver is called
 		resp.LinkedData.UserId = linkedUserId
@@ -143,9 +143,9 @@ func SetTakeOver(ctx *gin.Context) {
 	resp.ServiceUserCommonKey = nil
 	resp.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText
 	resp.LastLoginAt = linkedSession.UserStatus.LastLoginAt
-	resp.SnsCoin = linkedSession.UserStatus.FreeSnsCoin +
-		linkedSession.UserStatus.AppleSnsCoin + linkedSession.UserStatus.GoogleSnsCoin
-	resp.TermsOfUseVersion = linkedSession.UserStatus.TermsOfUseVersion
+	resp.SnsCoin = int(linkedSession.UserStatus.FreeSnsCoin +
+		linkedSession.UserStatus.AppleSnsCoin + linkedSession.UserStatus.GoogleSnsCoin)
+	resp.TermsOfUseVersion = int(linkedSession.UserStatus.TermsOfUseVersion)
 
 	signedResp, _ := sjson.Set("{}", "data", resp)
 

@@ -1,16 +1,17 @@
 package login_bonus
 
 import (
+	"elichika/client"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/model"
+	"elichika/item"
 	"elichika/userdata"
 
 	"math/rand"
 	"time"
 )
 
-func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *model.BootstrapLoginBonus) {
+func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *client.BootstrapLoginBonus) {
 	if loginBonus.LoginBonusType != enum.LoginBonusTypeBirthday {
 		panic("wrong handler used")
 	}
@@ -35,30 +36,26 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		// - additional 25 memorial for channel member
 		naviLoginBonus := loginBonus.NaviLoginBonus()
 		naviLoginBonus.LoginBonusRewards = append(naviLoginBonus.LoginBonusRewards,
-			model.LoginBonusRewards{
+			client.LoginBonusRewards{
 				Day:          1,
 				Status:       enum.LoginBonusReceiveStatusReceiving,
 				ContentGrade: enum.LoginBonusContentGradeRare,
-				LoginBonusContents: []model.Content{
-					model.Content{
+				LoginBonusContents: []client.Content{
+					client.Content{
 						ContentType:   enum.ContentTypeTrainingMaterial,
-						ContentId:     18000 + member.Id,
+						ContentId:     int32(18000 + member.Id),
 						ContentAmount: 2,
 					},
-					model.Content{
+					client.Content{
 						ContentType:   enum.ContentTypeTrainingMaterial,
-						ContentId:     8000 + member.Id,
+						ContentId:     int32(8000 + member.Id),
 						ContentAmount: 50,
 					},
-					model.Content{
-						ContentType:   enum.ContentTypeSnsCoin,
-						ContentId:     0,
-						ContentAmount: 50,
-					},
+					item.StarGem.Amount(50),
 				},
 			},
 		)
-		if session.UserStatus.MemberGuildMemberMasterId == member.Id {
+		if *session.UserStatus.MemberGuildMemberMasterId == int32(member.Id) {
 			naviLoginBonus.LoginBonusRewards[0].LoginBonusContents[1].ContentAmount += 25
 		}
 
@@ -76,7 +73,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		default:
 			panic("not supported")
 		}
-		target.BirthdayMember = append(target.BirthdayMember, model.LoginBonusBirthDayMember{
+		target.BirthdayMember = append(target.BirthdayMember, client.LoginBonusBirthDayMember{
 			MemberMasterId: member.Id,
 			SuitMasterId:   memberLoginBonusBirthday.SuitMasterId,
 		})

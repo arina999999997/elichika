@@ -1,12 +1,12 @@
 package item
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 )
 
 var (
-	StarGem = model.Content{
+	StarGem = client.Content{
 		ContentType:   enum.ContentTypeSnsCoin,
 		ContentId:     0,
 		ContentAmount: 1,

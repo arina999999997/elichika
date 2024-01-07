@@ -1,10 +1,10 @@
 package login_bonus
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/userdata"
 
 	"time"
@@ -23,7 +23,7 @@ func NextLoginBonusTime(timePoint time.Time) time.Time {
 	return latestLoginBonusTime(timePoint).AddDate(0, 0, 1)
 }
 
-func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *model.BootstrapLoginBonus) {
+func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *client.BootstrapLoginBonus) {
 	if loginBonus.LoginBonusType != enum.LoginBonusTypeNormal {
 		panic("wrong handler used")
 	}

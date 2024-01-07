@@ -2,7 +2,8 @@ package gamedata
 
 import (
 	"elichika/dictionary"
-	"elichika/model"
+	// "elichika/model"
+	"elichika/client"
 	"elichika/utils"
 
 	"fmt"
@@ -35,13 +36,13 @@ type Card struct {
 	MaxPassiveSkillSlot int `xorm:"'max_passive_skill_slot'"`
 
 	// from m_card_grade_up_item
-	// ma content_id to model.Content
-	CardGradeUpItem map[int](map[int]model.Content) `xorm:"-"`
+	// map content_id to client.Content
+	CardGradeUpItem map[int](map[int32]client.Content) `xorm:"-"`
 }
 
 type CardGradeUpItem struct {
-	Grade    int           `xorm:"'grade'"`
-	Resource model.Content `xorm:"extends"`
+	Grade    int            `xorm:"'grade'"`
+	Resource client.Content `xorm:"extends"`
 }
 
 func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
@@ -51,14 +52,14 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	card.TrainingTreeMasterId = &card.TrainingTree.Id
 
 	{
-		card.CardGradeUpItem = make(map[int](map[int]model.Content))
+		card.CardGradeUpItem = make(map[int](map[int32]client.Content))
 		gradeUps := []CardGradeUpItem{}
 		err := masterdata_db.Table("m_card_grade_up_item").Where("card_id = ?", card.Id).Find(&gradeUps)
 		utils.CheckErr(err)
 		for _, gradeUp := range gradeUps {
 			_, exist := card.CardGradeUpItem[gradeUp.Grade]
 			if !exist {
-				card.CardGradeUpItem[gradeUp.Grade] = make(map[int]model.Content)
+				card.CardGradeUpItem[gradeUp.Grade] = make(map[int32]client.Content)
 			}
 			card.CardGradeUpItem[gradeUp.Grade][gradeUp.Resource.ContentId] = gradeUp.Resource
 		}

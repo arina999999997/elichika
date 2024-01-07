@@ -1,12 +1,12 @@
 package item
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 )
 
 var (
-	TrainingTicket = model.Content{
+	TrainingTicket = client.Content{
 		ContentType:   enum.ContentTypeRecoveryAp,
 		ContentId:     2200,
 		ContentAmount: 1,

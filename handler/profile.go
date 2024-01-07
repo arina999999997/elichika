@@ -70,8 +70,10 @@ func SetProfileBirthday(ctx *gin.Context) {
 	defer session.Close()
 
 	// birthdate is probably calculated using gplay or apple id
-	session.UserStatus.BirthDay = req.Day
-	session.UserStatus.BirthMonth = req.Month
+	session.UserStatus.BirthDay = new(int32)
+	session.UserStatus.BirthMonth = new(int32)
+	*session.UserStatus.BirthDay = int32(req.Day)
+	*session.UserStatus.BirthMonth = int32(req.Month)
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseNameInput {
 		// session.UserStatus.TutorialPhase = enum.TutorialPhaseStory1
@@ -90,7 +92,7 @@ func SetRecommendCard(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	cardMasterId := int(gjson.Parse(reqBody).Array()[0].Get("card_master_id").Int())
-	session.UserStatus.RecommendCardMasterId = cardMasterId
+	session.UserStatus.RecommendCardMasterId = int32(cardMasterId)
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -142,7 +144,7 @@ func SetLivePartner(ctx *gin.Context) {
 func SetScoreOrComboLive(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetScoreOrComboReq struct {
-		LiveDifficultyMasterId int `json:"live_difficulty_master_id"`
+		LiveDifficultyMasterId int32 `json:"live_difficulty_master_id"`
 	}
 	req := SetScoreOrComboReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)

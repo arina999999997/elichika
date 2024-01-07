@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/model"
 	"elichika/utils"
 )
@@ -58,12 +59,12 @@ func (session *Session) ExecuteTrade(productId int, tradeCount int) bool {
 	product := session.Gamedata.TradeProduct[productId]
 	trade := session.Gamedata.Trade[product.TradeId]
 	content := product.ActualContent
-	content.ContentAmount *= int64(tradeCount)
+	content.ContentAmount *= int32(tradeCount)
 	session.AddResource(content)
-	session.RemoveResource(model.Content{
-		ContentType:   trade.SourceContentType,
-		ContentId:     trade.SourceContentId,
-		ContentAmount: int64(product.SourceAmount) * int64(tradeCount),
+	session.RemoveResource(client.Content{
+		ContentType:   int32(trade.SourceContentType),
+		ContentId:     int32(trade.SourceContentId),
+		ContentAmount: int32(product.SourceAmount) * int32(tradeCount),
 	})
 
 	return true

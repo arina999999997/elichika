@@ -56,7 +56,7 @@ func PhaseEnd(ctx *gin.Context) {
 		panic("Unexpected tutorial phase")
 	}
 	session.UserStatus.TutorialPhase = enum.TutorialPhaseTutorialEnd
-	session.UserStatus.TutorialEndAt = int(session.Time.Unix())
+	session.UserStatus.TutorialEndAt = session.Time.Unix()
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -71,7 +71,7 @@ func TutorialSkip(ctx *gin.Context) {
 
 	if session.UserStatus.TutorialPhase != enum.TutorialPhaseTutorialEnd {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseTutorialEnd
-		session.UserStatus.TutorialEndAt = int(time.Now().Unix())
+		session.UserStatus.TutorialEndAt = time.Now().Unix()
 	}
 
 	signBody := session.Finalize("{}", "user_model")

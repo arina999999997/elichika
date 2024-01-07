@@ -1,6 +1,7 @@
 package gacha
 
 import (
+	"elichika/client"
 	"elichika/gamedata"
 	"elichika/model"
 	"elichika/userdata"
@@ -57,7 +58,7 @@ func MakeResultCard(session *userdata.Session, cardMasterId int, isGuaranteed bo
 	// }
 	if resultCard.AfterGrade == 6 { // maxed out card
 		resultCard.AfterGrade = 5
-		resultCard.Content = &model.Content{
+		resultCard.Content = &client.Content{
 			ContentType:   13,
 			ContentId:     1800,
 			ContentAmount: 1,

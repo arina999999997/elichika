@@ -110,7 +110,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 			continue
 		}
 		// update if it feature this member
-		liveDifficultyMaster := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyId]
+		liveDifficultyMaster := gamedata.LiveDifficulty[int(liveDifficultyRecord.LiveDifficultyId)]
 		if liveDifficultyMaster == nil {
 			// some song no longer exists but official server still send them
 			// it's ok to ignore these for now
@@ -169,7 +169,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 			masterLive := gamedata.Live[*storyMemberMaster.UnlockLiveId]
 			// insert empty record for relevant items
 			for _, masterLiveDifficulty := range masterLive.LiveDifficulties {
-				liveDifficulty := session.GetLiveDifficulty(masterLiveDifficulty.LiveDifficultyId)
+				liveDifficulty := session.GetLiveDifficulty(int32(masterLiveDifficulty.LiveDifficultyId))
 				session.UpdateLiveDifficulty(liveDifficulty)
 			}
 		}
@@ -211,13 +211,13 @@ func SetFavoriteMember(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.FavoriteMemberId = req.MemberMasterId
+	session.UserStatus.FavoriteMemberId = int32(req.MemberMasterId)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseFavoriateMember {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseLovePointUp
 		// award the initial SR
 		// TODO(refactor): use the common method to add a card instead
 		card := session.GetUserCard(100002001 + req.MemberMasterId*10000)
-		session.UserStatus.RecommendCardMasterId = card.CardMasterId // this is for the pop up
+		session.UserStatus.RecommendCardMasterId = int32(card.CardMasterId) // this is for the pop up
 		cardRarity := 20
 		member := session.GetMember(req.MemberMasterId)
 		beforeLoveLevelLimit := session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)

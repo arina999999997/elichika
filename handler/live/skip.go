@@ -52,7 +52,7 @@ func LiveSkip(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyMasterId
+	session.UserStatus.LastLiveDifficultyId = int32(req.LiveDifficultyMasterId)
 	liveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyMasterId]
 	isCenter := map[int]bool{}
 	for _, memberMapping := range liveDifficulty.Live.LiveMemberMapping {
@@ -74,7 +74,7 @@ func LiveSkip(ctx *gin.Context) {
 	for i := 1; i <= req.TicketUseCount; i++ {
 		skipLiveResult.Drops = append(skipLiveResult.Drops, DropWithTypes{})
 	}
-	session.UserStatus.Exp += skipLiveResult.GainUserExp
+	session.UserStatus.Exp += int32(skipLiveResult.GainUserExp)
 	deck := session.GetUserLiveDeck(req.DeckId)
 	deckJsonByte, _ := json.Marshal(deck)
 	cardMasterIds := []int{}

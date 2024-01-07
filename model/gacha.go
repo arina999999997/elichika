@@ -1,5 +1,9 @@
 package model
 
+import (
+	"elichika/client"
+)
+
 type GachaAppeal struct { // s_gacha_appeal
 	GachaAppealMasterId int `xorm:"pk 'gacha_appeal_master_id'" json:"-"`
 	CardMasterId        int `xorm:"'card_master_id'" json:"card_master_id"`
@@ -90,15 +94,15 @@ type GachaDrawReq struct {
 }
 
 type ResultCard struct {
-	GachaLotType         int      `json:"gacha_lot_type"` // 1 for normal, 2 for guaranteed
-	CardMasterId         int      `json:"card_master_id"`
-	Level                int      `json:"level"`                   // always 1
-	BeforeGrade          int      `json:"before_grade"`            // 0 for new
-	AfterGrade           int      `json:"after_grade"`             // 0 for new, 5 for maxed
-	Content              *Content `json:"content"`                 // if maxed then award radiance. Technically we can award anything, but this is only the display value
-	LimitExceeded        bool     `json:"limit_exceeded"`          // always false
-	BeforeLoveLevelLimit int      `json:"before_love_level_limit"` // always correct
-	AfterLoveLevelLimit  int      `json:"after_love_level_limit"`  // 0 for max level
+	GachaLotType         int             `json:"gacha_lot_type"` // 1 for normal, 2 for guaranteed
+	CardMasterId         int             `json:"card_master_id"`
+	Level                int             `json:"level"`                   // always 1
+	BeforeGrade          int             `json:"before_grade"`            // 0 for new
+	AfterGrade           int             `json:"after_grade"`             // 0 for new, 5 for maxed
+	Content              *client.Content `json:"content"`                 // if maxed then award radiance. Technically we can award anything, but this is only the display value
+	LimitExceeded        bool            `json:"limit_exceeded"`          // always false
+	BeforeLoveLevelLimit int             `json:"before_love_level_limit"` // always correct
+	AfterLoveLevelLimit  int             `json:"after_love_level_limit"`  // 0 for max level
 }
 
 // How this server implement (back end) gacha (for now):

@@ -34,7 +34,7 @@ func ActivateEmblem(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UserStatus.EmblemId = req.EmblemMasterId
+	session.UserStatus.EmblemId = int32(req.EmblemMasterId)
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)

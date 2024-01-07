@@ -29,8 +29,8 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		if isRandomId {
 			userId = rand.Intn(1000000000)
 		}
-		tutorialPhase := 99
-		tutorialEndAt := int(time.Now().Unix())
+		tutorialPhase := int32(99)
+		tutorialEndAt := time.Now().Unix()
 		if *config.Conf.Tutorial {
 			tutorialPhase = enum.TutorialPhaseNameInput
 			tutorialEndAt = 0
@@ -56,9 +56,9 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			AppleSnsCoin:                              25000,
 			GoogleSnsCoin:                             25000,
 			SubscriptionCoin:                          50000,
-			BirthDate:                                 202307,
-			BirthMonth:                                7,
-			BirthDay:                                  1,
+			BirthDate:                                 nil,
+			BirthMonth:                                nil,
+			BirthDay:                                  nil,
 			LatestLiveDeckId:                          1,
 			MainLessonDeckId:                          1,
 			FavoriteMemberId:                          1,
@@ -69,14 +69,14 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			TutorialEndAt:                             tutorialEndAt,
 			LoginDays:                                 1221,
 			NaviTapRecoverAt:                          1688137200,
-			MaxScoreLiveDifficultyMasterId:            10001101,
-			MaxComboLiveDifficultyMasterId:            10001101,
+			MaxScoreLiveDifficultyMasterId:            nil,
+			MaxComboLiveDifficultyMasterId:            nil,
 			LessonResumeStatus:                        1,
 			AccessoryBoxAdditional:                    400,
 			TermsOfUseVersion:                         2,
 			BootstrapSifidCheckAt:                     1692471111782,
 			GdprVersion:                               4,
-			MemberGuildMemberMasterId:                 1,
+			MemberGuildMemberMasterId:                 nil,
 			MemberGuildLastUpdatedAt:                  1659485328,
 		}
 		status.Name.DotUnderText = "Newcomer"

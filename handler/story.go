@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
-	"elichika/model"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
@@ -32,9 +32,9 @@ func FinishStoryMain(ctx *gin.Context) {
 	// } else if session.UserStatus.TutorialPhase == enum.TutorialPhaseStory3 {
 	// 	session.UserStatus.TutorialPhase = enum.TutorialPhaseStory4
 	// }
-	firstClearReward := []model.Content{}
+	firstClearReward := []client.Content{}
 	if session.InsertUserStoryMain(req.CellId) { // newly inserted story, award some gem
-		firstClearReward = append(firstClearReward, model.Content{
+		firstClearReward = append(firstClearReward, client.Content{
 			ContentType:   enum.ContentTypeSnsCoin,
 			ContentId:     0,
 			ContentAmount: 10,

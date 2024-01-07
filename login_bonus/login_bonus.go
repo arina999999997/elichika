@@ -30,14 +30,14 @@
 package login_bonus
 
 import (
+	"elichika/client"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/userdata"
 )
 
 // handlers take the config, the relevant session, the relevant login bonus, and the bootstrap output
 
-type HandlerType = func(string, *userdata.Session, *gamedata.LoginBonus, *model.BootstrapLoginBonus)
+type HandlerType = func(string, *userdata.Session, *gamedata.LoginBonus, *client.BootstrapLoginBonus)
 
 var Handler map[string]HandlerType
 

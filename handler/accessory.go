@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -149,10 +149,10 @@ func AccessoryPowerUp(ctx *gin.Context) {
 
 	for _, item := range req.AccessoryLevelUpItems {
 		itemId := item.AccessoryLevelUpItemMasterId
-		session.RemoveResource(model.Content{
+		session.RemoveResource(client.Content{
 			ContentType:   24,
-			ContentId:     itemId,
-			ContentAmount: int64(item.Amount),
+			ContentId:     int32(itemId),
+			ContentAmount: int32(item.Amount),
 		})
 		userAccessory.Exp += item.Amount * gamedata.AccessoryLevelUpItem[itemId].PlusExp
 		moneyUsed += item.Amount * gamedata.AccessoryLevelUpItem[itemId].GameMoney
@@ -186,7 +186,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	}
 	session.UpdateUserAccessory(userAccessory)
 
-	session.RemoveGameMoney(int64(moneyUsed))
+	session.RemoveGameMoney(int32(moneyUsed))
 
 	signBody := session.Finalize("{}", "user_model_diff")
 	// not sure what this is, doesn't seem to do anything
@@ -243,7 +243,7 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	session.UpdateUserAccessory(userAccessory)
 	// remove resource used
 	session.RemoveResource(masterAccessory.RarityUp.RarityUpGroup.Resource)
-	session.RemoveGameMoney(int64(masterAccessory.Rarity.RarityUpMoney))
+	session.RemoveGameMoney(int32(masterAccessory.Rarity.RarityUpMoney))
 
 	// finalize and send the response
 
