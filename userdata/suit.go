@@ -8,20 +8,20 @@ import (
 // suit are inserted when the function is called as suit is unique and doesn't change
 
 func (session *Session) InsertUserSuits(suits []model.UserSuit) {
-	session.UserModel.UserSuitBySuitID.Objects = append(session.UserModel.UserSuitBySuitID.Objects, suits...)
+	session.UserModel.UserSuitBySuitId.Objects = append(session.UserModel.UserSuitBySuitId.Objects, suits...)
 }
 
-func (session *Session) InsertUserSuit(suitMasterID int) {
+func (session *Session) InsertUserSuit(suitMasterId int) {
 	suit := model.UserSuit{
-		UserID:       session.UserStatus.UserID,
-		SuitMasterID: suitMasterID,
+		UserId:       session.UserStatus.UserId,
+		SuitMasterId: suitMasterId,
 		IsNew:        true,
 	}
-	session.UserModel.UserSuitBySuitID.PushBack(suit)
+	session.UserModel.UserSuitBySuitId.PushBack(suit)
 }
 
 func suitFinalizer(session *Session) {
-	for _, suit := range session.UserModel.UserSuitBySuitID.Objects {
+	for _, suit := range session.UserModel.UserSuitBySuitId.Objects {
 		exist, err := session.Db.Table("u_suit").Exist(&suit)
 		utils.CheckErr(err)
 		if !exist {
@@ -33,5 +33,5 @@ func suitFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(suitFinalizer)
-	addGenericTableFieldPopulator("u_suit", "UserSuitBySuitID")
+	addGenericTableFieldPopulator("u_suit", "UserSuitBySuitId")
 }

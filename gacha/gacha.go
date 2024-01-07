@@ -18,30 +18,30 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int 
 	groups := map[int]([]int){}
 	totalWeight := int64(0)
 	for _, card := range cards {
-		_, exist := groups[card.GroupMasterID]
+		_, exist := groups[card.GroupMasterId]
 		if !exist {
-			totalWeight += gamedata.GachaGroup[card.GroupMasterID].GroupWeight
+			totalWeight += gamedata.GachaGroup[card.GroupMasterId].GroupWeight
 		}
-		groups[card.GroupMasterID] = append(groups[card.GroupMasterID], card.CardMasterID)
+		groups[card.GroupMasterId] = append(groups[card.GroupMasterId], card.CardMasterId)
 	}
 	groupRand := rand.Int63n(totalWeight)
-	for groupID, cardIDs := range groups {
-		if gamedata.GachaGroup[groupID].GroupWeight > groupRand { // this group
-			return cardIDs[rand.Intn(len(cardIDs))]
+	for groupId, cardIds := range groups {
+		if gamedata.GachaGroup[groupId].GroupWeight > groupRand { // this group
+			return cardIds[rand.Intn(len(cardIds))]
 		} else {
-			groupRand -= gamedata.GachaGroup[groupID].GroupWeight
+			groupRand -= gamedata.GachaGroup[groupId].GroupWeight
 		}
 	}
 	panic("this shouldn't happen")
 }
 
-func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bool) model.ResultCard {
-	card := session.GetUserCard(cardMasterID)
-	cardRarity := session.Gamedata.Card[cardMasterID].CardRarityType
-	member := session.GetMember(session.Gamedata.Card[cardMasterID].Member.ID)
+func MakeResultCard(session *userdata.Session, cardMasterId int, isGuaranteed bool) model.ResultCard {
+	card := session.GetUserCard(cardMasterId)
+	cardRarity := session.Gamedata.Card[cardMasterId].CardRarityType
+	member := session.GetMember(session.Gamedata.Card[cardMasterId].Member.Id)
 	resultCard := model.ResultCard{
 		GachaLotType:         1,
-		CardMasterID:         cardMasterID,
+		CardMasterId:         cardMasterId,
 		Level:                1,
 		BeforeGrade:          card.Grade,
 		AfterGrade:           card.Grade + 1,
@@ -59,7 +59,7 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 		resultCard.AfterGrade = 5
 		resultCard.Content = &model.Content{
 			ContentType:   13,
-			ContentID:     1800,
+			ContentId:     1800,
 			ContentAmount: 1,
 		}
 		// 30 20 10 for UR, SR, R
@@ -81,7 +81,7 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 		} else {
 			// add trigger card grade up so animation play when opening the card
 			session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-				CardMasterID:         card.CardMasterID,
+				CardMasterId:         card.CardMasterId,
 				BeforeLoveLevelLimit: resultCard.AfterLoveLevelLimit, // this is correct
 				AfterLoveLevelLimit:  resultCard.AfterLoveLevelLimit,
 			})
@@ -96,8 +96,8 @@ func MakeResultCard(session *userdata.Session, cardMasterID int, isGuaranteed bo
 func HandleGacha(ctx *gin.Context, req model.GachaDrawReq) (model.Gacha, []model.ResultCard) {
 	session := ctx.MustGet("session").(*userdata.Session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	draw := *gamedata.GachaDraw[req.GachaDrawMasterID]
-	gacha := *gamedata.Gacha[draw.GachaMasterID]
+	draw := *gamedata.GachaDraw[req.GachaDrawMasterId]
+	gacha := *gamedata.Gacha[draw.GachaMasterId]
 	cardPool := []model.GachaCard{}
 	for _, group := range gacha.DbGachaGroups {
 		cardPool = append(cardPool, gamedata.GachaGroup[group].Cards...)
@@ -107,13 +107,13 @@ func HandleGacha(ctx *gin.Context, req model.GachaDrawReq) (model.Gacha, []model
 	// TODO: gacha recovery and economy
 	// for now just get this to work
 	resultCards := []model.ResultCard{}
-	for _, guaranteeID := range draw.Guarantees {
-		gachaGuarantee := gamedata.GachaGuarantee[guaranteeID]
-		cardMasterID := GuaranteeHandlers[gachaGuarantee.GuaranteeHandler](ctx, gachaGuarantee)
-		if cardMasterID == 0 {
+	for _, guaranteeId := range draw.Guarantees {
+		gachaGuarantee := gamedata.GachaGuarantee[guaranteeId]
+		cardMasterId := GuaranteeHandlers[gachaGuarantee.GuaranteeHandler](ctx, gachaGuarantee)
+		if cardMasterId == 0 {
 			continue
 		}
-		resultCards = append(resultCards, MakeResultCard(session, cardMasterID, true))
+		resultCards = append(resultCards, MakeResultCard(session, cardMasterId, true))
 	}
 	for i := len(resultCards); i < draw.DrawCount; i++ {
 		resultCards = append(resultCards, MakeResultCard(session, ChooseRandomCard(gamedata, cardPool), false))

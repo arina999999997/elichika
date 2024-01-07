@@ -8,7 +8,7 @@ import (
 var (
 	MemoryKey = model.Content{
 		ContentType:   enum.ContentTypeStoryEventUnlock,
-		ContentID:     17001,
+		ContentId:     17001,
 		ContentAmount: 1,
 	}
 )

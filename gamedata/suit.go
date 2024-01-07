@@ -11,8 +11,8 @@ import (
 
 type Suit struct {
 	// from m_suit
-	ID        int     `xorm:"pk 'id'"`
-	MemberMID *int    `xorm:"'member_m_id'"`
+	Id        int     `xorm:"pk 'id'"`
+	MemberMId *int    `xorm:"'member_m_id'"`
 	Member    *Member `xorm:"-"`
 	// Name string `xorm:"'name'"`
 	// ThumbnailImageAssetPath string `xorm:"'thumbnail_image_asset_path'"`
@@ -22,10 +22,10 @@ type Suit struct {
 }
 
 func (suit *Suit) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	suit.Member = gamedata.Member[*suit.MemberMID]
-	suit.MemberMID = &suit.Member.ID
+	suit.Member = gamedata.Member[*suit.MemberMId]
+	suit.MemberMId = &suit.Member.Id
 	// suit.Name = dictionary.Resolve(suit.Name)
-	// fmt.Println(suit.ID, "\t", *suit.MemberMID, "\t", suit.Name, "\t", suit.ThumbnailImageAssetPath, "\t", suit.ModelAssetPath)
+	// fmt.Println(suit.Id, "\t", *suit.MemberMId, "\t", suit.Name, "\t", suit.ThumbnailImageAssetPath, "\t", suit.ModelAssetPath)
 }
 
 func loadSuit(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

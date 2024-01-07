@@ -6,7 +6,7 @@ import (
 
 type LiveDifficultyMission struct {
 	// from m_live_difficulty_mission
-	// LiveDifficultyMasterID int
+	// LiveDifficultyMasterId int
 	Position    int           `xorm:"'position'"`
 	TargetType  int           `xorm:"'target_type'"`
 	TargetValue int           `xorm:"'target_value'"`

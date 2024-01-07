@@ -18,7 +18,7 @@ type TrainingTreeCardParam struct {
 type TrainingTreeCardStorySide struct {
 	TrainingContentType int `xorm:"'training_content_type'"`
 	TrainingContentNo   int `xorm:"'training_content_no'"` // assume to be always 1
-	StorySideMID        int `xorm:"'story_side_m_id'"`
+	StorySideMId        int `xorm:"'story_side_m_id'"`
 }
 
 type TrainingTreeProgressReward struct {
@@ -28,33 +28,33 @@ type TrainingTreeProgressReward struct {
 
 type TrainingTree struct {
 	// from m_training_tree
-	ID                       int                  `xorm:"pk 'id'"`
-	TrainingTreeMappingMID   *int                 `xorm:"'training_tree_mapping_m_id'"`
+	Id                       int                  `xorm:"pk 'id'"`
+	TrainingTreeMappingMId   *int                 `xorm:"'training_tree_mapping_m_id'"`
 	TrainingTreeMapping      *TrainingTreeMapping `xorm:"-"`
-	TrainingTreeCardParamMID int                  `xorm:"'training_tree_card_param_m_id'"`
+	TrainingTreeCardParamMId int                  `xorm:"'training_tree_card_param_m_id'"`
 	// from m_training_tree_card_param
 	TrainingTreeCardParams []TrainingTreeCardParam `xorm:"-"` // 1 indexed
-	// TrainingTreeCardPassiveSkillIncreaseMID int `xorm:"'training_tree_card_passive_skill_increase_m_id;"`
+	// TrainingTreeCardPassiveSkillIncreaseMId int `xorm:"'training_tree_card_passive_skill_increase_m_id;"`
 	// from m_training_tree_card_passive_skill_increase
 	// basically only differ between level 5 max skill and level 7 max skill, not implemented here
 	// TrainingTreeCardPassiveSkillIncrease
 
 	// from m_training_tree_card_story_side
-	TrainingTreeCardStorySides map[int]int `xorm:"-"` // map from training_content_type to storySideMID
+	TrainingTreeCardStorySides map[int]int `xorm:"-"` // map from training_content_type to storySideMId
 	// from m_training_tree_card_suit
-	SuitMIDs []int `xorm:"-"` // 1 indexed
+	SuitMIds []int `xorm:"-"` // 1 indexed
 	// from m_training_tree_card_voice
-	NaviActionIDs []int `xorm:"-"` // 1 indexed
+	NaviActionIds []int `xorm:"-"` // 1 indexed
 
 	// from m_training_tree_progress_reward
 	TrainingTreeProgressRewards []TrainingTreeProgressReward `xorm:"-"`
 }
 
 func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	tree.TrainingTreeMapping = gamedata.TrainingTreeMapping[*tree.TrainingTreeMappingMID]
-	tree.TrainingTreeMappingMID = &tree.TrainingTreeMapping.ID
+	tree.TrainingTreeMapping = gamedata.TrainingTreeMapping[*tree.TrainingTreeMappingMId]
+	tree.TrainingTreeMappingMId = &tree.TrainingTreeMapping.Id
 	{
-		err := masterdata_db.Table("m_training_tree_card_param").Where("id = ?", tree.TrainingTreeCardParamMID).
+		err := masterdata_db.Table("m_training_tree_card_param").Where("id = ?", tree.TrainingTreeCardParamMId).
 			OrderBy("training_content_no").Find(&tree.TrainingTreeCardParams)
 		tree.TrainingTreeCardParams = append([]TrainingTreeCardParam{TrainingTreeCardParam{}}, tree.TrainingTreeCardParams...)
 		utils.CheckErr(err)
@@ -63,29 +63,29 @@ func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata
 	{
 		tree.TrainingTreeCardStorySides = make(map[int]int)
 		stories := []TrainingTreeCardStorySide{}
-		err := masterdata_db.Table("m_training_tree_card_story_side").Where("card_m_id = ?", tree.ID).Find(&stories)
+		err := masterdata_db.Table("m_training_tree_card_story_side").Where("card_m_id = ?", tree.Id).Find(&stories)
 		utils.CheckErr(err)
 		for _, story := range stories {
-			tree.TrainingTreeCardStorySides[story.TrainingContentType] = story.StorySideMID
+			tree.TrainingTreeCardStorySides[story.TrainingContentType] = story.StorySideMId
 		}
 	}
 
 	{
-		err := masterdata_db.Table("m_training_tree_card_suit").Where("card_m_id = ?", tree.ID).
-			OrderBy("training_content_no").Cols("suit_m_id").Find(&tree.SuitMIDs)
+		err := masterdata_db.Table("m_training_tree_card_suit").Where("card_m_id = ?", tree.Id).
+			OrderBy("training_content_no").Cols("suit_m_id").Find(&tree.SuitMIds)
 		utils.CheckErr(err)
-		tree.SuitMIDs = append([]int{0}, tree.SuitMIDs...)
+		tree.SuitMIds = append([]int{0}, tree.SuitMIds...)
 	}
 
 	{
-		err := masterdata_db.Table("m_training_tree_card_voice").Where("card_m_id = ?", tree.ID).
-			OrderBy("training_content_no").Cols("navi_action_id").Find(&tree.NaviActionIDs)
+		err := masterdata_db.Table("m_training_tree_card_voice").Where("card_m_id = ?", tree.Id).
+			OrderBy("training_content_no").Cols("navi_action_id").Find(&tree.NaviActionIds)
 		utils.CheckErr(err)
-		tree.NaviActionIDs = append([]int{0}, tree.NaviActionIDs...)
+		tree.NaviActionIds = append([]int{0}, tree.NaviActionIds...)
 	}
 
 	{
-		err := masterdata_db.Table("m_training_tree_progress_reward").Where("card_master_id = ?", tree.ID).
+		err := masterdata_db.Table("m_training_tree_progress_reward").Where("card_master_id = ?", tree.Id).
 			OrderBy("activate_num").Find(&tree.TrainingTreeProgressRewards)
 		utils.CheckErr(err)
 	}

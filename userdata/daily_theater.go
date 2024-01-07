@@ -5,10 +5,10 @@ import (
 )
 
 func dailyTheaterFinalizer(session *Session) {
-	for _, userDailyTheater := range session.UserModel.UserDailyTheaterByDailyTheaterID.Objects {
+	for _, userDailyTheater := range session.UserModel.UserDailyTheaterByDailyTheaterId.Objects {
 		affected, err := session.Db.Table("u_daily_theater").
 			Where("user_id = ? AND daily_theater_id = ?",
-				session.UserStatus.UserID, userDailyTheater.DailyTheaterID).
+				session.UserStatus.UserId, userDailyTheater.DailyTheaterId).
 			AllCols().Update(userDailyTheater)
 		utils.CheckErr(err)
 		if affected == 0 {
@@ -21,5 +21,5 @@ func dailyTheaterFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(dailyTheaterFinalizer)
-	addGenericTableFieldPopulator("u_daily_theater", "UserDailyTheaterByDailyTheaterID")
+	addGenericTableFieldPopulator("u_daily_theater", "UserDailyTheaterByDailyTheaterId")
 }

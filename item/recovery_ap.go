@@ -8,7 +8,7 @@ import (
 var (
 	TrainingTicket = model.Content{
 		ContentType:   enum.ContentTypeRecoveryAp,
-		ContentID:     2200,
+		ContentId:     2200,
 		ContentAmount: 1,
 	}
 )

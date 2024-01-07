@@ -12,7 +12,7 @@ import (
 
 type Member struct {
 	// from m_member
-	ID          int `xorm:"'id' pk"`        // member master id
+	Id          int `xorm:"'id' pk"`        // member master id
 	MemberGroup int `xorm:"'member_group'"` // muse aqour niji
 	SchoolGrade int `xorm:"school_grade"`
 
@@ -68,9 +68,9 @@ type Member struct {
 
 type MemberInit struct {
 	// from m_member_init
-	// MemberMID int
-	SuitMasterID        int `xorm:"'suit_m_id'"`
-	CustomBackgroundMID int `xorm:"'custom_background_m_id'"`
+	// MemberMId int
+	SuitMasterId        int `xorm:"'suit_m_id'"`
+	CustomBackgroundMId int `xorm:"'custom_background_m_id'"`
 	LoveLevel           int `xorm:"'love_level'"`
 	LovePoint           int `xorm:"'love_point'"`
 	LovePointLimit      int `xorm:"'love_point_limit'"`
@@ -84,7 +84,7 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 			Content   model.Content `xorm:"extends"`
 		}
 		rewards := []LoveLevelReward{}
-		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.ID).Find(&rewards)
+		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).Find(&rewards)
 		utils.CheckErr(err)
 		for i := 0; i <= gamedata.MemberLoveLevelCount; i++ {
 			member.LoveLevelRewards = append(member.LoveLevelRewards, []model.Content{})
@@ -95,14 +95,14 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	}
 
 	{
-		exist, err := masterdata_db.Table("m_member_init").Where("member_m_id = ?", member.ID).Get(&member.MemberInit)
+		exist, err := masterdata_db.Table("m_member_init").Where("member_m_id = ?", member.Id).Get(&member.MemberInit)
 		utils.CheckErrMustExist(err, exist)
 	}
 
 	// member.Name = dictionary.Resolve(member.Name)
 	// member.NameHiragana = dictionary.Resolve(member.NameHiragana)
 	// member.NameRomaji = dictionary.Resolve(member.NameRomaji)
-	// fmt.Println(member.ID, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
+	// fmt.Println(member.Id, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
 	// 	member.ThemeColor, "\t", member.ThemeLightColor, "\t", member.ThemeDarkColor, "\t",
 	// 	member.BackgroundUpperLeftColor, "\t", member.BackgroundBottomRightColor)
 }

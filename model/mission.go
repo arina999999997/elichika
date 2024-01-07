@@ -3,8 +3,8 @@ package model
 // TODO: saved in database but not handled
 
 type UserMission struct {
-	UserID           int  `xorm:"pk 'user_id'" json:"-"`
-	MissionMID       int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
+	UserId           int  `xorm:"pk 'user_id'" json:"-"`
+	MissionMId       int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
 	IsNew            bool `xorm:"'is_new'" json:"is_new"`
 	MissionCount     int  `xorm:"'mission_count'" json:"mission_count"`
 	IsCleared        bool `xorm:"'is_cleared'" json:"is_cleared"`
@@ -12,13 +12,13 @@ type UserMission struct {
 	NewExpiredAt     int  `xorm:"'new_expired_at'" json:"new_expired_at"`
 }
 
-func (um *UserMission) ID() int64 {
-	return int64(um.MissionMID)
+func (um *UserMission) Id() int64 {
+	return int64(um.MissionMId)
 }
 
 type UserDailyMission struct {
-	UserID            int  `xorm:"pk 'user_id'" json:"-"`
-	MissionMID        int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
+	UserId            int  `xorm:"pk 'user_id'" json:"-"`
+	MissionMId        int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
 	IsNew             bool `xorm:"'is_new'" json:"is_new"`
 	MissionStartCount int  `xorm:"'mission_start_count'" json:"mission_start_count"`
 	MissionCount      int  `xorm:"'mission_count'" json:"mission_count"`
@@ -27,13 +27,13 @@ type UserDailyMission struct {
 	ClearedExpiredAt  int  `xorm:"'cleared_expired_at'" json:"cleared_expired_at"`
 }
 
-func (udm *UserDailyMission) ID() int64 {
-	return int64(udm.MissionMID)
+func (udm *UserDailyMission) Id() int64 {
+	return int64(udm.MissionMId)
 }
 
 type UserWeeklyMission struct {
-	UserID            int  `xorm:"pk 'user_id'" json:"-"`
-	MissionMID        int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
+	UserId            int  `xorm:"pk 'user_id'" json:"-"`
+	MissionMId        int  `xorm:"pk 'mission_m_id'" json:"mission_m_id"`
 	IsNew             bool `xorm:"'is_new'" json:"is_new"`
 	MissionStartCount int  `xorm:"'mission_start_count'" json:"mission_start_count"`
 	MissionCount      int  `xorm:"'mission_count'" json:"mission_count"`
@@ -43,8 +43,8 @@ type UserWeeklyMission struct {
 	NewExpiredAt      int  `xorm:"'new_expired_at'" json:"new_expired_at"`
 }
 
-func (uwm *UserWeeklyMission) ID() int64 {
-	return int64(uwm.MissionMID)
+func (uwm *UserWeeklyMission) Id() int64 {
+	return int64(uwm.MissionMId)
 }
 
 func init() {

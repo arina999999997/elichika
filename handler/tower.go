@@ -20,13 +20,13 @@ import (
 
 func FetchTowerSelect(ctx *gin.Context) {
 	// there's no request body
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	// no need to return anything, the same use database for this
 	respObj := response.FetchTowerSelectResponse{
-		TowerIDs:      []int{},
+		TowerIds:      []int{},
 		UserModelDiff: &session.UserModel,
 	}
 
@@ -42,22 +42,22 @@ func FetchTowerTop(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	respObj := response.FetchTowerTopResponse{
-		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerID),
+		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
 		IsShowUnlockEffect:     false,
 		// other fields are for DLP with voltage ranking
 	}
 
-	userTower := session.GetUserTower(req.TowerID)
-	tower := gamedata.Tower[req.TowerID]
+	userTower := session.GetUserTower(req.TowerId)
+	tower := gamedata.Tower[req.TowerId]
 	if userTower.ClearedFloor == userTower.ReadFloor {
-		tower := gamedata.Tower[req.TowerID]
+		tower := gamedata.Tower[req.TowerId]
 		if userTower.ReadFloor < tower.FloorCount {
 			userTower.ReadFloor += 1
 			respObj.IsShowUnlockEffect = true
@@ -80,7 +80,7 @@ func FetchTowerTop(ctx *gin.Context) {
 		respObj.Order = new(int)
 		*respObj.Order = 1
 		// fetch the score
-		scores := session.GetUserTowerVoltageRankingScores(req.TowerID)
+		scores := session.GetUserTowerVoltageRankingScores(req.TowerId)
 		for _, score := range scores {
 			respObj.EachBonusLiveVoltage[score.FloorNo-1] = score.Voltage
 		}
@@ -100,8 +100,8 @@ func ClearedTowerFloor(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	respObj := response.ClearedTowerFloorResponse{
@@ -109,7 +109,7 @@ func ClearedTowerFloor(ctx *gin.Context) {
 		IsShowUnlockEffect: false,
 	}
 
-	userTower := session.GetUserTower(req.TowerID)
+	userTower := session.GetUserTower(req.TowerId)
 	if userTower.ClearedFloor < req.FloorNo {
 		userTower.ClearedFloor = req.FloorNo
 		session.UpdateUserTower(userTower)
@@ -129,39 +129,39 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	tower := gamedata.Tower[req.TowerID]
+	tower := gamedata.Tower[req.TowerId]
 
-	for _, cardMasterID := range req.CardMasterIDs {
-		cardUsedCount := session.GetUserTowerCardUsed(req.TowerID, cardMasterID)
+	for _, cardMasterId := range req.CardMasterIds {
+		cardUsedCount := session.GetUserTowerCardUsed(req.TowerId, cardMasterId)
 		cardUsedCount.UsedCount--
 		cardUsedCount.RecoveredCount++
 		session.UpdateUserTowerCardUsed(cardUsedCount)
 	}
 	// remove the item
 	has := session.GetUserResource(enum.ContentTypeRecoveryTowerCardUsedCount, 24001).Content.ContentAmount
-	if has >= int64(len(req.CardMasterIDs)) {
+	if has >= int64(len(req.CardMasterIds)) {
 		session.RemoveResource(model.Content{
 			ContentType:   enum.ContentTypeRecoveryTowerCardUsedCount,
-			ContentID:     24001,
-			ContentAmount: int64(len(req.CardMasterIDs)),
+			ContentId:     24001,
+			ContentAmount: int64(len(req.CardMasterIds)),
 		})
 	} else {
 		session.RemoveResource(model.Content{
 			ContentType:   enum.ContentTypeRecoveryTowerCardUsedCount,
-			ContentID:     24001,
+			ContentId:     24001,
 			ContentAmount: has,
 		})
-		session.RemoveSnsCoin((int64(len(req.CardMasterIDs)) - has) * int64(tower.RecoverCostBySnsCoin))
+		session.RemoveSnsCoin((int64(len(req.CardMasterIds)) - has) * int64(tower.RecoverCostBySnsCoin))
 
 	}
 	session.Finalize("", "dummy")
 	respObj := response.RecoveryTowerCardUsedResponse{
-		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerID),
+		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
 	}
 
@@ -177,12 +177,12 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	respObj := response.RecoveryTowerCardUsedResponse{
-		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerID),
+		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
 	}
 	for i := range respObj.TowerCardUsedCountRows {
@@ -190,7 +190,7 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 		respObj.TowerCardUsedCountRows[i].RecoveredCount = 0
 		session.UpdateUserTowerCardUsed(respObj.TowerCardUsedCountRows[i])
 	}
-	userTower := session.GetUserTower(req.TowerID)
+	userTower := session.GetUserTower(req.TowerId)
 	session.UpdateUserTower(userTower)
 
 	session.Finalize("", "dummy")
@@ -206,15 +206,15 @@ func FetchTowerRanking(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	// TODO(multiplayer ranking): return actual data for this
 	respObj := response.FetchTowerRankingResponse{
 		MyOrder: 1,
 	}
-	towerRankingCell := session.GetTowerRankingCell(req.TowerID)
+	towerRankingCell := session.GetTowerRankingCell(req.TowerId)
 	respObj.TopRankingCells = append(respObj.TopRankingCells, towerRankingCell)
 	respObj.MyRankingCells = append(respObj.MyRankingCells, towerRankingCell)
 	respObj.FriendRankingCells = append(respObj.FriendRankingCells, towerRankingCell)

@@ -22,7 +22,7 @@ import (
 func SaveDeckAll(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveDeckAllReq struct {
-		DeckID       int   `json:"deck_id"`
+		DeckId       int   `json:"deck_id"`
 		CardWithSuit []int `json:"card_with_suit"`
 		SquadDict    []any `json:"squad_dict"`
 	}
@@ -33,14 +33,14 @@ func SaveDeckAll(ctx *gin.Context) {
 	err := decoder.Decode(&req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	deckInfo := session.GetUserLiveDeck(req.DeckID)
+	deckInfo := session.GetUserLiveDeck(req.DeckId)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	for i := 0; i < 9; i++ {
 		if req.CardWithSuit[i*2+1] == 0 {
-			req.CardWithSuit[i*2+1] = gamedata.Card[req.CardWithSuit[i*2]].Member.MemberInit.SuitMasterID
+			req.CardWithSuit[i*2+1] = gamedata.Card[req.CardWithSuit[i*2]].Member.MemberInit.SuitMasterId
 		}
 	}
 
@@ -78,18 +78,18 @@ func SaveDeckAll(ctx *gin.Context) {
 			utils.CheckErr(err)
 
 			partyInfo := model.UserLiveParty{}
-			partyInfo.UserID = userID
-			partyInfo.PartyID = int(partyId)
-			partyInfo.IconMasterID, partyInfo.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIDs(
-				dictInfo.CardMasterIDs[0], dictInfo.CardMasterIDs[1], dictInfo.CardMasterIDs[2],
+			partyInfo.UserId = userId
+			partyInfo.PartyId = int(partyId)
+			partyInfo.IconMasterId, partyInfo.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIds(
+				dictInfo.CardMasterIds[0], dictInfo.CardMasterIds[1], dictInfo.CardMasterIds[2],
 			)
-			partyInfo.UserLiveDeckID = req.DeckID
-			partyInfo.CardMasterID1 = dictInfo.CardMasterIDs[0]
-			partyInfo.CardMasterID2 = dictInfo.CardMasterIDs[1]
-			partyInfo.CardMasterID3 = dictInfo.CardMasterIDs[2]
-			partyInfo.UserAccessoryID1 = dictInfo.UserAccessoryIDs[0]
-			partyInfo.UserAccessoryID2 = dictInfo.UserAccessoryIDs[1]
-			partyInfo.UserAccessoryID3 = dictInfo.UserAccessoryIDs[2]
+			partyInfo.UserLiveDeckId = req.DeckId
+			partyInfo.CardMasterId1 = dictInfo.CardMasterIds[0]
+			partyInfo.CardMasterId2 = dictInfo.CardMasterIds[1]
+			partyInfo.CardMasterId3 = dictInfo.CardMasterIds[2]
+			partyInfo.UserAccessoryId1 = dictInfo.UserAccessoryIds[0]
+			partyInfo.UserAccessoryId2 = dictInfo.UserAccessoryIds[1]
+			partyInfo.UserAccessoryId3 = dictInfo.UserAccessoryIds[2]
 			session.UpdateUserLiveParty(partyInfo)
 		}
 	}
@@ -105,16 +105,16 @@ func FetchLiveDeckSelect(ctx *gin.Context) {
 	// return last deck for this song
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchLiveDeckSelectReq struct {
-		LiveDifficultyID int `json:"live_difficulty_id"`
+		LiveDifficultyId int `json:"live_difficulty_id"`
 	}
 	req := FetchLiveDeckSelectReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	deck := session.GetLastPlayLiveDifficultyDeck(req.LiveDifficultyID)
+	deck := session.GetLastPlayLiveDifficultyDeck(req.LiveDifficultyId)
 	signBody, err := sjson.Set("{}", "last_play_live_difficulty_deck", deck)
 	utils.CheckErr(err)
 
@@ -127,9 +127,9 @@ func FetchLiveDeckSelect(ctx *gin.Context) {
 func SaveSuit(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveSuitReq struct {
-		DeckID       int `json:"deck_id"`
+		DeckId       int `json:"deck_id"`
 		CardIndex    int `json:"card_index"`
-		SuitMasterID int `json:"suit_master_id"`
+		SuitMasterId int `json:"suit_master_id"`
 		ViewStatus   int `json:"view_status"` // 2 for Rina-chan board off, 1 for everyone else
 	}
 
@@ -137,26 +137,26 @@ func SaveSuit(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseSuitChange {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseGacha
 	}
 
-	deck := session.GetUserLiveDeck(req.DeckID)
+	deck := session.GetUserLiveDeck(req.DeckId)
 	deckJsonByte, err := json.Marshal(deck)
 	utils.CheckErr(err)
 	deckJson := string(deckJsonByte)
-	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", req.CardIndex), req.SuitMasterID)
+	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", req.CardIndex), req.SuitMasterId)
 	err = json.Unmarshal([]byte(deckJson), &deck)
 	utils.CheckErr(err)
 	session.UpdateUserLiveDeck(deck)
 
 	// Rina-chan board toggle
-	if session.Gamedata.Suit[req.SuitMasterID].Member.ID == enum.MemberMasterIDRina {
-		RinaChan := session.GetMember(enum.MemberMasterIDRina)
+	if session.Gamedata.Suit[req.SuitMasterId].Member.Id == enum.MemberMasterIdRina {
+		RinaChan := session.GetMember(enum.MemberMasterIdRina)
 		RinaChan.ViewStatus = req.ViewStatus
 		session.UpdateMember(RinaChan)
 	}
@@ -170,31 +170,31 @@ func SaveSuit(ctx *gin.Context) {
 func SaveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveDeckReq struct {
-		DeckID        int    `json:"deck_id"`
-		CardMasterIDs [2]int `json:"card_master_ids"`
+		DeckId        int    `json:"deck_id"`
+		CardMasterIds [2]int `json:"card_master_ids"`
 	}
 	req := SaveDeckReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	position := req.CardMasterIDs[0]
-	newCardMasterID := req.CardMasterIDs[1]
-	newSuitMasterID := newCardMasterID
+	position := req.CardMasterIds[0]
+	newCardMasterId := req.CardMasterIds[1]
+	newSuitMasterId := newCardMasterId
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	// fetch the deck and parties affected
-	deck := session.GetUserLiveDeck(req.DeckID)
+	deck := session.GetUserLiveDeck(req.DeckId)
 	deckJsonByte, err := json.Marshal(deck)
 	utils.CheckErr(err)
 	deckJson := string(deckJsonByte)
 
-	oldCardMasterID := int(gjson.Get(deckJson, fmt.Sprintf("card_master_id_%d", position)).Int())
-	oldSuitMasterID := int(gjson.Get(deckJson, fmt.Sprintf("suit_master_id_%d", position)).Int())
-	if newCardMasterID == oldCardMasterID {
+	oldCardMasterId := int(gjson.Get(deckJson, fmt.Sprintf("card_master_id_%d", position)).Int())
+	oldSuitMasterId := int(gjson.Get(deckJson, fmt.Sprintf("suit_master_id_%d", position)).Int())
+	if newCardMasterId == oldCardMasterId {
 		panic("same card master id")
 	}
 
@@ -202,10 +202,10 @@ func SaveDeck(ctx *gin.Context) {
 	// old position != 0 then new card is in current deck, we have to swap
 	gjson.Parse(deckJson).ForEach(func(key, value gjson.Result) bool {
 		if strings.Contains(key.String(), "card_master_id") {
-			if int(value.Int()) == newCardMasterID {
+			if int(value.Int()) == newCardMasterId {
 				oldPosition = int(key.String()[len(key.String())-1] - '0')
 				// don't change suit_master_id if we just swap card around
-				newSuitMasterID = int(gjson.Get(deckJson, fmt.Sprintf("suit_master_id_%d", oldPosition)).Int())
+				newSuitMasterId = int(gjson.Get(deckJson, fmt.Sprintf("suit_master_id_%d", oldPosition)).Int())
 				return false
 			}
 		}
@@ -213,20 +213,20 @@ func SaveDeck(ctx *gin.Context) {
 	})
 
 	parties := []model.UserLiveParty{}
-	parties = append(parties, session.GetUserLivePartyWithDeckAndCardID(req.DeckID, oldCardMasterID))
+	parties = append(parties, session.GetUserLivePartyWithDeckAndCardId(req.DeckId, oldCardMasterId))
 	if oldPosition != 0 {
-		oldParty := session.GetUserLivePartyWithDeckAndCardID(req.DeckID, newCardMasterID)
-		if oldParty.PartyID != parties[0].PartyID {
+		oldParty := session.GetUserLivePartyWithDeckAndCardId(req.DeckId, newCardMasterId)
+		if oldParty.PartyId != parties[0].PartyId {
 			parties = append(parties, oldParty)
 		}
 	}
 
 	// change card master id in deck, then change the suit master id to default
-	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("card_master_id_%d", position), newCardMasterID)
-	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", position), newSuitMasterID)
+	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("card_master_id_%d", position), newCardMasterId)
+	deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", position), newSuitMasterId)
 	if oldPosition != 0 {
-		deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("card_master_id_%d", oldPosition), oldCardMasterID)
-		deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", oldPosition), oldSuitMasterID)
+		deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("card_master_id_%d", oldPosition), oldCardMasterId)
+		deckJson, _ = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", oldPosition), oldSuitMasterId)
 	}
 	err = json.Unmarshal([]byte(deckJson), &deck)
 	utils.CheckErr(err)
@@ -239,17 +239,17 @@ func SaveDeck(ctx *gin.Context) {
 		// change the live party and update the names
 		gjson.Parse(partyJson).ForEach(func(key, value gjson.Result) bool {
 			if strings.Contains(key.String(), "card_master_id") {
-				if int(value.Int()) == oldCardMasterID {
-					partyJson, _ = sjson.Set(partyJson, key.String(), newCardMasterID)
-				} else if int(value.Int()) == newCardMasterID {
-					partyJson, _ = sjson.Set(partyJson, key.String(), oldCardMasterID)
+				if int(value.Int()) == oldCardMasterId {
+					partyJson, _ = sjson.Set(partyJson, key.String(), newCardMasterId)
+				} else if int(value.Int()) == newCardMasterId {
+					partyJson, _ = sjson.Set(partyJson, key.String(), oldCardMasterId)
 				}
 			}
 			return true
 		})
 
 		partyInfo := gjson.Parse(partyJson)
-		partyIcon, partyName := gamedata.GetLivePartyInfoByCardMasterIDs(
+		partyIcon, partyName := gamedata.GetLivePartyInfoByCardMasterIds(
 			int(partyInfo.Get("card_master_id_1").Int()),
 			int(partyInfo.Get("card_master_id_2").Int()),
 			int(partyInfo.Get("card_master_id_3").Int()),
@@ -272,16 +272,16 @@ func SaveDeck(ctx *gin.Context) {
 func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ChangeDeckNameReq struct {
-		DeckID   int    `json:"deck_id"`
+		DeckId   int    `json:"deck_id"`
 		DeckName string `json:"deck_name"`
 	}
 	req := ChangeDeckNameReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	liveDeck := session.GetUserLiveDeck(req.DeckID)
+	liveDeck := session.GetUserLiveDeck(req.DeckId)
 	liveDeck.Name.DotUnderText = req.DeckName
 	session.UpdateUserLiveDeck(liveDeck)
 	signBody := session.Finalize("{}", "user_model")

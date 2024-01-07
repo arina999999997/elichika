@@ -17,17 +17,17 @@ import (
 func UpdateCardNewFlag(ctx *gin.Context) {
 	// mark the cards as read (is_new = false)
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	type UpdateCardNewFlagReq struct {
-		CardMasterIDs []int `json:"card_master_ids"`
+		CardMasterIds []int `json:"card_master_ids"`
 	}
 	req := UpdateCardNewFlagReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	for _, cardMasterID := range req.CardMasterIDs {
-		card := session.GetUserCard(cardMasterID)
+	for _, cardMasterId := range req.CardMasterIds {
+		card := session.GetUserCard(cardMasterId)
 		card.IsNew = false
 		session.UpdateUserCard(card)
 	}
@@ -46,10 +46,10 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 		panic(err)
 	}
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	userCard := session.GetUserCard(req.CardMasterID)
+	userCard := session.GetUserCard(req.CardMasterId)
 	userCard.IsAwakeningImage = req.IsAwakeningImage
 	session.UpdateUserCard(userCard)
 
@@ -68,10 +68,10 @@ func ChangeFavorite(ctx *gin.Context) {
 		panic(err)
 	}
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	userCard := session.GetUserCard(req.CardMasterID)
+	userCard := session.GetUserCard(req.CardMasterId)
 	userCard.IsFavorite = req.IsFavorite
 	session.UpdateUserCard(userCard)
 
@@ -85,17 +85,17 @@ func ChangeFavorite(ctx *gin.Context) {
 func GetOtherUserCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type OtherUserCardReq struct {
-		UserID       int `json:"user_id"`
-		CardMasterID int `json:"card_master_id"`
+		UserId       int `json:"user_id"`
+		CardMasterId int `json:"card_master_id"`
 	}
 	req := OtherUserCardReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	partnerCard := session.GetPartnerCardFromUserCard(userdata.GetOtherUserCard(req.UserID, req.CardMasterID))
+	partnerCard := session.GetPartnerCardFromUserCard(userdata.GetOtherUserCard(req.UserId, req.CardMasterId))
 	userCardResp, _ := sjson.Set("{}", "other_user_card", partnerCard)
 	resp := SignResp(ctx, userCardResp, config.SessionKey)
 

@@ -24,8 +24,8 @@ func FetchShopPack(ctx *gin.Context) {
 }
 
 func FetchShopSnsCoin(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UserModel.UserStatus.FreeSnsCoin += 10000 // add 10000 gems everytime someone try to buy gem
 	session.Finalize("{}", "dummy")

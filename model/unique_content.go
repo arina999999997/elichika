@@ -8,145 +8,145 @@ var (
 )
 
 type UserStoryMain struct {
-	UserID            int `xorm:"pk 'user_id'" json:"-"`
-	StoryMainMasterID int `xorm:"pk 'story_main_master_id'" json:"story_main_master_id"`
+	UserId            int `xorm:"pk 'user_id'" json:"-"`
+	StoryMainMasterId int `xorm:"pk 'story_main_master_id'" json:"story_main_master_id"`
 }
 
-func (usm *UserStoryMain) ID() int64 {
-	return int64(usm.StoryMainMasterID)
+func (usm *UserStoryMain) Id() int64 {
+	return int64(usm.StoryMainMasterId)
 }
 
 // for that one part in the main story where you select an idol
 type UserStoryMainSelected struct {
-	UserID          int `xorm:"pk 'user_id'" json:"-"`
-	StoryMainCellID int `xorm:"pk 'story_main_cell_id'" json:"story_main_cell_id"`
-	SelectedID      int `xorm:"'selected_id'" json:"selected_id"`
+	UserId          int `xorm:"pk 'user_id'" json:"-"`
+	StoryMainCellId int `xorm:"pk 'story_main_cell_id'" json:"story_main_cell_id"`
+	SelectedId      int `xorm:"'selected_id'" json:"selected_id"`
 }
 
-func (usms *UserStoryMainSelected) ID() int64 {
-	return int64(usms.StoryMainCellID)
+func (usms *UserStoryMainSelected) Id() int64 {
+	return int64(usms.StoryMainCellId)
 }
 
 type UserVoice struct {
-	UserID            int  `xorm:"pk 'user_id'" json:"-"`
-	NaviVoiceMasterID int  `xorm:"pk 'navi_voice_master_id'" json:"navi_voice_master_id"`
+	UserId            int  `xorm:"pk 'user_id'" json:"-"`
+	NaviVoiceMasterId int  `xorm:"pk 'navi_voice_master_id'" json:"navi_voice_master_id"`
 	IsNew             bool `xorm:"'is_new'" json:"is_new"`
 }
 
-func (uv *UserVoice) ID() int64 {
-	return int64(uv.NaviVoiceMasterID)
+func (uv *UserVoice) Id() int64 {
+	return int64(uv.NaviVoiceMasterId)
 }
 
 type UserEmblem struct {
-	UserID      int     `xorm:"pk 'user_id'" json:"-"`
-	EmblemMID   int     `xorm:"pk 'emblem_m_id'" json:"emblem_m_id"`
+	UserId      int     `xorm:"pk 'user_id'" json:"-"`
+	EmblemMId   int     `xorm:"pk 'emblem_m_id'" json:"emblem_m_id"`
 	IsNew       bool    `xorm:"'is_new'" json:"is_new"`
 	EmblemParam *string `xorm:"'emblem_param'" json:"emblem_param"`
 	AcquiredAt  int64   `xorm:"'acquired_at'" json:"acquired_at"`
 }
 
-func (ue *UserEmblem) ID() int64 {
-	return int64(ue.EmblemMID)
+func (ue *UserEmblem) Id() int64 {
+	return int64(ue.EmblemMId)
 }
 
 type UserCustomBackground struct {
-	UserID                   int  `xorm:"pk 'user_id'" json:"-"`
-	CustomBackgroundMasterID int  `xorm:"pk 'custom_background_master_id'" json:"custom_background_master_id"`
+	UserId                   int  `xorm:"pk 'user_id'" json:"-"`
+	CustomBackgroundMasterId int  `xorm:"pk 'custom_background_master_id'" json:"custom_background_master_id"`
 	IsNew                    bool `xorm:"'is_new'" json:"is_new"`
 }
 
-func (ucb *UserCustomBackground) ID() int64 {
-	return int64(ucb.CustomBackgroundMasterID)
+func (ucb *UserCustomBackground) Id() int64 {
+	return int64(ucb.CustomBackgroundMasterId)
 }
 
 type UserStorySide struct {
-	UserID            int   `xorm:"pk 'user_id'" json:"-"`
-	StorySideMasterID int   `xorm:"pk 'story_side_master_id'" json:"story_side_master_id"`
+	UserId            int   `xorm:"pk 'user_id'" json:"-"`
+	StorySideMasterId int   `xorm:"pk 'story_side_master_id'" json:"story_side_master_id"`
 	IsNew             bool  `xorm:"'is_new'" json:"is_new"`
 	AcquiredAt        int64 `xorm:"'acquired_at'" json:"acquired_at"`
 }
 
-func (uss *UserStorySide) ID() int64 {
-	return int64(uss.StorySideMasterID)
+func (uss *UserStorySide) Id() int64 {
+	return int64(uss.StorySideMasterId)
 }
 
 type UserStoryMember struct {
-	UserID              int   `xorm:"pk 'user_id'" json:"-"`
-	StoryMemberMasterID int   `xorm:"pk 'story_member_master_id'" json:"story_member_master_id"`
+	UserId              int   `xorm:"pk 'user_id'" json:"-"`
+	StoryMemberMasterId int   `xorm:"pk 'story_member_master_id'" json:"story_member_master_id"`
 	IsNew               bool  `xorm:"'is_new'" json:"is_new"`
 	AcquiredAt          int64 `xorm:"'acquired_at'" json:"acquired_at"`
 }
 
-func (usm *UserStoryMember) ID() int64 {
-	return int64(usm.StoryMemberMasterID)
+func (usm *UserStoryMember) Id() int64 {
+	return int64(usm.StoryMemberMasterId)
 }
 
 type UserStoryEventHistory struct {
-	UserID       int `xorm:"pk 'user_id'" json:"-"`
-	StoryEventID int `xorm:"pk 'story_event_id'" json:"story_event_id"`
+	UserId       int `xorm:"pk 'user_id'" json:"-"`
+	StoryEventId int `xorm:"pk 'story_event_id'" json:"story_event_id"`
 }
 
-func (useh *UserStoryEventHistory) ID() int64 {
-	return int64(useh.StoryEventID)
+func (useh *UserStoryEventHistory) Id() int64 {
+	return int64(useh.StoryEventId)
 }
 
 type UserUnlockScene struct {
-	UserID          int `xorm:"pk 'user_id'" json:"-"`
+	UserId          int `xorm:"pk 'user_id'" json:"-"`
 	UnlockSceneType int `xorm:"pk 'unlock_scene_type'" json:"unlock_scene_type"`
 	Status          int `xorm:"'status'" json:"status"`
 }
 
-func (uus *UserUnlockScene) ID() int64 {
+func (uus *UserUnlockScene) Id() int64 {
 	return int64(uus.UnlockSceneType)
 }
 
 type UserSceneTips struct {
-	UserID        int `xorm:"pk 'user_id'" json:"-"`
+	UserId        int `xorm:"pk 'user_id'" json:"-"`
 	SceneTipsType int `xorm:"pk 'scene_tips_type'" json:"scene_tips_type"`
 }
 
-func (ust *UserSceneTips) ID() int64 {
+func (ust *UserSceneTips) Id() int64 {
 	return int64(ust.SceneTipsType)
 }
 
 type UserRuleDescription struct {
-	UserID            int `xorm:"pk 'user_id'" json:"-"`
-	RuleDescriptionID int `xorm:"pk 'rule_description_id'" json:"-"`
+	UserId            int `xorm:"pk 'user_id'" json:"-"`
+	RuleDescriptionId int `xorm:"pk 'rule_description_id'" json:"-"`
 	DisplayStatus     int `xorm:"'display_status'" json:"display_status"`
 }
 
-func (urd *UserRuleDescription) ID() int64 {
-	return int64(urd.RuleDescriptionID)
+func (urd *UserRuleDescription) Id() int64 {
+	return int64(urd.RuleDescriptionId)
 }
-func (urd *UserRuleDescription) SetID(id int64) {
-	urd.RuleDescriptionID = int(id)
+func (urd *UserRuleDescription) SetId(id int64) {
+	urd.RuleDescriptionId = int(id)
 }
 
 type UserReferenceBook struct {
-	UserID          int `xorm:"pk 'user_id'" json:"-"`
-	ReferenceBookID int `xorm:"pk 'reference_book_id'" json:"reference_book_id"`
+	UserId          int `xorm:"pk 'user_id'" json:"-"`
+	ReferenceBookId int `xorm:"pk 'reference_book_id'" json:"reference_book_id"`
 }
 
-func (urb *UserReferenceBook) ID() int64 {
-	return int64(urb.ReferenceBookID)
+func (urb *UserReferenceBook) Id() int64 {
+	return int64(urb.ReferenceBookId)
 }
 
 type UserStoryLinkage struct {
-	UserID                   int `xorm:"pk 'user_id'" json:"-"`
-	StoryLinkageCellMasterID int `xorm:"pk 'story_linkage_cell_master_id'" json:"story_linkage_cell_master_id"`
+	UserId                   int `xorm:"pk 'user_id'" json:"-"`
+	StoryLinkageCellMasterId int `xorm:"pk 'story_linkage_cell_master_id'" json:"story_linkage_cell_master_id"`
 }
 
-func (usl *UserStoryLinkage) ID() int64 {
-	return int64(usl.StoryLinkageCellMasterID)
+func (usl *UserStoryLinkage) Id() int64 {
+	return int64(usl.StoryLinkageCellMasterId)
 }
 
 type UserStoryMainPartDigestMovie struct {
-	UserID                int `xorm:"pk 'user_id'" json:"-"`
-	StoryMainPartMasterID int `xorm:"pk 'story_main_part_master_id'" json:"story_main_part_master_id"`
+	UserId                int `xorm:"pk 'user_id'" json:"-"`
+	StoryMainPartMasterId int `xorm:"pk 'story_main_part_master_id'" json:"story_main_part_master_id"`
 }
 
-func (usmpdm *UserStoryMainPartDigestMovie) ID() int64 {
-	return int64(usmpdm.StoryMainPartMasterID)
+func (usmpdm *UserStoryMainPartDigestMovie) Id() int64 {
+	return int64(usmpdm.StoryMainPartMasterId)
 }
 
 func init() {

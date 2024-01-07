@@ -26,7 +26,7 @@ func InsertTrade(session *xorm.Session, args []string) {
 		trades[i].EndAt = 0x7fffffff
 		trades[i].ResetAt = 0x7fffffff
 		for j, product := range trade.Products {
-			product.TradeID = trade.TradeID
+			product.TradeId = trade.TradeId
 			product.ActualContent = product.Contents[0]
 			product.StockAmount = nil // set the stock to inf
 			trades[i].Products[j] = product

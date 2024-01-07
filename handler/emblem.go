@@ -14,8 +14,8 @@ import (
 )
 
 func FetchEmblem(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	// TODO: This correctly displayed things, but not sure if the giantic list is necessary
 	signBody := session.Finalize(GetData("fetchEmblem.json"), "user_model")
@@ -30,11 +30,11 @@ func ActivateEmblem(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UserStatus.EmblemID = req.EmblemMasterID
+	session.UserStatus.EmblemId = req.EmblemMasterId
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)

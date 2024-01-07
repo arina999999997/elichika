@@ -1,12 +1,12 @@
 // trade or exchange
 // trades are stored inside both serverdata.db and masterdata.db
 // for the clients to read them, mismatch between serverdata.db and masterdata.db will be resolved toward masterdata.db side
-// i.e. the masterdata.db ID will be used and such
+// i.e. the masterdata.db Id will be used and such
 // Requirements:
-// - TradeID in serverdata.db/s_trade must be the same TradeID in masterdata.db/m_trade
-// - TradeID reference in serverdata.db/s_trade_product must refer to the correct TradeID above
-// - The number of products per TradeID in serverdata.db/s_trade_product should be the same as the
-// amount of products per TradeID in m_trade_product. If they are not the same, some items will be ignored
+// - TradeId in serverdata.db/s_trade must be the same TradeId in masterdata.db/m_trade
+// - TradeId reference in serverdata.db/s_trade_product must refer to the correct TradeId above
+// - The number of products per TradeId in serverdata.db/s_trade_product should be the same as the
+// amount of products per TradeId in m_trade_product. If they are not the same, some items will be ignored
 // or filled with undetermined items
 
 package gamedata
@@ -23,7 +23,7 @@ import (
 
 type Trade struct {
 	TradesByType [3][]model.Trade    // map from trade type to array of Trade
-	Trades       map[int]model.Trade // map from TradeID to Trade
+	Trades       map[int]model.Trade // map from TradeId to Trade
 	Products     map[int]model.TradeProduct
 }
 
@@ -37,7 +37,7 @@ func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 	for id, trade := range gamedata.Trade {
 		exist, err := masterdata_db.Table("m_trade").Where("id = ?", id).
 			Cols("trade_type", "source_content_type", "source_content_id").Get(
-			&trade.TradeType, &trade.SourceContentType, &trade.SourceContentID)
+			&trade.TradeType, &trade.SourceContentType, &trade.SourceContentId)
 		utils.CheckErr(err)
 		if !exist {
 			fmt.Println("Warning: Skipped trade ", id, " (did not exist in masterdata.db)")
@@ -49,23 +49,23 @@ func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 		err = serverdata_db.Table("s_trade_product").Where("trade_id = ?", id).
 			OrderBy("product_id").Find(&serverProducts)
 		utils.CheckErr(err)
-		clientProductIDs := []int{}
+		clientProductIds := []int{}
 		err = masterdata_db.Table("m_trade_product").Where("trade_master_id = ?", id).
-			OrderBy("id").Cols("id").Find(&clientProductIDs)
+			OrderBy("id").Cols("id").Find(&clientProductIds)
 		utils.CheckErr(err)
 
 		n := len(serverProducts)
-		m := len(clientProductIDs)
+		m := len(clientProductIds)
 		for ; n < m; n++ { // if server have less than necessary append random product
 			serverProducts = append(
 				serverProducts,
 				model.TradeProduct{
-					TradeID:      id,
+					TradeId:      id,
 					SourceAmount: 1,
 					StockAmount:  nil,
 					ActualContent: model.Content{
 						ContentType:   10,
-						ContentID:     0,
+						ContentId:     0,
 						ContentAmount: 1,
 					},
 				})
@@ -73,10 +73,10 @@ func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 		serverProducts = serverProducts[0:m] // if server have more then reduce to what client have
 
 		for i := 0; i < m; i++ { // need to use client's id
-			serverProducts[i].ProductID = clientProductIDs[i]
-			serverProducts[i].DummyID = clientProductIDs[i]
+			serverProducts[i].ProductId = clientProductIds[i]
+			serverProducts[i].DummyId = clientProductIds[i]
 			serverProducts[i].Contents = append(serverProducts[i].Contents, serverProducts[i].ActualContent)
-			gamedata.TradeProduct[clientProductIDs[i]] = &serverProducts[i]
+			gamedata.TradeProduct[clientProductIds[i]] = &serverProducts[i]
 		}
 		trade.Products = serverProducts
 		gamedata.TradesByType[trade.TradeType] = append(gamedata.TradesByType[trade.TradeType], trade)

@@ -21,16 +21,16 @@ func UnlockStory(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UnlockEventStory(req.EventStoryMasterID)
+	session.UnlockEventStory(req.EventStoryMasterId)
 	// remove a memory key
-	// maybe don't hardcode the ID
+	// maybe don't hardcode the Id
 	session.RemoveResource(model.Content{
 		ContentType:   enum.ContentTypeStoryEventUnlock,
-		ContentID:     17001,
+		ContentId:     17001,
 		ContentAmount: 1,
 	})
 
@@ -46,8 +46,8 @@ func FinishStory(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	// there is no cleared tracking so all this request does is set story mode

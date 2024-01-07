@@ -8,15 +8,15 @@ import (
 	"encoding/json"
 )
 
-func FetchDBProfile(userID int, result interface{}) {
-	exist, err := Engine.Table("u_info").Where("user_id = ?", userID).Get(result)
+func FetchDBProfile(userId int, result interface{}) {
+	exist, err := Engine.Table("u_info").Where("user_id = ?", userId).Get(result)
 	utils.CheckErrMustExist(err, exist)
 }
 
-func FetchPartnerCards(otherUserID int) []model.UserCard {
+func FetchPartnerCards(otherUserId int) []model.UserCard {
 	partnerCards := []model.UserCard{}
 	err := Engine.Table("u_card").
-		Where("user_id = ? AND live_partner_categories != 0", otherUserID).
+		Where("user_id = ? AND live_partner_categories != 0", otherUserId).
 		Find(&partnerCards)
 	if err != nil {
 		panic(err)
@@ -26,7 +26,7 @@ func FetchPartnerCards(otherUserID int) []model.UserCard {
 
 func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.PartnerCardInfo {
 
-	memberID := session.Gamedata.Card[card.CardMasterID].Member.ID
+	memberId := session.Gamedata.Card[card.CardMasterId].Member.Id
 
 	partnerCard := model.PartnerCardInfo{}
 
@@ -39,17 +39,17 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 		panic(err)
 	}
 
-	exist, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserID, memberID).
+	exist, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", card.UserId, memberId).
 		Cols("love_level").Get(&partnerCard.LoveLevel)
 	utils.CheckErrMustExist(err, exist)
 
 	partnerCard.PassiveSkillLevels = []int{}
 	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, card.PassiveSkillALevel)
 	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, card.PassiveSkillBLevel)
-	partnerCard.AdditionalPassiveSkillIDs = append(partnerCard.AdditionalPassiveSkillIDs, card.AdditionalPassiveSkill1ID)
-	partnerCard.AdditionalPassiveSkillIDs = append(partnerCard.AdditionalPassiveSkillIDs, card.AdditionalPassiveSkill2ID)
-	partnerCard.AdditionalPassiveSkillIDs = append(partnerCard.AdditionalPassiveSkillIDs, card.AdditionalPassiveSkill3ID)
-	partnerCard.AdditionalPassiveSkillIDs = append(partnerCard.AdditionalPassiveSkillIDs, card.AdditionalPassiveSkill4ID)
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill1Id)
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill2Id)
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill3Id)
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill4Id)
 	partnerCard.MemberLovePanels = []int{} // must not be null
 
 	// filling this for a card of self freeze the game
@@ -59,30 +59,30 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 
 	// lovePanel := model.UserMemberLovePanel{}
 	// exist, err = Engine.Table("u_member").
-	// 	Where("user_id = ? AND member_master_id = ?", card.UserID, memberId).Get(&lovePanel)
+	// 	Where("user_id = ? AND member_master_id = ?", card.UserId, memberId).Get(&lovePanel)
 	// if err != nil {
 	// 	panic(err)
 	// }
 	// if !exist {
 	// 	panic("member doesn't exist")
 	// }
-	// partnerCard.MemberLovePanels = lovePanel.MemberLovePanelCellIDs
+	// partnerCard.MemberLovePanels = lovePanel.MemberLovePanelCellIds
 
 	return partnerCard
 }
 
-func GetOtherUserCard(otherUserID, cardMasterID int) model.UserCard {
+func GetOtherUserCard(otherUserId, cardMasterId int) model.UserCard {
 	card := model.UserCard{}
-	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserID, cardMasterID).
+	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).
 		Get(&card)
 	utils.CheckErrMustExist(err, exist)
 	return card
 }
 
-func (session *Session) GetOtherUserBasicProfile(otherUserID int) model.UserBasicInfo {
+func (session *Session) GetOtherUserBasicProfile(otherUserId int) model.UserBasicInfo {
 	basicInfo := model.UserBasicInfo{}
-	FetchDBProfile(otherUserID, &basicInfo)
-	recommendCard := GetOtherUserCard(otherUserID, basicInfo.RecommendCardMasterID)
+	FetchDBProfile(otherUserId, &basicInfo)
+	recommendCard := GetOtherUserCard(otherUserId, basicInfo.RecommendCardMasterId)
 
 	basicInfo.RecommendCardLevel = recommendCard.Level
 	basicInfo.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
@@ -96,32 +96,32 @@ func (session *Session) GetOtherUserBasicProfile(otherUserID int) model.UserBasi
 	return basicInfo
 }
 
-func (session *Session) GetOtherUserLiveStats(otherUserID int) model.UserProfileLiveStats {
+func (session *Session) GetOtherUserLiveStats(otherUserId int) model.UserProfileLiveStats {
 	stats := model.UserProfileLiveStats{}
-	_, err := Engine.Table("u_info").Where("user_id = ?", otherUserID).Get(&stats)
+	_, err := Engine.Table("u_info").Where("user_id = ?", otherUserId).Get(&stats)
 	utils.CheckErr(err)
 	return stats
 }
 
 func (session *Session) GetUserLiveStats() model.UserProfileLiveStats {
-	return session.GetOtherUserLiveStats(session.UserStatus.UserID)
+	return session.GetOtherUserLiveStats(session.UserStatus.UserId)
 }
 
 func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
-	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserID).AllCols().Update(&stats)
+	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserId).AllCols().Update(&stats)
 	utils.CheckErr(err)
 }
 
-// fetch profile of another user, from session.UserStatus.UserID's perspective
-// it's possible that otherUserID == session.UserStatus.UserID
-func (session *Session) FetchProfile(otherUserID int) model.Profile {
+// fetch profile of another user, from session.UserStatus.UserId's perspective
+// it's possible that otherUserId == session.UserStatus.UserId
+func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	profile := model.Profile{}
 
-	exist, err := session.Db.Table("u_info").Where("user_id = ?", otherUserID).Get(&profile)
+	exist, err := session.Db.Table("u_info").Where("user_id = ?", otherUserId).Get(&profile)
 	utils.CheckErrMustExist(err, exist)
 
 	// recommend card
-	recommendCard := GetOtherUserCard(otherUserID, profile.ProfileInfo.BasicInfo.RecommendCardMasterID)
+	recommendCard := GetOtherUserCard(otherUserId, profile.ProfileInfo.BasicInfo.RecommendCardMasterId)
 
 	profile.ProfileInfo.BasicInfo.RecommendCardLevel = recommendCard.Level
 	profile.ProfileInfo.BasicInfo.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
@@ -135,14 +135,14 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 
 	// other user's members
 	members := []model.UserMember{}
-	err = session.Db.Table("u_member").Where("user_id = ?", otherUserID).OrderBy("love_point DESC").Find(&members)
+	err = session.Db.Table("u_member").Where("user_id = ?", otherUserId).OrderBy("love_point DESC").Find(&members)
 	utils.CheckErr(err)
 	profile.ProfileInfo.TotalLovePoint = 0
 	for _, member := range members {
 		profile.ProfileInfo.TotalLovePoint += member.LovePoint
 	}
 	for i := 0; i < 3; i++ {
-		profile.ProfileInfo.LoveMembers[i].MemberMasterID = members[i].MemberMasterID
+		profile.ProfileInfo.LoveMembers[i].MemberMasterId = members[i].MemberMasterId
 		profile.ProfileInfo.LoveMembers[i].LovePoint = members[i].LovePoint
 	}
 
@@ -153,10 +153,10 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 		profile.GuestInfo.LivePartnersCards[i].LivePartnerCategoryMasterId = i + 1
 		profile.GuestInfo.LivePartnersCards[i].PartnerCard.MemberLovePanels = []int{}
 		profile.GuestInfo.LivePartnersCards[i].PartnerCard.PassiveSkillLevels = []int{}
-		profile.GuestInfo.LivePartnersCards[i].PartnerCard.AdditionalPassiveSkillIDs = []int{}
+		profile.GuestInfo.LivePartnersCards[i].PartnerCard.AdditionalPassiveSkillIds = []int{}
 	}
 
-	partnerCards := FetchPartnerCards(otherUserID)
+	partnerCards := FetchPartnerCards(otherUserId)
 	for _, card := range partnerCards {
 		partnerCard := session.GetPartnerCardFromUserCard(card)
 		livePartner := model.LivePartnerCard{}
@@ -169,7 +169,7 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 	}
 
 	// live clear stats
-	liveStats := session.GetOtherUserLiveStats(otherUserID)
+	liveStats := session.GetOtherUserLiveStats(otherUserId)
 	for i, liveDifficultyType := range enum.LiveDifficultyTypes {
 		profile.PlayInfo.LivePlayCount = append(profile.PlayInfo.LivePlayCount, liveDifficultyType)
 		profile.PlayInfo.LivePlayCount = append(profile.PlayInfo.LivePlayCount, liveStats.LivePlayCount[i])
@@ -177,46 +177,46 @@ func (session *Session) FetchProfile(otherUserID int) model.Profile {
 		profile.PlayInfo.LiveClearCount = append(profile.PlayInfo.LiveClearCount, liveStats.LiveClearCount[i])
 	}
 
-	session.Db.Table("u_card").Where("user_id = ?", otherUserID).
+	session.Db.Table("u_card").Where("user_id = ?", otherUserId).
 		OrderBy("live_join_count DESC").Limit(3).Find(&profile.PlayInfo.JoinedLiveCardRanking)
-	session.Db.Table("u_card").Where("user_id = ?", otherUserID).
+	session.Db.Table("u_card").Where("user_id = ?", otherUserId).
 		OrderBy("active_skill_play_count DESC").Limit(3).Find(&profile.PlayInfo.PlaySkillCardRanking)
 
 	// custom profile
-	customProfile := GetOtherUserSetProfile(otherUserID)
-	if customProfile.VoltageLiveDifficultyID != 0 {
-		profile.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterID = customProfile.VoltageLiveDifficultyID
+	customProfile := GetOtherUserSetProfile(otherUserId)
+	if customProfile.VoltageLiveDifficultyId != 0 {
+		profile.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterId = customProfile.VoltageLiveDifficultyId
 		profile.PlayInfo.MaxScoreLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(otherUserID, customProfile.VoltageLiveDifficultyID).MaxScore
+			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.VoltageLiveDifficultyId).MaxScore
 	}
-	if customProfile.ComboLiveDifficultyID != 0 {
-		profile.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterID = customProfile.ComboLiveDifficultyID
+	if customProfile.ComboLiveDifficultyId != 0 {
+		profile.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterId = customProfile.ComboLiveDifficultyId
 		profile.PlayInfo.MaxComboLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(otherUserID, customProfile.ComboLiveDifficultyID).MaxCombo
+			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.ComboLiveDifficultyId).MaxCombo
 	}
 
 	// can get from members[] to save sql
-	session.Db.Table("u_member").Where("user_id = ?", otherUserID).Find(&profile.MemberInfo.UserMembers)
+	session.Db.Table("u_member").Where("user_id = ?", otherUserId).Find(&profile.MemberInfo.UserMembers)
 	return profile
 }
 
-func GetOtherUserSetProfile(otherUserID int) model.UserSetProfile {
+func GetOtherUserSetProfile(otherUserId int) model.UserSetProfile {
 	p := model.UserSetProfile{}
-	exist, err := Engine.Table("u_custom_set_profile").Where("user_id = ?", otherUserID).Get(&p)
+	exist, err := Engine.Table("u_custom_set_profile").Where("user_id = ?", otherUserId).Get(&p)
 	utils.CheckErr(err)
 	if !exist {
-		p.UserID = otherUserID
+		p.UserId = otherUserId
 	}
 	return p
 }
 
 func (session *Session) GetUserSetProfile() model.UserSetProfile {
-	return GetOtherUserSetProfile(session.UserStatus.UserID)
+	return GetOtherUserSetProfile(session.UserStatus.UserId)
 }
 
 // doesn't need to return delta patch or submit at the start because we would need to fetch profile everytime we need this thing
 func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
-	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserStatus.UserID).
+	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserStatus.UserId).
 		AllCols().Update(&p)
 	utils.CheckErr(err)
 	if affected == 0 {
@@ -227,9 +227,9 @@ func (session *Session) SetUserSetProfile(p model.UserSetProfile) {
 }
 
 func userSetProfileFinalizer(session *Session) {
-	for _, userSetProfile := range session.UserModel.UserSetProfileByID.Objects {
+	for _, userSetProfile := range session.UserModel.UserSetProfileById.Objects {
 		affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?",
-			session.UserStatus.UserID).AllCols().Update(userSetProfile)
+			session.UserStatus.UserId).AllCols().Update(userSetProfile)
 		utils.CheckErr(err)
 		if affected == 0 {
 			_, err = session.Db.Table("u_custom_set_profile").Insert(userSetProfile)
@@ -240,5 +240,5 @@ func userSetProfileFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(userSetProfileFinalizer)
-	addGenericTableFieldPopulator("u_custom_set_profile", "UserSetProfileByID")
+	addGenericTableFieldPopulator("u_custom_set_profile", "UserSetProfileById")
 }

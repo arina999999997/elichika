@@ -12,7 +12,7 @@ import (
 
 // Common pattern of [object_1_id, object_1, object_2_id, object_2...]
 
-type ObjectByObjectIDList[T any] struct {
+type ObjectByObjectIdList[T any] struct {
 	Length  int // length
 	Objects []T // slice of items
 }
@@ -21,13 +21,13 @@ type ObjectByObjectIDList[T any] struct {
 // This is a limitation but also by design.
 // For example, somethings use the (id, null) pattern to delete an existing items
 // one design would be to have a null object
-// but a null object can't contain ID, so we actually have to have a wrapper or some marking field
+// but a null object can't contain Id, so we actually have to have a wrapper or some marking field
 // by default we check for IsNull, if it is true then the object get rendered as nil
 
 // Unmarshal: from JSON bytes to value
-// require method SetID for the values
+// require method SetId for the values
 // return an empty array if data is null
-func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
+func (oboid *ObjectByObjectIdList[T]) UnmarshalJSON(data []byte) error {
 	oboid.Objects = []T{}
 	oboid.Length = 0
 	if string(data) == "null" {
@@ -45,7 +45,7 @@ func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
 		if i%2 == 1 { // this is an object
 			continue
 		}
-		// this is ID, we create a new value
+		// this is Id, we create a new value
 		var id int64
 		var obj T
 		err = json.Unmarshal(arr[i], &id)
@@ -56,15 +56,15 @@ func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
 		if err != nil {
 			return err
 		}
-		setID := reflect.ValueOf(&obj).MethodByName("SetID")
-		if setID.IsValid() {
-			// if there's a SetID method then call it
-			// this should only be done for structs where the ID are not present in json
-			reflect.ValueOf(&obj).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
+		setId := reflect.ValueOf(&obj).MethodByName("SetId")
+		if setId.IsValid() {
+			// if there's a SetId method then call it
+			// this should only be done for structs where the Id are not present in json
+			reflect.ValueOf(&obj).MethodByName("SetId").Call([]reflect.Value{reflect.ValueOf(id)})
 		} else {
-			// make sure we have things correctly by calling ID
-			if id != reflect.ValueOf(&obj).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64) {
-				panic("ID doesn't match list provided id")
+			// make sure we have things correctly by calling Id
+			if id != reflect.ValueOf(&obj).MethodByName("Id").Call([]reflect.Value{})[0].Interface().(int64) {
+				panic("Id doesn't match list provided id")
 			}
 		}
 		oboid.Objects = append(oboid.Objects, obj) // append the pointer of the original type
@@ -73,12 +73,12 @@ func (oboid *ObjectByObjectIDList[T]) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Convert object to ID
-// require method ID to get ID for the values
-func (oboid ObjectByObjectIDList[T]) MarshalJSON() ([]byte, error) {
+// Convert object to Id
+// require method Id to get Id for the values
+func (oboid ObjectByObjectIdList[T]) MarshalJSON() ([]byte, error) {
 	arr := []any{}
 	for _, object := range oboid.Objects {
-		id := reflect.ValueOf(&object).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64)
+		id := reflect.ValueOf(&object).MethodByName("Id").Call([]reflect.Value{})[0].Interface().(int64)
 		arr = append(arr, id)
 		isNull := reflect.ValueOf(object).FieldByName("IsNull")
 		if isNull.IsValid() && isNull.Interface().(bool) {
@@ -92,13 +92,13 @@ func (oboid ObjectByObjectIDList[T]) MarshalJSON() ([]byte, error) {
 }
 
 // append an object
-func (oboid *ObjectByObjectIDList[T]) PushBack(obj T) {
+func (oboid *ObjectByObjectIdList[T]) PushBack(obj T) {
 	oboid.Length++
 	oboid.Objects = append(oboid.Objects, obj)
 }
 
 // append a zero valued object and return a pointer to said object
-func (oboid *ObjectByObjectIDList[T]) AppendNew() *T {
+func (oboid *ObjectByObjectIdList[T]) AppendNew() *T {
 	var object T
 	oboid.Objects = append(oboid.Objects, object)
 	oboid.Length++
@@ -106,15 +106,15 @@ func (oboid *ObjectByObjectIDList[T]) AppendNew() *T {
 }
 
 // append a zero valued object and return a pointer to said object
-func (oboid *ObjectByObjectIDList[T]) AppendNewWithID(id int64) *T {
+func (oboid *ObjectByObjectIdList[T]) AppendNewWithId(id int64) *T {
 	var object T
-	reflect.ValueOf(&object).MethodByName("SetID").Call([]reflect.Value{reflect.ValueOf(id)})
+	reflect.ValueOf(&object).MethodByName("SetId").Call([]reflect.Value{reflect.ValueOf(id)})
 	oboid.Objects = append(oboid.Objects, object)
 	oboid.Length++
 	return &oboid.Objects[oboid.Length-1]
 }
 
-func (oboid *ObjectByObjectIDList[T]) ToContents() []any {
+func (oboid *ObjectByObjectIdList[T]) ToContents() []any {
 	contents := []any{}
 	for i := range oboid.Objects {
 		contents = append(contents, reflect.ValueOf(&oboid.Objects[i]).MethodByName("ToContent").
@@ -123,50 +123,50 @@ func (oboid *ObjectByObjectIDList[T]) ToContents() []any {
 	return contents
 }
 
-func (oboid *ObjectByObjectIDList[T]) SetUserID(uid int) {
+func (oboid *ObjectByObjectIdList[T]) SetUserId(userId int) {
 	for i := range oboid.Objects {
-		rUserID := reflect.Indirect(reflect.ValueOf(&oboid.Objects[i])).FieldByName("UserID")
-		if rUserID.IsValid() {
-			rUserID.Set(reflect.ValueOf(uid))
+		rUserId := reflect.Indirect(reflect.ValueOf(&oboid.Objects[i])).FieldByName("UserId")
+		if rUserId.IsValid() {
+			rUserId.Set(reflect.ValueOf(userId))
 		} else {
-			// fmt.Println("skip UserID for",  reflect.ValueOf(&oboid.Objects[i]).Type())
+			// fmt.Println("skip UserId for",  reflect.ValueOf(&oboid.Objects[i]).Type())
 			return
 		}
 	}
 }
 
 // handler for an array object, use a map to map to the value for easier selection / tracking
-// note that we don't store the object in the map itself because that lead to complication with xorm, as xorm can't use the ID function and rely on pk mapping
-type ObjectByObjectIDMapping[T any] struct {
-	List *ObjectByObjectIDList[T]
+// note that we don't store the object in the map itself because that lead to complication with xorm, as xorm can't use the Id function and rely on pk mapping
+type ObjectByObjectIdMapping[T any] struct {
+	List *ObjectByObjectIdList[T]
 	Map  map[int64]int
 }
 
-func (m *ObjectByObjectIDMapping[T]) SetList(list *ObjectByObjectIDList[T]) *ObjectByObjectIDMapping[T] {
+func (m *ObjectByObjectIdMapping[T]) SetList(list *ObjectByObjectIdList[T]) *ObjectByObjectIdMapping[T] {
 	if m.List != list {
 		// new list, reset the map, and recalculate the mapping too (needed for importing account)
 		m.List = list
 		m.Map = make(map[int64]int)
 		for i := range list.Objects {
-			m.Map[reflect.ValueOf(&list.Objects[i]).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64)] = i
+			m.Map[reflect.ValueOf(&list.Objects[i]).MethodByName("Id").Call([]reflect.Value{})[0].Interface().(int64)] = i
 		}
 	}
 	return m
 }
 
 // create a new list if there is none
-func (m *ObjectByObjectIDMapping[T]) NewList() *ObjectByObjectIDMapping[T] {
+func (m *ObjectByObjectIdMapping[T]) NewList() *ObjectByObjectIdMapping[T] {
 	if m.List == nil {
-		m.List = new(ObjectByObjectIDList[T])
+		m.List = new(ObjectByObjectIdList[T])
 		m.Map = make(map[int64]int)
 	}
 	return m
 }
 
-// update or insert an object, require ID
+// update or insert an object, require Id
 // copy the object and return the new pointer
-func (m *ObjectByObjectIDMapping[T]) Update(object T) {
-	id := reflect.ValueOf(&object).MethodByName("ID").Call([]reflect.Value{})[0].Interface().(int64)
+func (m *ObjectByObjectIdMapping[T]) Update(object T) {
+	id := reflect.ValueOf(&object).MethodByName("Id").Call([]reflect.Value{})[0].Interface().(int64)
 	pos, exist := m.Map[id]
 	if exist {
 		m.List.Objects[pos] = object
@@ -176,14 +176,14 @@ func (m *ObjectByObjectIDMapping[T]) Update(object T) {
 	}
 }
 
-// insert by ID and return the pointer to the object, require SetID
-func (m *ObjectByObjectIDMapping[T]) InsertNew(id int64) *T {
-	ptr := m.List.AppendNewWithID(id)
+// insert by Id and return the pointer to the object, require SetId
+func (m *ObjectByObjectIdMapping[T]) InsertNew(id int64) *T {
+	ptr := m.List.AppendNewWithId(id)
 	m.Map[id] = m.List.Length - 1
 	return ptr
 }
 
-func (m *ObjectByObjectIDMapping[T]) GetObject(id int64) *T {
+func (m *ObjectByObjectIdMapping[T]) GetObject(id int64) *T {
 	pos, exist := m.Map[id]
 	if !exist {
 		panic("Item doesn't exist")

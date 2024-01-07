@@ -9,24 +9,24 @@ import (
 
 type LiveParty struct {
 	// only relevant data for now, full move later on
-	partyInfoByRoleIDs [5][5][5]struct {
+	partyInfoByRoleIds [5][5][5]struct {
 		PartyIcon int
 		PartyName string
 	}
 }
 
-func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIDs(a, b, c int) (partyIcon int, partyName string) {
+func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIds(a, b, c int) (partyIcon int, partyName string) {
 	a = gamedata.Card[a].Role
 	b = gamedata.Card[b].Role
 	c = gamedata.Card[c].Role
-	partyIcon = gamedata.LiveParty.partyInfoByRoleIDs[a][b][c].PartyIcon
-	partyName = gamedata.LiveParty.partyInfoByRoleIDs[a][b][c].PartyName
+	partyIcon = gamedata.LiveParty.partyInfoByRoleIds[a][b][c].PartyIcon
+	partyName = gamedata.LiveParty.partyInfoByRoleIds[a][b][c].PartyName
 	return
 }
 
 func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	type LiveParty struct {
-		ID            int    `xorm:"pk 'id'"`
+		Id            int    `xorm:"pk 'id'"`
 		Role1         int    `xorm:"'role_1'"`
 		Role2         int    `xorm:"'role_2'"`
 		Role3         int    `xorm:"'role_3'"`
@@ -48,8 +48,8 @@ func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sessio
 				if i == j {
 					continue
 					k := 3 - i - j
-					gamedata.LiveParty.partyInfoByRoleIDs[r[i]][r[j]][r[k]].PartyIcon = party.LivePartyIcon
-					gamedata.LiveParty.partyInfoByRoleIDs[r[i]][r[j]][r[k]].PartyName = party.Name
+					gamedata.LiveParty.partyInfoByRoleIds[r[i]][r[j]][r[k]].PartyIcon = party.LivePartyIcon
+					gamedata.LiveParty.partyInfoByRoleIds[r[i]][r[j]][r[k]].PartyName = party.Name
 				}
 			}
 		}

@@ -26,20 +26,20 @@ func InitGacha(session *xorm.Session, args []string) {
 	weight[30] = 5
 	for rarity := 10; rarity <= 30; rarity += 10 {
 		for school := 0; school < 3; school++ {
-			groupMasterID := rarity*10 + school
-			cardMasterIDs := []int{}
+			groupMasterId := rarity*10 + school
+			cardMasterIds := []int{}
 			err := masterdata.Table("m_card").Where("card_rarity_type = ? AND member_m_id / 100 == ?", rarity, school).
-				Cols("id").Find(&cardMasterIDs)
+				Cols("id").Find(&cardMasterIds)
 			utils.CheckErr(err)
-			for _, cardMasterID := range cardMasterIDs {
+			for _, cardMasterId := range cardMasterIds {
 				_, err := session.Table("s_gacha_card").Insert(model.GachaCard{
-					GroupMasterID: groupMasterID,
-					CardMasterID:  cardMasterID,
+					GroupMasterId: groupMasterId,
+					CardMasterId:  cardMasterId,
 				})
 				utils.CheckErr(err)
 			}
 			session.Table("s_gacha_group").Insert(model.GachaGroup{
-				GroupMasterID: groupMasterID,
+				GroupMasterId: groupMasterId,
 				GroupWeight:   weight[rarity],
 			})
 		}
@@ -47,24 +47,24 @@ func InitGacha(session *xorm.Session, args []string) {
 
 	// gacha guarantee: new card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
-		GachaGuaranteeMasterID: 0,
+		GachaGuaranteeMasterId: 0,
 		GuaranteeHandler:       "guaranteed_new_card",
 	})
 	// gacha guarantee: UR card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
-		GachaGuaranteeMasterID: 1,
+		GachaGuaranteeMasterId: 1,
 		GuaranteeHandler:       "guaranteed_card_set",
 		CardSetSQL:             "card_rarity_type = 30",
 	})
 	// gacha guarantee: SR+ card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
-		GachaGuaranteeMasterID: 2,
+		GachaGuaranteeMasterId: 2,
 		GuaranteeHandler:       "guaranteed_card_set",
 		CardSetSQL:             "card_rarity_type >= 20",
 	})
 	// gacha guarantee: festival / party card
 	session.Table("s_gacha_guarantee").Insert(model.GachaGuarantee{
-		GachaGuaranteeMasterID: 3,
+		GachaGuaranteeMasterId: 3,
 		GuaranteeHandler:       "guaranteed_card_set",
 		CardSetSQL:             "passive_skill_slot == 2",
 	})
@@ -84,14 +84,14 @@ func InsertGacha(session *xorm.Session, args []string) {
 	utils.CheckErr(err)
 	for pos, gacha := range gachas {
 		for i, appeal := range gacha.GachaAppeals {
-			appeal.GachaAppealMasterID = gacha.GachaMasterID*10 + i
-			gacha.DbGachaAppeals = append(gacha.DbGachaAppeals, appeal.GachaAppealMasterID)
+			appeal.GachaAppealMasterId = gacha.GachaMasterId*10 + i
+			gacha.DbGachaAppeals = append(gacha.DbGachaAppeals, appeal.GachaAppealMasterId)
 			_, err := session.Table("s_gacha_appeal").Insert(appeal)
 			utils.CheckErr(err)
 		}
 		for i, draw := range gacha.GachaDraws {
-			draw.GachaMasterID = gacha.GachaMasterID
-			gacha.DbGachaDraws = append(gacha.DbGachaDraws, draw.GachaDrawMasterID)
+			draw.GachaMasterId = gacha.GachaMasterId
+			gacha.DbGachaDraws = append(gacha.DbGachaDraws, draw.GachaDrawMasterId)
 			gjson.Get(gachaJsons, fmt.Sprintf("%d.gacha_draws.%d.guarantees", pos, i)).ForEach(
 				func(_, value gjson.Result) bool {
 					draw.Guarantees = append(draw.Guarantees, int(value.Int()))

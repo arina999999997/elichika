@@ -5,7 +5,7 @@ import (
 )
 
 type Login struct {
-	UserID                  int        `xorm:"pk 'user_id'" json:"-"`
+	UserId                  int        `xorm:"pk 'user_id'" json:"-"`
 	SessionKey              string     `xorm:"-" json:"session_key"`
 	UserModel               *UserModel `xorm:"-" json:"user_model"`
 	IsPlatformServiceLinked bool       `xorm:"'is_platform_service_linked'" json:"is_platform_service_linked"`
@@ -25,11 +25,11 @@ type Login struct {
 	} `xorm:"extends" json:"repro_info"`
 }
 
-func (login *Login) SetUserID(uid int) {
-	login.UserID = uid
-	login.UserModel.SetUserID(uid)
+func (login *Login) SetUserId(userId int) {
+	login.UserId = userId
+	login.UserModel.SetUserId(userId)
 	for i := range login.MemberLovePanels {
-		login.MemberLovePanels[i].SetUserID(uid)
+		login.MemberLovePanels[i].SetUserId(userId)
 	}
 }
 

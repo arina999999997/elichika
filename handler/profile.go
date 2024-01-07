@@ -17,17 +17,17 @@ import (
 func FetchProfile(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchProfileReq struct {
-		UserID int `json:"user_id"`
+		UserId int `json:"user_id"`
 	}
 	req := FetchProfileReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	profile := session.FetchProfile(req.UserID)
+	profile := session.FetchProfile(req.UserId)
 
 	signBody, err := json.Marshal(profile)
 	utils.CheckErr(err)
@@ -40,8 +40,8 @@ func FetchProfile(ctx *gin.Context) {
 
 func SetProfile(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	req := gjson.Parse(reqBody).Array()[0]
@@ -65,8 +65,8 @@ func SetProfileBirthday(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	// birthdate is probably calculated using gplay or apple id
@@ -86,11 +86,11 @@ func SetProfileBirthday(ctx *gin.Context) {
 
 func SetRecommendCard(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	cardMasterId := int(gjson.Parse(reqBody).Array()[0].Get("card_master_id").Int())
-	session.UserStatus.RecommendCardMasterID = cardMasterId
+	session.UserStatus.RecommendCardMasterId = cardMasterId
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -102,8 +102,8 @@ func SetRecommendCard(ctx *gin.Context) {
 func SetLivePartner(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetLivePartnerReq struct {
-		LivePartnerCategoryID int `json:"live_partner_category_id"`
-		CardMasterID          int `json:"card_master_id"`
+		LivePartnerCategoryId int `json:"live_partner_category_id"`
+		CardMasterId          int `json:"card_master_id"`
 	}
 	req := SetLivePartnerReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -111,21 +111,21 @@ func SetLivePartner(ctx *gin.Context) {
 	}
 
 	// set the bit on the correct card
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	newCard := session.GetUserCard(req.CardMasterID)
-	newCard.LivePartnerCategories |= (1 << req.LivePartnerCategoryID)
+	newCard := session.GetUserCard(req.CardMasterId)
+	newCard.LivePartnerCategories |= (1 << req.LivePartnerCategoryId)
 	session.UpdateUserCard(newCard)
 
 	// remove the bit on the other cards
-	partnerCards := userdata.FetchPartnerCards(userID)
+	partnerCards := userdata.FetchPartnerCards(userId)
 	for _, card := range partnerCards {
-		if card.CardMasterID == req.CardMasterID {
+		if card.CardMasterId == req.CardMasterId {
 			continue
 		}
-		if (card.LivePartnerCategories & (1 << req.LivePartnerCategoryID)) != 0 {
-			card.LivePartnerCategories ^= (1 << req.LivePartnerCategoryID)
+		if (card.LivePartnerCategories & (1 << req.LivePartnerCategoryId)) != 0 {
+			card.LivePartnerCategories ^= (1 << req.LivePartnerCategoryId)
 			session.UpdateUserCard(card)
 		}
 	}
@@ -142,20 +142,20 @@ func SetLivePartner(ctx *gin.Context) {
 func SetScoreOrComboLive(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetScoreOrComboReq struct {
-		LiveDifficultyMasterID int `json:"live_difficulty_master_id"`
+		LiveDifficultyMasterId int `json:"live_difficulty_master_id"`
 	}
 	req := SetScoreOrComboReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	setProfile := session.GetUserSetProfile()
 	if ctx.Request.URL.Path == "/userProfile/setScoreLive" {
-		setProfile.VoltageLiveDifficultyID = req.LiveDifficultyMasterID
+		setProfile.VoltageLiveDifficultyId = req.LiveDifficultyMasterId
 	} else {
-		setProfile.ComboLiveDifficultyID = req.LiveDifficultyMasterID
+		setProfile.ComboLiveDifficultyId = req.LiveDifficultyMasterId
 	}
 	session.SetUserSetProfile(setProfile)
 	session.Finalize("{}", "dummy")

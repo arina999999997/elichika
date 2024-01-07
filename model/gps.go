@@ -1,12 +1,12 @@
 package model
 
 type UserGpsPresentReceived struct {
-	UserID     int `xorm:"pk 'user_id'" json:"user_id"`
-	CampaignID int `xorm:"pk 'campaign_id'" json:"campaign_id"`
+	UserId     int `xorm:"pk 'user_id'" json:"user_id"`
+	CampaignId int `xorm:"pk 'campaign_id'" json:"campaign_id"`
 }
 
-func (gpr *UserGpsPresentReceived) ID() int64 {
-	return int64(gpr.CampaignID)
+func (gpr *UserGpsPresentReceived) Id() int64 {
+	return int64(gpr.CampaignId)
 }
 
 func init() {

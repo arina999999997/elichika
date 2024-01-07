@@ -20,12 +20,12 @@ func SaveUserNaviVoice(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	for _, naviVoiceMasterID := range req.NaviVoiceMasterIDs {
-		session.UpdateVoice(naviVoiceMasterID, false)
+	for _, naviVoiceMasterId := range req.NaviVoiceMasterIds {
+		session.UpdateVoice(naviVoiceMasterId, false)
 	}
 
 	signBody := session.Finalize("{}", "user_model")
@@ -38,17 +38,17 @@ func SaveUserNaviVoice(ctx *gin.Context) {
 func TapLovePoint(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type TapLovePointReq struct {
-		MemberMasterID int `json:"member_master_id"`
+		MemberMasterId int `json:"member_master_id"`
 	}
 
 	req := TapLovePointReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.AddLovePoint(req.MemberMasterID, *config.Conf.TapBondGain)
+	session.AddLovePoint(req.MemberMasterId, *config.Conf.TapBondGain)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseLovePointUp {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingLevelUp
 	}

@@ -5,10 +5,10 @@ import (
 )
 
 func reviewRequestProcessFlowFinalizer(session *Session) {
-	for _, userReview := range session.UserModel.UserReviewRequestProcessFlowByID.Objects {
+	for _, userReview := range session.UserModel.UserReviewRequestProcessFlowById.Objects {
 		affected, err := session.Db.Table("u_review_request_process_flow").
 			Where("user_id = ? AND review_request_id = ?",
-				session.UserStatus.UserID, userReview.ReviewRequestID).
+				session.UserStatus.UserId, userReview.ReviewRequestId).
 			AllCols().Update(userReview)
 		utils.CheckErr(err)
 		if affected == 0 {
@@ -21,5 +21,5 @@ func reviewRequestProcessFlowFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(reviewRequestProcessFlowFinalizer)
-	addGenericTableFieldPopulator("u_review_request_process_flow", "UserReviewRequestProcessFlowByID")
+	addGenericTableFieldPopulator("u_review_request_process_flow", "UserReviewRequestProcessFlowById")
 }

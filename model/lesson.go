@@ -1,7 +1,7 @@
 package model
 
 type LessonMenuAction struct {
-	CardMasterID                  int64 `json:"card_master_id"`
+	CardMasterId                  int64 `json:"card_master_id"`
 	Position                      int   `json:"position"`
 	IsAddedPassiveSkill           bool  `json:"is_added_passive_skill"`
 	IsAddedSpecialPassiveSkill    bool  `json:"is_added_special_passive_skill"`

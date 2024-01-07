@@ -7,14 +7,14 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetMember(memberMasterID int) model.UserMember {
-	pos, exist := session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberID).Map[int64(memberMasterID)]
+func (session *Session) GetMember(memberMasterId int) model.UserMember {
+	pos, exist := session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Map[int64(memberMasterId)]
 	if exist {
-		return session.UserModel.UserMemberByMemberID.Objects[pos]
+		return session.UserModel.UserMemberByMemberId.Objects[pos]
 	}
 	member := model.UserMember{}
 	exist, err := session.Db.Table("u_member").
-		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).Get(&member)
+		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserId, memberMasterId).Get(&member)
 	utils.CheckErr(err)
 	if !exist {
 		// always inserted at login if not exist
@@ -24,7 +24,7 @@ func (session *Session) GetMember(memberMasterID int) model.UserMember {
 }
 
 func (session *Session) UpdateMember(member model.UserMember) {
-	session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberID).Update(member)
+	session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Update(member)
 }
 
 func (session *Session) InsertMembers(members []model.UserMember) {
@@ -34,9 +34,9 @@ func (session *Session) InsertMembers(members []model.UserMember) {
 }
 
 func memberFinalizer(session *Session) {
-	for _, member := range session.UserModel.UserMemberByMemberID.Objects {
+	for _, member := range session.UserModel.UserMemberByMemberId.Objects {
 		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, member.MemberMasterID).AllCols().Update(member)
+			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserId, member.MemberMasterId).AllCols().Update(member)
 		utils.CheckErr(err)
 		if affected == 0 {
 			_, err = session.Db.Table("u_member").Insert(member)
@@ -45,15 +45,15 @@ func memberFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterID int) model.UserCommunicationMemberDetailBadge {
+func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int) model.UserCommunicationMemberDetailBadge {
 	pos, exist := session.UserCommunicationMemberDetailBadgeMapping.
-		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeByID).Map[int64(memberMasterID)]
+		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeById).Map[int64(memberMasterId)]
 	if exist {
-		return session.UserModel.UserCommunicationMemberDetailBadgeByID.Objects[pos]
+		return session.UserModel.UserCommunicationMemberDetailBadgeById.Objects[pos]
 	}
 	badge := model.UserCommunicationMemberDetailBadge{}
 	exist, err := session.Db.Table("u_communication_member_detail_badge").
-		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).Get(&badge)
+		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserId, memberMasterId).Get(&badge)
 	utils.CheckErr(err)
 	if !exist {
 		// always inserted at login if not exist
@@ -64,14 +64,14 @@ func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterID int
 
 func (session *Session) UpdateUserCommunicationMemberDetailBadge(badge model.UserCommunicationMemberDetailBadge) {
 	session.UserCommunicationMemberDetailBadgeMapping.
-		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeByID).Update(badge)
+		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeById).Update(badge)
 }
 
 func communicationMemberDetailBadgeFinalizer(session *Session) {
 	// TODO: this is only handled on the read side, new items won't change the badge
-	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeByID.Objects {
+	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeById.Objects {
 		affected, err := session.Db.Table("u_communication_member_detail_badge").
-			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, detailBadge.MemberMasterID).
+			Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserId, detailBadge.MemberMasterId).
 			AllCols().Update(detailBadge)
 		utils.CheckErr(err)
 		if affected == 0 {
@@ -82,8 +82,8 @@ func communicationMemberDetailBadgeFinalizer(session *Session) {
 }
 
 // add love point and return the love point added (in case maxed out)
-func (session *Session) AddLovePoint(memberID, point int) int {
-	member := session.GetMember(memberID)
+func (session *Session) AddLovePoint(memberId, point int) int {
+	member := session.GetMember(memberId)
 	if point > member.LovePointLimit-member.LovePoint {
 		point = member.LovePointLimit - member.LovePoint
 	}
@@ -94,29 +94,29 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 	// unlock bond stories, unlock bond board
 	if oldLoveLevel < member.LoveLevel {
 		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
-		masterMember := gamedata.Member[memberID]
+		masterMember := gamedata.Member[memberId]
 		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
 			for _, reward := range masterMember.LoveLevelRewards[loveLevel] {
 				session.AddResource(reward)
 			}
 		}
 
-		currentLovePanel := session.GetMemberLovePanel(memberID)
-		if len(currentLovePanel.LovePanelLastLevelCellIDs) == 5 {
+		currentLovePanel := session.GetMemberLovePanel(memberId)
+		if len(currentLovePanel.LovePanelLastLevelCellIds) == 5 {
 			// the current bond board is full, check if we can unlock a new bond board
-			masterLovePanel := gamedata.MemberLovePanelCell[currentLovePanel.LovePanelLastLevelCellIDs[0]].MemberLovePanel
+			masterLovePanel := gamedata.MemberLovePanelCell[currentLovePanel.LovePanelLastLevelCellIds[0]].MemberLovePanel
 			if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
 				// TODO: remove magic id from love panel system
 				currentLovePanel.LevelUp()
 				session.AddTriggerBasic(model.TriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
-					ParamInt:        currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberID})
+					ParamInt:        currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberId})
 
 				session.UpdateMemberLovePanel(currentLovePanel)
 			}
 		}
 		session.AddTriggerMemberLoveLevelUp(model.TriggerMemberLoveLevelUp{
-			MemberMasterID:  memberID,
+			MemberMasterId:  memberId,
 			BeforeLoveLevel: member.LoveLevel - 1})
 
 	}
@@ -125,8 +125,8 @@ func (session *Session) AddLovePoint(memberID, point int) int {
 }
 
 func init() {
-	addGenericTableFieldPopulator("u_member", "UserMemberByMemberID")
+	addGenericTableFieldPopulator("u_member", "UserMemberByMemberId")
 	addFinalizer(memberFinalizer)
-	addGenericTableFieldPopulator("u_communication_member_detail_badge", "UserCommunicationMemberDetailBadgeByID")
+	addGenericTableFieldPopulator("u_communication_member_detail_badge", "UserCommunicationMemberDetailBadgeById")
 	addFinalizer(communicationMemberDetailBadgeFinalizer)
 }

@@ -21,12 +21,12 @@ func SaveRuleDescription(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// response with user model
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	for _, ruleDescriptionID := range req.RuleDescriptionMasterIDs {
-		session.UpdateUserRuleDescription(ruleDescriptionID)
+	for _, ruleDescriptionId := range req.RuleDescriptionMasterIds {
+		session.UpdateUserRuleDescription(ruleDescriptionId)
 	}
 
 	signBody := session.Finalize("{}", "user_model")

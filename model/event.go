@@ -2,36 +2,36 @@ package model
 
 // TODO: not actually implemented, just for archival purpose
 type UserEventMarathon struct { // Story ranking event
-	UserID             int `xorm:"pk 'user_id'" json:"-"`
-	EventMasterID      int `xorm:"pk 'event_master_id'" json:"event_master_id"`
+	UserId             int `xorm:"pk 'user_id'" json:"-"`
+	EventMasterId      int `xorm:"pk 'event_master_id'" json:"event_master_id"`
 	EventPoint         int `xorm:"'event_point'" json:"event_point"`
 	OpennedStoryNumber int `xorm:"'opened_story_number'" json:"opened_story_number"`
 	ReadStoryNumber    int `xorm:"'read_story_number'" json:"read_story_number"`
 }
 
-func (uem *UserEventMarathon) ID() int64 {
-	return int64(uem.EventMasterID)
+func (uem *UserEventMarathon) Id() int64 {
+	return int64(uem.EventMasterId)
 }
 
 type UserEventMining struct { // Voltage ranking event
-	UserID             int `xorm:"pk 'user_id'" json:"-"`
-	EventMasterID      int `xorm:"pk 'event_master_id'" json:"event_master_id"`
+	UserId             int `xorm:"pk 'user_id'" json:"-"`
+	EventMasterId      int `xorm:"pk 'event_master_id'" json:"event_master_id"`
 	EventPoint         int `xorm:"'event_point'" json:"event_point"`
 	EventVoltagePoint  int `xorm:"'event_voltage_point'" json:"event_voltage_point"`
 	OpennedStoryNumber int `xorm:"'opened_story_number'" json:"opened_story_number"`
 	ReadStoryNumber    int `xorm:"'read_story_number'" json:"read_story_number"`
 }
 
-func (uem *UserEventMining) ID() int64 {
-	return int64(uem.EventMasterID)
+func (uem *UserEventMining) Id() int64 {
+	return int64(uem.EventMasterId)
 }
 
 type UserEventCoop struct { // SBL
-	UserID            int `xorm:"pk 'user_id'" json:"-"`
-	EventMasterID     int `xorm:"pk 'event_master_id'" json:"event_master_id"`
-	CurrentRoomID     int `xorm:"pk 'current_room_id'" json:"current_room_id"`
+	UserId            int `xorm:"pk 'user_id'" json:"-"`
+	EventMasterId     int `xorm:"pk 'event_master_id'" json:"event_master_id"`
+	CurrentRoomId     int `xorm:"pk 'current_room_id'" json:"current_room_id"`
 	EventPoint        int `xorm:"'event_point'" json:"event_point"`
-	RecentAwardID     int `xorm:"'recent_award_id'" json:"recent_award_id"`
+	RecentAwardId     int `xorm:"'recent_award_id'" json:"recent_award_id"`
 	EventVoltagePoint int `xorm:"'event_voltage_point'" json:"event_voltage_point"`
 	CoopPoint         int `xorm:"'coop_point'" json:"coop_point"`
 	CoopPointResetAt  int `xorm:"'coop_point_reset_at'" json:"coop_point_reset_at"`
@@ -40,8 +40,8 @@ type UserEventCoop struct { // SBL
 	PenaltyCount      int `xorm:"'penalty_count'" json:"penalty_count"`
 }
 
-func (uec *UserEventCoop) ID() int64 {
-	return int64(uec.EventMasterID)
+func (uec *UserEventCoop) Id() int64 {
+	return int64(uec.EventMasterId)
 }
 
 func init() {

@@ -52,7 +52,7 @@ const (
 )
 
 type SolverNode struct {
-	ID       int
+	Id       int
 	DPWeight [DPDimensionCount]int
 	Parent   *SolverNode
 	Children []*SolverNode
@@ -103,7 +103,7 @@ func (solver *TrainingTreeSolver) UndoOperations(operationLeft int) {
 
 func (solver *TrainingTreeSolver) MarkPicked(node *SolverNode) bool {
 	// if a node is picked then its ancestors are also picked
-	for ; node.ID != 0; node = node.Parent {
+	for ; node.Id != 0; node = node.Parent {
 		if node.IsPicked {
 			return true
 		}
@@ -125,9 +125,9 @@ func (solver *TrainingTreeSolver) MarkBanned(node *SolverNode) bool {
 	return true
 }
 func (node *SolverNode) Prepare(solver *TrainingTreeSolver) {
-	node.Parent = &solver.Node[solver.TrainingTreeDesign.Parent[node.ID]]
+	node.Parent = &solver.Node[solver.TrainingTreeDesign.Parent[node.Id]]
 	node.Children = nil
-	for _, child := range solver.TrainingTreeDesign.Children[node.ID] {
+	for _, child := range solver.TrainingTreeDesign.Children[node.Id] {
 		node.Children = append(node.Children, &solver.Node[child])
 	}
 	node.IsPicked = false
@@ -138,7 +138,7 @@ func (node *SolverNode) Prepare(solver *TrainingTreeSolver) {
 }
 func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 	// get the content
-	cell := solver.TrainingTreeMapping.TrainingTreeCellContents[node.ID]
+	cell := solver.TrainingTreeMapping.TrainingTreeCellContents[node.Id]
 	if cell.RequiredGrade > solver.Card.Grade {
 		return solver.MarkBanned(node)
 	}
@@ -158,18 +158,18 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 		}
 		return true
 	case 3: // voice
-		naviActionID := solver.TrainingTree.NaviActionIDs[cell.TrainingContentNo]
-		if solver.HasNaviVoice[naviActionID] {
+		naviActionId := solver.TrainingTree.NaviActionIds[cell.TrainingContentNo]
+		if solver.HasNaviVoice[naviActionId] {
 			return solver.MarkPicked(node)
 		} else {
 			return solver.MarkBanned(node)
 		}
 	case 4: // story cell
-		storySideID, exist := solver.TrainingTree.TrainingTreeCardStorySides[11]
+		storySideId, exist := solver.TrainingTree.TrainingTreeCardStorySides[11]
 		if !exist {
 			panic("story doesn't exist")
 		}
-		if solver.HasStorySide[storySideID] {
+		if solver.HasStorySide[storySideId] {
 			return solver.MarkPicked(node)
 		} else {
 			return solver.MarkBanned(node)
@@ -182,8 +182,8 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 			return solver.MarkBanned(node)
 		}
 	case 6: // costume
-		suitID := solver.TrainingTree.SuitMIDs[cell.TrainingContentNo]
-		if solver.HasSuit[suitID] {
+		suitId := solver.TrainingTree.SuitMIds[cell.TrainingContentNo]
+		if solver.HasSuit[suitId] {
 			return solver.MarkPicked(node)
 		} else {
 			return solver.MarkBanned(node)
@@ -205,25 +205,25 @@ func (solver *TrainingTreeSolver) LoadUserLogin(login *response.Login) {
 	solver.HasNaviVoice = make(map[int]bool)
 	solver.HasStorySide = make(map[int]bool)
 	solver.HasSuit = make(map[int]bool)
-	for _, voice := range login.UserModel.UserVoiceByVoiceID.Objects {
-		solver.HasNaviVoice[voice.NaviVoiceMasterID] = true
+	for _, voice := range login.UserModel.UserVoiceByVoiceId.Objects {
+		solver.HasNaviVoice[voice.NaviVoiceMasterId] = true
 	}
-	for _, storySide := range login.UserModel.UserStorySideByID.Objects {
-		solver.HasStorySide[storySide.StorySideMasterID] = true
+	for _, storySide := range login.UserModel.UserStorySideById.Objects {
+		solver.HasStorySide[storySide.StorySideMasterId] = true
 	}
-	for _, suit := range login.UserModel.UserSuitBySuitID.Objects {
-		solver.HasSuit[suit.SuitMasterID] = true
+	for _, suit := range login.UserModel.UserSuitBySuitId.Objects {
+		solver.HasSuit[suit.SuitMasterId] = true
 	}
 }
 
-func (solver *TrainingTreeSolver) AddCell(cellID int) {
-	if cellID == 0 {
+func (solver *TrainingTreeSolver) AddCell(cellId int) {
+	if cellId == 0 {
 		return
 	}
 	solver.Cells = append(solver.Cells,
 		model.TrainingTreeCell{
-			UserID:       solver.Session.UserStatus.UserID,
-			CardMasterID: solver.Card.CardMasterID,
-			CellID:       cellID,
+			UserId:       solver.Session.UserStatus.UserId,
+			CardMasterId: solver.Card.CardMasterId,
+			CellId:       cellId,
 			ActivatedAt:  solver.TimeStamp})
 }

@@ -21,8 +21,8 @@
 //   - if an object reference another object, then the data structure should store a reference to the object referenced by that id
 //   - the object should keep a reference to the id itself
 //   - for example, m_live_difficulty reference m_live through live_id
-//     then m_live_difficulty contain LiveID *int, Live *Live
-//   - LiveID will be loaded into at first, then it should point to Live.LiveID after we setup Live
+//     then m_live_difficulty contain LiveId *int, Live *Live
+//   - LiveId will be loaded into at first, then it should point to Live.LiveId after we setup Live
 package gamedata
 
 import (
@@ -113,7 +113,7 @@ type Gamedata struct {
 
 	Tower map[int]*Tower
 
-	Trade        map[int]*model.Trade // map from TradeID to Trade
+	Trade        map[int]*model.Trade // map from TradeId to Trade
 	TradesByType [3][]*model.Trade    // map from trade type to array of Trade
 	TradeProduct map[int]*model.TradeProduct
 

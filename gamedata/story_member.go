@@ -12,8 +12,8 @@ import (
 
 type StoryMember struct {
 	// from m_story_member
-	ID int `xorm:"pk 'id'"`
-	// MemberMasterID int `xorm:"member_master_id"`
+	Id int `xorm:"pk 'id'"`
+	// MemberMasterId int `xorm:"member_master_id"`
 	// StoryNo int
 	// LoveLevel int
 	// Title string
@@ -21,7 +21,7 @@ type StoryMember struct {
 	// ScenarioScriptAssetPath string
 	// CardImageAssetPath string
 	// DisplayOrder int
-	UnlockLiveID *int `xorm:"'unlock_live_id'"`
+	UnlockLiveId *int `xorm:"'unlock_live_id'"`
 
 	// from m_story_member_rewards
 	Reward *model.Content `xorm:"-"`
@@ -29,7 +29,7 @@ type StoryMember struct {
 
 func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	reward := model.Content{}
-	exist, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.ID).Get(&reward)
+	exist, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.Id).Get(&reward)
 	utils.CheckErr(err)
 	if exist {
 		story.Reward = &reward

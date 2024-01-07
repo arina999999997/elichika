@@ -8,7 +8,7 @@ import (
 var (
 	Gold = model.Content{
 		ContentType:   enum.ContentTypeGameMoney,
-		ContentID:     0,
+		ContentId:     0,
 		ContentAmount: 1,
 	}
 )

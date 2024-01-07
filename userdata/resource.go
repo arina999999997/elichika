@@ -14,7 +14,7 @@ import (
 )
 
 type UserResource struct {
-	UserID  int           `xorm:"'user_id'"`
+	UserId  int           `xorm:"'user_id'"`
 	Content model.Content `xorm:"extends"`
 }
 
@@ -27,7 +27,7 @@ var (
 func (session *Session) AddSnsCoin(coin int64) {
 	session.AddResource(model.Content{
 		ContentType:   enum.ContentTypeSnsCoin,
-		ContentID:     0,
+		ContentId:     0,
 		ContentAmount: coin,
 	})
 }
@@ -35,7 +35,7 @@ func (session *Session) AddSnsCoin(coin int64) {
 func (session *Session) RemoveSnsCoin(coin int64) {
 	session.RemoveResource(model.Content{
 		ContentType:   enum.ContentTypeSnsCoin,
-		ContentID:     0,
+		ContentId:     0,
 		ContentAmount: coin,
 	})
 }
@@ -43,7 +43,7 @@ func (session *Session) RemoveSnsCoin(coin int64) {
 func (session *Session) AddGameMoney(money int64) {
 	session.AddResource(model.Content{
 		ContentType:   enum.ContentTypeGameMoney,
-		ContentID:     1200,
+		ContentId:     1200,
 		ContentAmount: money,
 	})
 }
@@ -51,7 +51,7 @@ func (session *Session) AddGameMoney(money int64) {
 func (session *Session) RemoveGameMoney(money int64) {
 	session.RemoveResource(model.Content{
 		ContentType:   enum.ContentTypeGameMoney,
-		ContentID:     1200,
+		ContentId:     1200,
 		ContentAmount: money,
 	})
 }
@@ -59,7 +59,7 @@ func (session *Session) RemoveGameMoney(money int64) {
 func (session *Session) AddCardExp(exp int64) {
 	session.AddResource(model.Content{
 		ContentType:   enum.ContentTypeCardExp,
-		ContentID:     1100,
+		ContentId:     1100,
 		ContentAmount: exp,
 	})
 }
@@ -67,30 +67,30 @@ func (session *Session) AddCardExp(exp int64) {
 func (session *Session) RemoveCardExp(exp int64) {
 	session.RemoveResource(model.Content{
 		ContentType:   enum.ContentTypeCardExp,
-		ContentID:     1100,
+		ContentId:     1100,
 		ContentAmount: exp,
 	})
 }
 
-func (session *Session) GetUserResource(contentType, contentID int) UserResource {
+func (session *Session) GetUserResource(contentType, contentId int) UserResource {
 	_, exist := session.UserResourceDiffs[contentType]
 	if !exist {
 		session.UserResourceDiffs[contentType] = make(map[int]UserResource)
 	}
-	resource, exist := session.UserResourceDiffs[contentType][contentID]
+	resource, exist := session.UserResourceDiffs[contentType][contentId]
 	if exist {
 		return resource
 	}
 	// load from db
 	exist, err := session.Db.Table("u_resource").Where("user_id = ? AND content_type = ? AND content_id = ?",
-		session.UserStatus.UserID, contentType, contentID).Get(&resource)
+		session.UserStatus.UserId, contentType, contentId).Get(&resource)
 	utils.CheckErr(err)
 	if !exist {
 		resource = UserResource{
-			UserID: session.UserStatus.UserID,
+			UserId: session.UserStatus.UserId,
 			Content: model.Content{
 				ContentType:   contentType,
-				ContentID:     contentID,
+				ContentId:     contentId,
 				ContentAmount: 10000000,
 			},
 		}
@@ -103,7 +103,7 @@ func (session *Session) UpdateUserResource(resource UserResource) {
 	if !exist {
 		session.UserResourceDiffs[resource.Content.ContentType] = make(map[int]UserResource)
 	}
-	session.UserResourceDiffs[resource.Content.ContentType][resource.Content.ContentID] = resource
+	session.UserResourceDiffs[resource.Content.ContentType][resource.Content.ContentId] = resource
 }
 
 func (session *Session) AddResource(resource model.Content) {
@@ -112,7 +112,7 @@ func (session *Session) AddResource(resource model.Content) {
 		fmt.Println("TODO: Add handler for content type ", resource.ContentType)
 		return
 	}
-	handler(session, resource.ContentType, resource.ContentID, resource.ContentAmount)
+	handler(session, resource.ContentType, resource.ContentId, resource.ContentAmount)
 }
 
 func (session *Session) RemoveResource(resource model.Content) {
@@ -121,7 +121,7 @@ func (session *Session) RemoveResource(resource model.Content) {
 		fmt.Println("TODO: Add handler for content type ", resource.ContentType)
 		return
 	}
-	handler(session, resource.ContentType, resource.ContentID, -resource.ContentAmount)
+	handler(session, resource.ContentType, resource.ContentId, -resource.ContentAmount)
 }
 
 func init() {
@@ -137,73 +137,73 @@ func init() {
 	userModelField = make(map[int]string)
 
 	resourceHandler[enum.ContentTypeGachaPoint] = genericResourceHandler // gacha point (quartz)
-	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointID"
+	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointId"
 
 	resourceHandler[enum.ContentTypeGachaTicket] = genericResourceHandler
-	userModelField[enum.ContentTypeGachaTicket] = "UserGachaTicketByTicketID"
+	userModelField[enum.ContentTypeGachaTicket] = "UserGachaTicketByTicketId"
 
 	resourceHandler[enum.ContentTypeLessonEnhancingItem] = genericResourceHandler // light bulbs
-	userModelField[enum.ContentTypeLessonEnhancingItem] = "UserLessonEnhancingItemByItemID"
+	userModelField[enum.ContentTypeLessonEnhancingItem] = "UserLessonEnhancingItemByItemId"
 
 	resourceHandler[enum.ContentTypeTrainingMaterial] = genericResourceHandler // training items (macarons, memorials)
-	userModelField[enum.ContentTypeTrainingMaterial] = "UserTrainingMaterialByItemID"
+	userModelField[enum.ContentTypeTrainingMaterial] = "UserTrainingMaterialByItemId"
 
 	resourceHandler[enum.ContentTypeGradeUpper] = genericResourceHandler // card grade up items
-	userModelField[enum.ContentTypeGradeUpper] = "UserGradeUpItemByItemID"
+	userModelField[enum.ContentTypeGradeUpper] = "UserGradeUpItemByItemId"
 
 	resourceHandler[enum.ContentTypeRecoveryAp] = genericResourceHandler // training ticket
-	userModelField[enum.ContentTypeRecoveryAp] = "UserRecoveryApByID"
+	userModelField[enum.ContentTypeRecoveryAp] = "UserRecoveryApById"
 
 	resourceHandler[enum.ContentTypeRecoveryLp] = genericResourceHandler // lp candies
-	userModelField[enum.ContentTypeRecoveryLp] = "UserRecoveryLpByID"
+	userModelField[enum.ContentTypeRecoveryLp] = "UserRecoveryLpById"
 
 	// generics exchange point (SBL / DLP)
 	// also include channel exchanges
 	resourceHandler[enum.ContentTypeExchangeEventPoint] = genericResourceHandler
-	userModelField[enum.ContentTypeExchangeEventPoint] = "UserExchangeEventPointByID"
+	userModelField[enum.ContentTypeExchangeEventPoint] = "UserExchangeEventPointById"
 
 	resourceHandler[enum.ContentTypeAccessoryLevelUp] = genericResourceHandler // accessory stickers
-	userModelField[enum.ContentTypeAccessoryLevelUp] = "UserAccessoryLevelUpItemByID"
+	userModelField[enum.ContentTypeAccessoryLevelUp] = "UserAccessoryLevelUpItemById"
 
 	resourceHandler[enum.ContentTypeAccessoryRarityUp] = genericResourceHandler // accessory rarity up items
-	userModelField[enum.ContentTypeAccessoryRarityUp] = "UserAccessoryRarityUpItemByID"
+	userModelField[enum.ContentTypeAccessoryRarityUp] = "UserAccessoryRarityUpItemById"
 
 	resourceHandler[enum.ContentTypeEventMarathonBooster] = genericResourceHandler // marathon boosters
-	userModelField[enum.ContentTypeEventMarathonBooster] = "UserEventMarathonBoosterByID"
+	userModelField[enum.ContentTypeEventMarathonBooster] = "UserEventMarathonBoosterById"
 
 	resourceHandler[enum.ContentTypeLiveSkipTicket] = genericResourceHandler // skip tickets
-	userModelField[enum.ContentTypeLiveSkipTicket] = "UserLiveSkipTicketByID"
+	userModelField[enum.ContentTypeLiveSkipTicket] = "UserLiveSkipTicketById"
 
 	resourceHandler[enum.ContentTypeStoryEventUnlock] = genericResourceHandler // event story unlock key
-	userModelField[enum.ContentTypeStoryEventUnlock] = "UserStoryEventUnlockItemByID"
+	userModelField[enum.ContentTypeStoryEventUnlock] = "UserStoryEventUnlockItemById"
 
 	resourceHandler[enum.ContentTypeRecoveryTowerCardUsedCount] = genericResourceHandler // dlp water bottle
-	userModelField[enum.ContentTypeRecoveryTowerCardUsedCount] = "UserRecoveryTowerCardUsedCountItemByRecoveryTowerCardUsedCountItemMasterID"
+	userModelField[enum.ContentTypeRecoveryTowerCardUsedCount] = "UserRecoveryTowerCardUsedCountItemByRecoveryTowerCardUsedCountItemMasterId"
 
 	resourceHandler[enum.ContentTypeStoryMember] = memberStoryHandler
 	resourceHandler[enum.ContentTypeVoice] = voiceHandler
 }
 
-func genericResourceHandler(session *Session, contentType, contentID int, contentAmount int64) {
-	resource := session.GetUserResource(contentType, contentID)
+func genericResourceHandler(session *Session, contentType, contentId int, contentAmount int64) {
+	resource := session.GetUserResource(contentType, contentId)
 	resource.Content.ContentAmount += contentAmount
 	session.UpdateUserResource(resource)
 }
 
-func suitResourceHandler(session *Session, _, suitMasterID int, _ int64) {
-	session.InsertUserSuit(suitMasterID)
+func suitResourceHandler(session *Session, _, suitMasterId int, _ int64) {
+	session.InsertUserSuit(suitMasterId)
 }
 
-func memberStoryHandler(session *Session, _, memberStoryID int, _ int64) {
-	session.InsertMemberStory(memberStoryID)
+func memberStoryHandler(session *Session, _, memberStoryId int, _ int64) {
+	session.InsertMemberStory(memberStoryId)
 }
 
-func voiceHandler(session *Session, _, naviVoiceMasterID int, _ int64) {
-	session.UpdateVoice(naviVoiceMasterID, false)
+func voiceHandler(session *Session, _, naviVoiceMasterId int, _ int64) {
+	session.UpdateVoice(naviVoiceMasterId, false)
 }
 
 // these resources amount are stored in the user status
-func userStatusResourceHandler(session *Session, resourceContentType, resourceContentID int, amount int64) {
+func userStatusResourceHandler(session *Session, resourceContentType, resourceContentId int, amount int64) {
 	switch resourceContentType {
 	case enum.ContentTypeSnsCoin: // star gems
 		session.UserStatus.FreeSnsCoin += int(amount)
@@ -218,9 +218,9 @@ func userStatusResourceHandler(session *Session, resourceContentType, resourceCo
 	}
 }
 
-func genericResourceByResourceIDFinalizer(session *Session) {
+func genericResourceByResourceIdFinalizer(session *Session) {
 	rModel := reflect.ValueOf(&session.UserModel)
-	for contentType, resourceDiffByContentID := range session.UserResourceDiffs {
+	for contentType, resourceDiffByContentId := range session.UserResourceDiffs {
 		rObject := rModel.Elem().FieldByName(userModelField[contentType])
 		if !rObject.IsValid() {
 			fmt.Println("Invalid field: ", contentType, "->", userModelField[contentType])
@@ -242,10 +242,10 @@ func genericResourceByResourceIDFinalizer(session *Session) {
 			panic(fmt.Sprintln("Type ", rElementPtrType, " must have method FromContent"))
 		}
 
-		for _, resource := range resourceDiffByContentID {
+		for _, resource := range resourceDiffByContentId {
 			// update or insert the resource
 			affected, err := session.Db.Table("u_resource").Where("user_id = ? AND content_type = ? AND content_id = ?",
-				session.UserStatus.UserID, resource.Content.ContentType, resource.Content.ContentID).AllCols().Update(resource)
+				session.UserStatus.UserId, resource.Content.ContentType, resource.Content.ContentId).AllCols().Update(resource)
 			utils.CheckErr(err)
 			if affected == 0 { // doesn't exist, insert
 				// fmt.Println("Inserted: ", resource)
@@ -260,11 +260,11 @@ func genericResourceByResourceIDFinalizer(session *Session) {
 	}
 }
 
-func genericResourceByResourceIDPopulator(session *Session) {
+func genericResourceByResourceIdPopulator(session *Session) {
 	rModel := reflect.ValueOf(&session.UserModel)
 	contents := []model.Content{}
 	// order by is not necessary
-	err := session.Db.Table("u_resource").Where("user_id = ?", session.UserStatus.UserID).Find(&contents)
+	err := session.Db.Table("u_resource").Where("user_id = ?", session.UserStatus.UserId).Find(&contents)
 	utils.CheckErr(err)
 	contentByType := make(map[int][]model.Content)
 	for _, content := range contents {
@@ -325,7 +325,7 @@ func (session *Session) populateGenericResourceDiffFromUserModel() {
 		contents := rObjectToContents.Func.Call([]reflect.Value{rObject.Addr()})[0].Interface().([]any)
 		for _, content := range contents {
 			session.UpdateUserResource(UserResource{
-				UserID:  session.UserStatus.UserID,
+				UserId:  session.UserStatus.UserId,
 				Content: content.(model.Content),
 			})
 		}
@@ -334,6 +334,6 @@ func (session *Session) populateGenericResourceDiffFromUserModel() {
 }
 
 func init() {
-	addFinalizer(genericResourceByResourceIDFinalizer)
-	addPopulator(genericResourceByResourceIDPopulator)
+	addFinalizer(genericResourceByResourceIdFinalizer)
+	addPopulator(genericResourceByResourceIdPopulator)
 }

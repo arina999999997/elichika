@@ -9,7 +9,7 @@ import (
 )
 
 type AccessoryMeltGroup struct {
-	ID     int           `xorm:"pk 'id'"`
+	Id     int           `xorm:"pk 'id'"`
 	Reward model.Content `xorm:"extends"`
 }
 

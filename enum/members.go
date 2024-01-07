@@ -1,5 +1,5 @@
 package enum
 
 const (
-	MemberMasterIDRina = 209
+	MemberMasterIdRina = 209
 )

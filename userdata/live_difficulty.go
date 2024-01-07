@@ -12,44 +12,44 @@ import (
 
 // TODO: rename table "u_live_record" to "u_live_difficulty"
 
-func (session *Session) GetOtherUserLiveDifficulty(otherUserID, liveDifficultyID int) model.UserLiveDifficulty {
+func (session *Session) GetOtherUserLiveDifficulty(otherUserId, liveDifficultyId int) model.UserLiveDifficulty {
 	userLiveDifficulty := model.UserLiveDifficulty{}
 	exist, err := session.Db.Table("u_live_record").
-		Where("user_id = ? AND live_difficulty_id = ?", otherUserID, liveDifficultyID).
+		Where("user_id = ? AND live_difficulty_id = ?", otherUserId, liveDifficultyId).
 		Get(&userLiveDifficulty)
 	if err != nil {
 		panic(err)
 	}
 	if !exist {
-		userLiveDifficulty.UserID = otherUserID
-		userLiveDifficulty.LiveDifficultyID = liveDifficultyID
+		userLiveDifficulty.UserId = otherUserId
+		userLiveDifficulty.LiveDifficultyId = liveDifficultyId
 		userLiveDifficulty.EnableAutoplay = true
 		userLiveDifficulty.IsNew = true
 	}
 	return userLiveDifficulty
 }
 
-func (session *Session) GetLiveDifficulty(liveDifficultyID int) model.UserLiveDifficulty {
-	return session.GetOtherUserLiveDifficulty(session.UserStatus.UserID, liveDifficultyID)
+func (session *Session) GetLiveDifficulty(liveDifficultyId int) model.UserLiveDifficulty {
+	return session.GetOtherUserLiveDifficulty(session.UserStatus.UserId, liveDifficultyId)
 }
 
 func (session *Session) GetAllLiveDifficulties() []model.UserLiveDifficulty {
 	records := []model.UserLiveDifficulty{}
-	err := session.Db.Table("u_live_record").Where("user_id = ?", session.UserStatus.UserID).
+	err := session.Db.Table("u_live_record").Where("user_id = ?", session.UserStatus.UserId).
 		Find(&records)
 	utils.CheckErr(err)
 	return records
 }
 
 func (session *Session) UpdateLiveDifficulty(userLiveDifficulty model.UserLiveDifficulty) {
-	session.UserLiveDifficultyMapping.SetList(&session.UserModel.UserLiveDifficultyByDifficultyID).
+	session.UserLiveDifficultyMapping.SetList(&session.UserModel.UserLiveDifficultyByDifficultyId).
 		Update(userLiveDifficulty)
 }
 
 func liveDifficultyFinalizer(session *Session) {
-	for _, userLiveDifficulty := range session.UserModel.UserLiveDifficultyByDifficultyID.Objects {
+	for _, userLiveDifficulty := range session.UserModel.UserLiveDifficultyByDifficultyId.Objects {
 		updated, err := session.Db.Table("u_live_record").
-			Where("user_id = ? AND live_difficulty_id = ?", userLiveDifficulty.UserID, userLiveDifficulty.LiveDifficultyID).
+			Where("user_id = ? AND live_difficulty_id = ?", userLiveDifficulty.UserId, userLiveDifficulty.LiveDifficultyId).
 			AllCols().Update(&userLiveDifficulty)
 		utils.CheckErr(err)
 		if updated == 0 {
@@ -60,10 +60,10 @@ func liveDifficultyFinalizer(session *Session) {
 
 }
 
-func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyID int) *model.LastPlayLiveDifficultyDeck {
+func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyId int) *model.LastPlayLiveDifficultyDeck {
 	lastPlayDeck := model.LastPlayLiveDifficultyDeck{}
 	exist, err := session.Db.Table("u_live_record").
-		Where("user_id = ? AND live_difficulty_id = ?", session.UserStatus.UserID, liveDifficultyID).
+		Where("user_id = ? AND live_difficulty_id = ?", session.UserStatus.UserId, liveDifficultyId).
 		Get(&lastPlayDeck)
 	utils.CheckErr(err)
 	if !exist {
@@ -72,15 +72,15 @@ func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyID int) *mod
 	return &lastPlayDeck
 }
 
-func (session *Session) BuildLastPlayLiveDifficultyDeck(deckID, liveDifficultyID int) model.LastPlayLiveDifficultyDeck {
+func (session *Session) BuildLastPlayLiveDifficultyDeck(deckId, liveDifficultyId int) model.LastPlayLiveDifficultyDeck {
 	lastPlayDeck := model.LastPlayLiveDifficultyDeck{
-		UserID:           session.UserStatus.UserID,
-		LiveDifficultyID: liveDifficultyID,
+		UserId:           session.UserStatus.UserId,
+		LiveDifficultyId: liveDifficultyId,
 		Voltage:          0,     // filled by handler
 		IsCleared:        false, // filled by handler
 		RecordedAt:       session.Time.Unix()}
 	lastPlayDeck.CardWithSuitDict = make([]int, 18)
-	userLiveDeck := session.GetUserLiveDeck(deckID)
+	userLiveDeck := session.GetUserLiveDeck(deckId)
 	userLiveDeckJson, _ := json.Marshal(userLiveDeck)
 
 	gjson.Parse(string(userLiveDeckJson)).ForEach(func(key, value gjson.Result) bool {
@@ -96,18 +96,18 @@ func (session *Session) BuildLastPlayLiveDifficultyDeck(deckID, liveDifficultyID
 		return true
 	})
 
-	liveParties := session.GetUserLivePartiesWithDeckID(deckID)
+	liveParties := session.GetUserLivePartiesWithDeckId(deckId)
 	for i, party := range liveParties {
 		squad := model.DeckSquadDict{}
 		partyJson, _ := json.Marshal(party)
 		gjson.Parse(string(partyJson)).ForEach(func(key, value gjson.Result) bool {
 			k := key.String()
 			if strings.Contains(k, "card_master_id_") {
-				squad.CardMasterIDs = append(squad.CardMasterIDs, int(value.Int()))
+				squad.CardMasterIds = append(squad.CardMasterIds, int(value.Int()))
 			} else if strings.Contains(k, "user_accessory_id_") {
 				ptr := new(int64)
 				*ptr = value.Int()
-				squad.UserAccessoryIDs = append(squad.UserAccessoryIDs, ptr)
+				squad.UserAccessoryIds = append(squad.UserAccessoryIds, ptr)
 			}
 			return true
 		})
@@ -121,12 +121,12 @@ func (session *Session) BuildLastPlayLiveDifficultyDeck(deckID, liveDifficultyID
 func (session *Session) SetLastPlayLiveDifficultyDeck(deck model.LastPlayLiveDifficultyDeck) {
 	// TODO: maybe this can be put in finalizer
 	// always call after inserting the actual live play, so we can just update
-	_, err := session.Db.Table("u_live_record").Where("user_id = ? and live_difficulty_id = ?", deck.UserID, deck.LiveDifficultyID).
+	_, err := session.Db.Table("u_live_record").Where("user_id = ? and live_difficulty_id = ?", deck.UserId, deck.LiveDifficultyId).
 		AllCols().Update(&deck)
 	utils.CheckErr(err)
 }
 
 func init() {
 	addFinalizer(liveDifficultyFinalizer)
-	addGenericTableFieldPopulator("u_live_record", "UserLiveDifficultyByDifficultyID")
+	addGenericTableFieldPopulator("u_live_record", "UserLiveDifficultyByDifficultyId")
 }

@@ -22,8 +22,8 @@ func FetchBootstrap(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UserStatus.BootstrapSifidCheckAt = session.Time.UnixMilli()
 	session.UserStatus.DeviceToken = req.DeviceToken
@@ -110,7 +110,7 @@ func FetchBootstrap(ctx *gin.Context) {
 		}
 	}
 
-	session.UserModel.UserSubscriptionStatusByID.PushBack(session.GetSubsriptionStatus())
+	session.UserModel.UserSubscriptionStatusById.PushBack(session.GetSubsriptionStatus())
 	session.Finalize("{}", "dummy")
 
 	respBytes, _ := json.Marshal(respObj)

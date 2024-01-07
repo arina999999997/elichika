@@ -6,13 +6,13 @@ import (
 )
 
 func (session *Session) UpdateUserPlayList(item model.UserPlayListItem) {
-	session.UserModel.UserPlayListByID.PushBack(item)
+	session.UserModel.UserPlayListById.PushBack(item)
 }
 
 func userPlayListFinalizer(session *Session) {
-	for _, item := range session.UserModel.UserPlayListByID.Objects {
+	for _, item := range session.UserModel.UserPlayListById.Objects {
 		exist, err := session.Db.Table("u_play_list").
-			Where("user_id = ? AND user_play_list_id = ?", session.UserStatus.UserID, item.UserPlayListID).
+			Where("user_id = ? AND user_play_list_id = ?", session.UserStatus.UserId, item.UserPlayListId).
 			AllCols().Update(&item)
 		utils.CheckErr(err)
 		if exist == 0 {
@@ -24,5 +24,5 @@ func userPlayListFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(userPlayListFinalizer)
-	addGenericTableFieldPopulator("u_play_list", "UserPlayListByID")
+	addGenericTableFieldPopulator("u_play_list", "UserPlayListById")
 }

@@ -21,14 +21,14 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UpdateUserPlayList(model.UserPlayListItem{
-		UserID:         userID,
-		UserPlayListID: req.GroupNum + req.LiveMasterID*10,
+		UserId:         userId,
+		UserPlayListId: req.GroupNum + req.LiveMasterId*10,
 		GroupNum:       req.GroupNum,
-		LiveID:         req.LiveMasterID,
+		LiveId:         req.LiveMasterId,
 		IsNull:         !req.IsSet,
 	})
 

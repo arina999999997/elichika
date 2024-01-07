@@ -36,8 +36,8 @@ func FetchLiveMusicSelect(ctx *gin.Context) {
 		}
 		liveDailyList = append(liveDailyList,
 			model.LiveDaily{
-				LiveDailyMasterID: liveDaily.ID,
-				LiveMasterID:      liveDaily.LiveID,
+				LiveDailyMasterId: liveDaily.Id,
+				LiveMasterId:      liveDaily.LiveId,
 			})
 	}
 	for k := range liveDailyList {
@@ -50,8 +50,8 @@ func FetchLiveMusicSelect(ctx *gin.Context) {
 	signBody, _ = sjson.Set(signBody, "weekday_state.weekday", weekday)
 	signBody, _ = sjson.Set(signBody, "weekday_state.next_weekday_at", tomorrow)
 	signBody, _ = sjson.Set(signBody, "live_daily_list", liveDailyList)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	signBody = session.Finalize(signBody, "user_model_diff")
 	resp := handler.SignResp(ctx, signBody, config.SessionKey)
@@ -65,17 +65,17 @@ func FetchLivePartners(ctx *gin.Context) {
 	// this set include the current user, so we can use our own cards.
 	// currently only have current user
 	// note that all card are available, but we need to use the filter functionality to actually get them to show up.
-	partnerIDs := []int{}
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	partnerIds := []int{}
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	partnerIDs = append(partnerIDs, userID)
+	partnerIds = append(partnerIds, userId)
 	livePartners := []model.LiveStartLivePartner{}
-	for _, partnerID := range partnerIDs {
+	for _, partnerId := range partnerIds {
 		partner := model.LiveStartLivePartner{}
 		partner.IsFriend = true
-		userdata.FetchDBProfile(partnerID, &partner)
-		partnerCards := userdata.FetchPartnerCards(partnerID) // model.UserCard
+		userdata.FetchDBProfile(partnerId, &partner)
+		partnerCards := userdata.FetchPartnerCards(partnerId) // model.UserCard
 		if len(partnerCards) == 0 {
 			continue
 		}
@@ -104,25 +104,25 @@ func LiveStart(ctx *gin.Context) {
 	req := request.LiveStartRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	masterLiveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyID]
+	masterLiveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyId]
 	masterLiveDifficulty.ConstructLiveStage(gamedata)
-	session.UserStatus.LastLiveDifficultyID = req.LiveDifficultyID
-	session.UserStatus.LatestLiveDeckID = req.DeckID
+	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyId
+	session.UserStatus.LatestLiveDeckId = req.DeckId
 
 	// 保存请求包因为 /live/finish 接口的响应包里有部分字段不在该接口的请求包里
 	// live is stored in db
 	live := model.UserLive{
-		UserID:          userID,
-		PartnerUserID:   req.PartnerUserID,
-		LiveID:          time.Now().UnixNano(),
+		UserId:          userId,
+		PartnerUserId:   req.PartnerUserId,
+		LiveId:          time.Now().UnixNano(),
 		LiveType:        enum.LiveTypeManual,
 		IsPartnerFriend: true,
-		DeckID:          req.DeckID,
-		CellID:          req.CellID,
+		DeckId:          req.DeckId,
+		CellId:          req.CellId,
 		IsAutoplay:      req.IsAutoPlay,
 	}
 	live.LiveStage = masterLiveDifficulty.LiveStage.Copy()
@@ -130,16 +130,16 @@ func LiveStart(ctx *gin.Context) {
 	if req.LiveTowerStatus != nil {
 		// is tower live, fetch this tower
 		// TODO: fetch from database instead
-		userTower := session.GetUserTower(req.LiveTowerStatus.TowerID)
+		userTower := session.GetUserTower(req.LiveTowerStatus.TowerId)
 
 		if userTower.ReadFloor != req.LiveTowerStatus.FloorNo {
 			userTower.ReadFloor = req.LiveTowerStatus.FloorNo
 			session.UpdateUserTower(userTower)
 		}
 		live.TowerLive = model.TowerLive{
-			TowerID:       &req.LiveTowerStatus.TowerID,
+			TowerId:       &req.LiveTowerStatus.TowerId,
 			FloorNo:       &req.LiveTowerStatus.FloorNo,
-			TargetVoltage: &gamedata.Tower[req.LiveTowerStatus.TowerID].Floor[req.LiveTowerStatus.FloorNo].TargetVoltage,
+			TargetVoltage: &gamedata.Tower[req.LiveTowerStatus.TowerId].Floor[req.LiveTowerStatus.FloorNo].TargetVoltage,
 			StartVoltage:  &userTower.Voltage,
 		}
 		live.LiveType = enum.LiveTypeTower
@@ -151,9 +151,9 @@ func LiveStart(ctx *gin.Context) {
 		}
 	}
 
-	if req.PartnerUserID != 0 {
+	if req.PartnerUserId != 0 {
 		live.LivePartnerCard = session.GetPartnerCardFromUserCard(
-			userdata.GetOtherUserCard(req.PartnerUserID, req.PartnerCardMasterID))
+			userdata.GetOtherUserCard(req.PartnerUserId, req.PartnerCardMasterId))
 	}
 
 	liveStartResp := session.Finalize("{}", "user_model_diff")

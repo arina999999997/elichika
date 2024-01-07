@@ -11,7 +11,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 	solver.Cells = []model.TrainingTreeCell{}
 	solver.Session = session
 	solver.Card = card
-	solver.MasterCard = session.Gamedata.Card[card.CardMasterID]
+	solver.MasterCard = session.Gamedata.Card[card.CardMasterId]
 	solver.TrainingTree = solver.MasterCard.TrainingTree
 	solver.TrainingTreeMapping = solver.TrainingTree.TrainingTreeMapping
 	solver.TrainingTreeDesign = solver.TrainingTreeMapping.TrainingTreeDesign
@@ -19,15 +19,15 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 	solver.NodeCount = solver.TrainingTreeDesign.CellCount - 1 // not counting the starting node id 0
 	if card.IsAllTrainingActivated {                           // if maxed out then we don't need to solve
 		for _, cell := range solver.TrainingTreeMapping.TrainingTreeCellContents {
-			solver.AddCell(cell.CellID)
+			solver.AddCell(cell.CellId)
 		}
 	} else if card.TrainingActivatedCellCount == 0 {
 		// entirely new card, no need to do anything
 	} else if !solver.SolveForTileSet() { // otherwise we solve for a possible set of tiles
-		fmt.Println("Solving failed for card", card.CardMasterID, ", reseting to default")
+		fmt.Println("Solving failed for card", card.CardMasterId, ", reseting to default")
 		*card = model.UserCard{
-			UserID:              session.UserStatus.UserID,
-			CardMasterID:        card.CardMasterID,
+			UserId:              session.UserStatus.UserId,
+			CardMasterId:        card.CardMasterId,
 			Level:               card.Level,
 			MaxFreePassiveSkill: solver.MasterCard.PassiveSkillSlot,
 			Grade:               card.Grade, // check this for new card
@@ -39,14 +39,14 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 			IsNew:               true,
 		}
 	} // else {
-	// fmt.Println("Found solution for card", card.CardMasterID)
+	// fmt.Println("Found solution for card", card.CardMasterId)
 	// }
 	session.InsertTrainingTreeCells(solver.Cells)
 	if len(solver.Cells) != card.TrainingActivatedCellCount {
-		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterID))
+		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterId))
 	}
 	// update stat for this member
-	userMember := session.GetMember(solver.MasterCard.Member.ID)
+	userMember := session.GetMember(solver.MasterCard.Member.Id)
 	userMember.OwnedCardCount++
 	if card.IsAllTrainingActivated {
 		userMember.AllTrainingCardCount++
@@ -61,7 +61,7 @@ func (solver *TrainingTreeSolver) SolveForTileSet() bool {
 		solver.BFNodes[i] = []*SolverNode{}
 	}
 	for i := 1; i <= solver.NodeCount; i++ {
-		solver.Node[i].ID = i
+		solver.Node[i].Id = i
 	}
 	solver.MarkPicked(&solver.Node[0])
 
@@ -230,7 +230,7 @@ solutionFound:
 		}
 		for i := 1; i <= solver.NodeCount; i++ {
 			if solver.Node[i].IsPicked {
-				solver.AddCell(solver.Node[i].ID)
+				solver.AddCell(solver.Node[i].Id)
 			}
 		}
 	}

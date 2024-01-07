@@ -5,14 +5,14 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLessonDeck(userLessonDeckID int) model.UserLessonDeck {
-	pos, exist := session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckByID).Map[int64(userLessonDeckID)]
+func (session *Session) GetUserLessonDeck(userLessonDeckId int) model.UserLessonDeck {
+	pos, exist := session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckById).Map[int64(userLessonDeckId)]
 	if exist {
-		return session.UserModel.UserLessonDeckByID.Objects[pos]
+		return session.UserModel.UserLessonDeckById.Objects[pos]
 	}
 	deck := model.UserLessonDeck{}
 	exist, err := session.Db.Table("u_lesson_deck").
-		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserID, userLessonDeckID).
+		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserId, userLessonDeckId).
 		Get(&deck)
 	utils.CheckErr(err)
 	if !exist {
@@ -22,13 +22,13 @@ func (session *Session) GetUserLessonDeck(userLessonDeckID int) model.UserLesson
 }
 
 func (session *Session) UpdateLessonDeck(userLessonDeck model.UserLessonDeck) {
-	session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckByID).Update(userLessonDeck)
+	session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckById).Update(userLessonDeck)
 }
 
 func lessonDeckFinalizer(session *Session) {
-	for _, deck := range session.UserModel.UserLessonDeckByID.Objects {
+	for _, deck := range session.UserModel.UserLessonDeckById.Objects {
 		affected, err := session.Db.Table("u_lesson_deck").
-			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserID, deck.UserLessonDeckID).AllCols().
+			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserStatus.UserId, deck.UserLessonDeckId).AllCols().
 			Update(deck)
 		utils.CheckErr(err)
 		if affected == 0 {
@@ -39,10 +39,10 @@ func lessonDeckFinalizer(session *Session) {
 }
 
 func (session *Session) InsertLessonDecks(decks []model.UserLessonDeck) {
-	session.UserModel.UserLessonDeckByID.Objects = append(session.UserModel.UserLessonDeckByID.Objects, decks...)
+	session.UserModel.UserLessonDeckById.Objects = append(session.UserModel.UserLessonDeckById.Objects, decks...)
 }
 
 func init() {
 	addFinalizer(lessonDeckFinalizer)
-	addGenericTableFieldPopulator("u_lesson_deck", "UserLessonDeckByID")
+	addGenericTableFieldPopulator("u_lesson_deck", "UserLessonDeckById")
 }

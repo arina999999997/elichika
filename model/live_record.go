@@ -1,8 +1,8 @@
 package model
 
 type LastPlayLiveDifficultyDeck struct {
-	UserID           int   `xorm:"pk 'user_id'" json:"-"`
-	LiveDifficultyID int   `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
+	UserId           int   `xorm:"pk 'user_id'" json:"-"`
+	LiveDifficultyId int   `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
 	Voltage          int   `xorm:"'last_clear_voltage'" json:"voltage"`
 	IsCleared        bool  `xorm:"'last_clear_is_cleared'" json:"is_cleared"`
 	RecordedAt       int64 `xorm:"'last_clear_recorded_at'" json:"recorded_at"`
@@ -11,8 +11,8 @@ type LastPlayLiveDifficultyDeck struct {
 }
 
 type UserLiveDifficulty struct {
-	UserID                        int  `xorm:"pk 'user_id'" json:"-"`
-	LiveDifficultyID              int  `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
+	UserId                        int  `xorm:"pk 'user_id'" json:"-"`
+	LiveDifficultyId              int  `xorm:"pk 'live_difficulty_id'" json:"live_difficulty_id"`
 	MaxScore                      int  `xorm:"'max_score'" json:"max_score"`
 	MaxCombo                      int  `xorm:"'max_combo'" json:"max_combo"`
 	PlayCount                     int  `xorm:"'play_count'" json:"play_count"`   // live start count
@@ -28,8 +28,8 @@ type UserLiveDifficulty struct {
 	IsNew                         bool `xorm:"'is_new'" json:"is_new"`
 }
 
-func (uld *UserLiveDifficulty) ID() int64 {
-	return int64(uld.LiveDifficultyID)
+func (uld *UserLiveDifficulty) Id() int64 {
+	return int64(uld.LiveDifficultyId)
 }
 
 func init() {

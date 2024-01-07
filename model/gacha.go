@@ -1,8 +1,8 @@
 package model
 
 type GachaAppeal struct { // s_gacha_appeal
-	GachaAppealMasterID int `xorm:"pk 'gacha_appeal_master_id'" json:"-"`
-	CardMasterID        int `xorm:"'card_master_id'" json:"card_master_id"`
+	GachaAppealMasterId int `xorm:"pk 'gacha_appeal_master_id'" json:"-"`
+	CardMasterId        int `xorm:"'card_master_id'" json:"card_master_id"`
 	AppearanceType      int `json:"appearance_type"`
 	MainImageAsset      struct {
 		V string `xorm:"'main_image_asset'" json:"v"`
@@ -16,13 +16,13 @@ type GachaAppeal struct { // s_gacha_appeal
 }
 
 type GachaDraw struct { // s_gacha_draw
-	GachaMasterID        int    `xorm:"gacha_master_id" json:"-"` // client only send gacha_draw_master_id
-	GachaDrawMasterID    int    `xorm:"pk 'gacha_draw_master_id'" json:"gacha_draw_master_id"`
+	GachaMasterId        int    `xorm:"gacha_master_id" json:"-"` // client only send gacha_draw_master_id
+	GachaDrawMasterId    int    `xorm:"pk 'gacha_draw_master_id'" json:"gacha_draw_master_id"`
 	RecoveryType         int    `json:"recover_type"`
 	RecoverAt            *int64 `json:"recover_at"`
 	DrawCount            int    `json:"draw_count"`
 	GachaPaymentType     int    `json:"gacha_payment_type"`
-	GachaPaymentMasterID int    `xorm:"gacha_payment_master_id" json:"gacha_payment_master_id"`
+	GachaPaymentMasterId int    `xorm:"gacha_payment_master_id" json:"gacha_payment_master_id"`
 	GachaPaymentAmount   int    `json:"gacha_payment_amount"`
 	// doesn't seem to be used? maybe for paid festival?
 	GachaPointAmount int `json:"gacha_point_amount"`
@@ -42,14 +42,14 @@ type GachaDraw struct { // s_gacha_draw
 	RemainDayCount *int `json:"remain_day_count"`
 	// number of remaining pull in this banner
 	RemainTermCount *int  `json:"remain_term_count"`
-	PerformanceID   int   `xorm:"performance_id" json:"performance_id"` // gacha performance
+	PerformanceId   int   `xorm:"performance_id" json:"performance_id"` // gacha performance
 	IsSubscription  bool  `json:"is_subscription"`                      // is subscription only gacha
 	Guarantees      []int `xorm:"'guarantees'" json:"-"`                // ids to gacha.GachaGuarantee
 }
 
 type GachaDrawStepupDetail struct { // u_gacha_draw_stepup
-	UserID        int  `json:"-"`
-	GachaMasterID int  `json:"-"`
+	UserId        int  `json:"-"`
+	GachaMasterId int  `json:"-"`
 	CurrentStep   int  `json:"current_step"`
 	LoopCount     int  `json:"loop_count"`
 	MaxLoop       int  `json:"max_loop"`
@@ -58,7 +58,7 @@ type GachaDrawStepupDetail struct { // u_gacha_draw_stepup
 }
 
 type Gacha struct { // s_gacha
-	GachaMasterID int `xorm:"pk 'gacha_master_id'" json:"gacha_master_id"`
+	GachaMasterId int `xorm:"pk 'gacha_master_id'" json:"gacha_master_id"`
 	GachaType     int `json:"gacha_type"`
 	GachaDrawType int `json:"gacha_draw_type"`
 	Title         struct {
@@ -70,10 +70,10 @@ type Gacha struct { // s_gacha
 	} `xorm:"extends" json:"banner_image_asset"`
 	IsTimeLimited       bool                   `json:"is_time_limited"`
 	EndAt               int64                  `json:"end_at"` // 1924873200
-	PointMasterID       *int                   `xorm:"'point_master_id'" json:"point_master_id"`
+	PointMasterId       *int                   `xorm:"'point_master_id'" json:"point_master_id"`
 	PointExchangeExpire *int64                 `json:"point_exchange_expire_at"`
 	AppealAt            int64                  `json:"appeal_at"`
-	NoticeID            int                    `xorm:"'notice_id'" json:"notice_id"`
+	NoticeId            int                    `xorm:"'notice_id'" json:"notice_id"`
 	AppealView          int                    `json:"appeal_view"`
 	GachaAppeals        []GachaAppeal          `xorm:"-" json:"gacha_appeals"`     // member details button
 	DbGachaAppeals      []int                  `xorm:"'gacha_appeals'" json:"-"`   // member details button
@@ -85,13 +85,13 @@ type Gacha struct { // s_gacha
 }
 
 type GachaDrawReq struct {
-	GachaDrawMasterID int `json:"gacha_draw_master_id"`
+	GachaDrawMasterId int `json:"gacha_draw_master_id"`
 	ButtonDrawCount   int `json:"button_draw_count"`
 }
 
 type ResultCard struct {
 	GachaLotType         int      `json:"gacha_lot_type"` // 1 for normal, 2 for guaranteed
-	CardMasterID         int      `json:"card_master_id"`
+	CardMasterId         int      `json:"card_master_id"`
 	Level                int      `json:"level"`                   // always 1
 	BeforeGrade          int      `json:"before_grade"`            // 0 for new
 	AfterGrade           int      `json:"after_grade"`             // 0 for new, 5 for maxed
@@ -102,8 +102,8 @@ type ResultCard struct {
 }
 
 // How this server implement (back end) gacha (for now):
-// - Each banner need to implement a set of cards, each cards have group ID.
-// - Each banner need to implement the weight of all the group ID.
+// - Each banner need to implement a set of cards, each cards have group Id.
+// - Each banner need to implement the weight of all the group Id.
 // - To get a card from a pile, the system first roll the group based on the weight (empty group excluded).
 // - Then the system choose equally randomly from within the chosen group.
 // - Some common groups used in actual game is R, SR, UR, Featured UR and so on.
@@ -119,22 +119,22 @@ type ResultCard struct {
 
 // different gacha can share groups
 type GachaGroup struct { // s_gacha_group
-	GroupMasterID int   `xorm:"pk 'group_master_id'"`
+	GroupMasterId int   `xorm:"pk 'group_master_id'"`
 	GroupWeight   int64 `xorm:"'group_weight'"`
 }
 
 type GachaCard struct { // s_gacha_card
-	GroupMasterID int `xorm:"pk 'group_master_id'"`
-	CardMasterID  int `xorm:"pk 'card_master_id'"`
+	GroupMasterId int `xorm:"pk 'group_master_id'"`
+	CardMasterId  int `xorm:"pk 'card_master_id'"`
 }
 
 // can be shared depending on impl
 // GuaranteedCardSet is not stored, built by gamedata when loaded, if applicable
 // - (static) CardSet can be used to specify almost if not all the guaranteed form official version had
 // - More exotic form of guarantee should be built into the handler itself
-// - If CardSetSQL is not empty, GuaranteedCardSet would contain the relevant cards ID
+// - If CardSetSQL is not empty, GuaranteedCardSet would contain the relevant cards Id
 type GachaGuarantee struct { // s_gacha_guarantee
-	GachaGuaranteeMasterID int          `xorm:"pk 'gacha_guarantee_master_id'"` // unique id
+	GachaGuaranteeMasterId int          `xorm:"pk 'gacha_guarantee_master_id'"` // unique id
 	GuaranteeHandler       string       `xorm:"'handler'"`
 	CardSetSQL             string       `xorm:"card_set_sql"`
 	GuaranteedCardSet      map[int]bool `xorm:"-"`

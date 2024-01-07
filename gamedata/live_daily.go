@@ -11,8 +11,8 @@ import (
 )
 
 type LiveDaily struct {
-	ID                   int `xorm:"pk 'id'"`
-	LiveID               int `xorm:"'live_id'"`
+	Id                   int `xorm:"pk 'id'"`
+	LiveId               int `xorm:"'live_id'"`
 	LimitCount           int `xorm:"'limit_count'"`
 	MaxLimitCountRecover int `xorm:"'max_limit_count_recover'"`
 	// AppealText string

@@ -17,8 +17,8 @@ import (
 )
 
 func FetchGachaMenu(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gachaList := session.GetGachaList()
 	signBody := session.Finalize("{}", "user_model_diff")
@@ -34,8 +34,8 @@ func GachaDraw(ctx *gin.Context) {
 	req := model.GachaDrawReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseGacha {

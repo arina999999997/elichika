@@ -15,12 +15,12 @@ import (
 )
 
 func FetchDailyTheater(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	signBody := session.Finalize("{}", "user_model_diff")
 	respObj := response.DailyTheaterDetail{
-		DailyTheaterID: 1,
+		DailyTheaterId: 1,
 		Year:           2021,
 		Month:          6,
 		Day:            24,
@@ -38,26 +38,26 @@ func FetchDailyTheater(ctx *gin.Context) {
 func DailyTheaterSetLike(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetLikeReq struct {
-		DailyTheaterID int  `json:"daily_theater_id"`
+		DailyTheaterId int  `json:"daily_theater_id"`
 		IsLike         bool `json:"is_like"`
 	}
 	req := SetLikeReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 	type UserDailyTheater struct {
-		DailyTheaterID int  `json:"daily_theater_id"`
+		DailyTheaterId int  `json:"daily_theater_id"`
 		IsLiked        bool `json:"is_liked"`
 	}
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	signBody := session.Finalize("{}", "user_model")
 
 	response := []any{}
-	response = append(response, req.DailyTheaterID)
+	response = append(response, req.DailyTheaterId)
 	response = append(response, UserDailyTheater{
-		DailyTheaterID: req.DailyTheaterID,
+		DailyTheaterId: req.DailyTheaterId,
 		IsLiked:        req.IsLike,
 	})
 	signBody, _ = sjson.Set(signBody, "user_model.user_daily_theater_by_daily_theater_id", response)
@@ -77,7 +77,7 @@ func FetchDailyTheaterArchive(ctx *gin.Context) {
 	// this isn't the actual thing
 	respObj.DailyTheaterArchiveMasterRows = append(respObj.DailyTheaterArchiveMasterRows,
 		response.DailyTheaterArchiveMasterRow{
-			DailyTheaterID: 1001243,
+			DailyTheaterId: 1001243,
 			Year:           2023,
 			Month:          6,
 			Day:            29,
@@ -85,13 +85,13 @@ func FetchDailyTheaterArchive(ctx *gin.Context) {
 		})
 	respObj.DailyTheaterArchiveMemberMasterRows = append(respObj.DailyTheaterArchiveMemberMasterRows,
 		response.DailyTheaterArchiveMemberMasterRow{
-			DailyTheaterID: 1001243,
-			MemberMasterID: 101, // Chika
+			DailyTheaterId: 1001243,
+			MemberMasterId: 101, // Chika
 		})
 	respObj.DailyTheaterArchiveMemberMasterRows = append(respObj.DailyTheaterArchiveMemberMasterRows,
 		response.DailyTheaterArchiveMemberMasterRow{
-			DailyTheaterID: 1001243,
-			MemberMasterID: 106, // Yoshiko
+			DailyTheaterId: 1001243,
+			MemberMasterId: 106, // Yoshiko
 		})
 
 	signBody, _ := json.Marshal(respObj)

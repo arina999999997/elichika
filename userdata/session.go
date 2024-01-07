@@ -28,18 +28,18 @@ type Session struct {
 	Ctx                                       *gin.Context
 	Gamedata                                  *gamedata.Gamedata
 	UserStatus                                *model.UserStatus // link to UserModel.UserStatus
-	UserCardMapping                           generic.ObjectByObjectIDMapping[model.UserCard]
-	UserMemberMapping                         generic.ObjectByObjectIDMapping[model.UserMember]
-	UserLessonDeckMapping                     generic.ObjectByObjectIDMapping[model.UserLessonDeck]
-	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIDMapping[model.UserCommunicationMemberDetailBadge]
-	UserLiveDeckMapping                       generic.ObjectByObjectIDMapping[model.UserLiveDeck]
-	UserLivePartyMapping                      generic.ObjectByObjectIDMapping[model.UserLiveParty]
-	UserAccessoryMapping                      generic.ObjectByObjectIDMapping[model.UserAccessory]
-	UserLiveDifficultyMapping                 generic.ObjectByObjectIDMapping[model.UserLiveDifficulty]
-	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIDMapping[model.TriggerCardGradeUp]
-	UserTriggerBasicMapping                   generic.ObjectByObjectIDMapping[model.TriggerBasic]
-	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIDMapping[model.TriggerMemberLoveLevelUp]
-	UserTowerMapping                          generic.ObjectByObjectIDMapping[model.UserTower]
+	UserCardMapping                           generic.ObjectByObjectIdMapping[model.UserCard]
+	UserMemberMapping                         generic.ObjectByObjectIdMapping[model.UserMember]
+	UserLessonDeckMapping                     generic.ObjectByObjectIdMapping[model.UserLessonDeck]
+	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIdMapping[model.UserCommunicationMemberDetailBadge]
+	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[model.UserLiveDeck]
+	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[model.UserLiveParty]
+	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[model.UserAccessory]
+	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[model.UserLiveDifficulty]
+	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[model.TriggerCardGradeUp]
+	UserTriggerBasicMapping                   generic.ObjectByObjectIdMapping[model.TriggerBasic]
+	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIdMapping[model.TriggerMemberLoveLevelUp]
+	UserTowerMapping                          generic.ObjectByObjectIdMapping[model.UserTower]
 	// TODO: change the map to index map?
 	UserMemberLovePanelDiffs map[int]model.UserMemberLovePanel
 	UserMemberLovePanels     []model.UserMemberLovePanel
@@ -91,7 +91,7 @@ func (session *Session) Close() {
 }
 
 func userStatusFinalizer(session *Session) {
-	affected, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserID).AllCols().Update(session.UserStatus)
+	affected, err := session.Db.Table("u_info").Where("user_id = ?", session.UserStatus.UserId).AllCols().Update(session.UserStatus)
 	utils.CheckErr(err)
 	if affected != 1 {
 		if session.SessionType != SessionTypeImportAccount {
@@ -105,7 +105,7 @@ func init() {
 	addFinalizer(userStatusFinalizer)
 }
 
-func GetSession(ctx *gin.Context, userID int) *Session {
+func GetSession(ctx *gin.Context, userId int) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.Ctx = ctx
@@ -114,7 +114,7 @@ func GetSession(ctx *gin.Context, userID int) *Session {
 	err := s.Db.Begin()
 	utils.CheckErr(err)
 
-	exist, err := s.Db.Table("u_info").Where("user_id = ?", userID).Get(&s.UserModel.UserStatus)
+	exist, err := s.Db.Table("u_info").Where("user_id = ?", userId).Get(&s.UserModel.UserStatus)
 	utils.CheckErr(err)
 	if !exist {
 		s.Close()

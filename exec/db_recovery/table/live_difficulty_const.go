@@ -13,7 +13,7 @@ type LiveDifficultyConst struct {
 func (*LiveDifficultyConst) Table() string {
 	return "m_live_difficulty_const"
 }
-func (*LiveDifficultyConst) ID(fields []parser.Field) int64 {
+func (*LiveDifficultyConst) Id(fields []parser.Field) int64 {
 	if fields[0].Key != "id" {
 		panic("wrong field order")
 	}

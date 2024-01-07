@@ -22,8 +22,8 @@ func FinishStoryMain(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	session.UserStatus.IsAutoMode = req.IsAutoMode
@@ -33,16 +33,16 @@ func FinishStoryMain(ctx *gin.Context) {
 	// 	session.UserStatus.TutorialPhase = enum.TutorialPhaseStory4
 	// }
 	firstClearReward := []model.Content{}
-	if session.InsertUserStoryMain(req.CellID) { // newly inserted story, award some gem
+	if session.InsertUserStoryMain(req.CellId) { // newly inserted story, award some gem
 		firstClearReward = append(firstClearReward, model.Content{
 			ContentType:   enum.ContentTypeSnsCoin,
-			ContentID:     0,
+			ContentId:     0,
 			ContentAmount: 10,
 		})
 		session.AddResource(firstClearReward[0])
 	}
-	if req.MemberID != nil { // has a member -> select member thingy
-		session.UpdateUserStoryMainSelected(req.CellID, *req.MemberID)
+	if req.MemberId != nil { // has a member -> select member thingy
+		session.UpdateUserStoryMainSelected(req.CellId, *req.MemberId)
 	}
 
 	signBody := session.Finalize("{}", "user_model_diff")
@@ -58,10 +58,10 @@ func SaveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.InsertUserStoryMainPartDigestMovie(req.PartID)
+	session.InsertUserStoryMainPartDigestMovie(req.PartId)
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -75,11 +75,11 @@ func FinishStoryLinkage(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UserStatus.IsAutoMode = req.IsAutoMode
-	session.InsertUserStoryLinkage(req.CellID)
+	session.InsertUserStoryLinkage(req.CellId)
 	signBody := session.Finalize("{}", "user_model_diff")
 	// technically correct because it's way past the end of the reward periods
 	// but it would be cool to implement some reward handling

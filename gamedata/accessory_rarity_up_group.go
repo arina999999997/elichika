@@ -10,7 +10,7 @@ import (
 
 type AccessoryRarityUpGroup struct {
 	// from m_accessory_rarity_up_group
-	ID       int           `xorm:"pk 'id'"`
+	Id       int           `xorm:"pk 'id'"`
 	Resource model.Content `xorm:"extends"`
 }
 

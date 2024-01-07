@@ -10,8 +10,8 @@ import (
 )
 
 func Agreement(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	signBody := session.Finalize("{}", "user_model")

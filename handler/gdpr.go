@@ -9,8 +9,8 @@ import (
 
 func UpdateConsentState(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0]
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UserStatus.GdprVersion = int(reqBody.Get("version").Int())
 	session.Finalize("{}", "user_model")

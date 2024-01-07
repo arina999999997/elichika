@@ -25,8 +25,8 @@ func Common(ctx *gin.Context) {
 	ctx.Set("gamedata", locale.Locales[lang].Gamedata)
 	ctx.Set("dictionary", locale.Locales[lang].Dictionary)
 
-	userID, _ := strconv.Atoi(ctx.Query("u"))
-	ctx.Set("user_id", userID)
+	userId, _ := strconv.Atoi(ctx.Query("u"))
+	ctx.Set("user_id", userId)
 
 	ctx.Set("ep", ctx.Request.URL.String())
 

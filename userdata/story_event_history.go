@@ -5,16 +5,16 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) UnlockEventStory(eventStoryMasterID int) {
+func (session *Session) UnlockEventStory(eventStoryMasterId int) {
 	userStoryEventHistory := model.UserStoryEventHistory{
-		UserID:       session.UserStatus.UserID,
-		StoryEventID: eventStoryMasterID,
+		UserId:       session.UserStatus.UserId,
+		StoryEventId: eventStoryMasterId,
 	}
-	session.UserModel.UserStoryEventHistoryByID.PushBack(userStoryEventHistory)
+	session.UserModel.UserStoryEventHistoryById.PushBack(userStoryEventHistory)
 }
 
 func eventStoryFinalizer(session *Session) {
-	for _, userStoryEventHistory := range session.UserModel.UserStoryEventHistoryByID.Objects {
+	for _, userStoryEventHistory := range session.UserModel.UserStoryEventHistoryById.Objects {
 		_, err := session.Db.Table("u_story_event_history").Insert(userStoryEventHistory)
 		utils.CheckErr(err)
 	}
@@ -22,5 +22,5 @@ func eventStoryFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(eventStoryFinalizer)
-	addGenericTableFieldPopulator("u_story_event_history", "UserStoryEventHistoryByID")
+	addGenericTableFieldPopulator("u_story_event_history", "UserStoryEventHistoryById")
 }

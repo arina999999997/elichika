@@ -8,7 +8,7 @@ import (
 )
 
 type LiveStage struct {
-	LiveDifficultyID int               `json:"live_difficulty_id"`
+	LiveDifficultyId int               `json:"live_difficulty_id"`
 	LiveNotes        []LiveNote        `json:"live_notes"`
 	LiveWaveSettings []LiveWaveSetting `json:"live_wave_settings"`
 	NoteGimmicks     []NoteGimmick     `json:"note_gimmicks"`
@@ -17,7 +17,7 @@ type LiveStage struct {
 
 func (ls *LiveStage) Copy() LiveStage {
 	result := LiveStage{
-		LiveDifficultyID: ls.LiveDifficultyID,
+		LiveDifficultyId: ls.LiveDifficultyId,
 		LiveNotes:        []LiveNote{},
 		LiveWaveSettings: []LiveWaveSetting{},
 		NoteGimmicks:     []NoteGimmick{},
@@ -31,7 +31,7 @@ func (ls *LiveStage) Copy() LiveStage {
 }
 
 func (ls *LiveStage) IsSame(other *LiveStage) bool {
-	if ls.LiveDifficultyID != other.LiveDifficultyID {
+	if ls.LiveDifficultyId != other.LiveDifficultyId {
 		return false
 	}
 	if len(ls.LiveNotes) != len(other.LiveNotes) {
@@ -71,10 +71,10 @@ func (ls *LiveStage) IsSame(other *LiveStage) bool {
 	if len(ls.StageGimmickDict) > 0 {
 		lsDict, err := json.Marshal(ls.StageGimmickDict[0])
 		utils.CheckErr(err)
-		lsID := 0
-		err = json.Unmarshal(lsDict, &lsID)
+		lsId := 0
+		err = json.Unmarshal(lsDict, &lsId)
 		utils.CheckErr(err)
-		if lsID != other.StageGimmickDict[0].(int) {
+		if lsId != other.StageGimmickDict[0].(int) {
 			return false
 		}
 
@@ -95,31 +95,31 @@ func (ls *LiveStage) IsSame(other *LiveStage) bool {
 }
 
 type LiveNote struct {
-	ID                  int `json:"id"`
+	Id                  int `json:"id"`
 	CallTime            int `json:"call_time"`
 	NoteType            int `json:"note_type"`
 	NotePosition        int `json:"note_position"`
-	GimmickID           int `json:"gimmick_id"`
+	GimmickId           int `json:"gimmick_id"`
 	NoteAction          int `json:"note_action"`
-	WaveID              int `json:"wave_id"`
+	WaveId              int `json:"wave_id"`
 	NoteRandomDropColor int `json:"note_random_drop_color"`
 	AutoJudgeType       int `json:"auto_judge_type"`
 }
 
 func (ln *LiveNote) IsSame(other *LiveNote) bool {
 	same := true
-	same = same && (ln.ID == other.ID)
+	same = same && (ln.Id == other.Id)
 	same = same && (ln.CallTime == other.CallTime)
 	same = same && (ln.NoteType == other.NoteType)
 	same = same && (ln.NotePosition == other.NotePosition)
-	same = same && (ln.GimmickID == other.GimmickID)
+	same = same && (ln.GimmickId == other.GimmickId)
 	same = same && (ln.NoteAction == other.NoteAction)
-	same = same && (ln.WaveID == other.WaveID)
+	same = same && (ln.WaveId == other.WaveId)
 	return same
 }
 
 type LiveWaveSetting struct {
-	ID            int `json:"id"`
+	Id            int `json:"id"`
 	WaveDamage    int `json:"wave_damage"`
 	MissionType   int `json:"mission_type"`
 	Arg1          int `json:"arg_1"`
@@ -128,22 +128,22 @@ type LiveWaveSetting struct {
 }
 
 type NoteGimmick struct {
-	UniqID          int `json:"uniq_id"`
-	ID              int `json:"id"`
+	UniqId          int `json:"uniq_id"`
+	Id              int `json:"id"`
 	NoteGimmickType int `json:"note_gimmick_type"`
 	Arg1            int `json:"arg_1"`
 	Arg2            int `json:"arg_2"`
-	EffectMID       int `json:"effect_m_id"`
+	EffectMId       int `json:"effect_m_id"`
 	IconType        int `json:"icon_type"`
 }
 
 func (ng *NoteGimmick) IsSame(other *NoteGimmick) bool {
 	same := true
-	same = same && (ng.UniqID == other.UniqID)
+	same = same && (ng.UniqId == other.UniqId)
 	same = same && (ng.NoteGimmickType == other.NoteGimmickType)
 	same = same && (ng.Arg1 == other.Arg1)
 	same = same && (ng.Arg2 == other.Arg2)
-	same = same && (ng.EffectMID == other.EffectMID)
+	same = same && (ng.EffectMId == other.EffectMId)
 	if !same {
 		return false
 	}
@@ -160,9 +160,9 @@ func (ng *NoteGimmick) IsSame(other *NoteGimmick) bool {
 }
 
 type StageGimmick struct {
-	GimmickMasterID    int `json:"gimmick_master_id"`
-	ConditionMasterID1 int `json:"condition_master_id_1"`
-	ConditionMasterID2 int `json:"condition_master_id_2"`
-	SkillMasterID      int `json:"skill_master_id"`
-	UniqID             int `json:"uniq_id"`
+	GimmickMasterId    int `json:"gimmick_master_id"`
+	ConditionMasterId1 int `json:"condition_master_id_1"`
+	ConditionMasterId2 int `json:"condition_master_id_2"`
+	SkillMasterId      int `json:"skill_master_id"`
+	UniqId             int `json:"uniq_id"`
 }

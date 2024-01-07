@@ -19,7 +19,7 @@ Json file must be either:
 
 ## Output format
 A json object containing the relevant fields:
-- ``"live_difficulty_id"``: The live diffculty ID.
+- ``"live_difficulty_id"``: The live diffculty Id.
 
     - This will use the information inside the input json and not the name of the input json.
 - ``"live_notes"``: The relevant fields of relevant notes. More precisely:

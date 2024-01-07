@@ -53,7 +53,7 @@ func genericTableFieldPopulator(session *Session) {
 			fmt.Println("Invalid table field pair: ", tableName, "->", fieldName)
 			continue
 		}
-		err := session.Db.Table(tableName).Where("user_id = ?", session.UserStatus.UserID).
+		err := session.Db.Table(tableName).Where("user_id = ?", session.UserStatus.UserId).
 			Find(rField.FieldByName("Objects").Addr().Interface())
 		utils.CheckErr(err)
 	}

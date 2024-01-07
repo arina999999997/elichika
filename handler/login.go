@@ -56,11 +56,11 @@ func StartUp(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 	type StartUpResp struct {
-		UserID           int    `json:"user_id"`
+		UserId           int    `json:"user_id"`
 		AuthorizationKey string `json:"authorization_key"`
 	}
 	respObj := StartUpResp{}
-	respObj.UserID = userdata.CreateNewAccount(ctx, -1, "")
+	respObj.UserId = userdata.CreateNewAccount(ctx, -1, "")
 	respObj.AuthorizationKey = StartUpAuthorizationKey(req.Mask)
 	startupBody, _ := json.Marshal(respObj)
 	resp := SignResp(ctx, string(startupBody), ctx.MustGet("locale").(*locale.Locale).StartUpKey)
@@ -80,15 +80,15 @@ func Login(ctx *gin.Context) {
 		}
 		return true
 	})
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	if session == nil {
-		userdata.CreateNewAccount(ctx, userID, "")
-		session = userdata.GetSession(ctx, userID)
+		userdata.CreateNewAccount(ctx, userId, "")
+		session = userdata.GetSession(ctx, userId)
 		defer session.Close()
 	}
-	fmt.Println("User logins: ", userID)
+	fmt.Println("User logins: ", userId)
 	loginResponse := session.Login()
 	loginResponse.SessionKey = LoginSessionKey(mask64)
 	session.Finalize("{}", "user_model")
@@ -97,5 +97,5 @@ func Login(ctx *gin.Context) {
 	resp := SignResp(ctx, string(loginBody), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
-	utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", userID, ".json"), account.ExportUser(ctx))
+	utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", userId, ".json"), account.ExportUser(ctx))
 }

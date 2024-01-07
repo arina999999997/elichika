@@ -1,7 +1,7 @@
 package model
 
 type UserStatus struct {
-	UserID   int    `xorm:"pk 'user_id'" json:"-"`
+	UserId   int    `xorm:"pk 'user_id'" json:"-"`
 	PassWord string `xorm:"'pass_word'" json:"-"`
 	Name     struct {
 		DotUnderText string `xorm:"name" json:"dot_under_text"`
@@ -15,7 +15,7 @@ type UserStatus struct {
 	Message     struct {
 		DotUnderText string `xorm:"message" json:"dot_under_text"`
 	} `xorm:"extends" json:"message"` // introduction message
-	RecommendCardMasterID                     int    `xorm:"'recommend_card_master_id'" json:"recommend_card_master_id"` // featured / partner card
+	RecommendCardMasterId                     int    `xorm:"'recommend_card_master_id'" json:"recommend_card_master_id"` // featured / partner card
 	MaxFriendNum                              int    `json:"max_friend_num"`
 	LivePointFullAt                           int64  `json:"live_point_full_at"`                              // in unix second
 	LivePointBroken                           int    `json:"live_point_broken"`                               // max LP
@@ -34,12 +34,12 @@ type UserStatus struct {
 	BirthDate                                 int    `json:"birth_date"`                                     // yyyymm ?
 	BirthMonth                                int    `json:"birth_month"`
 	BirthDay                                  int    `json:"birth_day"`
-	LatestLiveDeckID                          int    `xorm:"'latest_live_deck_id'" json:"latest_live_deck_id"` // last used live formation
-	MainLessonDeckID                          int    `xorm:"'main_lesson_deck_id'" json:"main_lesson_deck_id"` // last used training formation
-	FavoriteMemberID                          int    `xorm:"'favorite_member_id'" json:"favorite_member_id"`   // partner id
-	LastLiveDifficultyID                      int    `xorm:"'last_live_difficulty_id'" json:"last_live_difficulty_id"`
+	LatestLiveDeckId                          int    `xorm:"'latest_live_deck_id'" json:"latest_live_deck_id"` // last used live formation
+	MainLessonDeckId                          int    `xorm:"'main_lesson_deck_id'" json:"main_lesson_deck_id"` // last used training formation
+	FavoriteMemberId                          int    `xorm:"'favorite_member_id'" json:"favorite_member_id"`   // partner id
+	LastLiveDifficultyId                      int    `xorm:"'last_live_difficulty_id'" json:"last_live_difficulty_id"`
 	LpMagnification                           int    `json:"lp_magnification"`                                                                 // unused feature, always 1
-	EmblemID                                  int    `xorm:"'emblem_id' "json:"emblem_id"`                                                     // title
+	EmblemId                                  int    `xorm:"'emblem_id' "json:"emblem_id"`                                                     // title
 	DeviceToken                               string `json:"device_token"`                                                                     //  some sort of salted encryption?, used to prevent using multiple device
 	TutorialPhase                             int    `json:"tutorial_phase"`                                                                   // 99 = done
 	TutorialEndAt                             int    `json:"tutorial_end_at"`                                                                  // in unix second
@@ -47,16 +47,16 @@ type UserStatus struct {
 	NaviTapCount                              int    `json:"navi_tap_count"`                                                                   // number of partner tap that will increase bond
 	NaviTapRecoverAt                          int    `json:"navi_tap_recover_at"`                                                              // in unix time
 	IsAutoMode                                bool   `json:"is_auto_mode"`                                                                     // is autoplay enabled, for restarting app without finishing lives
-	MaxScoreLiveDifficultyMasterID            int    `xorm:"'max_score_live_difficulty_master_id'" json:"max_score_live_difficulty_master_id"` // not the one featured in profile?
+	MaxScoreLiveDifficultyMasterId            int    `xorm:"'max_score_live_difficulty_master_id'" json:"max_score_live_difficulty_master_id"` // not the one featured in profile?
 	LiveMaxScore                              int    `json:"live_max_score"`
-	MaxComboLiveDifficultyMasterID            int    `xorm:"'max_combo_live_difficulty_master_id'" json:"max_combo_live_difficulty_master_id"`
+	MaxComboLiveDifficultyMasterId            int    `xorm:"'max_combo_live_difficulty_master_id'" json:"max_combo_live_difficulty_master_id"`
 	LiveMaxCombo                              int    `json:"live_max_combo"`
 	LessonResumeStatus                        int    `json:"lesson_resume_status"`                                                 // for quitting while training, the number probably mean the phase of the training
 	AccessoryBoxAdditional                    int    `json:"accessory_box_additional"`                                             // additional accessory slot, max is 400 in official
 	TermsOfUseVersion                         int    `json:"terms_of_use_version"`                                                 // 3 mean nothing to accept
 	BootstrapSifidCheckAt                     int64  `json:"bootstrap_sifid_check_at"`                                             // not really what it sound like, probably safe to ignore it
 	GdprVersion                               int    `json:"gdpr_version"`                                                         // set to 0 for outside the EU
-	MemberGuildMemberMasterID                 int    `xorm:"'member_guild_member_master_id'" json:"member_guild_member_master_id"` // member id of the channel joined
+	MemberGuildMemberMasterId                 int    `xorm:"'member_guild_member_master_id'" json:"member_guild_member_master_id"` // member id of the channel joined
 	MemberGuildLastUpdatedAt                  int64  `json:"member_guild_last_updated_at"`                                         // unix time stamp, last time joining the channel (used to allow only 1 channel changing)
 	Cash                                      int    `json:"cash"`
 }
@@ -64,19 +64,19 @@ type UserStatus struct {
 // this is not stored, constructed from main db
 // partially loaded from u_info, then load from u_card
 type UserBasicInfo struct {
-	UserID int `xorm:"pk 'user_id'" json:"user_id"`
+	UserId int `xorm:"pk 'user_id'" json:"user_id"`
 	Name   struct {
 		DotUnderText string `xorm:"name" json:"dot_under_text"`
 	} `xorm:"extends" json:"name"` // player name
 	Rank                  int   `json:"rank"` // rank
 	LastPlayedAt          int64 `xorm:"'last_login_at'" json:"last_played_at"`
-	RecommendCardMasterID int   `xorm:"'recommend_card_master_id'" json:"recommend_card_master_id"` // featured / partner card
+	RecommendCardMasterId int   `xorm:"'recommend_card_master_id'" json:"recommend_card_master_id"` // featured / partner card
 
 	RecommendCardLevel                  int  `xorm:"-" json:"recommend_card_level"`
 	IsRecommendCardImageAwaken          bool `xorm:"-" json:"is_recommend_card_image_awaken"`
 	IsRecommendCardAllTrainingActivated bool `xorm:"-" json:"is_recommend_card_all_training_activated"`
 
-	EmblemID            int  `xorm:"'emblem_id' "json:"emblem_id"` // title
+	EmblemId            int  `xorm:"'emblem_id' "json:"emblem_id"` // title
 	IsNew               bool `xorm:"-" json:"is_new"`              // not sure what this thing is about, maybe new friend?
 	IntroductionMessage struct {
 		DotUnderText string `xorm:"message" json:"dot_under_text"`
@@ -95,10 +95,10 @@ type UserProfileInfo struct {
 	BasicInfo      UserBasicInfo `xorm:"extends" json:"basic_info"`
 	TotalLovePoint int           `xorm:"-" json:"total_love_point"`
 	LoveMembers    [3]struct {
-		MemberMasterID int `json:"member_master_id"`
+		MemberMasterId int `json:"member_master_id"`
 		LovePoint      int `json:"love_point"`
 	} `xorm:"-" json:"love_members"`
-	MemberGuildMemberMasterID int `xorm:"'member_guild_member_master_id'" json:"member_guild_member_master_id"`
+	MemberGuildMemberMasterId int `xorm:"'member_guild_member_master_id'" json:"member_guild_member_master_id"`
 }
 
 type LivePartnerCard struct {
@@ -117,11 +117,11 @@ type Profile struct {
 		JoinedLiveCardRanking  []CardPlayInfo `xorm:"-" json:"joined_live_card_ranking"`
 		PlaySkillCardRanking   []CardPlayInfo `xorm:"-" json:"play_skill_card_ranking"`
 		MaxScoreLiveDifficulty struct {
-			LiveDifficultyMasterID int `xorm:"'max_score_live_difficulty_master_id'" json:"live_difficulty_master_id"`
+			LiveDifficultyMasterId int `xorm:"'max_score_live_difficulty_master_id'" json:"live_difficulty_master_id"`
 			Score                  int `xorm:"'live_max_score'" json:"score"`
 		} `xorm:"extends" json:"max_score_live_difficulty"`
 		MaxComboLiveDifficulty struct {
-			LiveDifficultyMasterID int `xorm:"'max_combo_live_difficulty_master_id'" json:"live_difficulty_master_id"`
+			LiveDifficultyMasterId int `xorm:"'max_combo_live_difficulty_master_id'" json:"live_difficulty_master_id"`
 			Score                  int `xorm:"'live_max_combo'" json:"score"`
 		} `xorm:"extends" json:"max_combo_live_difficulty"`
 	} `xorm:"extends" json:"play_info"`
@@ -131,14 +131,14 @@ type Profile struct {
 }
 
 type UserSetProfile struct {
-	UserID                  int `xorm:"'user_id'" json:"-"`
-	UserSetProfileID        int `xorm:"-" json:"user_set_profile_id"` // always 0
-	VoltageLiveDifficultyID int `xorm:"'voltage_live_difficulty_id'" json:"voltage_live_difficulty_id"`
-	ComboLiveDifficultyID   int `xorm:"'commbo_live_difficulty_id'" json:"commbo_live_difficulty_id"`
+	UserId                  int `xorm:"'user_id'" json:"-"`
+	UserSetProfileId        int `xorm:"-" json:"user_set_profile_id"` // always 0
+	VoltageLiveDifficultyId int `xorm:"'voltage_live_difficulty_id'" json:"voltage_live_difficulty_id"`
+	ComboLiveDifficultyId   int `xorm:"'commbo_live_difficulty_id'" json:"commbo_live_difficulty_id"`
 }
 
-func (usp *UserSetProfile) ID() int64 {
-	return int64(usp.UserSetProfileID)
+func (usp *UserSetProfile) Id() int64 {
+	return int64(usp.UserSetProfileId)
 }
 
 func init() {

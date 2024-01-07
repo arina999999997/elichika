@@ -23,17 +23,17 @@ import (
 /*
 The take over system is used as a pseudo account system.
 Use to switch account:
-- Transfer ID should be the same as user ID (9 digits).
+- Transfer Id should be the same as user Id (9 digits).
 - The password is the login password.
 Use to create new account:
-If the user ID is new, then a new account will be created.
+If the user Id is new, then a new account will be created.
 - The password entered will be the login password.
 - User can user the datalink function to change the password as long as they have access to the account.
 Password is stored in plaintext, if you want things like bcrypt, do it yourself.
 */
 
 type TakeOverData struct {
-	UserID           int    `json:"user_id"`
+	UserId           int    `json:"user_id"`
 	AuthorizationKey string `json:"authorization_key"`
 	Name             struct {
 		DotUnderText string `json:"dot_under_text"`
@@ -48,8 +48,8 @@ type TakeOverData struct {
 func CheckTakeOver(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type CheckTakeOverReq struct {
-		CurrentUserID int    `json:"user_id"`
-		TakeOverID    string `json:"take_over_id"`
+		CurrentUserId int    `json:"user_id"`
+		TakeOverId    string `json:"take_over_id"`
 		PassWord      string `json:"pass_word"`
 		Mask          string `json:"mask"`
 	}
@@ -65,20 +65,20 @@ func CheckTakeOver(ctx *gin.Context) {
 	resp := TakeOverResp{}
 	resp.IsNotTakeOver = false
 	var currentSession, linkedSession (*userdata.Session)
-	linkedUserID, err := strconv.Atoi(req.TakeOverID)
-	if (err != nil) || (len(req.TakeOverID) > 9) {
+	linkedUserId, err := strconv.Atoi(req.TakeOverId)
+	if (err != nil) || (len(req.TakeOverId) > 9) {
 		resp.IsNotTakeOver = true
 		goto FINISH_RESPONSE
 	}
 
-	currentSession = userdata.GetSession(ctx, req.CurrentUserID)
+	currentSession = userdata.GetSession(ctx, req.CurrentUserId)
 	defer currentSession.Close()
-	linkedSession = userdata.GetSession(ctx, linkedUserID)
+	linkedSession = userdata.GetSession(ctx, linkedUserId)
 	defer linkedSession.Close()
 
 	if currentSession != nil { // has current session, fill in current user
 		resp.CurrentData = new(TakeOverData)
-		resp.CurrentData.UserID = currentSession.UserStatus.UserID
+		resp.CurrentData.UserId = currentSession.UserStatus.UserId
 		resp.CurrentData.LastLoginAt = currentSession.UserStatus.LastLoginAt
 		resp.CurrentData.SnsCoin = currentSession.UserStatus.FreeSnsCoin +
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
@@ -88,7 +88,7 @@ func CheckTakeOver(ctx *gin.Context) {
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
 		}
-		resp.LinkedData.UserID = linkedSession.UserStatus.UserID
+		resp.LinkedData.UserId = linkedSession.UserStatus.UserId
 		resp.LinkedData.AuthorizationKey = LoginSessionKey(req.Mask)
 		resp.LinkedData.ServiceUserCommonKey = nil
 		resp.LinkedData.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText
@@ -98,7 +98,7 @@ func CheckTakeOver(ctx *gin.Context) {
 		resp.LinkedData.TermsOfUseVersion = linkedSession.UserStatus.TermsOfUseVersion
 
 	} else { // user doesn't exist, but we won't create an account until setTakeOver is called
-		resp.LinkedData.UserID = linkedUserID
+		resp.LinkedData.UserId = linkedUserId
 		resp.LinkedData.AuthorizationKey = LoginSessionKey(req.Mask)
 		resp.LinkedData.ServiceUserCommonKey = nil
 		resp.LinkedData.Name.DotUnderText = "Newcomer"
@@ -117,20 +117,20 @@ FINISH_RESPONSE:
 func SetTakeOver(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetTakeOverReq struct {
-		TakeOverID string `json:"take_over_id"`
+		TakeOverId string `json:"take_over_id"`
 		PassWord   string `json:"pass_word"`
 		Mask       string `json:"mask"`
 	}
 	req := SetTakeOverReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	linkedUserID, err := strconv.Atoi(req.TakeOverID)
+	linkedUserId, err := strconv.Atoi(req.TakeOverId)
 	utils.CheckErr(err)
-	linkedSession := userdata.GetSession(ctx, linkedUserID)
+	linkedSession := userdata.GetSession(ctx, linkedUserId)
 	defer linkedSession.Close()
 	if linkedSession == nil { // new account
-		userdata.CreateNewAccount(ctx, linkedUserID, req.PassWord)
-		linkedSession = userdata.GetSession(ctx, linkedUserID)
+		userdata.CreateNewAccount(ctx, linkedUserId, req.PassWord)
+		linkedSession = userdata.GetSession(ctx, linkedUserId)
 		defer linkedSession.Close()
 	} else { // existing account, have to check password
 		if linkedSession.UserStatus.PassWord != req.PassWord {
@@ -138,7 +138,7 @@ func SetTakeOver(ctx *gin.Context) {
 		}
 	}
 	resp := TakeOverData{}
-	resp.UserID = linkedSession.UserStatus.UserID
+	resp.UserId = linkedSession.UserStatus.UserId
 	resp.AuthorizationKey = StartUpAuthorizationKey(req.Mask)
 	resp.ServiceUserCommonKey = nil
 	resp.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText
@@ -164,17 +164,17 @@ func UpdatePassWord(ctx *gin.Context) {
 	req := UpdatePassWordReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	type UpdatePassWordResp struct {
-		TakeOverID string `json:"take_over_id"`
+		TakeOverId string `json:"take_over_id"`
 	}
 	session.UserStatus.PassWord = req.PassWord
 	session.Finalize("{}", "dummy")
 	respObj := UpdatePassWordResp{}
-	respObj.TakeOverID = fmt.Sprintf("%09d", userID)
+	respObj.TakeOverId = fmt.Sprintf("%09d", userId)
 	startupBody, _ := json.Marshal(respObj)
 	resp := SignResp(ctx, string(startupBody), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")

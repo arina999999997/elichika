@@ -13,8 +13,8 @@ import (
 
 func CorePlayableEnd(ctx *gin.Context) {
 	// there's no request body
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	if session.UserStatus.TutorialPhase != enum.TutorialPhaseCorePlayable {
@@ -30,8 +30,8 @@ func CorePlayableEnd(ctx *gin.Context) {
 
 func TimingAdjusterEnd(ctx *gin.Context) {
 	// there's no request body
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	if session.UserStatus.TutorialPhase != enum.TutorialPhaseTimingAdjuster {
@@ -48,8 +48,8 @@ func TimingAdjusterEnd(ctx *gin.Context) {
 
 func PhaseEnd(ctx *gin.Context) {
 	// there's no request body
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	if session.UserStatus.TutorialPhase != enum.TutorialPhaseFinal {
@@ -65,8 +65,8 @@ func PhaseEnd(ctx *gin.Context) {
 }
 
 func TutorialSkip(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	if session.UserStatus.TutorialPhase != enum.TutorialPhaseTutorialEnd {

@@ -5,17 +5,17 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) InsertReferenceBook(referenceBookID int) {
+func (session *Session) InsertReferenceBook(referenceBookId int) {
 	userReferenceBook := model.UserReferenceBook{
-		UserID:          session.UserStatus.UserID,
-		ReferenceBookID: referenceBookID,
+		UserId:          session.UserStatus.UserId,
+		ReferenceBookId: referenceBookId,
 	}
-	session.UserModel.UserReferenceBookByID.PushBack(userReferenceBook)
+	session.UserModel.UserReferenceBookById.PushBack(userReferenceBook)
 }
 
 func referenceBookFinalizer(session *Session) {
 	// guaranteed to be unique
-	for _, userReferenceBook := range session.UserModel.UserReferenceBookByID.Objects {
+	for _, userReferenceBook := range session.UserModel.UserReferenceBookById.Objects {
 		_, err := session.Db.Table("u_reference_book").Insert(userReferenceBook)
 		utils.CheckErr(err)
 	}
@@ -23,5 +23,5 @@ func referenceBookFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(referenceBookFinalizer)
-	addGenericTableFieldPopulator("u_reference_book", "UserReferenceBookByID")
+	addGenericTableFieldPopulator("u_reference_book", "UserReferenceBookById")
 }

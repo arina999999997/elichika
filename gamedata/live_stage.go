@@ -8,40 +8,40 @@ import (
 )
 
 type SimpleLiveStage struct {
-	LiveDifficultyID int                     `json:"live_difficulty_id"`
+	LiveDifficultyId int                     `json:"live_difficulty_id"`
 	LiveNotes        []model.LiveNote        `json:"live_notes"`
 	LiveWaveSettings []model.LiveWaveSetting `json:"live_wave_settings"`
 	Original         *int                    `json:"original"`
 }
 
 type LiveDifficultyGimmick struct {
-	ID                     int `xorm:"pk 'id'"`
-	LiveDifficultyMasterID int `xorm:"live_difficulty_master_id"`
+	Id                     int `xorm:"pk 'id'"`
+	LiveDifficultyMasterId int `xorm:"live_difficulty_master_id"`
 	TriggerType            int `xorm:"'trigger_type'"`
-	ConditionMasterID1     int `xorm:"'condition_master_id1'"`
-	ConditionMasterID2     int `xorm:"'condition_master_id2'"`
-	SkillMasterID          int `xorm:"'skill_master_id'"`
+	ConditionMasterId1     int `xorm:"'condition_master_id1'"`
+	ConditionMasterId2     int `xorm:"'condition_master_id2'"`
+	SkillMasterId          int `xorm:"'skill_master_id'"`
 }
 
 type LiveDifficultyNoteGimmick struct {
-	LiveDifficultyID    int    `xorm:"pk 'live_difficulty_id'"`
-	NoteID              int    `xorm:"pk 'note_id'"`
+	LiveDifficultyId    int    `xorm:"pk 'live_difficulty_id'"`
+	NoteId              int    `xorm:"pk 'note_id'"`
 	NoteGimmickType     int    `xorm:"note_gimmick_type"`
 	NoteGimmickIconType int    `xorm:"note_gimmick_icon_type"`
-	SkillMasterID       int    `xorm:"skill_master_id"`
+	SkillMasterId       int    `xorm:"skill_master_id"`
 	Name                string `xorm:"name"`
-	ID                  int    `xorm:"-"` // must be extracted from name
+	Id                  int    `xorm:"-"` // must be extracted from name
 }
 
 type LiveNoteWaveGimmickGroup struct {
-	LiveDifficultyID int `xorm:"pk 'live_difficulty_id'"`
-	WaveID           int `xorm:"pk 'wave_id'"`
+	LiveDifficultyId int `xorm:"pk 'live_difficulty_id'"`
+	WaveId           int `xorm:"pk 'wave_id'"`
 	State            int
-	SkillID          int
+	SkillId          int
 }
 
 func (ldng *LiveDifficultyNoteGimmick) populate() {
 	var err error
-	ldng.ID, err = strconv.Atoi(ldng.Name[len(ldng.Name)-8:])
+	ldng.Id, err = strconv.Atoi(ldng.Name[len(ldng.Name)-8:])
 	utils.CheckErr(err)
 }

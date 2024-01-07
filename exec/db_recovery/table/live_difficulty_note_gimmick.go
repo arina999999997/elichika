@@ -13,18 +13,18 @@ type LiveDifficultyNoteGimmick struct {
 func (*LiveDifficultyNoteGimmick) Table() string {
 	return "m_live_difficulty_note_gimmick"
 }
-func (*LiveDifficultyNoteGimmick) ID(fields []parser.Field) int64 {
+func (*LiveDifficultyNoteGimmick) Id(fields []parser.Field) int64 {
 	if fields[0].Key != "live_difficulty_id" {
 		panic("wrong field order")
 	}
 	if fields[1].Key != "note_id" {
 		panic("wrong field order")
 	}
-	liveID, err := strconv.ParseInt(fields[0].Value, 10, 64)
+	liveId, err := strconv.ParseInt(fields[0].Value, 10, 64)
 	utils.CheckErr(err)
-	noteID, err := strconv.ParseInt(fields[1].Value, 10, 64)
+	noteId, err := strconv.ParseInt(fields[1].Value, 10, 64)
 	utils.CheckErr(err)
-	return liveID*1000 + noteID
+	return liveId*1000 + noteId
 }
 func (*LiveDifficultyNoteGimmick) Value(field parser.Field) string {
 	return field.Value
@@ -39,7 +39,7 @@ func (ldng *LiveDifficultyNoteGimmick) Condition(fields []parser.Field) string {
 func handleLiveDifficultyNoteGimmickEvent(event parser.ModifierEvent[LiveDifficultyNoteGimmick]) {
 	var dummy LiveDifficultyNoteGimmick
 	if event.Type == parser.DELETE {
-		if recoveredLiveDifficulty[dummy.ID(event.Fields)/1000] { // only recover the notes for deleted map
+		if recoveredLiveDifficulty[dummy.Id(event.Fields)/1000] { // only recover the notes for deleted map
 			event.Type = parser.INSERT
 		} else {
 			return

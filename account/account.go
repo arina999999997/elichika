@@ -36,8 +36,8 @@ import (
 
 // export to string to write to file or to return to webui
 func ExportUser(ctx *gin.Context) string {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	loginData := session.Login()
 	text, err := json.Marshal(loginData)
@@ -45,10 +45,10 @@ func ExportUser(ctx *gin.Context) string {
 	return string(text)
 }
 
-func ImportUser(ctx *gin.Context, loginJson string, userID int) string {
+func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
 	loginData := response.Login{}
 	loginData.UserModel = new(response.UserModel)
-	loginData.UserModel.UserStatus.UserID = userID // userID is not stored in the json response
+	loginData.UserModel.UserStatus.UserId = userId // userId is not stored in the json response
 	err := json.Unmarshal([]byte(loginJson), &loginData)
 	if err != nil {
 		if jsonErr, ok := err.(*json.SyntaxError); ok {
@@ -58,14 +58,14 @@ func ImportUser(ctx *gin.Context, loginJson string, userID int) string {
 	}
 	utils.CheckErr(err)
 	// insert an account based on the login data, not actually inserted into database until finalize is called
-	loginData.SetUserID(userID)
+	loginData.SetUserId(userId)
 	session := userdata.SessionFromImportedLoginData(ctx, &loginData)
 	defer session.Close()
 	// insert training tree data to make training consistent
 	solver := TrainingTreeSolver{}
 	solver.LoadUserLogin(&loginData)
-	for i := range loginData.UserModel.UserCardByCardID.Objects {
-		solver.SolveCard(session, &loginData.UserModel.UserCardByCardID.Objects[i])
+	for i := range loginData.UserModel.UserCardByCardId.Objects {
+		solver.SolveCard(session, &loginData.UserModel.UserCardByCardId.Objects[i])
 	}
 	// update term of use and stuff
 

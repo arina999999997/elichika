@@ -18,8 +18,8 @@ import (
 // TODO: the logic of this part is wrong or missing
 // the request and response are sound for the most part
 func FetchMemberGuildTop(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	// this does't work
 	signBody := session.Finalize(GetData("fetchMemberGuildTop.json"), "user_model_diff")
@@ -35,8 +35,8 @@ func FetchMemberGuildSelect(ctx *gin.Context) {
 }
 
 func FetchMemberGuildRanking(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	respObj := response.FetchMemberGuildRankingResponse{}
@@ -44,7 +44,7 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 	respObj.MemberGuildRanking.NextYear = 2023
 	respObj.MemberGuildRanking.PreviousYear = 2021
 	oneTerm := response.MemberGuildRankingOneTerm{
-		MemberGuildID: 1,
+		MemberGuildId: 1,
 		StartAt:       1,
 		EndAt:         1,
 	}
@@ -55,11 +55,11 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 				if (id > 9) && (group != 2) {
 					break
 				}
-				memberID := group*100 + id
+				memberId := group*100 + id
 				oneTerm.Channels = append(oneTerm.Channels, response.MemberGuildRankingOneTermCell{
 					Order:          order,
 					TotalPoint:     1000000,
-					MemberMasterID: memberID,
+					MemberMasterId: memberId,
 				})
 				order++
 			}
@@ -69,16 +69,16 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 	respObj.MemberGuildRanking.MemberGuildRankingList = append(respObj.MemberGuildRanking.MemberGuildRankingList, oneTerm)
 
 	mgur := response.MemberGuildUserRanking{
-		MemberGuildID: 1,
+		MemberGuildId: 1,
 	}
 	userData := response.MemberGuildUserRankingUserData{
-		UserID:                 session.UserStatus.UserID,
+		UserId:                 session.UserStatus.UserId,
 		UserRank:               session.UserStatus.Rank,
-		CardMasterID:           session.UserStatus.RecommendCardMasterID,
+		CardMasterId:           session.UserStatus.RecommendCardMasterId,
 		Level:                  80,
 		IsAwakening:            true,
 		IsAllTrainingActivated: true,
-		EmblemMasterID:         session.UserStatus.EmblemID,
+		EmblemMasterId:         session.UserStatus.EmblemId,
 	}
 	userData.UserName.DotUnderText = session.UserStatus.Name.DotUnderText
 	userRankingCell := response.MemberGuildUserRankingCell{
@@ -112,8 +112,8 @@ func CheerMemberGuild(ctx *gin.Context) {
 	// 	UserModelDiff        []any           `json:"user_model_diff"`
 	// }
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	signBody := session.Finalize(GetData("fetchMemberGuildTop.json"), "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "rewards", []model.Content{})
@@ -126,16 +126,16 @@ func CheerMemberGuild(ctx *gin.Context) {
 func JoinMemberGuild(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type JoinMemberGuildReq struct {
-		MemberMasterID int `json:"member_master_id"`
+		MemberMasterId int `json:"member_master_id"`
 	}
 	req := JoinMemberGuildReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.MemberGuildMemberMasterID = req.MemberMasterID
+	session.UserStatus.MemberGuildMemberMasterId = req.MemberMasterId
 	signBody := session.Finalize("{}", "user_model")
 
 	resp := SignResp(ctx, signBody, config.SessionKey)

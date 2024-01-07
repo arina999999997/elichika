@@ -5,10 +5,10 @@ import (
 )
 
 func gpsPresentReceivedFinalizer(session *Session) {
-	for _, userGpsPresentReceived := range session.UserModel.UserGpsPresentReceivedByID.Objects {
+	for _, userGpsPresentReceived := range session.UserModel.UserGpsPresentReceivedById.Objects {
 		affected, err := session.Db.Table("u_gps_present_received").
 			Where("user_id = ? AND campaign_id = ?",
-				session.UserStatus.UserID, userGpsPresentReceived.CampaignID).
+				session.UserStatus.UserId, userGpsPresentReceived.CampaignId).
 			AllCols().Update(userGpsPresentReceived)
 		utils.CheckErr(err)
 		if affected == 0 {
@@ -21,5 +21,5 @@ func gpsPresentReceivedFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(gpsPresentReceivedFinalizer)
-	addGenericTableFieldPopulator("u_gps_present_received", "UserGpsPresentReceivedByID")
+	addGenericTableFieldPopulator("u_gps_present_received", "UserGpsPresentReceivedById")
 }

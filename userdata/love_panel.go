@@ -5,13 +5,13 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetMemberLovePanel(memberMasterID int) model.UserMemberLovePanel {
-	panel, exist := session.UserMemberLovePanelDiffs[memberMasterID]
+func (session *Session) GetMemberLovePanel(memberMasterId int) model.UserMemberLovePanel {
+	panel, exist := session.UserMemberLovePanelDiffs[memberMasterId]
 	if exist {
 		return panel
 	}
 	exist, err := session.Db.Table("u_member").
-		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserID, memberMasterID).
+		Where("user_id = ? AND member_master_id = ?", session.UserStatus.UserId, memberMasterId).
 		Get(&panel)
 	utils.CheckErr(err)
 	if !exist {
@@ -21,14 +21,14 @@ func (session *Session) GetMemberLovePanel(memberMasterID int) model.UserMemberL
 	return panel
 }
 
-func (session *Session) GetLovePanelCellIDs(memberID int) []int {
-	userMemberLovePanel := session.GetMemberLovePanel(memberID)
+func (session *Session) GetLovePanelCellIds(memberId int) []int {
+	userMemberLovePanel := session.GetMemberLovePanel(memberId)
 	userMemberLovePanel.Fill()
-	return userMemberLovePanel.MemberLovePanelCellIDs
+	return userMemberLovePanel.MemberLovePanelCellIds
 }
 
 func (session *Session) UpdateMemberLovePanel(panel model.UserMemberLovePanel) {
-	session.UserMemberLovePanelDiffs[panel.MemberID] = panel
+	session.UserMemberLovePanelDiffs[panel.MemberId] = panel
 }
 
 func finalizeMemberLovePanelDiffs(session *Session) {
@@ -39,8 +39,8 @@ func finalizeMemberLovePanelDiffs(session *Session) {
 		// TODO: this is not necessary after we split the database
 		session.UserMemberLovePanels[i].Normalize()
 		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserMemberLovePanels[i].UserID,
-				session.UserMemberLovePanels[i].MemberID).AllCols().Update(session.UserMemberLovePanels[i])
+			Where("user_id = ? AND member_master_id = ?", session.UserMemberLovePanels[i].UserId,
+				session.UserMemberLovePanels[i].MemberId).AllCols().Update(session.UserMemberLovePanels[i])
 		utils.CheckErr(err)
 		if affected != 1 {
 			panic("wrong number of member affected!")
@@ -51,7 +51,7 @@ func finalizeMemberLovePanelDiffs(session *Session) {
 
 func memberLovePanelPopulator(session *Session) {
 	err := session.Db.Table("u_member").
-		Where("user_id = ?", session.UserStatus.UserID).Find(&session.UserMemberLovePanels)
+		Where("user_id = ?", session.UserStatus.UserId).Find(&session.UserMemberLovePanels)
 	utils.CheckErr(err)
 	for i := range session.UserMemberLovePanels {
 		session.UserMemberLovePanels[i].Fill()

@@ -12,19 +12,19 @@ import (
 )
 
 type SimpleLiveNote struct {
-	// ID                  int `json:"id"`
+	// Id                  int `json:"id"`
 	CallTime     int `json:"call_time"`
 	NoteType     int `json:"note_type"`
 	NotePosition int `json:"note_position"`
-	// GimmickID           int `json:"gimmick_id"`
+	// GimmickId           int `json:"gimmick_id"`
 	NoteAction int `json:"note_action"`
-	WaveID     int `json:"wave_id"`
+	WaveId     int `json:"wave_id"`
 	// NoteRandomDropColor int `json:"note_random_drop_color"`
 	// AutoJudgeType       int `json:"auto_judge_type"` // relevant because some note actually have different auto judge type (to force fully trigger stuff?)
 }
 
 type SimpleLiveStage struct {
-	LiveDifficultyID int                     `json:"live_difficulty_id"`
+	LiveDifficultyId int                     `json:"live_difficulty_id"`
 	LiveNotes        []SimpleLiveNote        `json:"live_notes"`
 	LiveWaveSettings []model.LiveWaveSetting `json:"live_wave_settings"`
 
@@ -66,31 +66,31 @@ func isSame(a, b *SimpleLiveStage) bool {
 }
 
 func parseStage(stage SimpleLiveStage, fullStage FullLiveStage, file string) {
-	currentStage, exists := stages[stage.LiveDifficultyID]
+	currentStage, exists := stages[stage.LiveDifficultyId]
 	if !exists {
-		stages[stage.LiveDifficultyID] = &stage
-		fullStages[fullStage.LiveDifficultyID] = &fullStage
-		stageOrigins[stage.LiveDifficultyID] = file
+		stages[stage.LiveDifficultyId] = &stage
+		fullStages[fullStage.LiveDifficultyId] = &fullStage
+		stageOrigins[stage.LiveDifficultyId] = file
 		return
 	}
 	// must be the same
 	if len(stage.LiveNotes) != len(currentStage.LiveNotes) {
-		panic(fmt.Sprint("Error: Inconsistent stage: ", stage.LiveDifficultyID, "\nDifferent Live Notes Lengths: ",
+		panic(fmt.Sprint("Error: Inconsistent stage: ", stage.LiveDifficultyId, "\nDifferent Live Notes Lengths: ",
 			len(currentStage.LiveNotes), " vs ", len(stage.LiveNotes), "\nFiles: ",
-			stageOrigins[stage.LiveDifficultyID], " vs ", file))
+			stageOrigins[stage.LiveDifficultyId], " vs ", file))
 	}
 	for i := range stage.LiveNotes {
 		if stage.LiveNotes[i] != currentStage.LiveNotes[i] {
-			panic(fmt.Sprint("Error: Inconsistent stage: ", stage.LiveDifficultyID, "\nDifferent Notes: ",
+			panic(fmt.Sprint("Error: Inconsistent stage: ", stage.LiveDifficultyId, "\nDifferent Notes: ",
 				currentStage.LiveNotes[i], " vs ", stage.LiveNotes[i], "\nFiles: ",
-				stageOrigins[stage.LiveDifficultyID], " vs ", file))
+				stageOrigins[stage.LiveDifficultyId], " vs ", file))
 		}
 	}
 	for i := range stage.LiveWaveSettings {
 		if stage.LiveWaveSettings[i] != currentStage.LiveWaveSettings[i] {
-			panic(fmt.Sprint("Error: Inconsistent stage: ", stage.LiveDifficultyID, "\nDifferent Waves: ",
+			panic(fmt.Sprint("Error: Inconsistent stage: ", stage.LiveDifficultyId, "\nDifferent Waves: ",
 				currentStage.LiveWaveSettings[i], " vs ", stage.LiveWaveSettings[i], "\nFiles: ",
-				stageOrigins[stage.LiveDifficultyID], " vs ", file))
+				stageOrigins[stage.LiveDifficultyId], " vs ", file))
 		}
 	}
 }
@@ -100,7 +100,7 @@ func parseFile(file string) {
 	var liveStage SimpleLiveStage
 	var fullLiveStage FullLiveStage
 	err := json.Unmarshal([]byte(text), &liveStage)
-	if (err == nil) && (liveStage.LiveDifficultyID != 0) {
+	if (err == nil) && (liveStage.LiveDifficultyId != 0) {
 		err = json.Unmarshal([]byte(text), &fullLiveStage)
 		utils.CheckErr(err)
 		parseStage(liveStage, fullLiveStage, file)
@@ -109,7 +109,7 @@ func parseFile(file string) {
 	var live SimpleLiveStartResponse
 	var fullLive FullLiveStartResponse
 	err = json.Unmarshal([]byte(text), &live)
-	if (err == nil) && (live.Live.LiveStage.LiveDifficultyID != 0) {
+	if (err == nil) && (live.Live.LiveStage.LiveDifficultyId != 0) {
 		err = json.Unmarshal([]byte(text), &fullLive)
 		utils.CheckErr(err)
 		parseStage(live.Live.LiveStage, fullLive.Live.LiveStage, file)

@@ -19,16 +19,16 @@ import (
 func AccessoryUpdateIsLock(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type UpdateIsLockReq struct {
-		UserAccessoryID int64 `xorm:"'user_accessory_id' pk" json:"user_accessory_id"`
+		UserAccessoryId int64 `xorm:"'user_accessory_id' pk" json:"user_accessory_id"`
 		IsLock          bool  `xorm:"'is_lock'" json:"is_lock"`
 	}
 	req := UpdateIsLockReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	accessory := session.GetUserAccessory(req.UserAccessoryID)
+	accessory := session.GetUserAccessory(req.UserAccessoryId)
 	accessory.IsLock = req.IsLock
 	session.UpdateUserAccessory(accessory)
 
@@ -41,8 +41,8 @@ func AccessoryUpdateIsLock(ctx *gin.Context) {
 func AccessoryUpdateIsNew(ctx *gin.Context) {
 	// this has no body or response, we just need to update every new accessory as not so
 	// this can probably be optimised to a single SQL but no need to be so far
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	accessories := session.GetAllUserAccessories()
 	for _, accessory := range accessories {
@@ -59,18 +59,18 @@ func AccessoryMelt(ctx *gin.Context) {
 	// disassemble
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type MeltReq struct {
-		UserAccessoryIDs []int64 `json:"user_accessory_ids"`
+		UserAccessoryIds []int64 `json:"user_accessory_ids"`
 	}
 	req := MeltReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	for _, userAccessoryID := range req.UserAccessoryIDs {
-		accessory := session.GetUserAccessory(userAccessoryID)
-		session.AddResource(gamedata.Accessory[accessory.AccessoryMasterID].MeltGroup[accessory.Grade].Reward)
+	for _, userAccessoryId := range req.UserAccessoryIds {
+		accessory := session.GetUserAccessory(userAccessoryId)
+		session.AddResource(gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
 		accessory.IsNull = true // marked for delete
 		session.UpdateUserAccessory(accessory)
 	}
@@ -86,10 +86,10 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
 	type PowerUpReq struct {
-		UserAccessoryID       int64   `json:"user_accessory_id"`
-		PowerUpAccessoryIDs   []int64 `json:"power_up_user_accessory_ids"`
+		UserAccessoryId       int64   `json:"user_accessory_id"`
+		PowerUpAccessoryIds   []int64 `json:"power_up_user_accessory_ids"`
 		AccessoryLevelUpItems []struct {
-			AccessoryLevelUpItemMasterID int `json:"accessory_level_up_item_master_id"`
+			AccessoryLevelUpItemMasterId int `json:"accessory_level_up_item_master_id"`
 			Amount                       int `json:"amount"`
 		} `json:"accessory_level_up_items"`
 	}
@@ -97,12 +97,12 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 	// limit break (grade up) is processed first, then exp is processed later
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	userAccessory := session.GetUserAccessory(req.UserAccessoryID)
-	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterID]
+	userAccessory := session.GetUserAccessory(req.UserAccessoryId)
+	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterId]
 
 	skillPlusPercent := 0
 	moneyUsed := 0
@@ -117,11 +117,11 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	doPowerUp := AccessoryDoPowerUp{}
 	// power up is processed by listing order
 	// so different order of accessory can result in different result
-	for _, powerUpAccessoryID := range req.PowerUpAccessoryIDs {
-		powerUpAccessory := session.GetUserAccessory(powerUpAccessoryID)
-		masterPowerUpAccessory := gamedata.Accessory[powerUpAccessory.AccessoryMasterID]
+	for _, powerUpAccessoryId := range req.PowerUpAccessoryIds {
+		powerUpAccessory := session.GetUserAccessory(powerUpAccessoryId)
+		masterPowerUpAccessory := gamedata.Accessory[powerUpAccessory.AccessoryMasterId]
 
-		if (userAccessory.Grade < 5) && (powerUpAccessory.AccessoryMasterID == userAccessory.AccessoryMasterID) {
+		if (userAccessory.Grade < 5) && (powerUpAccessory.AccessoryMasterId == userAccessory.AccessoryMasterId) {
 			// limit increase
 			userAccessory.Grade += powerUpAccessory.Grade + 1
 			if userAccessory.Grade > 5 {
@@ -130,12 +130,12 @@ func AccessoryPowerUp(ctx *gin.Context) {
 			moneyUsed += masterPowerUpAccessory.Rarity.GradeUpMoney[powerUpAccessory.Grade]
 
 			// some limit increase change the skills
-			if masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterID != nil {
-				userAccessory.PassiveSkill1ID = *masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterID
+			if masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterId != nil {
+				userAccessory.PassiveSkill1Id = *masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterId
 			}
-			if masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterID != nil {
-				userAccessory.PassiveSkill2ID = new(int)
-				*userAccessory.PassiveSkill2ID = *masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterID
+			if masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterId != nil {
+				userAccessory.PassiveSkill2Id = new(int)
+				*userAccessory.PassiveSkill2Id = *masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterId
 			}
 			doPowerUp.DoGradeUp = true
 		} else {
@@ -148,14 +148,14 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	}
 
 	for _, item := range req.AccessoryLevelUpItems {
-		itemID := item.AccessoryLevelUpItemMasterID
+		itemId := item.AccessoryLevelUpItemMasterId
 		session.RemoveResource(model.Content{
 			ContentType:   24,
-			ContentID:     itemID,
+			ContentId:     itemId,
 			ContentAmount: int64(item.Amount),
 		})
-		userAccessory.Exp += item.Amount * gamedata.AccessoryLevelUpItem[itemID].PlusExp
-		moneyUsed += item.Amount * gamedata.AccessoryLevelUpItem[itemID].GameMoney
+		userAccessory.Exp += item.Amount * gamedata.AccessoryLevelUpItem[itemId].PlusExp
+		moneyUsed += item.Amount * gamedata.AccessoryLevelUpItem[itemId].GameMoney
 	}
 
 	// calculate new level
@@ -204,17 +204,17 @@ func AccessoryPowerUp(ctx *gin.Context) {
 func AccessoryRarityUp(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type RarityUpReq struct {
-		UserAccessoryID int64 `xorm:"'user_accessory_id' pk" json:"user_accessory_id"`
+		UserAccessoryId int64 `xorm:"'user_accessory_id' pk" json:"user_accessory_id"`
 	}
 	req := RarityUpReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	userAccessory := session.GetUserAccessory(req.UserAccessoryID)
-	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterID]
+	userAccessory := session.GetUserAccessory(req.UserAccessoryId)
+	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterId]
 
 	masterAfterAccessory := masterAccessory.RarityUp.AfterAccessory
 
@@ -229,15 +229,15 @@ func AccessoryRarityUp(ctx *gin.Context) {
 		DoRarityUpAddSkill:    false,
 	}
 	// update the accessory
-	userAccessory.AccessoryMasterID = masterAfterAccessory.ID
+	userAccessory.AccessoryMasterId = masterAfterAccessory.Id
 	userAccessory.Level = 1
 	userAccessory.Exp = 0
 	userAccessory.Grade = 0
-	doRarityUp.DoRarityUpAddSkill = userAccessory.PassiveSkill1ID != *masterAfterAccessory.Grade[0].PassiveSkill1MasterID
-	userAccessory.PassiveSkill1ID = *masterAfterAccessory.Grade[0].PassiveSkill1MasterID
-	if masterAfterAccessory.Grade[0].PassiveSkill2MasterID != nil {
-		userAccessory.PassiveSkill2ID = new(int)
-		*userAccessory.PassiveSkill2ID = *masterAfterAccessory.Grade[0].PassiveSkill2MasterID
+	doRarityUp.DoRarityUpAddSkill = userAccessory.PassiveSkill1Id != *masterAfterAccessory.Grade[0].PassiveSkill1MasterId
+	userAccessory.PassiveSkill1Id = *masterAfterAccessory.Grade[0].PassiveSkill1MasterId
+	if masterAfterAccessory.Grade[0].PassiveSkill2MasterId != nil {
+		userAccessory.PassiveSkill2Id = new(int)
+		*userAccessory.PassiveSkill2Id = *masterAfterAccessory.Grade[0].PassiveSkill2MasterId
 	}
 	userAccessory.AcquiredAt = session.Time.Unix()
 	session.UpdateUserAccessory(userAccessory)
@@ -257,25 +257,25 @@ func AccessoryRarityUp(ctx *gin.Context) {
 func AccessoryAllUnequip(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type AllUnequipReq struct {
-		UserAccessoryID int64 `xorm:"'user_accessory_id' pk" json:"user_accessory_id"`
+		UserAccessoryId int64 `xorm:"'user_accessory_id' pk" json:"user_accessory_id"`
 	}
 	req := AllUnequipReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	liveParties := session.GetAllLivePartiesWithAccessory(req.UserAccessoryID)
+	liveParties := session.GetAllLivePartiesWithAccessory(req.UserAccessoryId)
 	for _, liveParty := range liveParties {
-		if (liveParty.UserAccessoryID1 != nil) && (*liveParty.UserAccessoryID1 == req.UserAccessoryID) {
-			liveParty.UserAccessoryID1 = nil
+		if (liveParty.UserAccessoryId1 != nil) && (*liveParty.UserAccessoryId1 == req.UserAccessoryId) {
+			liveParty.UserAccessoryId1 = nil
 		}
-		if (liveParty.UserAccessoryID2 != nil) && (*liveParty.UserAccessoryID2 == req.UserAccessoryID) {
-			liveParty.UserAccessoryID2 = nil
+		if (liveParty.UserAccessoryId2 != nil) && (*liveParty.UserAccessoryId2 == req.UserAccessoryId) {
+			liveParty.UserAccessoryId2 = nil
 		}
-		if (liveParty.UserAccessoryID3 != nil) && (*liveParty.UserAccessoryID3 == req.UserAccessoryID) {
-			liveParty.UserAccessoryID3 = nil
+		if (liveParty.UserAccessoryId3 != nil) && (*liveParty.UserAccessoryId3 == req.UserAccessoryId) {
+			liveParty.UserAccessoryId3 = nil
 		}
 		session.UpdateUserLiveParty(liveParty)
 	}

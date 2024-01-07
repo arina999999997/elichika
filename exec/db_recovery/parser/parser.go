@@ -37,9 +37,9 @@ type ModifierEvent[T any] struct {
 	Type   int
 }
 
-func (this *ModifierEvent[T]) ID() int64 {
+func (this *ModifierEvent[T]) Id() int64 {
 	var dummy *T
-	return reflect.ValueOf(dummy).MethodByName("ID").Call([]reflect.Value{reflect.ValueOf(this.Fields)})[0].Interface().(int64)
+	return reflect.ValueOf(dummy).MethodByName("Id").Call([]reflect.Value{reflect.ValueOf(this.Fields)})[0].Interface().(int64)
 }
 
 func (this *ModifierEvent[T]) String() string {
@@ -126,7 +126,7 @@ func Parse[T any](input string) map[int64]ModifierEvent[T] {
 		if err != nil {
 			continue
 		}
-		current[event.ID()] = event
+		current[event.Id()] = event
 	}
 	for key, value := range current {
 		_, exists := res[key]

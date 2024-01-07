@@ -19,8 +19,8 @@ func SaveUnlockedScene(ctx *gin.Context) {
 	req := request.SaveUnlockedSceneRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	for _, sceneType := range req.UnlockSceneTypes {
 		session.UnlockScene(sceneType, enum.UnlockSceneStatusOpened)
@@ -38,8 +38,8 @@ func SaveSceneTipsType(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 	// response with user model
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	session.SaveSceneTips(req.SceneTipsType)

@@ -25,7 +25,7 @@ func loadGacha(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 	err := serverdata_db.Table("s_gacha").OrderBy("gacha_master_id").Find(&gamedata.GachaList)
 	utils.CheckErr(err)
 	for _, gacha := range gamedata.GachaList {
-		gamedata.Gacha[gacha.GachaMasterID] = gacha
+		gamedata.Gacha[gacha.GachaMasterId] = gacha
 		populateGacha(gacha, gamedata, masterdata_db, serverdata_db, dictionary)
 	}
 }

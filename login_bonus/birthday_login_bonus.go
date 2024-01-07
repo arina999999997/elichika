@@ -42,23 +42,23 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 				LoginBonusContents: []model.Content{
 					model.Content{
 						ContentType:   enum.ContentTypeTrainingMaterial,
-						ContentID:     18000 + member.ID,
+						ContentId:     18000 + member.Id,
 						ContentAmount: 2,
 					},
 					model.Content{
 						ContentType:   enum.ContentTypeTrainingMaterial,
-						ContentID:     8000 + member.ID,
+						ContentId:     8000 + member.Id,
 						ContentAmount: 50,
 					},
 					model.Content{
 						ContentType:   enum.ContentTypeSnsCoin,
-						ContentID:     0,
+						ContentId:     0,
 						ContentAmount: 50,
 					},
 				},
 			},
 		)
-		if session.UserStatus.MemberGuildMemberMasterID == member.ID {
+		if session.UserStatus.MemberGuildMemberMasterId == member.Id {
 			naviLoginBonus.LoginBonusRewards[0].LoginBonusContents[1].ContentAmount += 25
 		}
 
@@ -77,7 +77,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 			panic("not supported")
 		}
 		target.BirthdayMember = append(target.BirthdayMember, model.LoginBonusBirthDayMember{
-			MemberMasterId: member.ID,
+			MemberMasterId: member.Id,
 			SuitMasterId:   memberLoginBonusBirthday.SuitMasterId,
 		})
 		naviLoginBonus.BackgroundId = memberLoginBonusBirthday.Id

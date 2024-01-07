@@ -13,7 +13,7 @@ type Live struct {
 func (*Live) Table() string {
 	return "m_live"
 }
-func (*Live) ID(fields []parser.Field) int64 {
+func (*Live) Id(fields []parser.Field) int64 {
 	if fields[0].Key != "live_id" {
 		panic("wrong field order")
 	}

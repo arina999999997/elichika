@@ -5,7 +5,7 @@ import (
 )
 
 type FetchTowerSelectResponse struct {
-	TowerIDs      []int      `json:"tower_ids"`
+	TowerIds      []int      `json:"tower_ids"`
 	UserModelDiff *UserModel `json:"user_model_diff"`
 }
 

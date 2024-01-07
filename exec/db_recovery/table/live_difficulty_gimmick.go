@@ -13,7 +13,7 @@ type LiveDifficultyGimmick struct {
 func (*LiveDifficultyGimmick) Table() string {
 	return "m_live_difficulty_gimmick"
 }
-func (*LiveDifficultyGimmick) ID(fields []parser.Field) int64 {
+func (*LiveDifficultyGimmick) Id(fields []parser.Field) int64 {
 	if fields[0].Key != "id" {
 		panic("wrong field order")
 	}

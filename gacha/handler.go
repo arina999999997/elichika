@@ -32,7 +32,7 @@ func GuaranteedNewCard(ctx *gin.Context, gachaGuarantee *model.GachaGuarantee) i
 			cardSet[id] = true
 		}
 		for _, card := range cardPool {
-			_, have := cardSet[card.CardMasterID]
+			_, have := cardSet[card.CardMasterId]
 			if !have {
 				newCards = append(newCards, card)
 			}
@@ -48,7 +48,7 @@ func GuaranteedNewCard(ctx *gin.Context, gachaGuarantee *model.GachaGuarantee) i
 			cardSet[id] = true
 		}
 		for _, card := range cardPool {
-			_, have := cardSet[card.CardMasterID]
+			_, have := cardSet[card.CardMasterId]
 			if !have {
 				newCards = append(newCards, card)
 			}
@@ -64,7 +64,7 @@ func GuaranteedCardSet(ctx *gin.Context, gachaGuarantee *model.GachaGuarantee) i
 	cardSet := gachaGuarantee.GuaranteedCardSet
 	availableCards := []model.GachaCard{}
 	for _, card := range cardPool {
-		if cardSet[card.CardMasterID] {
+		if cardSet[card.CardMasterId] {
 			availableCards = append(availableCards, card)
 		}
 	}

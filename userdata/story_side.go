@@ -5,20 +5,20 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) InsertStorySide(storySideMasterID int) {
+func (session *Session) InsertStorySide(storySideMasterId int) {
 	userStorySide := model.UserStorySide{
-		UserID:            session.UserStatus.UserID,
-		StorySideMasterID: storySideMasterID,
+		UserId:            session.UserStatus.UserId,
+		StorySideMasterId: storySideMasterId,
 		IsNew:             true,
 		AcquiredAt:        session.Time.Unix(),
 	}
-	session.UserModel.UserStorySideByID.PushBack(userStorySide)
+	session.UserModel.UserStorySideById.PushBack(userStorySide)
 }
 
-func (session *Session) FinishStorySide(storySideMasterID int) {
+func (session *Session) FinishStorySide(storySideMasterId int) {
 	userStorySide := model.UserStorySide{}
 	exist, err := session.Db.Table("u_story_side").Where("user_id = ? AND story_side_master_id = ?",
-		session.UserStatus.UserID, storySideMasterID).Get(&userStorySide)
+		session.UserStatus.UserId, storySideMasterId).Get(&userStorySide)
 	utils.CheckErr(err)
 	if !exist {
 		panic("side story must exist to be read")
@@ -27,13 +27,13 @@ func (session *Session) FinishStorySide(storySideMasterID int) {
 		return
 	}
 	userStorySide.IsNew = false
-	session.UserModel.UserStorySideByID.PushBack(userStorySide)
+	session.UserModel.UserStorySideById.PushBack(userStorySide)
 }
 
 func storySideFinalizer(session *Session) {
-	for _, userStorySide := range session.UserModel.UserStorySideByID.Objects {
+	for _, userStorySide := range session.UserModel.UserStorySideById.Objects {
 		affected, err := session.Db.Table("u_story_side").Where("user_id = ? AND story_side_master_id = ?",
-			userStorySide.UserID, userStorySide.StorySideMasterID).AllCols().Update(userStorySide)
+			userStorySide.UserId, userStorySide.StorySideMasterId).AllCols().Update(userStorySide)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
 			_, err = session.Db.Table("u_story_side").Insert(userStorySide)
@@ -44,6 +44,6 @@ func storySideFinalizer(session *Session) {
 }
 
 func init() {
-	addGenericTableFieldPopulator("u_story_side", "UserStorySideByID")
+	addGenericTableFieldPopulator("u_story_side", "UserStorySideById")
 	addFinalizer(storySideFinalizer)
 }

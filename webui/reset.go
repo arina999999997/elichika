@@ -17,11 +17,11 @@ func ResetProgress(ctx *gin.Context) {
 	if !ctx.MustGet("has_user_id").(bool) {
 		return
 	}
-	userID := ctx.MustGet("user_id").(int)
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.MustGet("user_id").(int)
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userID, " doesn't exist"))
+		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userId, " doesn't exist"))
 		return
 	}
 	fmt.Println(ctx.Request.URL.Path)

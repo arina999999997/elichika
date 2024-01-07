@@ -1,18 +1,18 @@
 package model
 
 type TradeProductUser struct {
-	UserID      int `xorm:"pk 'user_id'"`
-	ProductID   int `xorm:"pk 'product_id'"`
+	UserId      int `xorm:"pk 'user_id'"`
+	ProductId   int `xorm:"pk 'product_id'"`
 	TradedCount int `xorm:"'traded_count'"`
 }
 
 type TradeProduct struct {
-	// ProductID is defined to be TradeID * 1000 + some number
-	ProductID int `xorm:"pk 'product_id'" json:"product_id"`
-	// TradeID inside json is the same as ProductID
-	DummyID int `xorm:"-" json:"trade_id"`
-	// TradeID inside db is the actual TradeID that this product belong to
-	TradeID       int       `xorm:"'trade_id'" json:"-"`
+	// ProductId is defined to be TradeId * 1000 + some number
+	ProductId int `xorm:"pk 'product_id'" json:"product_id"`
+	// TradeId inside json is the same as ProductId
+	DummyId int `xorm:"-" json:"trade_id"`
+	// TradeId inside db is the actual TradeId that this product belong to
+	TradeId       int       `xorm:"'trade_id'" json:"-"`
 	SourceAmount  int       `json:"source_amount"`         // cost
 	StockAmount   *int      `json:"stock_amount"`          // max exchange time, set to null for unlimited
 	TradedCount   int       `xorm:"-" json:"traded_count"` // amount traded, store per user
@@ -22,7 +22,7 @@ type TradeProduct struct {
 
 // represent exchange or channel exchange banner
 type Trade struct {
-	TradeID int `xorm:"pk 'trade_id'" json:"trade_id"`
+	TradeId int `xorm:"pk 'trade_id'" json:"trade_id"`
 	// trade type = 1 for normal exchange and 2 for channel exchange
 	TradeType       int `xorm:"'trade_type'" json:"-"`
 	BannerImagePath struct {
@@ -30,7 +30,7 @@ type Trade struct {
 	} `xorm:"extends" json:"banner_image_path"`
 	// items used for exchange
 	SourceContentType        int `xorm:"-" json:"source_content_type"`
-	SourceContentID          int `xorm:"-" json:"source_content_id"`
+	SourceContentId          int `xorm:"-" json:"source_content_id"`
 	SourceThumbnailAssetPath struct {
 		V string `xorm:"'source_thumbnail_asset_path'" json:"v"`
 	} `xorm:"extends" json:"source_thumbnail_asset_path"`

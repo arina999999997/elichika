@@ -12,12 +12,12 @@ import (
 
 type TrainingTreeCellItemSet struct {
 	// from m_training_tree_cell_item_set
-	ID        int             `xorm:"pk 'id'"`
+	Id        int             `xorm:"pk 'id'"`
 	Resources []model.Content `xorm:"-"`
 }
 
 func (set *TrainingTreeCellItemSet) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_training_tree_cell_item_set").Where("id = ?", set.ID).Find(&set.Resources)
+	err := masterdata_db.Table("m_training_tree_cell_item_set").Where("id = ?", set.Id).Find(&set.Resources)
 	utils.CheckErr(err)
 }
 

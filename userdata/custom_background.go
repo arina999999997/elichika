@@ -5,9 +5,9 @@ import (
 )
 
 func customBackgroundFinalizer(session *Session) {
-	for _, userCustomBackground := range session.UserModel.UserCustomBackgroundByID.Objects {
+	for _, userCustomBackground := range session.UserModel.UserCustomBackgroundById.Objects {
 		affected, err := session.Db.Table("u_custom_background").Where("user_id = ? AND custom_background_master_id = ?",
-			session.UserStatus.UserID, userCustomBackground.CustomBackgroundMasterID).AllCols().Update(userCustomBackground)
+			session.UserStatus.UserId, userCustomBackground.CustomBackgroundMasterId).AllCols().Update(userCustomBackground)
 		utils.CheckErr(err)
 		if affected == 0 {
 			_, err = session.Db.Table("u_custom_background").Insert(userCustomBackground)
@@ -17,5 +17,5 @@ func customBackgroundFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(customBackgroundFinalizer)
-	addGenericTableFieldPopulator("u_custom_background", "UserCustomBackgroundByID")
+	addGenericTableFieldPopulator("u_custom_background", "UserCustomBackgroundById")
 }

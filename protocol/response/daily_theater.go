@@ -5,7 +5,7 @@ import (
 )
 
 type DailyTheaterDetail struct {
-	DailyTheaterID int                 `json:"daily_theater_id"`
+	DailyTheaterId int                 `json:"daily_theater_id"`
 	Title          model.LocalizedText `json:"title"`
 	DetailText     model.LocalizedText `json:"detail_text"`
 	Year           int                 `json:"year"`
@@ -18,7 +18,7 @@ type FetchDailyTheaterResponse struct {
 }
 
 type DailyTheaterArchiveMasterRow struct {
-	DailyTheaterID int   `json:"daily_theater_id"`
+	DailyTheaterId int   `json:"daily_theater_id"`
 	Year           int   `json:"year"`
 	Month          int   `json:"month"`
 	Day            int   `json:"day"`
@@ -26,8 +26,8 @@ type DailyTheaterArchiveMasterRow struct {
 }
 
 type DailyTheaterArchiveMemberMasterRow struct {
-	DailyTheaterID int `json:"daily_theater_id"`
-	MemberMasterID int `json:"member_master_id"`
+	DailyTheaterId int `json:"daily_theater_id"`
+	MemberMasterId int `json:"member_master_id"`
 }
 
 type FetchDailyTheaterArchiveResponse struct {

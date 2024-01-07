@@ -16,8 +16,8 @@ Assume the following result in the DB:
 */
 type Card struct {
 	// from m_card
-	ID             int     `xorm:"pk 'id'"`
-	MemberMasterID *int    `xorm:"'member_m_id'"`
+	Id             int     `xorm:"pk 'id'"`
+	MemberMasterId *int    `xorm:"'member_m_id'"`
 	Member         *Member `xorm:"-"`
 	// SchoolIdolNo int `xorm:"'school_idol_no'"`
 	CardRarityType int `xorm:"'card_rarity_type'"`
@@ -25,12 +25,12 @@ type Card struct {
 	// MemberCardThumbnailAssetPath string
 	// AtGacha bool
 	// AtEvent bool
-	TrainingTreeMasterID *int          `xorm:"'training_tree_m_id'"` // must be equal to ID
+	TrainingTreeMasterId *int          `xorm:"'training_tree_m_id'"` // must be equal to Id
 	TrainingTree         *TrainingTree `xorm:"-"`
 	// ActiveSkillVoicePath string
 	// SpPoint int
-	// ExchangeItemID int `xorm:"'exchange_item_id'"`
-	// RoleEffectMasterID int `xorm:"'role_effect_master_id'"` // is just the same as role
+	// ExchangeItemId int `xorm:"'exchange_item_id'"`
+	// RoleEffectMasterId int `xorm:"'role_effect_master_id'"` // is just the same as role
 	PassiveSkillSlot    int `xorm:"'passive_skill_slot'"`
 	MaxPassiveSkillSlot int `xorm:"'max_passive_skill_slot'"`
 
@@ -45,22 +45,22 @@ type CardGradeUpItem struct {
 }
 
 func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	card.Member = gamedata.Member[*card.MemberMasterID]
-	card.MemberMasterID = &card.Member.ID
-	card.TrainingTree = gamedata.TrainingTree[*card.TrainingTreeMasterID]
-	card.TrainingTreeMasterID = &card.TrainingTree.ID
+	card.Member = gamedata.Member[*card.MemberMasterId]
+	card.MemberMasterId = &card.Member.Id
+	card.TrainingTree = gamedata.TrainingTree[*card.TrainingTreeMasterId]
+	card.TrainingTreeMasterId = &card.TrainingTree.Id
 
 	{
 		card.CardGradeUpItem = make(map[int](map[int]model.Content))
 		gradeUps := []CardGradeUpItem{}
-		err := masterdata_db.Table("m_card_grade_up_item").Where("card_id = ?", card.ID).Find(&gradeUps)
+		err := masterdata_db.Table("m_card_grade_up_item").Where("card_id = ?", card.Id).Find(&gradeUps)
 		utils.CheckErr(err)
 		for _, gradeUp := range gradeUps {
 			_, exist := card.CardGradeUpItem[gradeUp.Grade]
 			if !exist {
 				card.CardGradeUpItem[gradeUp.Grade] = make(map[int]model.Content)
 			}
-			card.CardGradeUpItem[gradeUp.Grade][gradeUp.Resource.ContentID] = gradeUp.Resource
+			card.CardGradeUpItem[gradeUp.Grade][gradeUp.Resource.ContentId] = gradeUp.Resource
 		}
 	}
 }

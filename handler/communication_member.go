@@ -29,10 +29,10 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 		return true
 	})
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	lovePanelCellIds := session.GetLovePanelCellIDs(memberId)
+	lovePanelCellIds := session.GetLovePanelCellIds(memberId)
 
 	now := time.Now()
 	year, month, day := now.Year(), now.Month(), now.Day()
@@ -58,10 +58,10 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	detailBadge := session.GetUserCommunicationMemberDetailBadge(req.MemberMasterID)
+	detailBadge := session.GetUserCommunicationMemberDetailBadge(req.MemberMasterId)
 	switch req.CommunicationMemberDetailBadgeType {
 	case enum.CommunicationMemberDetailBadgeTypeStoryMember:
 		detailBadge.IsStoryMemberBadge = false
@@ -91,15 +91,15 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	// only choose from the song user has access to, so no bond song and story locked songs
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type UpdateUserLiveDifficultyNewFlag struct {
-		MemberMasterID int `json:"member_master_id"`
+		MemberMasterId int `json:"member_master_id"`
 	}
 	req := UpdateUserLiveDifficultyNewFlag{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
+	userId := ctx.GetInt("user_id")
 
-	session := userdata.GetSession(ctx, userID)
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	liveDifficultyRecords := session.GetAllLiveDifficulties()
@@ -110,13 +110,13 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 			continue
 		}
 		// update if it feature this member
-		liveDifficultyMaster := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyID]
+		liveDifficultyMaster := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyId]
 		if liveDifficultyMaster == nil {
 			// some song no longer exists but official server still send them
 			// it's ok to ignore these for now
 			continue
 		}
-		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[req.MemberMasterID]
+		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[req.MemberMasterId]
 		if exist {
 			liveDifficultyRecord.IsNew = false
 			session.UpdateLiveDifficulty(liveDifficultyRecord)
@@ -135,12 +135,12 @@ func FinishUserStorySide(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	session.UserStatus.IsAutoMode = req.IsAutoMode
-	session.FinishStorySide(req.StorySideMasterID)
+	session.FinishStorySide(req.StorySideMasterId)
 
 	signBody := session.Finalize("{}", "user_model")
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -154,22 +154,22 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	session.UserStatus.IsAutoMode = req.IsAutoMode
-	if session.FinishStoryMember(req.StoryMemberMasterID) {
-		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterID]
+	if session.FinishStoryMember(req.StoryMemberMasterId) {
+		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterId]
 		if storyMemberMaster.Reward != nil {
 			session.AddResource(*storyMemberMaster.Reward)
 		}
-		if storyMemberMaster.UnlockLiveID != nil {
-			masterLive := gamedata.Live[*storyMemberMaster.UnlockLiveID]
+		if storyMemberMaster.UnlockLiveId != nil {
+			masterLive := gamedata.Live[*storyMemberMaster.UnlockLiveId]
 			// insert empty record for relevant items
 			for _, masterLiveDifficulty := range masterLive.LiveDifficulties {
-				liveDifficulty := session.GetLiveDifficulty(masterLiveDifficulty.LiveDifficultyID)
+				liveDifficulty := session.GetLiveDifficulty(masterLiveDifficulty.LiveDifficultyId)
 				session.UpdateLiveDifficulty(liveDifficulty)
 			}
 		}
@@ -187,13 +187,13 @@ func SetTheme(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	member := session.GetMember(req.MemberMasterID)
-	member.SuitMasterID = req.SuitMasterID
-	member.CustomBackgroundMasterID = req.CustomBackgroundMasterID
+	member := session.GetMember(req.MemberMasterId)
+	member.SuitMasterId = req.SuitMasterId
+	member.CustomBackgroundMasterId = req.CustomBackgroundMasterId
 	session.UpdateMember(member)
 
 	signBody := session.Finalize("{}", "user_model")
@@ -208,18 +208,18 @@ func SetFavoriteMember(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.FavoriteMemberID = req.MemberMasterID
+	session.UserStatus.FavoriteMemberId = req.MemberMasterId
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseFavoriateMember {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseLovePointUp
 		// award the initial SR
 		// TODO(refactor): use the common method to add a card instead
-		card := session.GetUserCard(100002001 + req.MemberMasterID*10000)
-		session.UserStatus.RecommendCardMasterID = card.CardMasterID // this is for the pop up
+		card := session.GetUserCard(100002001 + req.MemberMasterId*10000)
+		session.UserStatus.RecommendCardMasterId = card.CardMasterId // this is for the pop up
 		cardRarity := 20
-		member := session.GetMember(req.MemberMasterID)
+		member := session.GetMember(req.MemberMasterId)
 		beforeLoveLevelLimit := session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
 		afterLoveLevelLimit := beforeLoveLevelLimit + cardRarity/10
 		if afterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
@@ -232,7 +232,7 @@ func SetFavoriteMember(ctx *gin.Context) {
 		} else {
 			// add trigger card grade up so animation play when opening the card
 			session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-				CardMasterID:         card.CardMasterID,
+				CardMasterId:         card.CardMasterId,
 				BeforeLoveLevelLimit: afterLoveLevelLimit, // this is correct
 				AfterLoveLevelLimit:  afterLoveLevelLimit,
 			})

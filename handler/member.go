@@ -21,29 +21,29 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	req := request.OpenMemberLovePanelRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	panel := session.GetMemberLovePanel(req.MemberID)
-	panel.LovePanelLastLevelCellIDs = append(panel.LovePanelLastLevelCellIDs, req.MemberLovePanelCellIDs...)
+	panel := session.GetMemberLovePanel(req.MemberId)
+	panel.LovePanelLastLevelCellIds = append(panel.LovePanelLastLevelCellIds, req.MemberLovePanelCellIds...)
 	// remove resource
-	for _, cellID := range req.MemberLovePanelCellIDs {
-		for _, resource := range gamedata.MemberLovePanelCell[cellID].Resources {
+	for _, cellId := range req.MemberLovePanelCellIds {
+		for _, resource := range gamedata.MemberLovePanelCell[cellId].Resources {
 			session.RemoveResource(resource)
 		}
 	}
 
 	// if is full panel, then we have to send a basic info trigger to actually open up the next panel
-	if len(panel.LovePanelLastLevelCellIDs) == 5 {
-		member := session.GetMember(panel.MemberID)
-		masterLovePanel := gamedata.MemberLovePanel[req.MemberLovePanelID]
+	if len(panel.LovePanelLastLevelCellIds) == 5 {
+		member := session.GetMember(panel.MemberId)
+		masterLovePanel := gamedata.MemberLovePanel[req.MemberLovePanelId]
 		if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
 			// TODO: remove magic id from love panel system
 			panel.LevelUp()
 			session.AddTriggerBasic(model.TriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
-				ParamInt:        panel.LovePanelLevel*1000 + panel.MemberID})
+				ParamInt:        panel.LovePanelLevel*1000 + panel.MemberId})
 		}
 	}
 	session.UpdateMemberLovePanel(panel)

@@ -70,25 +70,25 @@ Note that this might introduce problems because the new server might not be comp
 With the server running, and the client network setup correctly, simply open the game and play.
 
 Logging in will create an account if one is not present in the server.
-- User ID will be set to random if there is no user ID in the client.
+- User id will be set to random if there is no user id in the client.
 
 ### Multi accounts / Account transfer
 You can use the account transfer system to switch / create account. Select ``transfer with password``. 
 ![Transfer system](docs/images/transfer_1.png)
 
-Enter your user / player ID and a password:
-- UserID is an non-negative integer with at most 9 digits.
+Enter your user / player id and a password:
+- UserId is an non-negative integer with at most 9 digits.
 - If user is in the database, password will be checked against the stored password.
-- Otherwise a new account with that player ID and password.
+- Otherwise a new account with that player id and password.
     - You can also leave the password empty.
 
-![Set the ID and password](docs/images/transfer_2.png)
+![Set the id and password](docs/images/transfer_2.png)
 
-After that, confirm the transfer and you can login with the new user ID.
+After that, confirm the transfer and you can login with the new user id.
 
 ![Confirm transfer](docs/images/transfer_3.png)
 
-At any point, you can use the transfer ID system inside the game to change your password.
+At any point, you can use the transfer id system inside the game to change your password.
 
 ![Use the system](docs/images/transfer_4.png)
 ![Set up new password](docs/images/transfer_5.png)
@@ -97,7 +97,7 @@ At any point, you can use the transfer ID system inside the game to change your 
 ### Client version
 You can use both the Japanese and Global client for the same server (and the same database).
 
-However, it's recommended to not play one account (user ID) in both Japanese and Global client, because some contents are exclusive to only 1 server, and will cause the client to freeze.
+However, it's recommended to not play one account (user id) in both Japanese and Global client, because some contents are exclusive to only 1 server, and will cause the client to freeze.
 
 ### Multiplayer
 The current implementation doesn't explicitly support multiplayer:

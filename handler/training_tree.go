@@ -19,25 +19,25 @@ import (
 func FetchTrainingTree(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchTrainingTreeReq struct {
-		CardMasterID int `json:"card_master_id"`
+		CardMasterId int `json:"card_master_id"`
 	}
 	req := FetchTrainingTreeReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
 		panic(err)
 	}
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	signBody := `"{}"`
-	signBody, _ = sjson.Set(signBody, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterID))
+	signBody, _ = sjson.Set(signBody, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterId))
 	resp := SignResp(ctx, signBody, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
 func LevelUpCard(ctx *gin.Context) {
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
@@ -48,7 +48,7 @@ func LevelUpCard(ctx *gin.Context) {
 	}
 
 	type LevelUpCardReq struct {
-		CardMasterID    int `json:"card_master_id"`
+		CardMasterId    int `json:"card_master_id"`
 		AdditionalLevel int `json:"additional_level"`
 	}
 
@@ -57,8 +57,8 @@ func LevelUpCard(ctx *gin.Context) {
 		panic(err)
 	}
 
-	cardLevel := gamedata.CardLevel[gamedata.Card[req.CardMasterID].CardRarityType]
-	card := session.GetUserCard(req.CardMasterID)
+	cardLevel := gamedata.CardLevel[gamedata.Card[req.CardMasterId].CardRarityType]
+	card := session.GetUserCard(req.CardMasterId)
 	session.RemoveGameMoney(int64(
 		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.GameMoneyPrefixSum[card.Level]))
 	session.RemoveCardExp(int64(
@@ -75,20 +75,20 @@ func LevelUpCard(ctx *gin.Context) {
 func GradeUpCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type GradeUpCardReq struct {
-		CardMasterID int `json:"card_master_id"`
-		ContentID    int `json:"content_id"`
+		CardMasterId int `json:"card_master_id"`
+		ContentId    int `json:"content_id"`
 	}
 	req := GradeUpCardReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	masterCard := gamedata.Card[req.CardMasterID]
-	card := session.GetUserCard(req.CardMasterID)
-	member := session.GetMember(*masterCard.MemberMasterID)
+	masterCard := gamedata.Card[req.CardMasterId]
+	card := session.GetUserCard(req.CardMasterId)
+	member := session.GetMember(*masterCard.MemberMasterId)
 	card.Grade++
 	currentLoveLevel := gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
 	currentLoveLevel += masterCard.CardRarityType / 10 // TODO: Do not hard code this
@@ -99,12 +99,12 @@ func GradeUpCard(ctx *gin.Context) {
 	session.UpdateUserCard(card)
 	member.IsNew = true
 	session.UpdateMember(member)
-	session.RemoveResource(masterCard.CardGradeUpItem[card.Grade][req.ContentID])
+	session.RemoveResource(masterCard.CardGradeUpItem[card.Grade][req.ContentId])
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break
 	session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-		CardMasterID:         req.CardMasterID,
+		CardMasterId:         req.CardMasterId,
 		BeforeLoveLevelLimit: currentLoveLevel - masterCard.CardRarityType/10,
 		AfterLoveLevelLimit:  currentLoveLevel})
 
@@ -117,8 +117,8 @@ func GradeUpCard(ctx *gin.Context) {
 func ActivateTrainingTreeCell(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ActivateTrainingTreeCellReq struct {
-		CardMasterID  int   `json:"card_master_id"`
-		CellMasterIDs []int `json:"cell_master_ids"`
+		CardMasterId  int   `json:"card_master_id"`
+		CellMasterIds []int `json:"cell_master_ids"`
 		PayType       int   `json:"pay_type"`
 	}
 	req := ActivateTrainingTreeCellReq{}
@@ -126,8 +126,8 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		panic(err)
 	}
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
@@ -135,12 +135,12 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseDeckEdit
 	}
 
-	card := session.GetUserCard(req.CardMasterID)
-	masterCard := gamedata.Card[req.CardMasterID]
+	card := session.GetUserCard(req.CardMasterId)
+	masterCard := gamedata.Card[req.CardMasterId]
 	trainingTree := masterCard.TrainingTree
 	cellContents := &trainingTree.TrainingTreeMapping.TrainingTreeCellContents
-	for _, cellID := range req.CellMasterIDs {
-		cell := &(*cellContents)[cellID]
+	for _, cellId := range req.CellMasterIds {
+		cell := &(*cellContents)[cellId]
 		// consume practice items
 		for _, resource := range cell.TrainingTreeCellItemSet.Resources {
 			session.RemoveResource(resource)
@@ -162,26 +162,26 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 				panic("Unexpected training content type")
 			}
 		case 3: // voice
-			naviActionID := trainingTree.NaviActionIDs[cell.TrainingContentNo]
-			session.UpdateVoice(naviActionID, true)
+			naviActionId := trainingTree.NaviActionIds[cell.TrainingContentNo]
+			session.UpdateVoice(naviActionId, true)
 		case 4: // story cell
 			// training_content_type 11 in m_training_tree_card_story_side
-			storySideID, exist := trainingTree.TrainingTreeCardStorySides[11]
+			storySideId, exist := trainingTree.TrainingTreeCardStorySides[11]
 			if !exist {
 				panic("story doesn't exist")
 			}
-			session.InsertStorySide(storySideID)
+			session.InsertStorySide(storySideId)
 		case 5:
 			// idolize
 			card.IsAwakening = true
 			card.IsAwakeningImage = true
-			storySideID, exist := trainingTree.TrainingTreeCardStorySides[9]
+			storySideId, exist := trainingTree.TrainingTreeCardStorySides[9]
 			if exist {
-				session.InsertStorySide(storySideID)
+				session.InsertStorySide(storySideId)
 			}
 		case 6: // costume
 			// alternative suit is awarded based on amount of tile instead
-			session.InsertUserSuit(trainingTree.SuitMIDs[cell.TrainingContentNo])
+			session.InsertUserSuit(trainingTree.SuitMIds[cell.TrainingContentNo])
 		case 7: // skill
 			card.ActiveSkillLevel++
 		case 8: // insight
@@ -195,7 +195,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 
 	// progress reward
 	for _, reward := range trainingTree.TrainingTreeProgressRewards {
-		if reward.ActivateNum > card.TrainingActivatedCellCount+len(req.CellMasterIDs) {
+		if reward.ActivateNum > card.TrainingActivatedCellCount+len(req.CellMasterIds) {
 			break
 		}
 		if reward.ActivateNum > card.TrainingActivatedCellCount {
@@ -203,11 +203,11 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		}
 	}
 
-	card.TrainingActivatedCellCount += len(req.CellMasterIDs)
+	card.TrainingActivatedCellCount += len(req.CellMasterIds)
 
 	if card.TrainingActivatedCellCount+1 == len(*cellContents) {
 		card.IsAllTrainingActivated = true
-		member := session.GetMember(*masterCard.MemberMasterID)
+		member := session.GetMember(*masterCard.MemberMasterId)
 		member.AllTrainingCardCount++
 		session.UpdateMember(member)
 	}
@@ -216,19 +216,19 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 
 	// set "user_card_training_tree_cell_list" to the cell unlocked and insert the cell to db
 	unlockedCells := []model.TrainingTreeCell{}
-	for _, cellID := range req.CellMasterIDs {
+	for _, cellId := range req.CellMasterIds {
 		unlockedCells = append(unlockedCells,
 			model.TrainingTreeCell{
-				UserID:       userID,
-				CardMasterID: req.CardMasterID,
-				CellID:       cellID,
+				UserId:       userId,
+				CardMasterId: req.CardMasterId,
+				CellId:       cellId,
 				ActivatedAt:  session.Time.Unix()})
 	}
 
 	session.InsertTrainingTreeCells(unlockedCells)
 
 	jsonResp := session.Finalize("{}", "user_model_diff")
-	jsonResp, _ = sjson.Set(jsonResp, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterID))
+	jsonResp, _ = sjson.Set(jsonResp, "user_card_training_tree_cell_list", session.GetTrainingTree(req.CardMasterId))
 	resp := SignResp(ctx, jsonResp, config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)

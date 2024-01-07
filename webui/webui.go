@@ -32,11 +32,11 @@ func Common(ctx *gin.Context) {
 	ctx.Set("gamedata", locale.Locales[lang].Gamedata)
 	ctx.Set("dictionary", locale.Locales[lang].Dictionary)
 
-	userIDString := form.Value["user_id"][0]
-	userID := -1
-	userID, err = strconv.Atoi(userIDString)
+	userIdString := form.Value["user_id"][0]
+	userId := -1
+	userId, err = strconv.Atoi(userIdString)
 	if err != nil {
-		exist, err := userdata.Engine.Table("u_info").OrderBy("last_login_at DESC").Limit(1).Cols("user_id").Get(&userID)
+		exist, err := userdata.Engine.Table("u_info").OrderBy("last_login_at DESC").Limit(1).Cols("user_id").Get(&userId)
 		utils.CheckErr(err)
 		if !exist {
 			ctx.Set("has_user_id", false)
@@ -44,7 +44,7 @@ func Common(ctx *gin.Context) {
 			return
 		}
 	}
-	ctx.Set("user_id", userID)
+	ctx.Set("user_id", userId)
 	ctx.Next()
 }
 
@@ -53,11 +53,11 @@ func Birthday(ctx *gin.Context) {
 		return
 	}
 
-	userID := ctx.MustGet("user_id").(int)
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.MustGet("user_id").(int)
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userID, " doesn't exist"))
+		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userId, " doesn't exist"))
 		return
 	}
 	session.UserStatus.LastLoginAt = time.Now().Unix()
@@ -76,28 +76,28 @@ func Birthday(ctx *gin.Context) {
 	session.UserStatus.BirthDay = day
 	session.UserStatus.BirthMonth = month
 	session.Finalize("{}", "dummy")
-	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userID, year, month, day))
+	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userId, year, month, day))
 }
 
 func Accessory(ctx *gin.Context) {
 	if !ctx.MustGet("has_user_id").(bool) {
 		return
 	}
-	userID := ctx.MustGet("user_id").(int)
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.MustGet("user_id").(int)
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	if session == nil {
-		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userID, " doesn't exist"))
+		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userId, " doesn't exist"))
 		return
 	}
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	form, _ := ctx.MultipartForm()
 	specificAccessoryString := form.Value["accessory_id"][0]
-	accessoryIDs := []int{}
+	accessoryIds := []int{}
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	if specificAccessoryString != "" {
 		value, _ := strconv.Atoi(specificAccessoryString)
-		accessoryIDs = append(accessoryIDs, value)
+		accessoryIds = append(accessoryIds, value)
 	} else {
 		getRarity := make(map[int]bool)
 		getRarity[30] = len(form.Value["ur_accessories"]) > 0
@@ -105,33 +105,33 @@ func Accessory(ctx *gin.Context) {
 		getRarity[10] = len(form.Value["r_accessories"]) > 0
 		for _, accessory := range gamedata.Accessory {
 			if getRarity[accessory.RarityType] {
-				accessoryIDs = append(accessoryIDs, accessory.ID)
+				accessoryIds = append(accessoryIds, accessory.Id)
 			}
 		}
 	}
-	if len(accessoryIDs) == 0 {
-		ctx.Redirect(http.StatusFound, commonPrefix+"Error: no accessory found, add a specific ID or choose at least one rarity")
+	if len(accessoryIds) == 0 {
+		ctx.Redirect(http.StatusFound, commonPrefix+"Error: no accessory found, add a specific Id or choose at least one rarity")
 		return
 	}
 	amount, _ := strconv.Atoi(form.Value["accessory_amount"][0])
 	index := time.Now().UnixNano()
 	total := 0
-	for _, accessoryMasterID := range accessoryIDs {
-		masterAccessory, exist := gamedata.Accessory[accessoryMasterID]
+	for _, accessoryMasterId := range accessoryIds {
+		masterAccessory, exist := gamedata.Accessory[accessoryMasterId]
 		if !exist {
-			ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: invalid accessory id ", accessoryMasterID))
+			ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: invalid accessory id ", accessoryMasterId))
 			return
 		}
 		for i := 1; i <= amount; i++ {
 			total++
 			accessory := session.GetUserAccessory(index + int64(total))
-			accessory.AccessoryMasterID = masterAccessory.ID
+			accessory.AccessoryMasterId = masterAccessory.Id
 			accessory.Level = 1
 			accessory.Exp = 0
 			accessory.Grade = 0
 			accessory.Attribute = masterAccessory.Attribute
-			accessory.PassiveSkill1ID = *masterAccessory.Grade[0].PassiveSkill1MasterID
-			accessory.PassiveSkill2ID = masterAccessory.Grade[0].PassiveSkill2MasterID
+			accessory.PassiveSkill1Id = *masterAccessory.Grade[0].PassiveSkill1MasterId
+			accessory.PassiveSkill2Id = masterAccessory.Grade[0].PassiveSkill2MasterId
 			session.UpdateUserAccessory(accessory)
 		}
 	}

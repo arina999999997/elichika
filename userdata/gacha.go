@@ -12,7 +12,7 @@ func (session *Session) GetGachaList() []model.Gacha {
 	// it's not handled for now
 	for _, gacha := range session.Ctx.MustGet("gamedata").(*gamedata.Gamedata).GachaList {
 		// skip the tutorial gacha if already done with tutorial
-		if gacha.GachaMasterID == 999999 && session.UserStatus.TutorialPhase != enum.TutorialPhaseGacha {
+		if gacha.GachaMasterId == 999999 && session.UserStatus.TutorialPhase != enum.TutorialPhaseGacha {
 			continue
 		}
 		gachaList = append(gachaList, *gacha)
@@ -20,6 +20,6 @@ func (session *Session) GetGachaList() []model.Gacha {
 	return gachaList
 }
 
-func (session *Session) GetGacha(gachaMasterID int) model.Gacha {
-	return *session.Ctx.MustGet("gamedata").(*gamedata.Gamedata).Gacha[gachaMasterID]
+func (session *Session) GetGacha(gachaMasterId int) model.Gacha {
+	return *session.Ctx.MustGet("gamedata").(*gamedata.Gamedata).Gacha[gachaMasterId]
 }

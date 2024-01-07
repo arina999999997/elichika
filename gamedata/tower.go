@@ -13,7 +13,7 @@ import (
 
 type TowerFloor struct {
 	// from m_tower_composition
-	TowerID int `xorm:"pk 'tower_id'"`
+	TowerId int `xorm:"pk 'tower_id'"`
 	FloorNo int `xorm:"pk 'floor_no'"`
 	// Name DictionaryString `xorm:"'name'"`
 	// ThumbnailAssetPath *string `xorm:"'thumbnail_asset_path'"`
@@ -21,25 +21,25 @@ type TowerFloor struct {
 	ConsumePerformance bool `xorm:"'consume_performance'"`
 	TowerCellType      int  `xorm:"'tower_cell_type'"`
 	// ScenarioScriptAssetPath *string `xorm:"'scenario_script_asset_path'"`
-	// LiveDifficultyID int `xorm:"'live_difficulty_id'"`
+	// LiveDifficultyId int `xorm:"'live_difficulty_id'"`
 	TargetVoltage int `xorm:"'target_voltage'"`
 	// SuperStageAssetPath *string `xorm:"'super_stage_asset_path'"`
 	// StillAssetPath *string `xorm:"'still_asset_path'"`
-	// MusicID *int  `xorm:"'music_id'"`
-	TowerClearRewardID    *int            `xorm:"'tower_clear_reward_id'"`
+	// MusicId *int  `xorm:"'music_id'"`
+	TowerClearRewardId    *int            `xorm:"'tower_clear_reward_id'"`
 	TowerClearRewards     []model.Content `xorm:"-"` // from: m_tower_clear_reward
-	TowerProgressRewardID *int            `xorm:"'tower_progress_reward_id'"`
+	TowerProgressRewardId *int            `xorm:"'tower_progress_reward_id'"`
 	TowerProgressRewards  []model.Content `xorm:"-"` // from: m_tower_progress_reward
 }
 
 func (tf *TowerFloor) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	if tf.TowerClearRewardID != nil {
-		err := masterdata_db.Table("m_tower_clear_reward").Where("tower_clear_reward_id = ?", *tf.TowerClearRewardID).
+	if tf.TowerClearRewardId != nil {
+		err := masterdata_db.Table("m_tower_clear_reward").Where("tower_clear_reward_id = ?", *tf.TowerClearRewardId).
 			Find(&tf.TowerClearRewards)
 		utils.CheckErr(err)
 	}
-	if tf.TowerProgressRewardID != nil {
-		err := masterdata_db.Table("m_tower_progress_reward").Where("tower_progress_reward_id = ?", *tf.TowerProgressRewardID).
+	if tf.TowerProgressRewardId != nil {
+		err := masterdata_db.Table("m_tower_progress_reward").Where("tower_progress_reward_id = ?", *tf.TowerProgressRewardId).
 			Find(&tf.TowerProgressRewards)
 		utils.CheckErr(err)
 	}
@@ -47,15 +47,15 @@ func (tf *TowerFloor) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 type Tower struct {
 	// from m_tower
-	TowerID int `xorm:"pk 'tower_id'"`
+	TowerId int `xorm:"pk 'tower_id'"`
 	// Title DictionaryString `xorm:"'title'"`
 	// ThumbnailAssetPath string `xorm:"'thumbnail_asset_path'"`
 	// DisplayOrder int `xorm:"'display_order'"`
-	TowerCompositionID   int          `xorm:"'tower_composition_id'"`
+	TowerCompositionId   int          `xorm:"'tower_composition_id'"`
 	Floor                []TowerFloor `xorm:"-"` // from m_tower_composition, 1 indexed
 	FloorCount           int          `xorm:"-"`
 	IsVoltageRanked      bool         `xorm:"-"`
-	TradeMasterID        int          `xorm:"'trade_master_id'"`
+	TradeMasterId        int          `xorm:"'trade_master_id'"`
 	EntryRestrictionType int          `xorm:"'entry_restriction_type'"`
 	// EntryRestrictionCondition *int `xorm:"'entry_restriction_condition'"`
 	CardUseLimit      int `xorm:"'card_use_limit'"`
@@ -67,7 +67,7 @@ type Tower struct {
 }
 
 func (t *Tower) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_tower_composition").Where("tower_id = ?", t.TowerID).OrderBy("floor_no").Find(&t.Floor)
+	err := masterdata_db.Table("m_tower_composition").Where("tower_id = ?", t.TowerId).OrderBy("floor_no").Find(&t.Floor)
 	utils.CheckErr(err)
 	t.FloorCount = len(t.Floor)
 	t.Floor = append([]TowerFloor{TowerFloor{}}, t.Floor...)

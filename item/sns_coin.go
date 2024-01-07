@@ -8,7 +8,7 @@ import (
 var (
 	StarGem = model.Content{
 		ContentType:   enum.ContentTypeSnsCoin,
-		ContentID:     0,
+		ContentId:     0,
 		ContentAmount: 1,
 	}
 )

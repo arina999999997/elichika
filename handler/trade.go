@@ -22,8 +22,8 @@ func FetchTrade(ctx *gin.Context) {
 	req := FetchTradeReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	trades := session.GetTrades(req.TradeType)
 
@@ -36,25 +36,25 @@ func FetchTrade(ctx *gin.Context) {
 func ExecuteTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ExecuteTradeReq struct {
-		ProductID  int `json:"product_id"`
+		ProductId  int `json:"product_id"`
 		TradeCount int `json:"trade_count"`
 	}
 	req := ExecuteTradeReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	sentToPresentBox := session.ExecuteTrade(req.ProductID, req.TradeCount)
+	sentToPresentBox := session.ExecuteTrade(req.ProductId, req.TradeCount)
 
 	signBody := session.Finalize("{}", "user_model_diff")
 	// this only decide whether there's a text saying that things were sent to present box
 	signBody, _ = sjson.Set(signBody, "is_send_present_box", sentToPresentBox)
 
-	tradeType := gamedata.Trade[gamedata.TradeProduct[req.ProductID].TradeID].TradeType
+	tradeType := gamedata.Trade[gamedata.TradeProduct[req.ProductId].TradeId].TradeType
 	signBody, _ = sjson.Set(signBody, "trades", session.GetTrades(tradeType))
 
 	resp := SignResp(ctx, signBody, config.SessionKey)
@@ -66,7 +66,7 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ExecuteMultiTradeReq struct {
 		TradeOrders []struct {
-			ProductID  int `json:"product_id"`
+			ProductId  int `json:"product_id"`
 			TradeCount int `json:"trade_count"`
 		} `json:"trade_orders"`
 	}
@@ -74,14 +74,14 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	sentToPresentBox := false
 	for _, trade := range req.TradeOrders {
-		if session.ExecuteTrade(trade.ProductID, trade.TradeCount) {
+		if session.ExecuteTrade(trade.ProductId, trade.TradeCount) {
 			sentToPresentBox = true
 		}
 	}
@@ -90,7 +90,7 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 	// this only decide whether there's a text saying that things were sent to present box
 	signBody, _ = sjson.Set(signBody, "is_send_present_box", sentToPresentBox)
 
-	tradeType := gamedata.Trade[gamedata.TradeProduct[req.TradeOrders[0].ProductID].TradeID].TradeType
+	tradeType := gamedata.Trade[gamedata.TradeProduct[req.TradeOrders[0].ProductId].TradeId].TradeType
 	signBody, _ = sjson.Set(signBody, "trades", session.GetTrades(tradeType))
 
 	resp := SignResp(ctx, signBody, config.SessionKey)

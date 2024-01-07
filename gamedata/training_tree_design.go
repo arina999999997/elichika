@@ -20,7 +20,7 @@ import (
 // Children will have the main child (ParentBranchType = 100) as the first item, otherwise it doesn't matter what come first
 type TrainingTreeDesign struct {
 	// from m_training_tree_design
-	ID        int
+	Id        int
 	CellCount int
 	Parent    []int
 	Children  []([]int)
@@ -30,9 +30,9 @@ type TrainingTreeDesign struct {
 func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading TrainingTreeDesign")
 	type TrainingTreeDesignCell struct {
-		DesignID         int `xorm:"'id'"`
-		CellID           int `xorm:"'cell_id'"`
-		ParentCellID     int `xorm:"'parent_cell_id'"`
+		DesignId         int `xorm:"'id'"`
+		CellId           int `xorm:"'cell_id'"`
+		ParentCellId     int `xorm:"'parent_cell_id'"`
 		ParentBranchType int `xorm:"'parent_branch_type'"`
 	}
 	cells := []TrainingTreeDesignCell{}
@@ -40,13 +40,13 @@ func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xo
 	utils.CheckErr(err)
 	gamedata.TrainingTreeDesign = make(map[int]*TrainingTreeDesign)
 	for _, cell := range cells {
-		_, exist := gamedata.TrainingTreeDesign[cell.DesignID]
+		_, exist := gamedata.TrainingTreeDesign[cell.DesignId]
 		if !exist {
-			gamedata.TrainingTreeDesign[cell.DesignID] = &TrainingTreeDesign{
-				ID: cell.DesignID,
+			gamedata.TrainingTreeDesign[cell.DesignId] = &TrainingTreeDesign{
+				Id: cell.DesignId,
 			}
 		}
-		gamedata.TrainingTreeDesign[cell.DesignID].CellCount++
+		gamedata.TrainingTreeDesign[cell.DesignId].CellCount++
 	}
 	for _, design := range gamedata.TrainingTreeDesign {
 		for i := 0; i < design.CellCount; i++ {
@@ -55,16 +55,16 @@ func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xo
 		}
 	}
 	for _, cell := range cells {
-		design := gamedata.TrainingTreeDesign[cell.DesignID]
-		design.Parent[cell.CellID] = cell.ParentCellID
+		design := gamedata.TrainingTreeDesign[cell.DesignId]
+		design.Parent[cell.CellId] = cell.ParentCellId
 		if cell.ParentBranchType == 100 {
-			design.Children[cell.ParentCellID] = append(design.Children[cell.ParentCellID], cell.CellID)
+			design.Children[cell.ParentCellId] = append(design.Children[cell.ParentCellId], cell.CellId)
 		}
 	}
 	for _, cell := range cells {
-		design := gamedata.TrainingTreeDesign[cell.DesignID]
+		design := gamedata.TrainingTreeDesign[cell.DesignId]
 		if cell.ParentBranchType != 100 {
-			design.Children[cell.ParentCellID] = append(design.Children[cell.ParentCellID], cell.CellID)
+			design.Children[cell.ParentCellId] = append(design.Children[cell.ParentCellId], cell.CellId)
 		}
 	}
 }

@@ -27,10 +27,10 @@ type DropWithTypes struct {
 }
 
 type SkipLiveResult struct {
-	LiveDifficultyMasterID        int                                            `json:"live_difficulty_master_id"`
-	LiveDeckID                    int                                            `json:"live_deck_id"`
+	LiveDifficultyMasterId        int                                            `json:"live_difficulty_master_id"`
+	LiveDeckId                    int                                            `json:"live_deck_id"`
 	Drops                         []DropWithTypes                                `json:"drops"`
-	MemberLoveStatuses            generic.ObjectByObjectIDList[MemberLoveStatus] `json:"member_love_statuses"`
+	MemberLoveStatuses            generic.ObjectByObjectIdList[MemberLoveStatus] `json:"member_love_statuses"`
 	GainUserExp                   int                                            `json:"gain_user_exp"`
 	IsRewardAccessoryInPresentBox bool                                           `json:"is_reward_accessory_in_present_box"`
 	ActiveEventResult             *int                                           `json:"active_event_result"`
@@ -40,20 +40,20 @@ type SkipLiveResult struct {
 func LiveSkip(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type LiveSkipReq struct {
-		LiveDifficultyMasterID int `json:"live_difficulty_master_id"`
-		DeckID                 int `json:"deck_id"`
+		LiveDifficultyMasterId int `json:"live_difficulty_master_id"`
+		DeckId                 int `json:"deck_id"`
 		TicketUseCount         int `json:"ticket_use_count"`
 	}
 	req := LiveSkipReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userID := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userID)
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	session.UserStatus.LastLiveDifficultyID = req.LiveDifficultyMasterID
-	liveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyMasterID]
+	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyMasterId
+	liveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyMasterId]
 	isCenter := map[int]bool{}
 	for _, memberMapping := range liveDifficulty.Live.LiveMemberMapping {
 		if memberMapping.IsCenter && (memberMapping.Position <= 9) {
@@ -67,27 +67,27 @@ func LiveSkip(ctx *gin.Context) {
 	}
 
 	skipLiveResult := SkipLiveResult{
-		LiveDifficultyMasterID: req.LiveDifficultyMasterID,
-		LiveDeckID:             req.DeckID,
+		LiveDifficultyMasterId: req.LiveDifficultyMasterId,
+		LiveDeckId:             req.DeckId,
 		GainUserExp:            liveDifficulty.RewardUserExp * req.TicketUseCount}
 
 	for i := 1; i <= req.TicketUseCount; i++ {
 		skipLiveResult.Drops = append(skipLiveResult.Drops, DropWithTypes{})
 	}
 	session.UserStatus.Exp += skipLiveResult.GainUserExp
-	deck := session.GetUserLiveDeck(req.DeckID)
+	deck := session.GetUserLiveDeck(req.DeckId)
 	deckJsonByte, _ := json.Marshal(deck)
-	cardMasterIDs := []int{}
+	cardMasterIds := []int{}
 	gjson.Parse(string(deckJsonByte)).ForEach(func(key, value gjson.Result) bool {
 		if strings.Contains(key.String(), "card_master_id") {
-			cardMasterIDs = append(cardMasterIDs, int(value.Int()))
+			cardMasterIds = append(cardMasterIds, int(value.Int()))
 		}
 		return true
 	})
 
 	bondCardPosition := make(map[int]int)
-	for i, cardMasterID := range cardMasterIDs {
-		userCard := session.GetUserCard(cardMasterID)
+	for i, cardMasterId := range cardMasterIds {
+		userCard := session.GetUserCard(cardMasterId)
 		userCard.LiveJoinCount += req.TicketUseCount // count skip clear in pfp
 		session.UpdateUserCard(userCard)
 		// update member love point
@@ -95,20 +95,20 @@ func LiveSkip(ctx *gin.Context) {
 		if isCenter[i] {
 			addedLove += rewardCenterLovePoint
 		}
-		memberMasterID := gamedata.Card[cardMasterID].Member.ID
+		memberMasterId := gamedata.Card[cardMasterId].Member.Id
 
-		pos, exist := bondCardPosition[memberMasterID]
+		pos, exist := bondCardPosition[memberMasterId]
 		// only use 1 card master id or an idol might be shown multiple times
 		if !exist {
-			memberLoveStatus := skipLiveResult.MemberLoveStatuses.AppendNewWithID(int64(cardMasterID))
+			memberLoveStatus := skipLiveResult.MemberLoveStatuses.AppendNewWithId(int64(cardMasterId))
 			memberLoveStatus.RewardLovePoint = addedLove
-			bondCardPosition[memberMasterID] = skipLiveResult.MemberLoveStatuses.Length - 1
+			bondCardPosition[memberMasterId] = skipLiveResult.MemberLoveStatuses.Length - 1
 		} else {
 			skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint += addedLove
 		}
 	}
-	for memberMasterID, pos := range bondCardPosition {
-		addedLove := session.AddLovePoint(memberMasterID,
+	for memberMasterId, pos := range bondCardPosition {
+		addedLove := session.AddLovePoint(memberMasterId,
 			req.TicketUseCount*skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint)
 		skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint = addedLove
 	}

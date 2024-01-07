@@ -17,7 +17,7 @@ type LiveDifficulty struct {
 func (*LiveDifficulty) Table() string {
 	return "m_live_difficulty"
 }
-func (*LiveDifficulty) ID(fields []parser.Field) int64 {
+func (*LiveDifficulty) Id(fields []parser.Field) int64 {
 	if fields[0].Key != "live_difficulty_id" {
 		panic("wrong field order")
 	}
@@ -44,7 +44,7 @@ func handleLiveDifficultyEvent(event parser.ModifierEvent[LiveDifficulty]) {
 	var dummy LiveDifficulty
 	if event.Type == parser.DELETE { // if deleted then we can add it back
 		event.Type = parser.INSERT
-		recoveredLiveDifficulty[dummy.ID(event.Fields)] = true
+		recoveredLiveDifficulty[dummy.Id(event.Fields)] = true
 	} else if event.Type == parser.INSERT { // check if the unlock pattern is 3, then we set it to 1
 		// return for now
 		return

@@ -9,7 +9,7 @@ import (
 
 type AccessoryLevelUpItem struct {
 	// frm m_accessory_level_up_item
-	ID int `xorm:"pk 'id'"`
+	Id int `xorm:"pk 'id'"`
 	// Name string
 	// ThumbnailAssetPath
 	Rarity    int `xorm:"'rarity'"`
@@ -18,7 +18,7 @@ type AccessoryLevelUpItem struct {
 	GameMoney int `xorm:"'game_money'"`
 	// Description string
 	ItemListCategoryType int `xorm:"'item_list_category_type'"`
-	// SceneID int
+	// SceneId int
 	// BannerImageAssetPath
 	// DisplayOrder int
 }

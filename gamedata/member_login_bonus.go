@@ -22,8 +22,8 @@ func loadMemberLoginBonusBirthday(gamedata *Gamedata, masterdata_db, serverdata_
 	err := masterdata_db.Table("m_login_bonus_birthday").OrderBy("id DESC").Find(&bonuses)
 	utils.CheckErr(err)
 	for _, memberLoginBonusBirthday := range bonuses {
-		gamedata.Member[gamedata.Suit[memberLoginBonusBirthday.SuitMasterId].Member.ID].MemberLoginBonusBirthdays = append(
-			gamedata.Member[gamedata.Suit[memberLoginBonusBirthday.SuitMasterId].Member.ID].MemberLoginBonusBirthdays,
+		gamedata.Member[gamedata.Suit[memberLoginBonusBirthday.SuitMasterId].Member.Id].MemberLoginBonusBirthdays = append(
+			gamedata.Member[gamedata.Suit[memberLoginBonusBirthday.SuitMasterId].Member.Id].MemberLoginBonusBirthdays,
 			memberLoginBonusBirthday)
 	}
 }

@@ -8,11 +8,11 @@ package response
 type MemberGuildRankingOneTermCell struct {
 	Order          int `json:"order"`
 	TotalPoint     int `json:"total_point"`
-	MemberMasterID int `json:"member_master_id"`
+	MemberMasterId int `json:"member_master_id"`
 }
 
 type MemberGuildRankingOneTerm struct {
-	MemberGuildID int                             `json:"member_guild_id"` // this is not the ID of the member, this is what week this ranking is from
+	MemberGuildId int                             `json:"member_guild_id"` // this is not the Id of the member, this is what week this ranking is from
 	StartAt       int64                           `json:"start_at"`
 	EndAt         int64                           `json:"end_at"`
 	Channels      []MemberGuildRankingOneTermCell `json:"channels"`
@@ -40,7 +40,7 @@ type MemberGuildUserRankingBorderInfo struct {
 }
 
 type MemberGuildUserRanking struct {
-	MemberGuildID  int                                `json:"member_guild_id"` // this is not the ID of the member, this is what week this ranking is from
+	MemberGuildId  int                                `json:"member_guild_id"` // this is not the Id of the member, this is what week this ranking is from
 	TopRanking     []MemberGuildUserRankingCell       `json:"top_ranking"`
 	MyRanking      []MemberGuildUserRankingCell       `json:"my_ranking"`
 	RankingBorders []MemberGuildUserRankingBorderInfo `json:"ranking_borders"`

@@ -5,10 +5,10 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) UpdateVoice(naviVoiceMasterID int, isNew bool) {
+func (session *Session) UpdateVoice(naviVoiceMasterId int, isNew bool) {
 	userVoice := model.UserVoice{}
 	exist, err := session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?",
-		session.UserStatus.UserID, naviVoiceMasterID).Get(&userVoice)
+		session.UserStatus.UserId, naviVoiceMasterId).Get(&userVoice)
 	utils.CheckErr(err)
 	if exist {
 		if userVoice.IsNew == isNew {
@@ -17,17 +17,17 @@ func (session *Session) UpdateVoice(naviVoiceMasterID int, isNew bool) {
 		userVoice.IsNew = isNew
 	} else {
 		userVoice = model.UserVoice{
-			UserID:            session.UserStatus.UserID,
-			NaviVoiceMasterID: naviVoiceMasterID,
+			UserId:            session.UserStatus.UserId,
+			NaviVoiceMasterId: naviVoiceMasterId,
 			IsNew:             isNew,
 		}
 	}
-	session.UserModel.UserVoiceByVoiceID.PushBack(userVoice)
+	session.UserModel.UserVoiceByVoiceId.PushBack(userVoice)
 }
 func voiceFinalizer(session *Session) {
-	for _, userVoice := range session.UserModel.UserVoiceByVoiceID.Objects {
+	for _, userVoice := range session.UserModel.UserVoiceByVoiceId.Objects {
 		affected, err := session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?",
-			session.UserStatus.UserID, userVoice.NaviVoiceMasterID).AllCols().Update(userVoice)
+			session.UserStatus.UserId, userVoice.NaviVoiceMasterId).AllCols().Update(userVoice)
 		utils.CheckErr(err)
 		if affected == 0 {
 			_, err = session.Db.Table("u_voice").Insert(userVoice)
@@ -37,5 +37,5 @@ func voiceFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(voiceFinalizer)
-	addGenericTableFieldPopulator("u_voice", "UserVoiceByVoiceID")
+	addGenericTableFieldPopulator("u_voice", "UserVoiceByVoiceId")
 }
