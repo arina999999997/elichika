@@ -36,7 +36,7 @@ type Session struct {
 	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIdMapping[model.UserCommunicationMemberDetailBadge]
 	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[model.UserLiveDeck]
 	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[model.UserLiveParty]
-	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[model.UserAccessory]
+	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[client.UserAccessory]
 	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[model.UserLiveDifficulty]
 	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[model.TriggerCardGradeUp]
 	UserTriggerBasicMapping                   generic.ObjectByObjectIdMapping[model.TriggerBasic]

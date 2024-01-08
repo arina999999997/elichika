@@ -9,15 +9,15 @@ import (
 
 type AccessoryGrade struct {
 	// Grade int
-	MaxLevel              int  `xorm:"'max_level'"`
-	PassiveSkill1MasterId *int `xorm:"'accessory_passive_skill_1_master_id'"`
-	PassiveSkill2MasterId *int `xorm:"'accessory_passive_skill_2_master_id'"` // always null
+	MaxLevel              int32  `xorm:"'max_level'"`
+	PassiveSkill1MasterId *int32 `xorm:"'accessory_passive_skill_1_master_id'"`
+	PassiveSkill2MasterId *int32 `xorm:"'accessory_passive_skill_2_master_id'"` // always null
 }
 
 type AccessoryRarityUp struct {
-	AfterAccessoryMasterId *int                    `xorm:"'after_accessory_master_id'"`
+	AfterAccessoryMasterId *int32                  `xorm:"'after_accessory_master_id'"`
 	AfterAccessory         *Accessory              `xorm:"-"`
-	RarityUpGroupMasterId  *int                    `xorm:"'accessory_rarity_up_group_master_id'"`
+	RarityUpGroupMasterId  *int32                  `xorm:"'accessory_rarity_up_group_master_id'"`
 	RarityUpGroup          *AccessoryRarityUpGroup `xorm:"-"`
 }
 
@@ -28,25 +28,25 @@ func (rarityUp *AccessoryRarityUp) populate(gamedata *Gamedata, masterdata_db, s
 
 type Accessory struct {
 	// from m_accessory
-	Id int `xorm:"pk 'id'"`
+	Id int32 `xorm:"pk 'id'"`
 	// Name string
 	// AccessoryNo int
 	// ThumbnailAssetPath string
 	// AccessoryType int // always 1
 	// MemberMasterId *int // always null
-	RarityType int              `xorm:"'rarity_type'"`
+	RarityType int32            `xorm:"'rarity_type'" enum:"AccessoryRarity"`
 	Rarity     *AccessoryRarity `xorm:"-"`
-	Attribute  int              `xorm:"'attribute'"`
+	Attribute  int32            `xorm:"'attribute'" enum:"CardAttribute"`
 	Role       int              `xorm:"'role'"`
 	MaxGrade   int              `xorm:"'max_grade'"`
 
 	// from m_accessory_grade_up
 	Grade []AccessoryGrade `xorm:"-"` // 0 indexed
 	// from m_accessory_level_up
-	LevelExp []int `xorm:"-"` // 1 indexed, total amount of exp
+	LevelExp []int32 `xorm:"-"` // 1 indexed, total amount of exp
 
 	// from m_accessory_melt
-	MeltGroupMasterIds []int                 `xorm:"-"` // 0 indexed
+	MeltGroupMasterIds []int32               `xorm:"-"` // 0 indexed
 	MeltGroup          []*AccessoryMeltGroup `xorm:"-"` // 0 indexed
 
 	// from m_accessory_rarity_up
@@ -64,7 +64,7 @@ func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverda
 	{
 		err := masterdata_db.Table("m_accessory_level_up").Where("accessory_master_id = ?", accessory.Id).OrderBy("level").Cols("exp").Find(&accessory.LevelExp)
 		utils.CheckErr(err)
-		accessory.LevelExp = append([]int{0}, accessory.LevelExp...)
+		accessory.LevelExp = append([]int32{0}, accessory.LevelExp...)
 	}
 
 	{
@@ -89,7 +89,7 @@ func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverda
 }
 
 func loadAccessory(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	gamedata.Accessory = make(map[int]*Accessory)
+	gamedata.Accessory = make(map[int32]*Accessory)
 	err := masterdata_db.Table("m_accessory").Find(&gamedata.Accessory)
 	utils.CheckErr(err)
 	for _, accessory := range gamedata.Accessory {

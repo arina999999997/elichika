@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/config"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -86,11 +87,12 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
 	type PowerUpReq struct {
-		UserAccessoryId       int64   `json:"user_accessory_id"`
+		UserAccessoryId int64 `json:"user_accessory_id"`
+		// TODO: do not use anon type
 		PowerUpAccessoryIds   []int64 `json:"power_up_user_accessory_ids"`
 		AccessoryLevelUpItems []struct {
-			AccessoryLevelUpItemMasterId int `json:"accessory_level_up_item_master_id"`
-			Amount                       int `json:"amount"`
+			AccessoryLevelUpItemMasterId int32 `json:"accessory_level_up_item_master_id"`
+			Amount                       int32 `json:"amount"`
 		} `json:"accessory_level_up_items"`
 	}
 	req := PowerUpReq{}
@@ -104,8 +106,8 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	userAccessory := session.GetUserAccessory(req.UserAccessoryId)
 	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterId]
 
-	skillPlusPercent := 0
-	moneyUsed := 0
+	skillPlusPercent := int32(0)
+	moneyUsed := int32(0)
 
 	type AccessoryDoPowerUp struct {
 		DoLevelUp        bool `json:"do_level_up"`
@@ -131,17 +133,16 @@ func AccessoryPowerUp(ctx *gin.Context) {
 
 			// some limit increase change the skills
 			if masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterId != nil {
-				userAccessory.PassiveSkill1Id = *masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterId
+				userAccessory.PassiveSkill1Id = generic.NewNullable(*masterAccessory.Grade[userAccessory.Grade].PassiveSkill1MasterId)
 			}
 			if masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterId != nil {
-				userAccessory.PassiveSkill2Id = new(int)
-				*userAccessory.PassiveSkill2Id = *masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterId
+				userAccessory.PassiveSkill2Id = generic.NewNullable(*masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterId)
 			}
 			doPowerUp.DoGradeUp = true
 		} else {
 			userAccessory.Exp += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].PlusExp
 			moneyUsed += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].GameMoney
-			skillPlusPercent += masterPowerUpAccessory.Rarity.SkillLevelUpPlusPercent[powerUpAccessory.PassiveSkill1Level]
+			skillPlusPercent += masterPowerUpAccessory.Rarity.SkillLevelUpPlusPercent[powerUpAccessory.PassiveSkill1Level.Value]
 		}
 		powerUpAccessory.IsNull = true // mark for delete
 		session.UpdateUserAccessory(powerUpAccessory)
@@ -174,12 +175,12 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	}
 
 	// calculate new skill level
-	if userAccessory.PassiveSkill1Level < masterAccessory.Rarity.GradeMaxSkillLevel[userAccessory.Grade] {
-		denominator := masterAccessory.Rarity.SkillLevelUpDenominator[userAccessory.Grade][userAccessory.PassiveSkill1Level]
+	if userAccessory.PassiveSkill1Level.Value < masterAccessory.Rarity.GradeMaxSkillLevel[userAccessory.Grade] {
+		denominator := masterAccessory.Rarity.SkillLevelUpDenominator[userAccessory.Grade][userAccessory.PassiveSkill1Level.Value]
 		chance := skillPlusPercent / denominator
 		// probability is chance / 10000
-		if chance > rand.Intn(10000) {
-			userAccessory.PassiveSkill1Level++
+		if int32(rand.Intn(10000)) < chance {
+			userAccessory.PassiveSkill1Level.Value++
 			doPowerUp.DoSkillLevelUp = true
 		}
 		doPowerUp.DoSkillProcessed = true
@@ -219,9 +220,9 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	masterAfterAccessory := masterAccessory.RarityUp.AfterAccessory
 
 	type AccessoryDoRarityUp struct {
-		BeforeAccessoryRarity int  `json:"before_accessory_rarity"`
-		AfterAccessoryRarity  int  `json:"after_accessory_rarity"`
-		DoRarityUpAddSkill    bool `json:"do_rarity_up_add_skill"`
+		BeforeAccessoryRarity int32 `json:"before_accessory_rarity"`
+		AfterAccessoryRarity  int32 `json:"after_accessory_rarity"`
+		DoRarityUpAddSkill    bool  `json:"do_rarity_up_add_skill"`
 	}
 	doRarityUp := AccessoryDoRarityUp{
 		BeforeAccessoryRarity: masterAccessory.RarityType,
@@ -233,11 +234,12 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	userAccessory.Level = 1
 	userAccessory.Exp = 0
 	userAccessory.Grade = 0
-	doRarityUp.DoRarityUpAddSkill = userAccessory.PassiveSkill1Id != *masterAfterAccessory.Grade[0].PassiveSkill1MasterId
-	userAccessory.PassiveSkill1Id = *masterAfterAccessory.Grade[0].PassiveSkill1MasterId
+	doRarityUp.DoRarityUpAddSkill = userAccessory.PassiveSkill1Id.Value != *masterAfterAccessory.Grade[0].PassiveSkill1MasterId
+	userAccessory.PassiveSkill1Id = generic.NewNullable(*masterAfterAccessory.Grade[0].PassiveSkill1MasterId)
 	if masterAfterAccessory.Grade[0].PassiveSkill2MasterId != nil {
-		userAccessory.PassiveSkill2Id = new(int)
-		*userAccessory.PassiveSkill2Id = *masterAfterAccessory.Grade[0].PassiveSkill2MasterId
+		userAccessory.PassiveSkill2Id = generic.NewNullable(*masterAfterAccessory.Grade[0].PassiveSkill2MasterId)
+		// userAccessory.PassiveSkill2Id = new(int)
+		// *userAccessory.PassiveSkill2Id = *masterAfterAccessory.Grade[0].PassiveSkill2MasterId
 	}
 	userAccessory.AcquiredAt = session.Time.Unix()
 	session.UpdateUserAccessory(userAccessory)

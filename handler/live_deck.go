@@ -126,10 +126,10 @@ func FetchLiveDeckSelect(ctx *gin.Context) {
 func SaveSuit(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveSuitReq struct {
-		DeckId       int `json:"deck_id"`
-		CardIndex    int `json:"card_index"`
+		DeckId       int   `json:"deck_id"`
+		CardIndex    int   `json:"card_index"`
 		SuitMasterId int32 `json:"suit_master_id"`
-		ViewStatus   int `json:"view_status"` // 2 for Rina-chan board off, 1 for everyone else
+		ViewStatus   int   `json:"view_status"` // 2 for Rina-chan board off, 1 for everyone else
 	}
 
 	req := SaveSuitReq{}

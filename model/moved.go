@@ -1,8 +1,8 @@
 package model
 
 import (
-	"elichika/generic"
 	"elichika/client"
+	"elichika/generic"
 )
 
 func init() {
@@ -14,4 +14,5 @@ func init() {
 	TableNameToInterface["u_member"] = generic.UserIdWrapper[DbMember]{}
 	TableNameToInterface["u_suit"] = generic.UserIdWrapper[client.UserSuit]{}
 	TableNameToInterface["u_card"] = generic.UserIdWrapper[client.UserCard]{}
+	TableNameToInterface["u_accessory"] = generic.UserIdWrapper[client.UserAccessory]{}
 }

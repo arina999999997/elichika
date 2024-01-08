@@ -11,7 +11,7 @@ import (
 
 type Suit struct {
 	// from m_suit
-	Id        int32     `xorm:"pk 'id'"`
+	Id        int32   `xorm:"pk 'id'"`
 	MemberMId *int32  `xorm:"'member_m_id'"`
 	Member    *Member `xorm:"-"`
 	// Name string `xorm:"'name'"`

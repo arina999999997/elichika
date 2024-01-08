@@ -1,19 +1,20 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/generic"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) GetAllUserAccessories() []model.UserAccessory {
-	accessories := []model.UserAccessory{}
+func (session *Session) GetAllUserAccessories() []client.UserAccessory {
+	accessories := []client.UserAccessory{}
 	err := session.Db.Table("u_accessory").Where("user_id = ?", session.UserId).
 		Find(&accessories)
 	utils.CheckErr(err)
 	return accessories
 }
 
-func (session *Session) GetUserAccessory(userAccessoryId int64) model.UserAccessory {
+func (session *Session) GetUserAccessory(userAccessoryId int64) client.UserAccessory {
 	// if exist then reuse
 	pos, exist := session.UserAccessoryMapping.SetList(&session.UserModel.UserAccessoryByUserAccessoryId).Map[userAccessoryId]
 	if exist {
@@ -21,18 +22,18 @@ func (session *Session) GetUserAccessory(userAccessoryId int64) model.UserAccess
 	}
 
 	// if not look in db
-	accessory := model.UserAccessory{}
+	accessory := client.UserAccessory{}
 	exist, err := session.Db.Table("u_accessory").
 		Where("user_id = ? AND user_accessory_id = ?", session.UserId, userAccessoryId).Get(&accessory)
 	utils.CheckErr(err)
 	if !exist {
 		// if not exist, create new one
-		accessory = model.UserAccessory{
+		accessory = client.UserAccessory{
 			// UserId:             session.UserId,
 			UserAccessoryId:    userAccessoryId,
 			Level:              1,
-			PassiveSkill1Level: 1,
-			PassiveSkill2Level: 1,
+			PassiveSkill1Level: generic.NewNullable(int32(1)),
+			PassiveSkill2Level: generic.NewNullable(int32(1)),
 			IsNew:              true,
 			AcquiredAt:         session.Time.Unix(),
 		}
@@ -40,7 +41,7 @@ func (session *Session) GetUserAccessory(userAccessoryId int64) model.UserAccess
 	return accessory
 }
 
-func (session *Session) UpdateUserAccessory(accessory model.UserAccessory) {
+func (session *Session) UpdateUserAccessory(accessory client.UserAccessory) {
 	session.UserAccessoryMapping.SetList(&session.UserModel.UserAccessoryByUserAccessoryId).Update(accessory)
 }
 

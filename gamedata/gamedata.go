@@ -73,11 +73,11 @@ func generateLoadOrder(fid uintptr) {
 }
 
 type Gamedata struct {
-	Accessory              map[int]*Accessory
-	AccessoryRarity        map[int]*AccessoryRarity
-	AccessoryRarityUpGroup map[int]*AccessoryRarityUpGroup
-	AccessoryMeltGroup     map[int]*AccessoryMeltGroup
-	AccessoryLevelUpItem   map[int]*AccessoryLevelUpItem
+	Accessory              map[int32]*Accessory
+	AccessoryRarity        map[int32]*AccessoryRarity
+	AccessoryRarityUpGroup map[int32]*AccessoryRarityUpGroup
+	AccessoryMeltGroup     map[int32]*AccessoryMeltGroup
+	AccessoryLevelUpItem   map[int32]*AccessoryLevelUpItem
 
 	Member                          map[int32]*Member
 	MemberLoveLevelLovePoint        []int32

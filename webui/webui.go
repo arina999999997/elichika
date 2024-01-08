@@ -2,6 +2,7 @@ package webui
 
 import (
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/locale"
 	"elichika/userdata"
 	"elichika/utils"
@@ -96,13 +97,13 @@ func Accessory(ctx *gin.Context) {
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	form, _ := ctx.MultipartForm()
 	specificAccessoryString := form.Value["accessory_id"][0]
-	accessoryIds := []int{}
+	accessoryIds := []int32{}
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	if specificAccessoryString != "" {
 		value, _ := strconv.Atoi(specificAccessoryString)
-		accessoryIds = append(accessoryIds, value)
+		accessoryIds = append(accessoryIds, int32(value))
 	} else {
-		getRarity := make(map[int]bool)
+		getRarity := make(map[int32]bool)
 		getRarity[30] = len(form.Value["ur_accessories"]) > 0
 		getRarity[20] = len(form.Value["sr_accessories"]) > 0
 		getRarity[10] = len(form.Value["r_accessories"]) > 0
@@ -133,8 +134,12 @@ func Accessory(ctx *gin.Context) {
 			accessory.Exp = 0
 			accessory.Grade = 0
 			accessory.Attribute = masterAccessory.Attribute
-			accessory.PassiveSkill1Id = *masterAccessory.Grade[0].PassiveSkill1MasterId
-			accessory.PassiveSkill2Id = masterAccessory.Grade[0].PassiveSkill2MasterId
+			if masterAccessory.Grade[0].PassiveSkill1MasterId != nil {
+				accessory.PassiveSkill1Id = generic.NewNullable(*masterAccessory.Grade[0].PassiveSkill1MasterId)
+			}
+			if masterAccessory.Grade[0].PassiveSkill2MasterId != nil {
+				accessory.PassiveSkill2Id = generic.NewNullable(*masterAccessory.Grade[0].PassiveSkill2MasterId)
+			}
 			session.UpdateUserAccessory(accessory)
 		}
 	}
