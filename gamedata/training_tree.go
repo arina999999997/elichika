@@ -42,7 +42,7 @@ type TrainingTree struct {
 	// from m_training_tree_card_story_side
 	TrainingTreeCardStorySides map[int]int `xorm:"-"` // map from training_content_type to storySideMId
 	// from m_training_tree_card_suit
-	SuitMIds []int `xorm:"-"` // 1 indexed
+	SuitMIds []int32 `xorm:"-"` // 1 indexed
 	// from m_training_tree_card_voice
 	NaviActionIds []int `xorm:"-"` // 1 indexed
 
@@ -74,7 +74,7 @@ func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata
 		err := masterdata_db.Table("m_training_tree_card_suit").Where("card_m_id = ?", tree.Id).
 			OrderBy("training_content_no").Cols("suit_m_id").Find(&tree.SuitMIds)
 		utils.CheckErr(err)
-		tree.SuitMIds = append([]int{0}, tree.SuitMIds...)
+		tree.SuitMIds = append([]int32{0}, tree.SuitMIds...)
 	}
 
 	{

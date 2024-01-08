@@ -101,7 +101,7 @@ type Gamedata struct {
 	Card      map[int32]*Card
 	CardLevel map[int32]*CardLevel
 
-	Suit map[int]*Suit
+	Suit map[int32]*Suit
 
 	StoryMember map[int]*StoryMember
 

@@ -128,7 +128,7 @@ func SaveSuit(ctx *gin.Context) {
 	type SaveSuitReq struct {
 		DeckId       int `json:"deck_id"`
 		CardIndex    int `json:"card_index"`
-		SuitMasterId int `json:"suit_master_id"`
+		SuitMasterId int32 `json:"suit_master_id"`
 		ViewStatus   int `json:"view_status"` // 2 for Rina-chan board off, 1 for everyone else
 	}
 

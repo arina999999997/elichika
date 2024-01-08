@@ -10,10 +10,10 @@ import (
 )
 
 type MemberLoginBonusBirthday struct {
-	Id int `xorm:"pk 'id'"`
+	Id int32 `xorm:"pk 'id'"`
 	// StartAt int64
 	// EndAt int64
-	SuitMasterId int `xorm:"'suit_master_id'"`
+	SuitMasterId int32 `xorm:"'suit_master_id'"`
 }
 
 func loadMemberLoginBonusBirthday(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

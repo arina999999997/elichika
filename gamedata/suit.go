@@ -11,7 +11,7 @@ import (
 
 type Suit struct {
 	// from m_suit
-	Id        int     `xorm:"pk 'id'"`
+	Id        int32     `xorm:"pk 'id'"`
 	MemberMId *int32  `xorm:"'member_m_id'"`
 	Member    *Member `xorm:"-"`
 	// Name string `xorm:"'name'"`
@@ -30,7 +30,7 @@ func (suit *Suit) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 
 func loadSuit(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading Suit")
-	gamedata.Suit = make(map[int]*Suit)
+	gamedata.Suit = make(map[int32]*Suit)
 	err := masterdata_db.Table("m_suit").Find(&gamedata.Suit)
 	utils.CheckErr(err)
 	for _, suit := range gamedata.Suit {

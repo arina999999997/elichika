@@ -1,18 +1,18 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
 // suit are inserted when the function is called as suit is unique and doesn't change
 
-func (session *Session) InsertUserSuits(suits []model.UserSuit) {
+func (session *Session) InsertUserSuits(suits []client.UserSuit) {
 	session.UserModel.UserSuitBySuitId.Objects = append(session.UserModel.UserSuitBySuitId.Objects, suits...)
 }
 
-func (session *Session) InsertUserSuit(suitMasterId int) {
-	suit := model.UserSuit{
+func (session *Session) InsertUserSuit(suitMasterId int32) {
+	suit := client.UserSuit{
 		SuitMasterId: suitMasterId,
 		IsNew:        true,
 	}

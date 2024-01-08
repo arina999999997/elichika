@@ -164,7 +164,7 @@ func genericResourceHandler(session *Session, contentType, contentId, contentAmo
 }
 
 func suitResourceHandler(session *Session, _, suitMasterId, _ int32) {
-	session.InsertUserSuit(int(suitMasterId))
+	session.InsertUserSuit(suitMasterId)
 }
 
 func memberStoryHandler(session *Session, _, memberStoryId, _ int32) {

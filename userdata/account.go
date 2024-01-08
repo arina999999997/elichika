@@ -151,11 +151,11 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		session.InsertCards(cards)
 	}
 	{ // all the costumes that can't be obtained from maxing cards
-		suits := []model.UserSuit{}
+		suits := []client.UserSuit{}
 
 		for _, suit := range gamedata.Suit {
 			if suit.SuitReleaseRoute == 2 {
-				suits = append(suits, model.UserSuit{
+				suits = append(suits, client.UserSuit{
 					SuitMasterId: suit.Id,
 					IsNew:        false,
 				})

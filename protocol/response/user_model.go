@@ -15,7 +15,7 @@ type UserModel struct {
 	UserStatus                                                                 model.UserStatus                                                          `json:"user_status"`
 	UserMemberByMemberId                                                       generic.ObjectByObjectIdList[client.UserMember]                           `json:"user_member_by_member_id"`
 	UserCardByCardId                                                           generic.ObjectByObjectIdList[client.UserCard]                             `json:"user_card_by_card_id"`
-	UserSuitBySuitId                                                           generic.ObjectByObjectIdList[model.UserSuit]                              `json:"user_suit_by_suit_id"`
+	UserSuitBySuitId                                                           generic.ObjectByObjectIdList[client.UserSuit]                              `json:"user_suit_by_suit_id"`
 	UserLiveDeckById                                                           generic.ObjectByObjectIdList[model.UserLiveDeck]                          `json:"user_live_deck_by_id"`
 	UserLivePartyById                                                          generic.ObjectByObjectIdList[model.UserLiveParty]                         `json:"user_live_party_by_id"`
 	UserLessonDeckById                                                         generic.ObjectByObjectIdList[model.UserLessonDeck]                        `json:"user_lesson_deck_by_id"`

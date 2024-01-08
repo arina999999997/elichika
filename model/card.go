@@ -1,10 +1,5 @@
 package model
 
-import (
-	"elichika/client"
-	"elichika/generic"
-)
-
 // CardAwakeningReq ...
 type CardAwakeningReq struct {
 	CardMasterId     int  `json:"card_master_id"`
@@ -49,8 +44,4 @@ type CardPlayInfo struct {
 	IsAllTrainingActivated bool `json:"is_all_training_activated"`
 	LiveJoinCount          int  `xorm:"'live_join_count' default 0" json:"live_join_count"`
 	ActiveSkillPlayCount   int  `xorm:"'active_skill_play_count' default 0" json:"active_skill_play_count"`
-}
-
-func init() {
-	TableNameToInterface["u_card"] = generic.UserIdWrapper[client.UserCard]{}
 }
