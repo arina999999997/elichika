@@ -19,9 +19,9 @@ type UserResource struct {
 }
 
 var (
-	resourceHandler map[int]func(*Session, int, int32, int32)
+	resourceHandler = map[int32]func(*Session, int32, int32, int32){}
 	// new system
-	userModelField map[int]string
+	userModelField = map[int32]string{}
 )
 
 func (session *Session) AddSnsCoin(coin int32) {
@@ -48,7 +48,7 @@ func (session *Session) RemoveCardExp(exp int32) {
 	session.UserStatus.CardExp -= exp
 }
 
-func (session *Session) GetUserResource(contentType int, contentId int32) UserResource {
+func (session *Session) GetUserResource(contentType, contentId int32) UserResource {
 	_, exist := session.UserResourceDiffs[contentType]
 	if !exist {
 		session.UserResourceDiffs[contentType] = make(map[int32]UserResource)
@@ -102,15 +102,12 @@ func (session *Session) RemoveResource(resource client.Content) {
 
 func init() {
 	// reference for type can be found in m_content_setting
-	resourceHandler = make(map[int]func(*Session, int, int32, int32))
 	resourceHandler[enum.ContentTypeSnsCoin] = userStatusResourceHandler
 	resourceHandler[enum.ContentTypeCardExp] = userStatusResourceHandler
 	resourceHandler[enum.ContentTypeGameMoney] = userStatusResourceHandler
 	resourceHandler[enum.ContentTypeSubscriptionCoin] = userStatusResourceHandler
 
 	resourceHandler[enum.ContentTypeSuit] = suitResourceHandler
-
-	userModelField = make(map[int]string)
 
 	resourceHandler[enum.ContentTypeGachaPoint] = genericResourceHandler // gacha point (quartz)
 	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointId"
@@ -160,26 +157,26 @@ func init() {
 	resourceHandler[enum.ContentTypeVoice] = voiceHandler
 }
 
-func genericResourceHandler(session *Session, contentType int, contentId, contentAmount int32) {
+func genericResourceHandler(session *Session, contentType, contentId, contentAmount int32) {
 	resource := session.GetUserResource(contentType, contentId)
 	resource.Content.ContentAmount += contentAmount
 	session.UpdateUserResource(resource)
 }
 
-func suitResourceHandler(session *Session, _ int, suitMasterId, _ int32) {
+func suitResourceHandler(session *Session, _, suitMasterId, _ int32) {
 	session.InsertUserSuit(int(suitMasterId))
 }
 
-func memberStoryHandler(session *Session, _ int, memberStoryId, _ int32) {
+func memberStoryHandler(session *Session, _, memberStoryId, _ int32) {
 	session.InsertMemberStory(int(memberStoryId))
 }
 
-func voiceHandler(session *Session, _ int, naviVoiceMasterId, _ int32) {
+func voiceHandler(session *Session, _, naviVoiceMasterId, _ int32) {
 	session.UpdateVoice(int(naviVoiceMasterId), false)
 }
 
 // these resources amount are stored in the user status
-func userStatusResourceHandler(session *Session, resourceContentType int, resourceContentId, amount int32) {
+func userStatusResourceHandler(session *Session, resourceContentType, resourceContentId, amount int32) {
 	switch resourceContentType {
 	case enum.ContentTypeSnsCoin: // star gems
 		session.AddSnsCoin(amount)
@@ -243,7 +240,7 @@ func genericResourceByResourceIdPopulator(session *Session) {
 	// order by is not necessary
 	err := session.Db.Table("u_resource").Where("user_id = ?", session.UserId).Find(&contents)
 	utils.CheckErr(err)
-	contentByType := make(map[int][]client.Content)
+	contentByType := map[int32][]client.Content{}
 	for _, content := range contents {
 		contentByType[content.ContentType] = append(contentByType[content.ContentType], content)
 	}

@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/dictionary"
 	"elichika/enum"
@@ -100,11 +101,11 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 	defer session.Close()
 
 	{ // members, initial cards
-		members := []model.UserMember{}
-		cards := []model.UserCard{}
+		members := []client.UserMember{}
+		cards := []client.UserCard{}
 
 		for _, member := range gamedata.Member {
-			members = append(members, model.UserMember{
+			members = append(members, client.UserMember{
 				MemberMasterId:           member.Id,
 				CustomBackgroundMasterId: member.MemberInit.CustomBackgroundMId,
 				SuitMasterId:             member.MemberInit.SuitMasterId,
@@ -116,7 +117,7 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				OwnedCardCount:           1,
 				AllTrainingCardCount:     0,
 			})
-			cards = append(cards, model.UserCard{
+			cards = append(cards, client.UserCard{
 				CardMasterId:               member.MemberInit.SuitMasterId,
 				Level:                      1,
 				Exp:                        0,
@@ -139,7 +140,7 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				AdditionalPassiveSkill2Id:  0,
 				AdditionalPassiveSkill3Id:  0,
 				AdditionalPassiveSkill4Id:  0,
-				AcquiredAt:                 time.Now().Unix(),
+				AcquiredAt:                 int32(time.Now().Unix()),
 				IsNew:                      false,
 				LivePartnerCategories:      0,
 				LiveJoinCount:              0,
@@ -168,13 +169,13 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		for a := 0; a <= 10000; a += 10000 { // 10000... are DLP formations
 			for b := 1; b <= 20; b++ {
 				i := a + b
-				cid := [10]int{}
+				cid := [10]int32{}
 				// this order isn't actually correct to the official server
 				for j := 1; j <= 9; j++ {
-					cid[j] = gamedata.Member[j+100*((i-1)%3)].MemberInit.SuitMasterId
+					cid[j] = gamedata.Member[int32(j+100*((i-1)%3))].MemberInit.SuitMasterId
 				}
 				liveDeck := model.UserLiveDeck{
-					UserLiveDeckId: i,
+					UserLiveDeckId: int32(i),
 					CardMasterId1:  cid[1],
 					CardMasterId2:  cid[2],
 					CardMasterId3:  cid[3],
@@ -198,8 +199,8 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				liveDecks = append(liveDecks, liveDeck)
 				for j := 1; j <= 3; j++ {
 					liveParty := model.UserLiveParty{
-						PartyId:        i*100 + j,
-						UserLiveDeckId: i,
+						PartyId:        int32(i*100 + j),
+						UserLiveDeckId: int32(i),
 						CardMasterId1:  cid[(j-1)*3+1],
 						CardMasterId2:  cid[(j-1)*3+2],
 						CardMasterId3:  cid[(j-1)*3+3],

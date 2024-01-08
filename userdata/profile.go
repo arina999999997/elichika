@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/enum"
 	"elichika/model"
 	"elichika/utils"
@@ -13,8 +14,8 @@ func FetchDBProfile(userId int, result interface{}) {
 	utils.CheckErrMustExist(err, exist)
 }
 
-func FetchPartnerCards(otherUserId int) []model.UserCard {
-	partnerCards := []model.UserCard{}
+func FetchPartnerCards(otherUserId int) []client.UserCard {
+	partnerCards := []client.UserCard{}
 	err := Engine.Table("u_card").
 		Where("user_id = ? AND live_partner_categories != 0", otherUserId).
 		Find(&partnerCards)
@@ -24,7 +25,7 @@ func FetchPartnerCards(otherUserId int) []model.UserCard {
 	return partnerCards
 }
 
-func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.PartnerCardInfo {
+func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.PartnerCardInfo {
 
 	memberId := session.Gamedata.Card[card.CardMasterId].Member.Id
 
@@ -45,12 +46,12 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 	utils.CheckErrMustExist(err, exist)
 
 	partnerCard.PassiveSkillLevels = []int{}
-	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, card.PassiveSkillALevel)
-	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, card.PassiveSkillBLevel)
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill1Id)
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill2Id)
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill3Id)
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, card.AdditionalPassiveSkill4Id)
+	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, int(card.PassiveSkillALevel))
+	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, int(card.PassiveSkillBLevel))
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill1Id))
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill2Id))
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill3Id))
+	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill4Id))
 	partnerCard.MemberLovePanels = []int{} // must not be null
 
 	// filling this for a card of self freeze the game
@@ -72,8 +73,8 @@ func (session *Session) GetPartnerCardFromUserCard(card model.UserCard) model.Pa
 	return partnerCard
 }
 
-func GetOtherUserCard(otherUserId, cardMasterId int) model.UserCard {
-	card := model.UserCard{}
+func GetOtherUserCard(otherUserId, cardMasterId int) client.UserCard {
+	card := client.UserCard{}
 	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).
 		Get(&card)
 	utils.CheckErrMustExist(err, exist)
@@ -85,7 +86,7 @@ func (session *Session) GetOtherUserBasicProfile(otherUserId int) model.UserBasi
 	FetchDBProfile(otherUserId, &basicInfo)
 	recommendCard := GetOtherUserCard(otherUserId, basicInfo.RecommendCardMasterId)
 
-	basicInfo.RecommendCardLevel = recommendCard.Level
+	basicInfo.RecommendCardLevel = int(recommendCard.Level)
 	basicInfo.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
 	basicInfo.IsRecommendCardAllTrainingActivated = recommendCard.IsAllTrainingActivated
 
@@ -124,7 +125,7 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	// recommend card
 	recommendCard := GetOtherUserCard(otherUserId, profile.ProfileInfo.BasicInfo.RecommendCardMasterId)
 
-	profile.ProfileInfo.BasicInfo.RecommendCardLevel = recommendCard.Level
+	profile.ProfileInfo.BasicInfo.RecommendCardLevel = int(recommendCard.Level)
 	profile.ProfileInfo.BasicInfo.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
 	profile.ProfileInfo.BasicInfo.IsRecommendCardAllTrainingActivated = recommendCard.IsAllTrainingActivated
 
@@ -135,16 +136,16 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	profile.ProfileInfo.BasicInfo.IsRequestPending = false
 
 	// other user's members
-	members := []model.UserMember{}
+	members := []client.UserMember{}
 	err = session.Db.Table("u_member").Where("user_id = ?", otherUserId).OrderBy("love_point DESC").Find(&members)
 	utils.CheckErr(err)
 	profile.ProfileInfo.TotalLovePoint = 0
 	for _, member := range members {
-		profile.ProfileInfo.TotalLovePoint += member.LovePoint
+		profile.ProfileInfo.TotalLovePoint += int(member.LovePoint)
 	}
 	for i := 0; i < 3; i++ {
-		profile.ProfileInfo.LoveMembers[i].MemberMasterId = members[i].MemberMasterId
-		profile.ProfileInfo.LoveMembers[i].LovePoint = members[i].LovePoint
+		profile.ProfileInfo.LoveMembers[i].MemberMasterId = int(members[i].MemberMasterId)
+		profile.ProfileInfo.LoveMembers[i].LovePoint = int(members[i].LovePoint)
 	}
 
 	// need to return this in order, so make the array then write to it

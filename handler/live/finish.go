@@ -22,15 +22,16 @@ import (
 )
 
 type MemberLoveStatus struct {
-	CardMasterId    int `json:"-"`
-	RewardLovePoint int `json:"reward_love_point"`
+	// TODO(refactor): remove this field
+	CardMasterId    int32 `json:"-"`
+	RewardLovePoint int32 `json:"reward_love_point"`
 }
 
 func (mls *MemberLoveStatus) Id() int64 {
 	return int64(mls.CardMasterId)
 }
 func (mls *MemberLoveStatus) SetId(id int64) {
-	mls.CardMasterId = int(id)
+	mls.CardMasterId = int32(id)
 }
 
 type LiveResultAchievement struct {
@@ -62,10 +63,10 @@ type LiveFinishLiveResult struct {
 	GimmickDrops           []any                                          `json:"gimmick_drops"`
 	MemberLoveStatuses     generic.ObjectByObjectIdList[MemberLoveStatus] `json:"member_love_statuses"`
 	MVP                    struct {
-		CardMasterId        int `json:"card_master_id"`
-		GetVoltage          int `json:"get_voltage"`
-		SkillTriggeredCount int `json:"skill_triggered_count"`
-		AppealCount         int `json:"appeal_count"`
+		CardMasterId        int32 `json:"card_master_id"`
+		GetVoltage          int   `json:"get_voltage"`
+		SkillTriggeredCount int   `json:"skill_triggered_count"`
+		AppealCount         int   `json:"appeal_count"`
 	} `json:"mvp"`
 	Partner                     *model.UserBasicInfo                                `json:"partner"`
 	LiveResultAchievements      generic.ObjectByObjectIdList[LiveResultAchievement] `json:"live_result_achievements"`
@@ -178,8 +179,8 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 		liveResult.GainUserExp = liveDifficulty.RewardUserExp
 	}
 
-	memberPos := make(map[int]int)
-	loveAmount := [9]int{}
+	memberPos := make(map[int32]int)
+	loveAmount := [9]int32{}
 	for i := range req.LiveScore.CardStatDict.Objects {
 		liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
 
@@ -211,7 +212,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 			if !exist {
 				memberPos[memberMasterId] = i
 			}
-			loveAmount[memberPos[memberMasterId]] += addedLove
+			loveAmount[memberPos[memberMasterId]] += int32(addedLove)
 		}
 	}
 	// it's normal to show +0 on the bond screen if the person is already maxed
@@ -320,7 +321,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 		// update card used stuff
 		for i := range req.LiveScore.CardStatDict.Objects {
 			liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
-			cardUsedCount := session.GetUserTowerCardUsed(*live.TowerLive.TowerId, liveFinishCard.CardMasterId)
+			cardUsedCount := session.GetUserTowerCardUsed(*live.TowerLive.TowerId, int(liveFinishCard.CardMasterId))
 			cardUsedCount.UsedCount++
 			cardUsedCount.LastUsedAt = session.Time.Unix()
 			session.UpdateUserTowerCardUsed(cardUsedCount)

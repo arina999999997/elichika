@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/item"
 	"elichika/userdata"
 
@@ -16,7 +17,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		panic("wrong handler used")
 	}
 	year, month, day := session.Time.Date()
-	mmdd := int(month)*100 + int(day)
+	mmdd := int32(month)*100 + int32(day)
 	list, exists := session.Gamedata.MemberByBirthday[mmdd]
 	if !exists { // no one with this birthday
 		return
@@ -39,7 +40,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 			client.LoginBonusRewards{
 				Day:          1,
 				Status:       enum.LoginBonusReceiveStatusReceiving,
-				ContentGrade: enum.LoginBonusContentGradeRare,
+				ContentGrade: generic.NewNullable(enum.LoginBonusContentGradeRare),
 				LoginBonusContents: []client.Content{
 					client.Content{
 						ContentType:   enum.ContentTypeTrainingMaterial,
@@ -74,8 +75,8 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 			panic("not supported")
 		}
 		target.BirthdayMember = append(target.BirthdayMember, client.LoginBonusBirthDayMember{
-			MemberMasterId: int32(member.Id),
-			SuitMasterId:   int32(memberLoginBonusBirthday.SuitMasterId),
+			MemberMasterId: generic.NewNullable(int32(member.Id)),
+			SuitMasterId:   generic.NewNullable(int32(memberLoginBonusBirthday.SuitMasterId)),
 		})
 		naviLoginBonus.BackgroundId = int32(memberLoginBonusBirthday.Id)
 		target.BirthdayLoginBonuses = append(target.BirthdayLoginBonuses, naviLoginBonus)

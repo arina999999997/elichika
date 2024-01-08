@@ -11,9 +11,9 @@ import (
 
 type MemberLovePanel struct {
 	// from m_member_love_panel
-	Id                       int              `xorm:"pk 'id'"`
-	LoveLevelMasterLoveLevel int              `xorm:"'love_level_master_love_level'"`
-	MemberMasterId           *int             `xorm:"member_master_id"`
+	Id                       int32            `xorm:"pk 'id'"`
+	LoveLevelMasterLoveLevel int32            `xorm:"'love_level_master_love_level'"`
+	MemberMasterId           *int32           `xorm:"member_master_id"`
 	Member                   *Member          `xorm:"-"`
 	NextPanel                *MemberLovePanel `xorm:"-"`
 }
@@ -25,7 +25,7 @@ func (panel *MemberLovePanel) populate(gamedata *Gamedata, masterdata_db, server
 
 func loadMemberLovePanel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading MemberLovePanel")
-	gamedata.MemberLovePanel = make(map[int]*MemberLovePanel)
+	gamedata.MemberLovePanel = make(map[int32]*MemberLovePanel)
 	err := masterdata_db.Table("m_member_love_panel").Find(&gamedata.MemberLovePanel)
 	utils.CheckErr(err)
 	for _, panel := range gamedata.MemberLovePanel {

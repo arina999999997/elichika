@@ -19,7 +19,7 @@ type LoginBonus struct {
 type LoginBonusRewardDay struct {
 	LoginBonusId int32 `xorm:"pk"`
 	Day          int32 `xorm:"pk"`
-	ContentGrade int
+	ContentGrade int32 `enum:"LoginBonusContentGrade"`
 }
 
 type LoginBonusRewardContent struct {

@@ -10,9 +10,9 @@ These types are defined in the `client` package, and they must have the exact sa
 - The fields' types must match perfectly:
 
   - `int32` must be `int32` and `int64` must be `int64` and so on.
-  - For fields that are `enum`, `int` must be used.
   - Replicate the type of the fields if necessary, and do not use annonymous types.
-  - If the field can be `null`, use a pointer.
+  - If the field can be `null`, use the Nullable generic wrapper.
+  - For fields that are `enum`, an enum tag to the enum name is required. This currently doesn't do anything but we might want to do enum checking and stuff later, and it just make it easier to keep track of things.
 - If the type is used with `json`, it must works correctly with Marshal and Unmarshal, and it no information would be lost in doing so.
 
   - Use a custom marshal / unmarshaler if necessary.

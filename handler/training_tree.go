@@ -19,7 +19,7 @@ import (
 func FetchTrainingTree(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchTrainingTreeReq struct {
-		CardMasterId int `json:"card_master_id"`
+		CardMasterId int32 `json:"card_master_id"`
 	}
 	req := FetchTrainingTreeReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -48,8 +48,8 @@ func LevelUpCard(ctx *gin.Context) {
 	}
 
 	type LevelUpCardReq struct {
-		CardMasterId    int `json:"card_master_id"`
-		AdditionalLevel int `json:"additional_level"`
+		CardMasterId    int32 `json:"card_master_id"`
+		AdditionalLevel int32 `json:"additional_level"`
 	}
 
 	req := LevelUpCardReq{}
@@ -75,8 +75,8 @@ func LevelUpCard(ctx *gin.Context) {
 func GradeUpCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type GradeUpCardReq struct {
-		CardMasterId int `json:"card_master_id"`
-		ContentId    int `json:"content_id"`
+		CardMasterId int32 `json:"card_master_id"`
+		ContentId    int32 `json:"content_id"`
 	}
 	req := GradeUpCardReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -104,9 +104,9 @@ func GradeUpCard(ctx *gin.Context) {
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break
 	session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-		CardMasterId:         req.CardMasterId,
-		BeforeLoveLevelLimit: currentLoveLevel - masterCard.CardRarityType/10,
-		AfterLoveLevelLimit:  currentLoveLevel})
+		CardMasterId:         int(req.CardMasterId),
+		BeforeLoveLevelLimit: int(currentLoveLevel - masterCard.CardRarityType/10),
+		AfterLoveLevelLimit:  int(currentLoveLevel)})
 
 	resp := session.Finalize("{}", "user_model_diff")
 	resp = SignResp(ctx, resp, config.SessionKey)
@@ -117,9 +117,9 @@ func GradeUpCard(ctx *gin.Context) {
 func ActivateTrainingTreeCell(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ActivateTrainingTreeCellReq struct {
-		CardMasterId  int   `json:"card_master_id"`
-		CellMasterIds []int `json:"cell_master_ids"`
-		PayType       int   `json:"pay_type"`
+		CardMasterId  int32   `json:"card_master_id"`
+		CellMasterIds []int32 `json:"cell_master_ids"`
+		PayType       int     `json:"pay_type"`
 	}
 	req := ActivateTrainingTreeCellReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
@@ -153,11 +153,11 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 			paramCell := &trainingTree.TrainingTreeCardParams[cell.TrainingContentNo]
 			switch paramCell.TrainingContentType {
 			case 2: // stamina
-				card.TrainingLife += paramCell.Value
+				card.TrainingLife += int32(paramCell.Value)
 			case 3: // appeal
-				card.TrainingAttack += paramCell.Value
+				card.TrainingAttack += int32(paramCell.Value)
 			case 4: // technique
-				card.TrainingDexterity += paramCell.Value
+				card.TrainingDexterity += int32(paramCell.Value)
 			default:
 				panic("Unexpected training content type")
 			}
@@ -195,17 +195,17 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 
 	// progress reward
 	for _, reward := range trainingTree.TrainingTreeProgressRewards {
-		if reward.ActivateNum > card.TrainingActivatedCellCount+len(req.CellMasterIds) {
+		if reward.ActivateNum > int(card.TrainingActivatedCellCount)+len(req.CellMasterIds) {
 			break
 		}
-		if reward.ActivateNum > card.TrainingActivatedCellCount {
+		if reward.ActivateNum > int(card.TrainingActivatedCellCount) {
 			session.AddResource(reward.Reward)
 		}
 	}
 
-	card.TrainingActivatedCellCount += len(req.CellMasterIds)
+	card.TrainingActivatedCellCount += int32(len(req.CellMasterIds))
 
-	if card.TrainingActivatedCellCount+1 == len(*cellContents) {
+	if card.TrainingActivatedCellCount+1 == int32(len(*cellContents)) {
 		card.IsAllTrainingActivated = true
 		member := session.GetMember(*masterCard.MemberMasterId)
 		member.AllTrainingCardCount++
@@ -219,8 +219,8 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	for _, cellId := range req.CellMasterIds {
 		unlockedCells = append(unlockedCells,
 			model.TrainingTreeCell{
-				CardMasterId: req.CardMasterId,
-				CellId:       cellId,
+				CardMasterId: int(req.CardMasterId),
+				CellId:       int(cellId),
 				ActivatedAt:  session.Time.Unix()})
 	}
 

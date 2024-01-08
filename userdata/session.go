@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/model"
@@ -29,8 +30,8 @@ type Session struct {
 	UserId                                    int
 	Gamedata                                  *gamedata.Gamedata
 	UserStatus                                *model.UserStatus // link to UserModel.UserStatus
-	UserCardMapping                           generic.ObjectByObjectIdMapping[model.UserCard]
-	UserMemberMapping                         generic.ObjectByObjectIdMapping[model.UserMember]
+	UserCardMapping                           generic.ObjectByObjectIdMapping[client.UserCard]
+	UserMemberMapping                         generic.ObjectByObjectIdMapping[client.UserMember]
 	UserLessonDeckMapping                     generic.ObjectByObjectIdMapping[model.UserLessonDeck]
 	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIdMapping[model.UserCommunicationMemberDetailBadge]
 	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[model.UserLiveDeck]
@@ -42,9 +43,9 @@ type Session struct {
 	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIdMapping[model.TriggerMemberLoveLevelUp]
 	UserTowerMapping                          generic.ObjectByObjectIdMapping[model.UserTower]
 	// TODO: change the map to index map?
-	UserMemberLovePanelDiffs map[int]model.UserMemberLovePanel
+	UserMemberLovePanelDiffs map[int32]model.UserMemberLovePanel
 	UserMemberLovePanels     []model.UserMemberLovePanel
-	UserResourceDiffs        map[int](map[int32]UserResource) // content_type then content_id
+	UserResourceDiffs        map[int32](map[int32]UserResource) // content_type then content_id
 
 	UserTrainingTreeCellDiffs []model.TrainingTreeCell
 	// for now only store delta patch, i.e. user_model_diff
@@ -123,9 +124,9 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 		return nil
 	}
 	s.UserStatus = &s.UserModel.UserStatus
-	s.UserResourceDiffs = make(map[int](map[int32]UserResource))
+	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
-	s.UserMemberLovePanelDiffs = make(map[int]model.UserMemberLovePanel)
+	s.UserMemberLovePanelDiffs = make(map[int32]model.UserMemberLovePanel)
 	return &s
 }
 
@@ -142,7 +143,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login, u
 	s.UserModel = *loginData.UserModel
 	s.UserStatus = &s.UserModel.UserStatus
 
-	s.UserResourceDiffs = make(map[int](map[int32]UserResource))
+	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
 	s.UserMemberLovePanels = loginData.MemberLovePanels
 	genericDatabaseInsert(&s, "u_login", *loginData)

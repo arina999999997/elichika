@@ -1,18 +1,18 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/utils"
 )
 
 // fetch a card, use the value in diff is present, otherwise fetch from db
-func (session *Session) GetUserCard(cardMasterId int) model.UserCard {
+func (session *Session) GetUserCard(cardMasterId int32) client.UserCard {
 	pos, exist := session.UserCardMapping.SetList(&session.UserModel.UserCardByCardId).Map[int64(cardMasterId)]
 	if exist {
 		return session.UserModel.UserCardByCardId.Objects[pos]
 	}
-	card := model.UserCard{}
+	card := client.UserCard{}
 	exist, err := session.Db.Table("u_card").
 		Where("user_id = ? AND card_master_id = ?", session.UserId, cardMasterId).Get(&card)
 	utils.CheckErr(err)
@@ -20,7 +20,7 @@ func (session *Session) GetUserCard(cardMasterId int) model.UserCard {
 	if !exist {
 		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
 		masterCard := gamedata.Card[cardMasterId]
-		card = model.UserCard{
+		card = client.UserCard{
 			CardMasterId:        cardMasterId,
 			Level:               1,
 			MaxFreePassiveSkill: masterCard.PassiveSkillSlot,
@@ -29,14 +29,14 @@ func (session *Session) GetUserCard(cardMasterId int) model.UserCard {
 			PassiveSkillALevel:  1,
 			PassiveSkillBLevel:  1,
 			PassiveSkillCLevel:  1,
-			AcquiredAt:          session.Time.Unix(),
+			AcquiredAt:          int32(session.Time.Unix()),
 			IsNew:               true,
 		}
 	}
 	return card
 }
 
-func (session *Session) UpdateUserCard(card model.UserCard) {
+func (session *Session) UpdateUserCard(card client.UserCard) {
 	session.UserCardMapping.SetList(&session.UserModel.UserCardByCardId).Update(card)
 }
 
@@ -52,7 +52,7 @@ func cardFinalizer(session *Session) {
 }
 
 // insert all the cards
-func (session *Session) InsertCards(cards []model.UserCard) {
+func (session *Session) InsertCards(cards []client.UserCard) {
 	session.UserModel.UserCardByCardId.Objects = append(session.UserModel.UserCardByCardId.Objects, cards...)
 }
 

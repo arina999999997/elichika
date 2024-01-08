@@ -17,7 +17,7 @@ import (
 func FetchTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchTradeReq struct {
-		TradeType int `json:"trade_type"`
+		TradeType int32 `json:"trade_type"`
 	}
 	req := FetchTradeReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)

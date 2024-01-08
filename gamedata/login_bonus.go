@@ -3,6 +3,7 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/dictionary"
+	"elichika/generic"
 	"elichika/model"
 	"elichika/utils"
 
@@ -13,7 +14,7 @@ import (
 
 type LoginBonus struct {
 	LoginBonusId            int32                      `xorm:"pk 'login_bonus_id'"`
-	LoginBonusType          int                        `xorm:"'login_bonus_type'"`
+	LoginBonusType          int32                      `xorm:"'login_bonus_type'" enum:"LoginBonusType"`
 	StartAt                 int64                      `xorm:"'start_at'"`
 	EndAt                   int64                      `xorm:"'end_at'"`
 	BackgroundId            int32                      `xorm:"'background_id'"`
@@ -31,7 +32,7 @@ func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	for _, day := range rewardDays {
 		reward := client.LoginBonusRewards{
 			Day:          day.Day,
-			ContentGrade: day.ContentGrade,
+			ContentGrade: generic.NewNullable(day.ContentGrade),
 		}
 		err = serverdata_db.Table("s_login_bonus_reward_content").
 			Where("login_bonus_id = ? AND day = ?", lb.LoginBonusId, day.Day).Find(&reward.LoginBonusContents)
@@ -42,7 +43,7 @@ func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 func loadLoginBonus(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading LoginBonus")
-	gamedata.LoginBonus = make(map[int]*LoginBonus)
+	gamedata.LoginBonus = make(map[int32]*LoginBonus)
 	err := serverdata_db.Table("s_login_bonus").Find(&gamedata.LoginBonus)
 	utils.CheckErr(err)
 	for _, loginBonus := range gamedata.LoginBonus {

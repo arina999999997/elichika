@@ -40,7 +40,7 @@ func SaveDeckAll(ctx *gin.Context) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	for i := 0; i < 9; i++ {
 		if req.CardWithSuit[i*2+1] == 0 {
-			req.CardWithSuit[i*2+1] = gamedata.Card[req.CardWithSuit[i*2]].Member.MemberInit.SuitMasterId
+			req.CardWithSuit[i*2+1] = int(gamedata.Card[int32(req.CardWithSuit[i*2])].Member.MemberInit.SuitMasterId)
 		}
 	}
 
@@ -78,14 +78,14 @@ func SaveDeckAll(ctx *gin.Context) {
 			utils.CheckErr(err)
 
 			partyInfo := model.UserLiveParty{}
-			partyInfo.PartyId = int(partyId)
+			partyInfo.PartyId = int32(partyId)
 			partyInfo.IconMasterId, partyInfo.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIds(
-				dictInfo.CardMasterIds[0], dictInfo.CardMasterIds[1], dictInfo.CardMasterIds[2],
+				int32(dictInfo.CardMasterIds[0]), int32(dictInfo.CardMasterIds[1]), int32(dictInfo.CardMasterIds[2]),
 			)
-			partyInfo.UserLiveDeckId = req.DeckId
-			partyInfo.CardMasterId1 = dictInfo.CardMasterIds[0]
-			partyInfo.CardMasterId2 = dictInfo.CardMasterIds[1]
-			partyInfo.CardMasterId3 = dictInfo.CardMasterIds[2]
+			partyInfo.UserLiveDeckId = int32(req.DeckId)
+			partyInfo.CardMasterId1 = int32(dictInfo.CardMasterIds[0])
+			partyInfo.CardMasterId2 = int32(dictInfo.CardMasterIds[1])
+			partyInfo.CardMasterId3 = int32(dictInfo.CardMasterIds[2])
 			partyInfo.UserAccessoryId1 = dictInfo.UserAccessoryIds[0]
 			partyInfo.UserAccessoryId2 = dictInfo.UserAccessoryIds[1]
 			partyInfo.UserAccessoryId3 = dictInfo.UserAccessoryIds[2]
@@ -156,7 +156,7 @@ func SaveSuit(ctx *gin.Context) {
 	// Rina-chan board toggle
 	if session.Gamedata.Suit[req.SuitMasterId].Member.Id == enum.MemberMasterIdRina {
 		RinaChan := session.GetMember(enum.MemberMasterIdRina)
-		RinaChan.ViewStatus = req.ViewStatus
+		RinaChan.ViewStatus = int32(req.ViewStatus)
 		session.UpdateMember(RinaChan)
 	}
 
@@ -249,9 +249,9 @@ func SaveDeck(ctx *gin.Context) {
 
 		partyInfo := gjson.Parse(partyJson)
 		partyIcon, partyName := gamedata.GetLivePartyInfoByCardMasterIds(
-			int(partyInfo.Get("card_master_id_1").Int()),
-			int(partyInfo.Get("card_master_id_2").Int()),
-			int(partyInfo.Get("card_master_id_3").Int()),
+			int32(partyInfo.Get("card_master_id_1").Int()),
+			int32(partyInfo.Get("card_master_id_2").Int()),
+			int32(partyInfo.Get("card_master_id_3").Int()),
 		)
 
 		partyJson, _ = sjson.Set(partyJson, "name.dot_under_text", partyName)

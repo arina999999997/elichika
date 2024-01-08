@@ -20,10 +20,10 @@ import (
 
 func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
-	var memberId int
+	var memberId int32
 	gjson.Parse(reqBody).ForEach(func(key, value gjson.Result) bool {
 		if value.Get("member_id").String() != "" {
-			memberId = int(value.Get("member_id").Int())
+			memberId = int32(value.Get("member_id").Int())
 			return false
 		}
 		return true
@@ -191,9 +191,9 @@ func SetTheme(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	member := session.GetMember(req.MemberMasterId)
-	member.SuitMasterId = req.SuitMasterId
-	member.CustomBackgroundMasterId = req.CustomBackgroundMasterId
+	member := session.GetMember(int32(req.MemberMasterId))
+	member.SuitMasterId = int32(req.SuitMasterId)
+	member.CustomBackgroundMasterId = int32(req.CustomBackgroundMasterId)
 	session.UpdateMember(member)
 
 	signBody := session.Finalize("{}", "user_model")
@@ -216,10 +216,10 @@ func SetFavoriteMember(ctx *gin.Context) {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseLovePointUp
 		// award the initial SR
 		// TODO(refactor): use the common method to add a card instead
-		card := session.GetUserCard(100002001 + req.MemberMasterId*10000)
+		card := session.GetUserCard(int32(100002001 + req.MemberMasterId*10000))
 		session.UserStatus.RecommendCardMasterId = int32(card.CardMasterId) // this is for the pop up
-		cardRarity := 20
-		member := session.GetMember(req.MemberMasterId)
+		cardRarity := int32(20)
+		member := session.GetMember(int32(req.MemberMasterId))
 		beforeLoveLevelLimit := session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
 		afterLoveLevelLimit := beforeLoveLevelLimit + cardRarity/10
 		if afterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
@@ -232,9 +232,9 @@ func SetFavoriteMember(ctx *gin.Context) {
 		} else {
 			// add trigger card grade up so animation play when opening the card
 			session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-				CardMasterId:         card.CardMasterId,
-				BeforeLoveLevelLimit: afterLoveLevelLimit, // this is correct
-				AfterLoveLevelLimit:  afterLoveLevelLimit,
+				CardMasterId:         int(card.CardMasterId),
+				BeforeLoveLevelLimit: int(afterLoveLevelLimit), // this is correct
+				AfterLoveLevelLimit:  int(afterLoveLevelLimit),
 			})
 		}
 		// update the card and member

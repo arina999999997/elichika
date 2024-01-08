@@ -12,9 +12,9 @@ import (
 
 type Member struct {
 	// from m_member
-	Id          int `xorm:"'id' pk"`        // member master id
-	MemberGroup int `xorm:"'member_group'"` // muse aqour niji
-	SchoolGrade int `xorm:"school_grade"`
+	Id          int32 `xorm:"'id' pk"`                           // member master id
+	MemberGroup int32 `xorm:"'member_group'" enum:"MemberGroup"` // muse aqour niji
+	SchoolGrade int32 `xorm:"school_grade"`
 
 	// colors use rgba, 8 bits each
 	// ThemeColor int `xorm:"'theme_color'"`
@@ -30,8 +30,8 @@ type Member struct {
 	// Height string
 	// Birthday string
 
-	BirthMonth int `xorm:"birth_month"`
-	BirthDay   int `xorm:"birth_day"`
+	BirthMonth int32 `xorm:"birth_month"`
+	BirthDay   int32 `xorm:"birth_day"`
 
 	// BloodType string
 	// ZodiacSign string
@@ -69,11 +69,11 @@ type Member struct {
 type MemberInit struct {
 	// from m_member_init
 	// MemberMId int
-	SuitMasterId        int `xorm:"'suit_m_id'"`
-	CustomBackgroundMId int `xorm:"'custom_background_m_id'"`
-	LoveLevel           int `xorm:"'love_level'"`
-	LovePoint           int `xorm:"'love_point'"`
-	LovePointLimit      int `xorm:"'love_point_limit'"`
+	SuitMasterId        int32 `xorm:"'suit_m_id'"`
+	CustomBackgroundMId int32 `xorm:"'custom_background_m_id'"`
+	LoveLevel           int32 `xorm:"'love_level'"`
+	LovePoint           int32 `xorm:"'love_point'"`
+	LovePointLimit      int32 `xorm:"'love_point_limit'"`
 }
 
 func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
@@ -86,7 +86,7 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 		rewards := []LoveLevelReward{}
 		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).Find(&rewards)
 		utils.CheckErr(err)
-		for i := 0; i <= gamedata.MemberLoveLevelCount; i++ {
+		for i := int32(0); i <= gamedata.MemberLoveLevelCount; i++ {
 			member.LoveLevelRewards = append(member.LoveLevelRewards, []client.Content{})
 		}
 		for _, reward := range rewards {
@@ -109,10 +109,10 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading Member")
-	gamedata.Member = make(map[int]*Member)
+	gamedata.Member = make(map[int32]*Member)
 	err := masterdata_db.Table("m_member").Find(&gamedata.Member)
 	utils.CheckErr(err)
-	gamedata.MemberByBirthday = make(map[int]([]*Member))
+	gamedata.MemberByBirthday = make(map[int32]([]*Member))
 	for _, member := range gamedata.Member {
 		member.populate(gamedata, masterdata_db, serverdata_db, dictionary)
 		gamedata.MemberByBirthday[member.BirthMonth*100+member.BirthDay] =

@@ -87,11 +87,11 @@ func (ul UserLive) MarshalJSON() ([]byte, error) {
 	return bytes, nil
 }
 
-// MemberLovePanels ...
-type MemberLovePanels struct {
-	MemberId               int   `json:"member_id"`
-	MemberLovePanelCellIds []int `json:"member_love_panel_cell_ids"`
-}
+// // MemberLovePanels ...
+// type MemberLovePanels struct {
+// 	MemberId               int   `json:"member_id"`
+// 	MemberLovePanelCellIds []int `json:"member_love_panel_cell_ids"`
+// }
 
 type LiveUpdatePlayListReq struct {
 	LiveMasterId int  `json:"live_master_id"`

@@ -32,7 +32,7 @@ func (session *Session) SetTradeProductUser(productId, newTradedCount int) {
 	}
 }
 
-func (session *Session) GetTrades(tradeType int) []model.Trade {
+func (session *Session) GetTrades(tradeType int32) []model.Trade {
 	trades := []model.Trade{}
 	for _, trade_ptr := range session.Gamedata.TradesByType[tradeType] {
 		trade := *trade_ptr

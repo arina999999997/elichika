@@ -10,15 +10,15 @@ import (
 type LiveParty struct {
 	// only relevant data for now, full move later on
 	partyInfoByRoleIds [5][5][5]struct {
-		PartyIcon int
+		PartyIcon int32
 		PartyName string
 	}
 }
 
-func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIds(a, b, c int) (partyIcon int, partyName string) {
-	a = gamedata.Card[a].Role
-	b = gamedata.Card[b].Role
-	c = gamedata.Card[c].Role
+func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIds(a, b, c int32) (partyIcon int32, partyName string) {
+	a = int32(gamedata.Card[a].Role)
+	b = int32(gamedata.Card[b].Role)
+	c = int32(gamedata.Card[c].Role)
 	partyIcon = gamedata.LiveParty.partyInfoByRoleIds[a][b][c].PartyIcon
 	partyName = gamedata.LiveParty.partyInfoByRoleIds[a][b][c].PartyName
 	return
@@ -31,7 +31,7 @@ func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sessio
 		Role2         int    `xorm:"'role_2'"`
 		Role3         int    `xorm:"'role_3'"`
 		Name          string `xorm:"'name'"`
-		LivePartyIcon int    `xorm:"'live_party_icon'"`
+		LivePartyIcon int32  `xorm:"'live_party_icon'"`
 	}
 	liveParties := []LiveParty{}
 	err := masterdata_db.Table("m_live_party_name").Find(&liveParties)

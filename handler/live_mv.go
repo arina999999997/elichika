@@ -76,7 +76,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 			// Rina-chan board toggle
 			if memberId == enum.MemberMasterIdRina {
 				RinaChan := session.GetMember(enum.MemberMasterIdRina)
-				RinaChan.ViewStatus = req.ViewStatusByPos[k+1]
+				RinaChan.ViewStatus = int32(req.ViewStatusByPos[k+1])
 				session.UpdateMember(RinaChan)
 			}
 		}

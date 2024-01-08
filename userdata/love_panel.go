@@ -5,7 +5,7 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetMemberLovePanel(memberMasterId int) model.UserMemberLovePanel {
+func (session *Session) GetMemberLovePanel(memberMasterId int32) model.UserMemberLovePanel {
 	panel, exist := session.UserMemberLovePanelDiffs[memberMasterId]
 	if exist {
 		return panel
@@ -21,7 +21,7 @@ func (session *Session) GetMemberLovePanel(memberMasterId int) model.UserMemberL
 	return panel
 }
 
-func (session *Session) GetLovePanelCellIds(memberId int) []int {
+func (session *Session) GetLovePanelCellIds(memberId int32) []int32 {
 	userMemberLovePanel := session.GetMemberLovePanel(memberId)
 	userMemberLovePanel.Fill()
 	return userMemberLovePanel.MemberLovePanelCellIds

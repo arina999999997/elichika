@@ -18,43 +18,43 @@ type LiveStartRequest struct {
 }
 
 type LiveFinishCard struct {
-	CardMasterId        int `json:"-"`
-	GotVoltage          int `json:"got_voltage"`
-	SkillTriggeredCount int `json:"skill_triggered_count"`
-	AppealCount         int `json:"appeal_count"`
+	CardMasterId        int32 `json:"-"`
+	GotVoltage          int   `json:"got_voltage"`
+	SkillTriggeredCount int   `json:"skill_triggered_count"`
+	AppealCount         int   `json:"appeal_count"`
 }
 
 func (obj *LiveFinishCard) SetId(id int64) {
-	obj.CardMasterId = int(id)
+	obj.CardMasterId = int32(id)
 }
 
 type LiveFinishRequest struct {
 	LiveId           int64 `json:"live_id"`
 	LiveFinishStatus int   `json:"live_finish_status"`
 	LiveScore        struct {
-		StartInfo                  any                                                `json:"start_info"`
-		FinishInfo                 any                                                `json:"finish_info"`
-		ResultDict                 []any                                              `json:"result_dict"`
-		WaveStatDict               []any                                              `json:"wave_stat_dict"`
-		TurnStatDict               []any                                              `json:"turn_stat_dict"`
-		CardStatDict               generic.ObjectByObjectIdList[model.LiveFinishCard] `json:"card_stat_dict"`
-		TargetScore                int                                                `json:"target_score"`
-		CurrentScore               int                                                `json:"current_score"`
-		ComboCount                 int                                                `json:"combo_count"`
-		ChangeSquadCount           int                                                `json:"change_squad_count"`
-		HighestComboCount          int                                                `json:"highest_combo_count"`
-		RemainingStamina           int                                                `json:"remaining_stamina"`
-		IsPerfectLive              bool                                               `json:"is_perfect_live"`
-		IsPerfectFullCombo         bool                                               `json:"is_perfect_full_combo"`
-		UseVoltageActiveSkillCount int                                                `json:"use_voltage_active_skill_count"`
-		UseHealActiveSkillCount    int                                                `json:"use_heal_active_skill_count"`
-		UseDebufActiveSkillCount   int                                                `json:"use_debuf_active_skill_count"`
-		UseBufActiveSkillCount     int                                                `json:"use_buf_active_skill_count"`
-		UseSpSkillCount            int                                                `json:"use_sp_skill_count"`
-		CompleteAppealChanceCount  int                                                `json:"complete_appeal_chance_count"`
-		TriggerCriticalCount       int                                                `json:"triggered_critical_count"`
-		LivePower                  int                                                `json:"live_power"`
-		SpSkillScoreList           []int                                              `json:"sp_skill_score_list"`
+		StartInfo                  any                                          `json:"start_info"`
+		FinishInfo                 any                                          `json:"finish_info"`
+		ResultDict                 []any                                        `json:"result_dict"`
+		WaveStatDict               []any                                        `json:"wave_stat_dict"`
+		TurnStatDict               []any                                        `json:"turn_stat_dict"`
+		CardStatDict               generic.ObjectByObjectIdList[LiveFinishCard] `json:"card_stat_dict"`
+		TargetScore                int                                          `json:"target_score"`
+		CurrentScore               int                                          `json:"current_score"`
+		ComboCount                 int                                          `json:"combo_count"`
+		ChangeSquadCount           int                                          `json:"change_squad_count"`
+		HighestComboCount          int                                          `json:"highest_combo_count"`
+		RemainingStamina           int                                          `json:"remaining_stamina"`
+		IsPerfectLive              bool                                         `json:"is_perfect_live"`
+		IsPerfectFullCombo         bool                                         `json:"is_perfect_full_combo"`
+		UseVoltageActiveSkillCount int                                          `json:"use_voltage_active_skill_count"`
+		UseHealActiveSkillCount    int                                          `json:"use_heal_active_skill_count"`
+		UseDebufActiveSkillCount   int                                          `json:"use_debuf_active_skill_count"`
+		UseBufActiveSkillCount     int                                          `json:"use_buf_active_skill_count"`
+		UseSpSkillCount            int                                          `json:"use_sp_skill_count"`
+		CompleteAppealChanceCount  int                                          `json:"complete_appeal_chance_count"`
+		TriggerCriticalCount       int                                          `json:"triggered_critical_count"`
+		LivePower                  int                                          `json:"live_power"`
+		SpSkillScoreList           []int                                        `json:"sp_skill_score_list"`
 	} `json:"live_score"`
 	ResumeFinishInfo any `json:"resume_finish_info"`
 	RoomId           int `json:"room_id"`

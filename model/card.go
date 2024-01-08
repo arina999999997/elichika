@@ -1,6 +1,7 @@
 package model
 
 import (
+	"elichika/client"
 	"elichika/generic"
 )
 
@@ -8,41 +9,6 @@ import (
 type CardAwakeningReq struct {
 	CardMasterId     int  `json:"card_master_id"`
 	IsAwakeningImage bool `json:"is_awakening_image"`
-}
-
-// UserCard ...
-type UserCard struct {
-	CardMasterId               int   `xorm:"pk 'card_master_id'" json:"card_master_id"`
-	Level                      int   `json:"level"`
-	Exp                        int   `json:"exp"`
-	LovePoint                  int   `json:"love_point"`
-	IsFavorite                 bool  `json:"is_favorite"`
-	IsAwakening                bool  `json:"is_awakening"`
-	IsAwakeningImage           bool  `json:"is_awakening_image"`
-	IsAllTrainingActivated     bool  `json:"is_all_training_activated"`
-	TrainingActivatedCellCount int   `json:"training_activated_cell_count"`
-	MaxFreePassiveSkill        int   `json:"max_free_passive_skill"`
-	Grade                      int   `json:"grade"`
-	TrainingLife               int   `json:"training_life"`
-	TrainingAttack             int   `json:"training_attack"`
-	TrainingDexterity          int   `json:"training_dexterity"`
-	ActiveSkillLevel           int   `json:"active_skill_level"`
-	PassiveSkillALevel         int   `json:"passive_skill_a_level"`
-	PassiveSkillBLevel         int   `json:"passive_skill_b_level"`
-	PassiveSkillCLevel         int   `json:"passive_skill_c_level"`
-	AdditionalPassiveSkill1Id  int   `xorm:"'additional_passive_skill_1_id'" json:"additional_passive_skill_1_id"`
-	AdditionalPassiveSkill2Id  int   `xorm:"'additional_passive_skill_2_id'" json:"additional_passive_skill_2_id"`
-	AdditionalPassiveSkill3Id  int   `xorm:"'additional_passive_skill_3_id'" json:"additional_passive_skill_3_id"`
-	AdditionalPassiveSkill4Id  int   `xorm:"'additional_passive_skill_4_id'" json:"additional_passive_skill_4_id"`
-	AcquiredAt                 int64 `json:"acquired_at"`
-	IsNew                      bool  `json:"is_new"`
-	LivePartnerCategories      int   `xorm:"default 0" json:"-"` // bitset, i-th bit is on if is i-th partner card
-	LiveJoinCount              int   `xorm:"'live_join_count' default 0" json:"-"`
-	ActiveSkillPlayCount       int   `xorm:"'active_skill_play_count' default 0" json:"-"`
-}
-
-func (uc *UserCard) Id() int64 {
-	return int64(uc.CardMasterId)
 }
 
 // CardFavoriteReq ...
@@ -86,5 +52,5 @@ type CardPlayInfo struct {
 }
 
 func init() {
-	TableNameToInterface["u_card"] = generic.UserIdWrapper[UserCard]{}
+	TableNameToInterface["u_card"] = generic.UserIdWrapper[client.UserCard]{}
 }

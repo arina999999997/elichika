@@ -17,12 +17,12 @@ Assume the following result in the DB:
 */
 type Card struct {
 	// from m_card
-	Id             int     `xorm:"pk 'id'"`
-	MemberMasterId *int    `xorm:"'member_m_id'"`
+	Id             int32   `xorm:"pk 'id'"`
+	MemberMasterId *int32  `xorm:"'member_m_id'"`
 	Member         *Member `xorm:"-"`
 	// SchoolIdolNo int `xorm:"'school_idol_no'"`
-	CardRarityType int `xorm:"'card_rarity_type'"`
-	Role           int `xorm:"'role'"`
+	CardRarityType int32 `xorm:"'card_rarity_type'" enum:"CardRarityType"`
+	Role           int   `xorm:"'role'"`
 	// MemberCardThumbnailAssetPath string
 	// AtGacha bool
 	// AtEvent bool
@@ -32,16 +32,16 @@ type Card struct {
 	// SpPoint int
 	// ExchangeItemId int `xorm:"'exchange_item_id'"`
 	// RoleEffectMasterId int `xorm:"'role_effect_master_id'"` // is just the same as role
-	PassiveSkillSlot    int `xorm:"'passive_skill_slot'"`
-	MaxPassiveSkillSlot int `xorm:"'max_passive_skill_slot'"`
+	PassiveSkillSlot    int32 `xorm:"'passive_skill_slot'"`
+	MaxPassiveSkillSlot int32 `xorm:"'max_passive_skill_slot'"`
 
 	// from m_card_grade_up_item
 	// map content_id to client.Content
-	CardGradeUpItem map[int](map[int32]client.Content) `xorm:"-"`
+	CardGradeUpItem map[int32](map[int32]client.Content) `xorm:"-"`
 }
 
 type CardGradeUpItem struct {
-	Grade    int            `xorm:"'grade'"`
+	Grade    int32          `xorm:"'grade'"`
 	Resource client.Content `xorm:"extends"`
 }
 
@@ -52,7 +52,7 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	card.TrainingTreeMasterId = &card.TrainingTree.Id
 
 	{
-		card.CardGradeUpItem = make(map[int](map[int32]client.Content))
+		card.CardGradeUpItem = make(map[int32](map[int32]client.Content))
 		gradeUps := []CardGradeUpItem{}
 		err := masterdata_db.Table("m_card_grade_up_item").Where("card_id = ?", card.Id).Find(&gradeUps)
 		utils.CheckErr(err)
@@ -68,7 +68,7 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 
 func loadCard(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading Card")
-	gamedata.Card = make(map[int]*Card)
+	gamedata.Card = make(map[int32]*Card)
 	err := masterdata_db.Table("m_card").Find(&gamedata.Card)
 	utils.CheckErr(err)
 

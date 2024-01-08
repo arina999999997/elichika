@@ -35,7 +35,7 @@ func (cardLevel *CardLevel) populate(gamedata *Gamedata, masterdata_db, serverda
 
 func loadCardLevel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading CardLevel")
-	gamedata.CardLevel = make(map[int]*CardLevel)
+	gamedata.CardLevel = make(map[int32]*CardLevel)
 	err := masterdata_db.Table("m_card_rarity").Find(&gamedata.CardLevel)
 	utils.CheckErr(err)
 	for _, cardLevel := range gamedata.CardLevel {

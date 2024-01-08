@@ -12,9 +12,9 @@ import (
 
 type MemberLovePanelCell struct {
 	// from m_member_love_panel_cell
-	Id                      int              `xorm:"pk 'id'"`
-	PanelIndex              int              `xorm:"'panel_index'"`
-	MemberLovePanelMasterId *int             `xorm:"'member_love_panel_master_id'"`
+	Id                      int32            `xorm:"pk 'id'"`
+	PanelIndex              int32            `xorm:"'panel_index'"`
+	MemberLovePanelMasterId *int32           `xorm:"'member_love_panel_master_id'"`
 	MemberLovePanel         *MemberLovePanel `xorm:"-"`
 	// BonusType
 	// BonusValue
@@ -32,7 +32,7 @@ func (cell *MemberLovePanelCell) populate(gamedata *Gamedata, masterdata_db, ser
 
 func loadMemberLovePanelCell(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading MemberLovePanelCell")
-	gamedata.MemberLovePanelCell = make(map[int]*MemberLovePanelCell)
+	gamedata.MemberLovePanelCell = make(map[int32]*MemberLovePanelCell)
 	err := masterdata_db.Table("m_member_love_panel_cell").Find(&gamedata.MemberLovePanelCell)
 	utils.CheckErr(err)
 	for _, cell := range gamedata.MemberLovePanelCell {

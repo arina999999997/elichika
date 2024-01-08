@@ -116,14 +116,14 @@ func SetLivePartner(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	newCard := session.GetUserCard(req.CardMasterId)
+	newCard := session.GetUserCard(int32(req.CardMasterId))
 	newCard.LivePartnerCategories |= (1 << req.LivePartnerCategoryId)
 	session.UpdateUserCard(newCard)
 
 	// remove the bit on the other cards
 	partnerCards := userdata.FetchPartnerCards(userId)
 	for _, card := range partnerCards {
-		if card.CardMasterId == req.CardMasterId {
+		if int(card.CardMasterId) == req.CardMasterId {
 			continue
 		}
 		if (card.LivePartnerCategories & (1 << req.LivePartnerCategoryId)) != 0 {

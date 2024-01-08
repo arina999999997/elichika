@@ -1,18 +1,19 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/model"
 	"elichika/utils"
 )
 
-func (session *Session) GetMember(memberMasterId int) model.UserMember {
+func (session *Session) GetMember(memberMasterId int32) client.UserMember {
 	pos, exist := session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Map[int64(memberMasterId)]
 	if exist {
 		return session.UserModel.UserMemberByMemberId.Objects[pos]
 	}
-	member := model.UserMember{}
+	member := client.UserMember{}
 	exist, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).Get(&member)
 	utils.CheckErr(err)
@@ -23,11 +24,11 @@ func (session *Session) GetMember(memberMasterId int) model.UserMember {
 	return member
 }
 
-func (session *Session) UpdateMember(member model.UserMember) {
+func (session *Session) UpdateMember(member client.UserMember) {
 	session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Update(member)
 }
 
-func (session *Session) InsertMembers(members []model.UserMember) {
+func (session *Session) InsertMembers(members []client.UserMember) {
 	for _, member := range members {
 		session.UpdateMember(member)
 	}
@@ -80,7 +81,7 @@ func communicationMemberDetailBadgeFinalizer(session *Session) {
 }
 
 // add love point and return the love point added (in case maxed out)
-func (session *Session) AddLovePoint(memberId, point int) int {
+func (session *Session) AddLovePoint(memberId, point int32) int32 {
 	member := session.GetMember(memberId)
 	if point > member.LovePointLimit-member.LovePoint {
 		point = member.LovePointLimit - member.LovePoint
@@ -108,14 +109,14 @@ func (session *Session) AddLovePoint(memberId, point int) int {
 				currentLovePanel.LevelUp()
 				session.AddTriggerBasic(model.TriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
-					ParamInt:        currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberId})
+					ParamInt:        int(currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberId)})
 
 				session.UpdateMemberLovePanel(currentLovePanel)
 			}
 		}
 		session.AddTriggerMemberLoveLevelUp(model.TriggerMemberLoveLevelUp{
-			MemberMasterId:  memberId,
-			BeforeLoveLevel: member.LoveLevel - 1})
+			MemberMasterId:  int(memberId),
+			BeforeLoveLevel: int(member.LoveLevel - 1)})
 
 	}
 	session.UpdateMember(member)

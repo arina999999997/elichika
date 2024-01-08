@@ -1,6 +1,7 @@
 package account
 
 import (
+	"elichika/client"
 	"elichika/gamedata"
 	"elichika/model"
 	"elichika/protocol/response"
@@ -75,7 +76,7 @@ type TrainingTreeSolver struct {
 	Cells               []model.TrainingTreeCell
 	TimeStamp           int64
 	Session             *userdata.Session
-	Card                *model.UserCard
+	Card                *client.UserCard
 
 	BFNodes   [BFDimensionCount]([]*SolverNode)
 	BFTarget  [BFDimensionCount]int
@@ -139,7 +140,7 @@ func (node *SolverNode) Prepare(solver *TrainingTreeSolver) {
 func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 	// get the content
 	cell := solver.TrainingTreeMapping.TrainingTreeCellContents[node.Id]
-	if cell.RequiredGrade > solver.Card.Grade {
+	if cell.RequiredGrade > int(solver.Card.Grade) {
 		return solver.MarkBanned(node)
 	}
 	node.DPWeight[DPDimensionTrainingActivatedCellCount] = 1
@@ -222,7 +223,7 @@ func (solver *TrainingTreeSolver) AddCell(cellId int) {
 	}
 	solver.Cells = append(solver.Cells,
 		model.TrainingTreeCell{
-			CardMasterId: solver.Card.CardMasterId,
+			CardMasterId: int(solver.Card.CardMasterId),
 			CellId:       cellId,
 			ActivatedAt:  solver.TimeStamp})
 }

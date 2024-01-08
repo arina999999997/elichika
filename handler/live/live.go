@@ -75,7 +75,7 @@ func FetchLivePartners(ctx *gin.Context) {
 		partner := model.LiveStartLivePartner{}
 		partner.IsFriend = true
 		userdata.FetchDBProfile(partnerId, &partner)
-		partnerCards := userdata.FetchPartnerCards(partnerId) // model.UserCard
+		partnerCards := userdata.FetchPartnerCards(partnerId) // client.UserCard
 		if len(partnerCards) == 0 {
 			continue
 		}

@@ -1,7 +1,7 @@
 package client
 
 type Content struct {
-	ContentType   int   `xorm:"'content_type'" json:"content_type"`
+	ContentType   int32 `xorm:"'content_type'" json:"content_type" enum:"ContentType"`
 	ContentId     int32 `xorm:"'content_id'" json:"content_id"`
 	ContentAmount int32 `xorm:"'content_amount'" json:"content_amount"`
 }

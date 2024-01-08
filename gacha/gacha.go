@@ -36,19 +36,19 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int 
 	panic("this shouldn't happen")
 }
 
-func MakeResultCard(session *userdata.Session, cardMasterId int, isGuaranteed bool) model.ResultCard {
+func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed bool) model.ResultCard {
 	card := session.GetUserCard(cardMasterId)
 	cardRarity := session.Gamedata.Card[cardMasterId].CardRarityType
 	member := session.GetMember(session.Gamedata.Card[cardMasterId].Member.Id)
 	resultCard := model.ResultCard{
 		GachaLotType:         1,
-		CardMasterId:         cardMasterId,
+		CardMasterId:         int(cardMasterId),
 		Level:                1,
-		BeforeGrade:          card.Grade,
-		AfterGrade:           card.Grade + 1,
+		BeforeGrade:          int(card.Grade),
+		AfterGrade:           int(card.Grade) + 1,
 		Content:              nil,
 		LimitExceeded:        false,
-		BeforeLoveLevelLimit: session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit),
+		BeforeLoveLevelLimit: int(session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)),
 		AfterLoveLevelLimit:  0,
 	}
 	// if isGuaranteed {
@@ -69,9 +69,9 @@ func MakeResultCard(session *userdata.Session, cardMasterId int, isGuaranteed bo
 		}
 		session.AddResource(*resultCard.Content)
 	} else {
-		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + cardRarity/10
-		if resultCard.AfterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
-			resultCard.AfterLoveLevelLimit = session.Gamedata.MemberLoveLevelCount
+		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + int(cardRarity/10)
+		if resultCard.AfterLoveLevelLimit > int(session.Gamedata.MemberLoveLevelCount) {
+			resultCard.AfterLoveLevelLimit = int(session.Gamedata.MemberLoveLevelCount)
 		}
 		member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[resultCard.AfterLoveLevelLimit]
 		card.Grade++ // new grade,
@@ -82,7 +82,7 @@ func MakeResultCard(session *userdata.Session, cardMasterId int, isGuaranteed bo
 		} else {
 			// add trigger card grade up so animation play when opening the card
 			session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-				CardMasterId:         card.CardMasterId,
+				CardMasterId:         int(card.CardMasterId),
 				BeforeLoveLevelLimit: resultCard.AfterLoveLevelLimit, // this is correct
 				AfterLoveLevelLimit:  resultCard.AfterLoveLevelLimit,
 			})
@@ -114,10 +114,10 @@ func HandleGacha(ctx *gin.Context, req model.GachaDrawReq) (model.Gacha, []model
 		if cardMasterId == 0 {
 			continue
 		}
-		resultCards = append(resultCards, MakeResultCard(session, cardMasterId, true))
+		resultCards = append(resultCards, MakeResultCard(session, int32(cardMasterId), true))
 	}
 	for i := len(resultCards); i < draw.DrawCount; i++ {
-		resultCards = append(resultCards, MakeResultCard(session, ChooseRandomCard(gamedata, cardPool), false))
+		resultCards = append(resultCards, MakeResultCard(session, int32(ChooseRandomCard(gamedata, cardPool)), false))
 	}
 	return gacha, resultCards
 }

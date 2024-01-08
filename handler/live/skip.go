@@ -77,15 +77,15 @@ func LiveSkip(ctx *gin.Context) {
 	session.UserStatus.Exp += int32(skipLiveResult.GainUserExp)
 	deck := session.GetUserLiveDeck(req.DeckId)
 	deckJsonByte, _ := json.Marshal(deck)
-	cardMasterIds := []int{}
+	cardMasterIds := []int32{}
 	gjson.Parse(string(deckJsonByte)).ForEach(func(key, value gjson.Result) bool {
 		if strings.Contains(key.String(), "card_master_id") {
-			cardMasterIds = append(cardMasterIds, int(value.Int()))
+			cardMasterIds = append(cardMasterIds, int32(value.Int()))
 		}
 		return true
 	})
 
-	bondCardPosition := make(map[int]int)
+	bondCardPosition := make(map[int32]int)
 	for i, cardMasterId := range cardMasterIds {
 		userCard := session.GetUserCard(cardMasterId)
 		userCard.LiveJoinCount += req.TicketUseCount // count skip clear in pfp
@@ -101,15 +101,15 @@ func LiveSkip(ctx *gin.Context) {
 		// only use 1 card master id or an idol might be shown multiple times
 		if !exist {
 			memberLoveStatus := skipLiveResult.MemberLoveStatuses.AppendNewWithId(int64(cardMasterId))
-			memberLoveStatus.RewardLovePoint = addedLove
+			memberLoveStatus.RewardLovePoint = int32(addedLove)
 			bondCardPosition[memberMasterId] = skipLiveResult.MemberLoveStatuses.Length - 1
 		} else {
-			skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint += addedLove
+			skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint += int32(addedLove)
 		}
 	}
 	for memberMasterId, pos := range bondCardPosition {
 		addedLove := session.AddLovePoint(memberMasterId,
-			req.TicketUseCount*skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint)
+			int32(req.TicketUseCount)*skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint)
 		skipLiveResult.MemberLoveStatuses.Objects[pos].RewardLovePoint = addedLove
 	}
 

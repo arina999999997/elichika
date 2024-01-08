@@ -1,13 +1,14 @@
 package account
 
 import (
+	"elichika/client"
 	"elichika/model"
 	"elichika/userdata"
 
 	"fmt"
 )
 
-func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *model.UserCard) {
+func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *client.UserCard) {
 	solver.Cells = []model.TrainingTreeCell{}
 	solver.Session = session
 	solver.Card = card
@@ -15,7 +16,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 	solver.TrainingTree = solver.MasterCard.TrainingTree
 	solver.TrainingTreeMapping = solver.TrainingTree.TrainingTreeMapping
 	solver.TrainingTreeDesign = solver.TrainingTreeMapping.TrainingTreeDesign
-	solver.TimeStamp = card.AcquiredAt
+	solver.TimeStamp = int64(card.AcquiredAt)
 	solver.NodeCount = solver.TrainingTreeDesign.CellCount - 1 // not counting the starting node id 0
 	if card.IsAllTrainingActivated {                           // if maxed out then we don't need to solve
 		for _, cell := range solver.TrainingTreeMapping.TrainingTreeCellContents {
@@ -25,7 +26,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 		// entirely new card, no need to do anything
 	} else if !solver.SolveForTileSet() { // otherwise we solve for a possible set of tiles
 		fmt.Println("Solving failed for card", card.CardMasterId, ", reseting to default")
-		*card = model.UserCard{
+		*card = client.UserCard{
 			CardMasterId:        card.CardMasterId,
 			Level:               card.Level,
 			MaxFreePassiveSkill: solver.MasterCard.PassiveSkillSlot,
@@ -41,7 +42,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *mod
 	// fmt.Println("Found solution for card", card.CardMasterId)
 	// }
 	session.InsertTrainingTreeCells(solver.Cells)
-	if len(solver.Cells) != card.TrainingActivatedCellCount {
+	if int32(len(solver.Cells)) != card.TrainingActivatedCellCount {
 		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterId))
 	}
 	// update stat for this member
@@ -74,9 +75,9 @@ func (solver *TrainingTreeSolver) SolveForTileSet() bool {
 		}
 	}
 	// brute force smaller stuff phase, prepare the BF target
-	solver.BFTarget[BFDimensionActiveSkillLevel] = solver.Card.ActiveSkillLevel - 1
-	solver.BFTarget[BFDimensionMaxFreePassiveSkill] = solver.Card.MaxFreePassiveSkill - solver.MasterCard.PassiveSkillSlot
-	solver.BFTarget[BFDimensionPassiveSkillALevel] = solver.Card.PassiveSkillALevel - 1
+	solver.BFTarget[BFDimensionActiveSkillLevel] = int(solver.Card.ActiveSkillLevel - 1)
+	solver.BFTarget[BFDimensionMaxFreePassiveSkill] = int(solver.Card.MaxFreePassiveSkill - solver.MasterCard.PassiveSkillSlot)
+	solver.BFTarget[BFDimensionPassiveSkillALevel] = int(solver.Card.PassiveSkillALevel - 1)
 	for i := range solver.BFCurrent {
 		solver.BFCurrent[i] = 0
 	}
@@ -120,8 +121,8 @@ func (solver *TrainingTreeSolver) DynamicProgramming() bool {
 	// iterate over the central path, then we can produce side path chains
 	// we can take a prefix of the chains for dynamic programming
 
-	state := [DPDimensionCount]int{solver.Card.TrainingActivatedCellCount,
-		solver.Card.TrainingLife, solver.Card.TrainingAttack, solver.Card.TrainingDexterity}
+	state := [DPDimensionCount]int{int(solver.Card.TrainingActivatedCellCount),
+		int(solver.Card.TrainingLife), int(solver.Card.TrainingAttack), int(solver.Card.TrainingDexterity)}
 	wantedState := [DPDimensionCount]int{}
 	for i := 1; i <= solver.NodeCount; i++ {
 		if solver.Node[i].IsPicked {

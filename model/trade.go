@@ -28,13 +28,13 @@ type TradeProduct struct {
 type Trade struct {
 	TradeId int `xorm:"pk 'trade_id'" json:"trade_id"`
 	// trade type = 1 for normal exchange and 2 for channel exchange
-	TradeType       int `xorm:"'trade_type'" json:"-"`
+	TradeType       int32 `xorm:"'trade_type'" json:"-" enum:"TradeType"`
 	BannerImagePath struct {
 		V string `xorm:"'banner_image_path'" json:"v"`
 	} `xorm:"extends" json:"banner_image_path"`
 	// items used for exchange
-	SourceContentType        int `xorm:"-" json:"source_content_type"`
-	SourceContentId          int `xorm:"-" json:"source_content_id"`
+	SourceContentType        int32 `xorm:"-" json:"source_content_type"`
+	SourceContentId          int32 `xorm:"-" json:"source_content_id"`
 	SourceThumbnailAssetPath struct {
 		V string `xorm:"'source_thumbnail_asset_path'" json:"v"`
 	} `xorm:"extends" json:"source_thumbnail_asset_path"`

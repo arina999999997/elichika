@@ -27,7 +27,7 @@ func UpdateCardNewFlag(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 	for _, cardMasterId := range req.CardMasterIds {
-		card := session.GetUserCard(cardMasterId)
+		card := session.GetUserCard(int32(cardMasterId))
 		card.IsNew = false
 		session.UpdateUserCard(card)
 	}
@@ -49,7 +49,7 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	userCard := session.GetUserCard(req.CardMasterId)
+	userCard := session.GetUserCard(int32(req.CardMasterId))
 	userCard.IsAwakeningImage = req.IsAwakeningImage
 	session.UpdateUserCard(userCard)
 
@@ -71,7 +71,7 @@ func ChangeFavorite(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	userCard := session.GetUserCard(req.CardMasterId)
+	userCard := session.GetUserCard(int32(req.CardMasterId))
 	userCard.IsFavorite = req.IsFavorite
 	session.UpdateUserCard(userCard)
 

@@ -79,13 +79,13 @@ type Gamedata struct {
 	AccessoryMeltGroup     map[int]*AccessoryMeltGroup
 	AccessoryLevelUpItem   map[int]*AccessoryLevelUpItem
 
-	Member                          map[int]*Member
-	MemberLoveLevelLovePoint        []int
-	MemberLoveLevelCount            int
-	MemberLovePanel                 map[int]*MemberLovePanel
-	MemberLovePanelCell             map[int]*MemberLovePanelCell
-	MemberLovePanelLevelAtLoveLevel []int
-	MemberByBirthday                map[int]([]*Member)
+	Member                          map[int32]*Member
+	MemberLoveLevelLovePoint        []int32
+	MemberLoveLevelCount            int32
+	MemberLovePanel                 map[int32]*MemberLovePanel
+	MemberLovePanelCell             map[int32]*MemberLovePanelCell
+	MemberLovePanelLevelAtLoveLevel []int32
+	MemberByBirthday                map[int32]([]*Member)
 
 	Live              map[int]*Live
 	LiveParty         LiveParty
@@ -98,8 +98,8 @@ type Gamedata struct {
 	TrainingTreeMapping     map[int]*TrainingTreeMapping
 	TrainingTree            map[int]*TrainingTree
 
-	Card      map[int]*Card
-	CardLevel map[int]*CardLevel
+	Card      map[int32]*Card
+	CardLevel map[int32]*CardLevel
 
 	Suit map[int]*Suit
 
@@ -117,7 +117,7 @@ type Gamedata struct {
 	TradesByType [3][]*model.Trade    // map from trade type to array of Trade
 	TradeProduct map[int]*model.TradeProduct
 
-	LoginBonus map[int]*LoginBonus
+	LoginBonus map[int32]*LoginBonus
 }
 
 func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {

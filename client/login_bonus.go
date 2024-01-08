@@ -1,11 +1,15 @@
 package client
 
+import (
+	"elichika/generic"
+)
+
 // the struct in client also has plural
 type LoginBonusRewards struct {
-	Day                int32     `json:"day"`
-	Status             int32     `json:"status"`
-	ContentGrade       int       `json:"content_grade"` // can be 0
-	LoginBonusContents []Content `json:"login_bonus_contents"`
+	Day                int32                   `json:"day"`
+	Status             int32                   `json:"status" enum:"LoginBonusReceiveStatus"`
+	ContentGrade       generic.Nullable[int32] `json:"content_grade" enum:"LoginBonusContentGrade"` // can be 0
+	LoginBonusContents []Content               `json:"login_bonus_contents"`
 }
 
 // used for extra login bonus event that use an illustration?
@@ -31,8 +35,8 @@ type NaviLoginBonus struct {
 }
 
 type LoginBonusBirthDayMember struct {
-	MemberMasterId int32 `json:"member_master_id"`
-	SuitMasterId   int32 `json:"suit_master_id"`
+	MemberMasterId generic.Nullable[int32] `json:"member_master_id"`
+	SuitMasterId   generic.Nullable[int32] `json:"suit_master_id"`
 }
 
 type BootstrapLoginBonus struct {

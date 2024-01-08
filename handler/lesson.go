@@ -89,7 +89,7 @@ func SkillEditResult(ctx *gin.Context) {
 	skillList := req.Get("selected_skill_ids")
 	skillList.ForEach(func(key, cardId gjson.Result) bool {
 		if key.Int()%2 == 0 {
-			userCard := session.GetUserCard(int(cardId.Int()))
+			userCard := session.GetUserCard(int32(cardId.Int()))
 			skills := skillList.Get(fmt.Sprintf("%d", key.Int()+1))
 			cardJsonBytes, _ := json.Marshal(userCard)
 			cardJson := string(cardJsonBytes)

@@ -12,11 +12,11 @@ import (
 type Suit struct {
 	// from m_suit
 	Id        int     `xorm:"pk 'id'"`
-	MemberMId *int    `xorm:"'member_m_id'"`
+	MemberMId *int32  `xorm:"'member_m_id'"`
 	Member    *Member `xorm:"-"`
 	// Name string `xorm:"'name'"`
 	// ThumbnailImageAssetPath string `xorm:"'thumbnail_image_asset_path'"`
-	SuitReleaseRoute int `xorm:"'suit_release_route'"`
+	SuitReleaseRoute int32 `xorm:"'suit_release_route'" enum:"SuitReleaseRoute"`
 	// ModelAssetPath string `xorm:"'model_asset_path'"`
 	// DisplayOrder int `xorm:"'display_order'"`
 }

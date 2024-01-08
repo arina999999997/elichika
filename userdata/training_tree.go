@@ -6,7 +6,7 @@ import (
 )
 
 // return the training tree for a card
-func (session *Session) GetTrainingTree(cardMasterId int) []model.TrainingTreeCell {
+func (session *Session) GetTrainingTree(cardMasterId int32) []model.TrainingTreeCell {
 	cells := []model.TrainingTreeCell{}
 	err := session.Db.Table("u_training_tree_cell").
 		Where("user_id = ? AND card_master_id = ?", session.UserId, cardMasterId).Find(&cells)
