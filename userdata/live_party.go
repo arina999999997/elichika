@@ -1,12 +1,12 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLiveParty(partyId int) model.UserLiveParty {
-	liveParty := model.UserLiveParty{}
+func (session *Session) GetUserLiveParty(partyId int) client.UserLiveParty {
+	liveParty := client.UserLiveParty{}
 	exist, err := session.Db.Table("u_live_party").
 		Where("user_id = ? AND party_id = ?", session.UserId, partyId).
 		Get(&liveParty)
@@ -17,8 +17,8 @@ func (session *Session) GetUserLiveParty(partyId int) model.UserLiveParty {
 	return liveParty
 }
 
-func (session *Session) GetUserLivePartiesWithDeckId(deckId int) []model.UserLiveParty {
-	liveParties := []model.UserLiveParty{}
+func (session *Session) GetUserLivePartiesWithDeckId(deckId int) []client.UserLiveParty {
+	liveParties := []client.UserLiveParty{}
 	err := session.Db.Table("u_live_party").
 		Where("user_id = ? AND user_live_deck_id = ?", session.UserId, deckId).
 		OrderBy("party_id").Find(&liveParties)
@@ -26,8 +26,8 @@ func (session *Session) GetUserLivePartiesWithDeckId(deckId int) []model.UserLiv
 	return liveParties
 }
 
-func (session *Session) GetUserLivePartyWithDeckAndCardId(deckId int, cardId int) model.UserLiveParty {
-	liveParty := model.UserLiveParty{}
+func (session *Session) GetUserLivePartyWithDeckAndCardId(deckId int, cardId int) client.UserLiveParty {
+	liveParty := client.UserLiveParty{}
 	exist, err := session.Db.Table("u_live_party").
 		Where("user_id = ? AND user_live_deck_id = ? AND (card_master_id_1 = ? OR card_master_id_2 = ? OR card_master_id_3 = ?)",
 			session.UserId, deckId, cardId, cardId, cardId).
@@ -39,7 +39,7 @@ func (session *Session) GetUserLivePartyWithDeckAndCardId(deckId int, cardId int
 	return liveParty
 }
 
-func (session *Session) UpdateUserLiveParty(liveParty model.UserLiveParty) {
+func (session *Session) UpdateUserLiveParty(liveParty client.UserLiveParty) {
 	session.UserLivePartyMapping.SetList(&session.UserModel.UserLivePartyById).Update(liveParty)
 }
 
@@ -55,8 +55,8 @@ func livePartyFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) GetAllLivePartiesWithAccessory(accessoryId int64) []model.UserLiveParty {
-	parties := []model.UserLiveParty{}
+func (session *Session) GetAllLivePartiesWithAccessory(accessoryId int64) []client.UserLiveParty {
+	parties := []client.UserLiveParty{}
 	err := session.Db.Table("u_live_party").
 		Where("user_id = ? AND (user_accessory_id_1 = ? OR user_accessory_id_2 = ? OR user_accessory_id_3 = ? )",
 			session.UserId, accessoryId, accessoryId, accessoryId).Find(&parties)
@@ -64,7 +64,7 @@ func (session *Session) GetAllLivePartiesWithAccessory(accessoryId int64) []mode
 	return parties
 }
 
-func (session *Session) InsertLiveParties(parties []model.UserLiveParty) {
+func (session *Session) InsertLiveParties(parties []client.UserLiveParty) {
 	session.UserModel.UserLivePartyById.Objects = append(session.UserModel.UserLivePartyById.Objects, parties...)
 }
 

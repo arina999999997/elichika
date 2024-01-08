@@ -1,8 +1,8 @@
 package userdata
 
 import (
-	"elichika/generic"
 	"elichika/client"
+	"elichika/generic"
 	"elichika/utils"
 )
 

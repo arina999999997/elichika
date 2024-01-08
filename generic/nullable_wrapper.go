@@ -10,6 +10,26 @@ type Nullable[T any] struct {
 	HasValue bool `xorm:"-"` // zero value mean HasValue = false and thus the zero value is empty
 }
 
+func NewNullable[T any](value T) Nullable[T] {
+	return Nullable[T]{
+		Value:    value,
+		HasValue: true,
+	}
+}
+
+func NewNullableFromPointer[T any](pointer *T) Nullable[T] {
+	if pointer == nil {
+		return Nullable[T]{
+			HasValue: false,
+		}
+	} else {
+		return Nullable[T]{
+			Value:    *pointer,
+			HasValue: true,
+		}
+	}
+}
+
 // Unmarshal: from JSON bytes to value
 func (n *Nullable[T]) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
@@ -25,13 +45,6 @@ func (n Nullable[T]) MarshalJSON() ([]byte, error) {
 		return bytes, err
 	} else {
 		return []byte("null"), nil
-	}
-}
-
-func NewNullable[T any](value T) Nullable[T] {
-	return Nullable[T]{
-		Value:    value,
-		HasValue: true,
 	}
 }
 

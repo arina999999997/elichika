@@ -164,17 +164,17 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		session.InsertUserSuits(suits)
 	}
 	{ // show formation
-		liveDecks := []model.UserLiveDeck{}
-		liveParties := []model.UserLiveParty{}
+		liveDecks := []client.UserLiveDeck{}
+		liveParties := []client.UserLiveParty{}
 		for a := 0; a <= 10000; a += 10000 { // 10000... are DLP formations
 			for b := 1; b <= 20; b++ {
 				i := a + b
-				cid := [10]int32{}
+				cid := [10]generic.Nullable[int32]{}
 				// this order isn't actually correct to the official server
 				for j := 1; j <= 9; j++ {
-					cid[j] = gamedata.Member[int32(j+100*((i-1)%3))].MemberInit.SuitMasterId
+					cid[j] = generic.NewNullable(gamedata.Member[int32(j+100*((i-1)%3))].MemberInit.SuitMasterId)
 				}
-				liveDeck := model.UserLiveDeck{
+				liveDeck := client.UserLiveDeck{
 					UserLiveDeckId: int32(i),
 					CardMasterId1:  cid[1],
 					CardMasterId2:  cid[2],
@@ -198,7 +198,7 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				liveDeck.Name.DotUnderText = fmt.Sprintf(dictionary.Resolve("k.m_sorter_deck_live")+" %d", i)
 				liveDecks = append(liveDecks, liveDeck)
 				for j := 1; j <= 3; j++ {
-					liveParty := model.UserLiveParty{
+					liveParty := client.UserLiveParty{
 						PartyId:        int32(i*100 + j),
 						UserLiveDeckId: int32(i),
 						CardMasterId1:  cid[(j-1)*3+1],
@@ -206,7 +206,7 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 						CardMasterId3:  cid[(j-1)*3+3],
 					}
 					liveParty.IconMasterId, liveParty.Name.DotUnderText = gamedata.
-						GetLivePartyInfoByCardMasterIds(liveParty.CardMasterId1, liveParty.CardMasterId2, liveParty.CardMasterId3)
+						GetLivePartyInfoByCardMasterIds(liveParty.CardMasterId1.Value, liveParty.CardMasterId2.Value, liveParty.CardMasterId3.Value)
 					liveParties = append(liveParties, liveParty)
 				}
 			}
@@ -216,10 +216,10 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 	}
 	{ // lesson deck
 
-		lessonDecks := []model.UserLessonDeck{}
+		lessonDecks := []client.UserLessonDeck{}
 		for i := 1; i <= 20; i++ {
-			lessonDecks = append(lessonDecks, model.UserLessonDeck{
-				UserLessonDeckId: i,
+			lessonDecks = append(lessonDecks, client.UserLessonDeck{
+				UserLessonDeckId: int32(i),
 				Name:             fmt.Sprintf(dictionary.Resolve("k.m_sorter_deck_lesson")+" %d", i),
 			})
 		}

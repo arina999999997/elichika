@@ -270,14 +270,14 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 	defer session.Close()
 	liveParties := session.GetAllLivePartiesWithAccessory(req.UserAccessoryId)
 	for _, liveParty := range liveParties {
-		if (liveParty.UserAccessoryId1 != nil) && (*liveParty.UserAccessoryId1 == req.UserAccessoryId) {
-			liveParty.UserAccessoryId1 = nil
+		if (liveParty.UserAccessoryId1.HasValue) && (liveParty.UserAccessoryId1.Value == req.UserAccessoryId) {
+			liveParty.UserAccessoryId1.HasValue = false
 		}
-		if (liveParty.UserAccessoryId2 != nil) && (*liveParty.UserAccessoryId2 == req.UserAccessoryId) {
-			liveParty.UserAccessoryId2 = nil
+		if (liveParty.UserAccessoryId2.HasValue) && (liveParty.UserAccessoryId2.Value == req.UserAccessoryId) {
+			liveParty.UserAccessoryId2.HasValue = false
 		}
-		if (liveParty.UserAccessoryId3 != nil) && (*liveParty.UserAccessoryId3 == req.UserAccessoryId) {
-			liveParty.UserAccessoryId3 = nil
+		if (liveParty.UserAccessoryId3.HasValue) && (liveParty.UserAccessoryId3.Value == req.UserAccessoryId) {
+			liveParty.UserAccessoryId3.HasValue = false
 		}
 		session.UpdateUserLiveParty(liveParty)
 	}

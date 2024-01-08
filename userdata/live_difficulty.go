@@ -101,7 +101,7 @@ func (session *Session) BuildLastPlayLiveDifficultyDeck(deckId, liveDifficultyId
 		gjson.Parse(string(partyJson)).ForEach(func(key, value gjson.Result) bool {
 			k := key.String()
 			if strings.Contains(k, "card_master_id_") {
-				squad.CardMasterIds = append(squad.CardMasterIds, int(value.Int()))
+				squad.CardMasterIds = append(squad.CardMasterIds, int32(value.Int()))
 			} else if strings.Contains(k, "user_accessory_id_") {
 				ptr := new(int64)
 				*ptr = value.Int()

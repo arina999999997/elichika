@@ -4,6 +4,8 @@ import (
 	"elichika/dictionary"
 	"elichika/utils"
 
+	"fmt"
+
 	"xorm.io/xorm"
 )
 
@@ -25,6 +27,7 @@ func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIds(a, b, c int32) (partyI
 }
 
 func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+	fmt.Println("Loading LiveParty")
 	type LiveParty struct {
 		Id            int    `xorm:"pk 'id'"`
 		Role1         int    `xorm:"'role_1'"`
@@ -47,10 +50,10 @@ func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sessio
 			for j := 0; j <= 2; j++ {
 				if i == j {
 					continue
-					k := 3 - i - j
-					gamedata.LiveParty.partyInfoByRoleIds[r[i]][r[j]][r[k]].PartyIcon = party.LivePartyIcon
-					gamedata.LiveParty.partyInfoByRoleIds[r[i]][r[j]][r[k]].PartyName = party.Name
 				}
+				k := 3 - i - j
+				gamedata.LiveParty.partyInfoByRoleIds[r[i]][r[j]][r[k]].PartyIcon = party.LivePartyIcon
+				gamedata.LiveParty.partyInfoByRoleIds[r[i]][r[j]][r[k]].PartyName = party.Name
 			}
 		}
 	}

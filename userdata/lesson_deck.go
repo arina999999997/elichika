@@ -1,16 +1,16 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLessonDeck(userLessonDeckId int) model.UserLessonDeck {
+func (session *Session) GetUserLessonDeck(userLessonDeckId int) client.UserLessonDeck {
 	pos, exist := session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckById).Map[int64(userLessonDeckId)]
 	if exist {
 		return session.UserModel.UserLessonDeckById.Objects[pos]
 	}
-	deck := model.UserLessonDeck{}
+	deck := client.UserLessonDeck{}
 	exist, err := session.Db.Table("u_lesson_deck").
 		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserId, userLessonDeckId).
 		Get(&deck)
@@ -21,7 +21,7 @@ func (session *Session) GetUserLessonDeck(userLessonDeckId int) model.UserLesson
 	return deck
 }
 
-func (session *Session) UpdateLessonDeck(userLessonDeck model.UserLessonDeck) {
+func (session *Session) UpdateLessonDeck(userLessonDeck client.UserLessonDeck) {
 	session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckById).Update(userLessonDeck)
 }
 
@@ -37,7 +37,7 @@ func lessonDeckFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) InsertLessonDecks(decks []model.UserLessonDeck) {
+func (session *Session) InsertLessonDecks(decks []client.UserLessonDeck) {
 	session.UserModel.UserLessonDeckById.Objects = append(session.UserModel.UserLessonDeckById.Objects, decks...)
 }
 

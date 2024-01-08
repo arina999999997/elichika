@@ -24,7 +24,6 @@ func ResetProgress(ctx *gin.Context) {
 		ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: user ", userId, " doesn't exist"))
 		return
 	}
-	fmt.Println(ctx.Request.URL.Path)
 	switch ctx.Request.URL.Path {
 	case "/webui/reset_story_main":
 		session.RemoveUserProgress("u_story_main")

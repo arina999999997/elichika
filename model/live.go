@@ -112,8 +112,6 @@ func (item UserPlayListItem) Id() int64 {
 
 func init() {
 
-	TableNameToInterface["u_live_deck"] = generic.UserIdWrapper[UserLiveDeck]{}
-	TableNameToInterface["u_live_party"] = generic.UserIdWrapper[UserLiveParty]{}
 	// TableNameToInterface["u_live_state"] = LiveState{}
 	TableNameToInterface["u_play_list"] = generic.UserIdWrapper[UserPlayListItem]{}
 }

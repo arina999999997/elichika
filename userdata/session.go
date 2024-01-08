@@ -32,10 +32,10 @@ type Session struct {
 	UserStatus                                *model.UserStatus // link to UserModel.UserStatus
 	UserCardMapping                           generic.ObjectByObjectIdMapping[client.UserCard]
 	UserMemberMapping                         generic.ObjectByObjectIdMapping[client.UserMember]
-	UserLessonDeckMapping                     generic.ObjectByObjectIdMapping[model.UserLessonDeck]
+	UserLessonDeckMapping                     generic.ObjectByObjectIdMapping[client.UserLessonDeck]
 	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIdMapping[model.UserCommunicationMemberDetailBadge]
-	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[model.UserLiveDeck]
-	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[model.UserLiveParty]
+	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[client.UserLiveDeck]
+	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[client.UserLiveParty]
 	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[client.UserAccessory]
 	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[model.UserLiveDifficulty]
 	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[model.TriggerCardGradeUp]

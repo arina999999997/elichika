@@ -10,9 +10,7 @@ func (session *Session) InsertUserStoryMain(storyMainMasterId int) bool {
 	userStoryMain := model.UserStoryMain{
 		StoryMainMasterId: storyMainMasterId,
 	}
-	has, err := session.Db.Table("u_story_main").Exist(&userStoryMain)
-	utils.CheckErr(err)
-	if has { // already have it
+	if genericDatabaseExist(session, "u_story_main", userStoryMain) {
 		return false
 	}
 
@@ -35,9 +33,7 @@ func (session *Session) InsertUserStoryMain(storyMainMasterId int) bool {
 
 func storyMainFinalizer(session *Session) {
 	for _, userStoryMain := range session.UserModel.UserStoryMainByStoryMainId.Objects {
-		exist, err := session.Db.Table("u_story_main").Exist(&userStoryMain)
-		utils.CheckErr(err)
-		if !exist {
+		if !genericDatabaseExist(session, "u_story_main", userStoryMain) {
 			genericDatabaseInsert(session, "u_story_main", userStoryMain)
 		}
 	}
@@ -71,9 +67,7 @@ func (session *Session) InsertUserStoryMainPartDigestMovie(partId int) {
 
 func storyMainPartDigestMovieFinalizer(session *Session) {
 	for _, userStoryMainPartDigestMovie := range session.UserModel.UserStoryMainPartDigestMovieById.Objects {
-		exist, err := session.Db.Table("u_story_main_part_digest_movie").Exist(&userStoryMainPartDigestMovie)
-		utils.CheckErr(err)
-		if !exist {
+		if !genericDatabaseExist(session, "u_story_main_part_digest_movie", userStoryMainPartDigestMovie) {
 			genericDatabaseInsert(session, "u_story_main_part_digest_movie", userStoryMainPartDigestMovie)
 		}
 	}
@@ -83,19 +77,14 @@ func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterId int) {
 	userStoryLinkage := model.UserStoryLinkage{
 		StoryLinkageCellMasterId: storyLinkageCellMasterId,
 	}
-	has, err := session.Db.Table("u_story_linkage").Exist(&userStoryLinkage)
-	utils.CheckErr(err)
-	if has {
-		return
+	if !genericDatabaseExist(session, "u_story_linkage", userStoryLinkage) {
+		session.UserModel.UserStoryLinkageById.PushBack(userStoryLinkage)
 	}
-	session.UserModel.UserStoryLinkageById.PushBack(userStoryLinkage)
 }
 
 func storyLinkageFinalizer(session *Session) {
 	for _, userStoryLinkage := range session.UserModel.UserStoryLinkageById.Objects {
-		exist, err := session.Db.Table("u_story_linkage").Exist(&userStoryLinkage)
-		utils.CheckErr(err)
-		if !exist {
+		if !genericDatabaseExist(session, "u_story_linkage", userStoryLinkage) {
 			genericDatabaseInsert(session, "u_story_linkage", userStoryLinkage)
 		}
 	}

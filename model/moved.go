@@ -14,5 +14,8 @@ func init() {
 	TableNameToInterface["u_member"] = generic.UserIdWrapper[DbMember]{}
 	TableNameToInterface["u_suit"] = generic.UserIdWrapper[client.UserSuit]{}
 	TableNameToInterface["u_card"] = generic.UserIdWrapper[client.UserCard]{}
+	TableNameToInterface["u_lesson_deck"] = generic.UserIdWrapper[client.UserLessonDeck]{}
 	TableNameToInterface["u_accessory"] = generic.UserIdWrapper[client.UserAccessory]{}
+	TableNameToInterface["u_live_deck"] = generic.UserIdWrapper[client.UserLiveDeck]{}
+	TableNameToInterface["u_live_party"] = generic.UserIdWrapper[client.UserLiveParty]{}
 }

@@ -2,9 +2,11 @@ package handler
 
 import (
 	"bytes"
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
@@ -77,18 +79,18 @@ func SaveDeckAll(ctx *gin.Context) {
 			err = decoder.Decode(&dictInfo)
 			utils.CheckErr(err)
 
-			partyInfo := model.UserLiveParty{}
+			partyInfo := client.UserLiveParty{}
 			partyInfo.PartyId = int32(partyId)
 			partyInfo.IconMasterId, partyInfo.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIds(
 				int32(dictInfo.CardMasterIds[0]), int32(dictInfo.CardMasterIds[1]), int32(dictInfo.CardMasterIds[2]),
 			)
 			partyInfo.UserLiveDeckId = int32(req.DeckId)
-			partyInfo.CardMasterId1 = int32(dictInfo.CardMasterIds[0])
-			partyInfo.CardMasterId2 = int32(dictInfo.CardMasterIds[1])
-			partyInfo.CardMasterId3 = int32(dictInfo.CardMasterIds[2])
-			partyInfo.UserAccessoryId1 = dictInfo.UserAccessoryIds[0]
-			partyInfo.UserAccessoryId2 = dictInfo.UserAccessoryIds[1]
-			partyInfo.UserAccessoryId3 = dictInfo.UserAccessoryIds[2]
+			partyInfo.CardMasterId1 = generic.NewNullable(dictInfo.CardMasterIds[0])
+			partyInfo.CardMasterId2 = generic.NewNullable(dictInfo.CardMasterIds[1])
+			partyInfo.CardMasterId3 = generic.NewNullable(dictInfo.CardMasterIds[2])
+			partyInfo.UserAccessoryId1 = generic.NewNullableFromPointer(dictInfo.UserAccessoryIds[0])
+			partyInfo.UserAccessoryId2 = generic.NewNullableFromPointer(dictInfo.UserAccessoryIds[1])
+			partyInfo.UserAccessoryId3 = generic.NewNullableFromPointer(dictInfo.UserAccessoryIds[2])
 			session.UpdateUserLiveParty(partyInfo)
 		}
 	}
@@ -211,7 +213,7 @@ func SaveDeck(ctx *gin.Context) {
 		return true
 	})
 
-	parties := []model.UserLiveParty{}
+	parties := []client.UserLiveParty{}
 	parties = append(parties, session.GetUserLivePartyWithDeckAndCardId(req.DeckId, oldCardMasterId))
 	if oldPosition != 0 {
 		oldParty := session.GetUserLivePartyWithDeckAndCardId(req.DeckId, newCardMasterId)

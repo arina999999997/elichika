@@ -16,9 +16,9 @@ type UserModel struct {
 	UserMemberByMemberId                                                       generic.ObjectByObjectIdList[client.UserMember]                           `json:"user_member_by_member_id"`
 	UserCardByCardId                                                           generic.ObjectByObjectIdList[client.UserCard]                             `json:"user_card_by_card_id"`
 	UserSuitBySuitId                                                           generic.ObjectByObjectIdList[client.UserSuit]                             `json:"user_suit_by_suit_id"`
-	UserLiveDeckById                                                           generic.ObjectByObjectIdList[model.UserLiveDeck]                          `json:"user_live_deck_by_id"`
-	UserLivePartyById                                                          generic.ObjectByObjectIdList[model.UserLiveParty]                         `json:"user_live_party_by_id"`
-	UserLessonDeckById                                                         generic.ObjectByObjectIdList[model.UserLessonDeck]                        `json:"user_lesson_deck_by_id"`
+	UserLiveDeckById                                                           generic.ObjectByObjectIdList[client.UserLiveDeck]                         `json:"user_live_deck_by_id"`
+	UserLivePartyById                                                          generic.ObjectByObjectIdList[client.UserLiveParty]                        `json:"user_live_party_by_id"`
+	UserLessonDeckById                                                         generic.ObjectByObjectIdList[client.UserLessonDeck]                       `json:"user_lesson_deck_by_id"`
 	UserLiveMvDeckById                                                         generic.ObjectByObjectIdList[model.UserLiveMvDeck]                        `json:"user_live_mv_deck_by_id"`
 	UserLiveMvDeckCustomById                                                   generic.ObjectByObjectIdList[model.UserLiveMvDeck]                        `json:"user_live_mv_deck_custom_by_id"`
 	UserLiveDifficultyByDifficultyId                                           generic.ObjectByObjectIdList[model.UserLiveDifficulty]                    `json:"user_live_difficulty_by_difficulty_id"`
@@ -45,7 +45,7 @@ type UserModel struct {
 	UserInfoTriggerCardGradeUpByTriggerId                                      generic.ObjectByObjectIdList[model.TriggerCardGradeUp]                    `json:"user_info_trigger_card_grade_up_by_trigger_id"`
 	UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId                    generic.ObjectByObjectIdList[model.TriggerMemberGuildSupportItemExpired]  `json:"user_info_trigger_member_guild_support_item_expired_by_trigger_id"` // TODO: not properly handled
 	UserInfoTriggerMemberLoveLevelUpByTriggerId                                generic.ObjectByObjectIdList[model.TriggerMemberLoveLevelUp]              `json:"user_info_trigger_member_love_level_up_by_trigger_id"`
-	UserAccessoryByUserAccessoryId                                             generic.ObjectByObjectIdList[client.UserAccessory]                         `json:"user_accessory_by_user_accessory_id"`
+	UserAccessoryByUserAccessoryId                                             generic.ObjectByObjectIdList[client.UserAccessory]                        `json:"user_accessory_by_user_accessory_id"`
 	UserAccessoryLevelUpItemById                                               generic.ObjectByObjectIdList[model.AccessoryLevelUpItem]                  `json:"user_accessory_level_up_item_by_id"`
 	UserAccessoryRarityUpItemById                                              generic.ObjectByObjectIdList[model.AccessoryRarityUpItem]                 `json:"user_accessory_rarity_up_item_by_id"`
 	UserUnlockScenesByEnum                                                     generic.ObjectByObjectIdList[model.UserUnlockScene]                       `json:"user_unlock_scenes_by_enum"`

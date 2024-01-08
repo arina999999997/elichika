@@ -1,12 +1,12 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLiveDeck(userLiveDeckId int) model.UserLiveDeck {
-	liveDeck := model.UserLiveDeck{}
+func (session *Session) GetUserLiveDeck(userLiveDeckId int) client.UserLiveDeck {
+	liveDeck := client.UserLiveDeck{}
 	exist, err := session.Db.Table("u_live_deck").
 		Where("user_id = ? AND user_live_deck_id = ?", session.UserId, userLiveDeckId).
 		Get(&liveDeck)
@@ -19,7 +19,7 @@ func (session *Session) GetUserLiveDeck(userLiveDeckId int) model.UserLiveDeck {
 	return liveDeck
 }
 
-func (session *Session) UpdateUserLiveDeck(liveDeck model.UserLiveDeck) {
+func (session *Session) UpdateUserLiveDeck(liveDeck client.UserLiveDeck) {
 	session.UserLiveDeckMapping.SetList(&session.UserModel.UserLiveDeckById).Update(liveDeck)
 }
 
@@ -35,7 +35,7 @@ func liveDeckFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) InsertLiveDecks(decks []model.UserLiveDeck) {
+func (session *Session) InsertLiveDecks(decks []client.UserLiveDeck) {
 	session.UserModel.UserLiveDeckById.Objects = append(session.UserModel.UserLiveDeckById.Objects, decks...)
 }
 
