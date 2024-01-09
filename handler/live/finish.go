@@ -127,9 +127,9 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 
 	liveRecord.PlayCount++
 	lastPlayDeck.IsCleared = req.LiveFinishStatus == enum.LiveFinishStatusSucceeded
-	liveResult.LiveResultAchievements.AppendNewWithId(1).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement1 != nil
-	liveResult.LiveResultAchievements.AppendNewWithId(2).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2 != nil
-	liveResult.LiveResultAchievements.AppendNewWithId(3).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3 != nil
+	liveResult.LiveResultAchievements.AppendNewWithId(1).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement1.HasValue
+	liveResult.LiveResultAchievements.AppendNewWithId(2).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2.HasValue
+	liveResult.LiveResultAchievements.AppendNewWithId(3).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3.HasValue
 	if lastPlayDeck.IsCleared {
 		// add story if it is a story mode
 		if live.CellId != nil {
@@ -164,14 +164,11 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 					session.AddResource(mission.Reward)
 					switch i {
 					case 0:
-						liveRecord.ClearedDifficultyAchievement1 = new(int)
-						*liveRecord.ClearedDifficultyAchievement1 = 1
+						liveRecord.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
 					case 1:
-						liveRecord.ClearedDifficultyAchievement2 = new(int)
-						*liveRecord.ClearedDifficultyAchievement2 = 2
+						liveRecord.ClearedDifficultyAchievement2 = generic.NewNullable(int32(2))
 					case 2:
-						liveRecord.ClearedDifficultyAchievement3 = new(int)
-						*liveRecord.ClearedDifficultyAchievement3 = 3
+						liveRecord.ClearedDifficultyAchievement2 = generic.NewNullable(int32(3))
 					}
 				}
 			}

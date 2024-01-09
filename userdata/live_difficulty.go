@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/model"
 	"elichika/utils"
 
@@ -12,8 +13,8 @@ import (
 
 // TODO: rename table "u_live_record" to "u_live_difficulty"
 
-func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficultyId int32) model.UserLiveDifficulty {
-	userLiveDifficulty := model.UserLiveDifficulty{}
+func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficultyId int32) client.UserLiveDifficulty {
+	userLiveDifficulty := client.UserLiveDifficulty{}
 	exist, err := session.Db.Table("u_live_record").
 		Where("user_id = ? AND live_difficulty_id = ?", otherUserId, liveDifficultyId).
 		Get(&userLiveDifficulty)
@@ -29,19 +30,19 @@ func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficul
 	return userLiveDifficulty
 }
 
-func (session *Session) GetLiveDifficulty(liveDifficultyId int32) model.UserLiveDifficulty {
+func (session *Session) GetLiveDifficulty(liveDifficultyId int32) client.UserLiveDifficulty {
 	return session.GetOtherUserLiveDifficulty(session.UserId, liveDifficultyId)
 }
 
-func (session *Session) GetAllLiveDifficulties() []model.UserLiveDifficulty {
-	records := []model.UserLiveDifficulty{}
+func (session *Session) GetAllLiveDifficulties() []client.UserLiveDifficulty {
+	records := []client.UserLiveDifficulty{}
 	err := session.Db.Table("u_live_record").Where("user_id = ?", session.UserId).
 		Find(&records)
 	utils.CheckErr(err)
 	return records
 }
 
-func (session *Session) UpdateLiveDifficulty(userLiveDifficulty model.UserLiveDifficulty) {
+func (session *Session) UpdateLiveDifficulty(userLiveDifficulty client.UserLiveDifficulty) {
 	session.UserLiveDifficultyMapping.SetList(&session.UserModel.UserLiveDifficultyByDifficultyId).
 		Update(userLiveDifficulty)
 }

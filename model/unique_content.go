@@ -11,13 +11,6 @@ var (
 	TableNameToInterface = map[string]interface{}{}
 )
 
-type UserStoryMain struct {
-	StoryMainMasterId int `xorm:"pk 'story_main_master_id'" json:"story_main_master_id"`
-}
-
-func (usm *UserStoryMain) Id() int64 {
-	return int64(usm.StoryMainMasterId)
-}
 
 // for that one part in the main story where you select an idol
 type UserStoryMainSelected struct {

@@ -37,7 +37,7 @@ type Session struct {
 	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[client.UserLiveDeck]
 	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[client.UserLiveParty]
 	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[client.UserAccessory]
-	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[model.UserLiveDifficulty]
+	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[client.UserLiveDifficulty]
 	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[model.TriggerCardGradeUp]
 	UserTriggerBasicMapping                   generic.ObjectByObjectIdMapping[model.TriggerBasic]
 	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIdMapping[model.TriggerMemberLoveLevelUp]

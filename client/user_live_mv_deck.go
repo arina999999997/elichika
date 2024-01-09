@@ -5,7 +5,7 @@ import (
 )
 
 type UserLiveMvDeck struct {
-	LiveMasterId     int32  `xorm:"pk 'live_master_id'" json:"live_master_id"`
+	LiveMasterId     int32                   `xorm:"pk 'live_master_id'" json:"live_master_id"`
 	MemberMasterId1  generic.Nullable[int32] `xorm:"json 'member_master_id_1'" json:"member_master_id_1"`
 	MemberMasterId2  generic.Nullable[int32] `xorm:"json 'member_master_id_2'" json:"member_master_id_2"`
 	MemberMasterId3  generic.Nullable[int32] `xorm:"json 'member_master_id_3'" json:"member_master_id_3"`
