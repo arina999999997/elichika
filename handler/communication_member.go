@@ -4,7 +4,7 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/model"
+	"elichika/client"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
@@ -231,10 +231,10 @@ func SetFavoriteMember(ctx *gin.Context) {
 			member.OwnedCardCount++
 		} else {
 			// add trigger card grade up so animation play when opening the card
-			session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-				CardMasterId:         int(card.CardMasterId),
-				BeforeLoveLevelLimit: int(afterLoveLevelLimit), // this is correct
-				AfterLoveLevelLimit:  int(afterLoveLevelLimit),
+			session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{
+				CardMasterId:         card.CardMasterId,
+				BeforeLoveLevelLimit: int32(afterLoveLevelLimit), // this is correct
+				AfterLoveLevelLimit:  int32(afterLoveLevelLimit),
 			})
 		}
 		// update the card and member

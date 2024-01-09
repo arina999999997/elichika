@@ -38,9 +38,9 @@ type Session struct {
 	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[client.UserLiveParty]
 	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[client.UserAccessory]
 	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[client.UserLiveDifficulty]
-	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[model.TriggerCardGradeUp]
-	UserTriggerBasicMapping                   generic.ObjectByObjectIdMapping[model.TriggerBasic]
-	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIdMapping[model.TriggerMemberLoveLevelUp]
+	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[client.UserInfoTriggerCardGradeUp]
+	UserTriggerBasicMapping                   generic.ObjectByObjectIdMapping[client.UserInfoTriggerBasic]
+	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIdMapping[client.UserInfoTriggerMemberLoveLevelUp]
 	UserTowerMapping                          generic.ObjectByObjectIdMapping[client.UserTower]
 	// TODO: change the map to index map?
 	UserMemberLovePanelDiffs map[int32]model.UserMemberLovePanel

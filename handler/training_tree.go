@@ -4,6 +4,7 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/client"
 	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
@@ -103,10 +104,10 @@ func GradeUpCard(ctx *gin.Context) {
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break
-	session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-		CardMasterId:         int(req.CardMasterId),
-		BeforeLoveLevelLimit: int(currentLoveLevel - masterCard.CardRarityType/10),
-		AfterLoveLevelLimit:  int(currentLoveLevel)})
+	session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{
+		CardMasterId:         req.CardMasterId,
+		BeforeLoveLevelLimit: int32(currentLoveLevel - masterCard.CardRarityType/10),
+		AfterLoveLevelLimit:  int32(currentLoveLevel)})
 
 	resp := session.Finalize("{}", "user_model_diff")
 	resp = SignResp(ctx, resp, config.SessionKey)

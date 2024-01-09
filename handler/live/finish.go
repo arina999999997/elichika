@@ -329,9 +329,9 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 		// TODO(present box): Reward are actually added to present box in official server, we just add them directly here
 		if tower.Floor[*live.TowerLive.FloorNo].TowerClearRewardId != nil {
 			session.AddTriggerBasic(
-				model.TriggerBasic{
+				client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopClearRewardReceived,
-					ParamInt:        int(*live.TowerLive.TowerId),
+					ParamInt:        generic.NewNullable(*live.TowerLive.TowerId),
 				})
 			for _, reward := range tower.Floor[*live.TowerLive.FloorNo].TowerClearRewards {
 				session.AddResource(reward)
@@ -339,9 +339,9 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 		}
 		if tower.Floor[*live.TowerLive.FloorNo].TowerProgressRewardId != nil {
 			session.AddTriggerBasic(
-				model.TriggerBasic{
+				client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopProgressRewardReceived,
-					ParamInt:        int(*live.TowerLive.TowerId),
+					ParamInt:        generic.NewNullable(*live.TowerLive.TowerId),
 				})
 			for _, reward := range tower.Floor[*live.TowerLive.FloorNo].TowerProgressRewards {
 				session.AddResource(reward)

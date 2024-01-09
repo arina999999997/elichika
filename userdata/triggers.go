@@ -1,18 +1,18 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) UpdateTriggerCardGradeUp(trigger model.TriggerCardGradeUp) {
+func (session *Session) UpdateTriggerCardGradeUp(trigger client.UserInfoTriggerCardGradeUp) {
 	session.UserTriggerCardGradeUpMapping.SetList(&session.UserModel.UserInfoTriggerCardGradeUpByTriggerId).Update(trigger)
 }
 
 // card grade up trigger is responsible for showing the pop-up animation when openning a card after getting a new copy
 // or right after performing a limit break using items
 // Getting a new trigger also destroy old trigger, and we might have to update it
-func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) {
+func (session *Session) AddTriggerCardGradeUp(trigger client.UserInfoTriggerCardGradeUp) {
 	if trigger.TriggerId == 0 {
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
@@ -24,7 +24,7 @@ func (session *Session) AddTriggerCardGradeUp(trigger model.TriggerCardGradeUp) 
 func triggerCardGradeUpFinalizer(session *Session) {
 	for _, trigger := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Objects {
 		if !trigger.IsNull {
-			dbTrigger := model.TriggerCardGradeUp{}
+			dbTrigger := client.UserInfoTriggerCardGradeUp{}
 			exist, err := session.Db.Table("u_trigger_card_grade_up").
 				Where("user_id = ? AND card_master_id = ?", session.UserId, trigger.CardMasterId).Get(&dbTrigger)
 			utils.CheckErr(err)
@@ -42,17 +42,17 @@ func triggerCardGradeUpFinalizer(session *Session) {
 			// remove from db
 			// this is only caused by infoTrigger/read
 			_, err := session.Db.Table("u_trigger_card_grade_up").Where("trigger_id = ?", trigger.TriggerId).Delete(
-				&model.TriggerCardGradeUp{})
+				&client.UserInfoTriggerCardGradeUp{})
 			utils.CheckErr(err)
 		}
 	}
 }
 
-func (session *Session) UpdateTriggerBasic(trigger model.TriggerBasic) {
+func (session *Session) UpdateTriggerBasic(trigger client.UserInfoTriggerBasic) {
 	session.UserTriggerBasicMapping.SetList(&session.UserModel.UserInfoTriggerBasicByTriggerId).Update(trigger)
 }
 
-func (session *Session) AddTriggerBasic(trigger model.TriggerBasic) {
+func (session *Session) AddTriggerBasic(trigger client.UserInfoTriggerBasic) {
 	if trigger.TriggerId == 0 {
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
@@ -64,7 +64,7 @@ func triggerBasicFinalizer(session *Session) {
 	for _, trigger := range session.UserModel.UserInfoTriggerBasicByTriggerId.Objects {
 		if trigger.IsNull { // delete
 			_, err := session.Db.Table("u_trigger_basic").Where("trigger_id = ?", trigger.TriggerId).Delete(
-				&model.TriggerBasic{})
+				&client.UserInfoTriggerBasic{})
 			utils.CheckErr(err)
 		} else { // add
 			genericDatabaseInsert(session, "u_trigger_basic", trigger)
@@ -76,7 +76,7 @@ func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
 	for _, trigger := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Objects {
 		if trigger.IsNull { // delete
 			_, err := session.Db.Table("u_trigger_member_guild_support_item_expired").Where("trigger_id = ?", trigger.TriggerId).Delete(
-				&model.TriggerMemberGuildSupportItemExpired{})
+				&client.UserInfoTriggerMemberGuildSupportItemExpired{})
 			utils.CheckErr(err)
 		} else { // add
 			genericDatabaseInsert(session, "u_trigger_member_guild_support_item_expired", trigger)
@@ -99,11 +99,11 @@ func (session *Session) ReadMemberGuildSupportItemExpired() {
 // TODO: Trigger member love level up isn't really that persistent, so it's probably better to only keep it in ram
 // This could be done by keeping a full user model in ram too.
 
-func (session *Session) UpdateTriggerMemberLoveLevelUp(trigger model.TriggerMemberLoveLevelUp) {
+func (session *Session) UpdateTriggerMemberLoveLevelUp(trigger client.UserInfoTriggerMemberLoveLevelUp) {
 	session.UserTriggerMemberLoveLevelUpMapping.SetList(&session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId).Update(trigger)
 }
 
-func (session *Session) AddTriggerMemberLoveLevelUp(trigger model.TriggerMemberLoveLevelUp) {
+func (session *Session) AddTriggerMemberLoveLevelUp(trigger client.UserInfoTriggerMemberLoveLevelUp) {
 	if trigger.TriggerId == 0 {
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
@@ -113,7 +113,7 @@ func (session *Session) AddTriggerMemberLoveLevelUp(trigger model.TriggerMemberL
 		genericDatabaseInsert(session, "u_trigger_member_love_level_up", trigger)
 	} else {
 		_, err := session.Db.Table("u_trigger_member_love_level_up").Where("trigger_id = ?", trigger.TriggerId).Delete(
-			&model.TriggerMemberLoveLevelUp{})
+			&client.UserInfoTriggerMemberLoveLevelUp{})
 		utils.CheckErr(err)
 	}
 }
@@ -127,7 +127,7 @@ func (session *Session) ReadAllMemberLoveLevelUpTriggers() {
 		session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Objects[i].IsNull = true
 	}
 	_, err = session.Db.Table("u_trigger_member_love_level_up").Where("user_id = ?", session.UserId).Delete(
-		&model.TriggerMemberLoveLevelUp{})
+		&client.UserInfoTriggerMemberLoveLevelUp{})
 	utils.CheckErr(err)
 }
 

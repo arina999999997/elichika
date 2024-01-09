@@ -81,10 +81,10 @@ func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed 
 			resultCard.BeforeGrade = 0
 		} else {
 			// add trigger card grade up so animation play when opening the card
-			session.AddTriggerCardGradeUp(model.TriggerCardGradeUp{
-				CardMasterId:         int(card.CardMasterId),
-				BeforeLoveLevelLimit: resultCard.AfterLoveLevelLimit, // this is correct
-				AfterLoveLevelLimit:  resultCard.AfterLoveLevelLimit,
+			session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{
+				CardMasterId:         card.CardMasterId,
+				BeforeLoveLevelLimit: int32(resultCard.AfterLoveLevelLimit), // this is correct
+				AfterLoveLevelLimit:  int32(resultCard.AfterLoveLevelLimit),
 			})
 		}
 		// update the card and member

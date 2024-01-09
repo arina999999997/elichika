@@ -2,9 +2,9 @@ package userdata
 
 import (
 	"elichika/client"
+	"elichika/generic"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/utils"
 )
 
@@ -107,16 +107,16 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 			if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
 				// TODO: remove magic id from love panel system
 				currentLovePanel.LevelUp()
-				session.AddTriggerBasic(model.TriggerBasic{
+				session.AddTriggerBasic(client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
-					ParamInt:        int(currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberId)})
+					ParamInt:        generic.NewNullable(int32(currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberId))})
 
 				session.UpdateMemberLovePanel(currentLovePanel)
 			}
 		}
-		session.AddTriggerMemberLoveLevelUp(model.TriggerMemberLoveLevelUp{
-			MemberMasterId:  int(memberId),
-			BeforeLoveLevel: int(member.LoveLevel - 1)})
+		session.AddTriggerMemberLoveLevelUp(client.UserInfoTriggerMemberLoveLevelUp{
+			MemberMasterId:  memberId,
+			BeforeLoveLevel: member.LoveLevel - 1})
 
 	}
 	session.UpdateMember(member)
