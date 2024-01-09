@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/protocol/response"
 	"elichika/userdata"
@@ -38,16 +39,12 @@ func FetchDailyTheater(ctx *gin.Context) {
 func DailyTheaterSetLike(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetLikeReq struct {
-		DailyTheaterId int  `json:"daily_theater_id"`
-		IsLike         bool `json:"is_like"`
+		DailyTheaterId int32 `json:"daily_theater_id"`
+		IsLike         bool  `json:"is_like"`
 	}
 	req := SetLikeReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	type UserDailyTheater struct {
-		DailyTheaterId int  `json:"daily_theater_id"`
-		IsLiked        bool `json:"is_liked"`
-	}
 
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -56,7 +53,7 @@ func DailyTheaterSetLike(ctx *gin.Context) {
 
 	response := []any{}
 	response = append(response, req.DailyTheaterId)
-	response = append(response, UserDailyTheater{
+	response = append(response, client.UserDailyTheater{
 		DailyTheaterId: req.DailyTheaterId,
 		IsLiked:        req.IsLike,
 	})

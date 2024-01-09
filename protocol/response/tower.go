@@ -17,7 +17,7 @@ type FetchTowerTopResponse struct {
 	// used for bonus lives (ranking one), order will display the small ranking number
 	// each bonus live voltage is an array of number of floor length that store the score to them
 	Order                *int  `json:"order"`
-	EachBonusLiveVoltage []int `json:"each_bonus_live_voltage"`
+	EachBonusLiveVoltage []int32 `json:"each_bonus_live_voltage"`
 }
 
 type ClearedTowerFloorResponse struct {
@@ -37,8 +37,8 @@ type RecoveryTowerCardUsedAllResponse struct {
 type TowerRankingUser = RankingUser
 
 type TowerRankingCell struct {
-	Order            int              `json:"order"`
-	SumVoltage       int              `json:"sum_voltage"`
+	Order            int32              `json:"order"`
+	SumVoltage       int32              `json:"sum_voltage"`
 	TowerRankingUser TowerRankingUser `json:"tower_ranking_user"`
 }
 

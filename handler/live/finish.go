@@ -48,10 +48,10 @@ func (obj *LiveResultAchievement) SetId(id int64) {
 }
 
 type LiveResultTower struct {
-	TowerId             int                            `json:"tower_id"`
-	FloorNo             int                            `json:"floor_no"`
-	TotalVoltage        int                            `json:"total_voltage"`
-	GettedVoltage       int                            `json:"getted_voltage"` // nice engrish
+	TowerId             int32                            `json:"tower_id"`
+	FloorNo             int32                            `json:"floor_no"`
+	TotalVoltage        int32                            `json:"total_voltage"`
+	GettedVoltage       int32                            `json:"getted_voltage"` // nice engrish
 	TowerCardUsedCounts []model.UserTowerCardUsedCount `json:"tower_card_used_counts"`
 }
 
@@ -266,8 +266,8 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 		LiveResultTower: &LiveResultTower{
 			TowerId:             *live.TowerLive.TowerId,
 			FloorNo:             *live.TowerLive.FloorNo,
-			TotalVoltage:        req.LiveScore.CurrentScore,
-			GettedVoltage:       req.LiveScore.CurrentScore - *live.TowerLive.StartVoltage,
+			TotalVoltage:        int32(req.LiveScore.CurrentScore),
+			GettedVoltage:       int32(req.LiveScore.CurrentScore) - *live.TowerLive.StartVoltage,
 			TowerCardUsedCounts: []model.UserTowerCardUsedCount{},
 		}}
 
@@ -295,10 +295,10 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 				// so it's better to just use something else
 				// that will also help with displaying the ranking
 				currentScore := session.GetUserTowerVoltageRankingScore(*live.TowerLive.TowerId, *live.TowerLive.FloorNo)
-				if (req.LiveScore.CurrentScore >= req.LiveScore.TargetScore) && (currentScore.Voltage < req.LiveScore.CurrentScore) {
+				if (req.LiveScore.CurrentScore >= req.LiveScore.TargetScore) && (int(currentScore.Voltage) < req.LiveScore.CurrentScore) {
 					increasePlayCount = true
 					awardFirstClearReward = currentScore.Voltage == 0
-					currentScore.Voltage = req.LiveScore.CurrentScore
+					currentScore.Voltage = int32(req.LiveScore.CurrentScore)
 					session.UpdateUserTowerVoltageRankingScore(currentScore)
 				}
 			}
@@ -309,7 +309,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 			userTower.Voltage = 0
 		} else { // not cleared
 			increasePlayCount = true
-			userTower.Voltage = req.LiveScore.CurrentScore
+			userTower.Voltage = int32(req.LiveScore.CurrentScore)
 		}
 		session.UpdateUserTower(userTower)
 	}
@@ -318,7 +318,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 		// update card used stuff
 		for i := range req.LiveScore.CardStatDict.Objects {
 			liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
-			cardUsedCount := session.GetUserTowerCardUsed(*live.TowerLive.TowerId, int(liveFinishCard.CardMasterId))
+			cardUsedCount := session.GetUserTowerCardUsed(*live.TowerLive.TowerId, int32(liveFinishCard.CardMasterId))
 			cardUsedCount.UsedCount++
 			cardUsedCount.LastUsedAt = session.Time.Unix()
 			session.UpdateUserTowerCardUsed(cardUsedCount)
@@ -331,7 +331,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 			session.AddTriggerBasic(
 				model.TriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopClearRewardReceived,
-					ParamInt:        *live.TowerLive.TowerId,
+					ParamInt:        int(*live.TowerLive.TowerId),
 				})
 			for _, reward := range tower.Floor[*live.TowerLive.FloorNo].TowerClearRewards {
 				session.AddResource(reward)
@@ -341,7 +341,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 			session.AddTriggerBasic(
 				model.TriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopProgressRewardReceived,
-					ParamInt:        *live.TowerLive.TowerId,
+					ParamInt:        int(*live.TowerLive.TowerId),
 				})
 			for _, reward := range tower.Floor[*live.TowerLive.FloorNo].TowerProgressRewards {
 				session.AddResource(reward)

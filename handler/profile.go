@@ -157,7 +157,7 @@ func SetScoreOrComboLive(ctx *gin.Context) {
 	if ctx.Request.URL.Path == "/userProfile/setScoreLive" {
 		setProfile.VoltageLiveDifficultyId = req.LiveDifficultyMasterId
 	} else {
-		setProfile.ComboLiveDifficultyId = req.LiveDifficultyMasterId
+		setProfile.CommboLiveDifficultyId = req.LiveDifficultyMasterId
 	}
 	session.SetUserSetProfile(setProfile)
 	session.Finalize("{}", "dummy")

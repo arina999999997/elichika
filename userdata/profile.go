@@ -191,10 +191,10 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 		profile.PlayInfo.MaxScoreLiveDifficulty.Score =
 			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.VoltageLiveDifficultyId).MaxScore
 	}
-	if customProfile.ComboLiveDifficultyId != 0 {
-		profile.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterId = customProfile.ComboLiveDifficultyId
+	if customProfile.CommboLiveDifficultyId != 0 {
+		profile.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterId = customProfile.CommboLiveDifficultyId
 		profile.PlayInfo.MaxComboLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.ComboLiveDifficultyId).MaxCombo
+			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.CommboLiveDifficultyId).MaxCombo
 	}
 
 	// can get from members[] to save sql
@@ -202,19 +202,19 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	return profile
 }
 
-func (session *Session) GetOtherUserSetProfile(otherUserId int) model.UserSetProfile {
-	p := model.UserSetProfile{}
+func (session *Session) GetOtherUserSetProfile(otherUserId int) client.UserSetProfile {
+	p := client.UserSetProfile{}
 	_, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", otherUserId).Get(&p)
 	utils.CheckErr(err)
 	return p
 }
 
-func (session *Session) GetUserSetProfile() model.UserSetProfile {
+func (session *Session) GetUserSetProfile() client.UserSetProfile {
 	return session.GetOtherUserSetProfile(session.UserId)
 }
 
 // doesn't need to return delta patch or submit at the start because we would need to fetch profile everytime we need this thing
-func (session *Session) SetUserSetProfile(userSetProfile model.UserSetProfile) {
+func (session *Session) SetUserSetProfile(userSetProfile client.UserSetProfile) {
 	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserId).
 		AllCols().Update(&userSetProfile)
 	utils.CheckErr(err)

@@ -135,10 +135,11 @@ func LiveStart(ctx *gin.Context) {
 			userTower.ReadFloor = req.LiveTowerStatus.FloorNo
 			session.UpdateUserTower(userTower)
 		}
+		dummy := int32(gamedata.Tower[req.LiveTowerStatus.TowerId].Floor[req.LiveTowerStatus.FloorNo].TargetVoltage)
 		live.TowerLive = model.TowerLive{
 			TowerId:       &req.LiveTowerStatus.TowerId,
 			FloorNo:       &req.LiveTowerStatus.FloorNo,
-			TargetVoltage: &gamedata.Tower[req.LiveTowerStatus.TowerId].Floor[req.LiveTowerStatus.FloorNo].TargetVoltage,
+			TargetVoltage: &dummy,
 			StartVoltage:  &userTower.Voltage,
 		}
 		live.LiveType = enum.LiveTypeTower

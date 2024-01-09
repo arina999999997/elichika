@@ -2,7 +2,7 @@ package handler
 
 import (
 	"elichika/config"
-	"elichika/model"
+	"elichika/client"
 	"elichika/protocol/response"
 	"elichika/userdata"
 
@@ -68,9 +68,9 @@ func FetchShopSubscription(ctx *gin.Context) {
 	//  but let's settle on giving everyone who click on this button a subscription anyway
 
 	session.UserModel.UserSubscriptionStatusById.PushBack(
-		model.UserSubscriptionStatus{
+		client.UserSubscriptionStatus{
 			SubscriptionMasterId: 13001,
-			StartDate:            int(session.Time.Unix()),
+			StartDate:            session.Time.Unix(),
 			ExpireDate:           1<<31 - 1,
 			PlatformExpireDate:   1<<31 - 1,
 			SubscriptionPassId:   session.Time.UnixNano(),

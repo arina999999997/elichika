@@ -38,4 +38,32 @@ func init() {
 	TableNameToInterface["u_reference_book"] = generic.UserIdWrapper[client.UserReferenceBook]{}
 	TableNameToInterface["u_story_linkage"] = generic.UserIdWrapper[client.UserStoryLinkage]{}
 	TableNameToInterface["u_story_main_part_digest_movie"] = generic.UserIdWrapper[client.UserStoryMainPartDigestMovie]{}
+	TableNameToInterface["u_communication_member_detail_badge"] = generic.UserIdWrapper[client.UserCommunicationMemberDetailBadge]{}
+	// TODO(mission): Not handled
+	TableNameToInterface["u_mission"] = generic.UserIdWrapper[client.UserMission]{}
+	TableNameToInterface["u_daily_mission"] = generic.UserIdWrapper[client.UserDailyMission]{}
+	TableNameToInterface["u_weekly_mission"] = generic.UserIdWrapper[client.UserWeeklyMission]{}
+
+	TableNameToInterface["u_school_idol_festival_id_reward_mission"] = generic.UserIdWrapper[client.UserSchoolIdolFestivalIdRewardMission]{}
+	TableNameToInterface["u_sif_2_data_link"] = generic.UserIdWrapper[client.UserSif2DataLink]{}
+	TableNameToInterface["u_gps_present_received"] = generic.UserIdWrapper[client.UserGpsPresentReceived]{}
+
+	TableNameToInterface["u_event_marathon"] = generic.UserIdWrapper[client.UserEventMarathon]{}
+	TableNameToInterface["u_event_mining"] = generic.UserIdWrapper[client.UserEventMining]{}
+	TableNameToInterface["u_event_coop"] = generic.UserIdWrapper[client.UserEventCoop]{}
+	TableNameToInterface["u_review_request_process_flow"] = generic.UserIdWrapper[client.UserReviewRequestProcessFlow]{}
+
+	TableNameToInterface["u_member_guild"] = generic.UserIdWrapper[client.UserMemberGuild]{}
+	TableNameToInterface["u_member_guild_support_item"] = generic.UserIdWrapper[client.UserMemberGuildSupportItem]{}
+
+	TableNameToInterface["u_daily_theater"] = generic.UserIdWrapper[client.UserDailyTheater]{}
+	
+	// TODO(refactor): change this database name
+	TableNameToInterface["u_custom_set_profile"] = generic.UserIdWrapper[client.UserSetProfile]{} 
+
+	TableNameToInterface["u_steady_voltage_ranking"] = generic.UserIdWrapper[client.UserSteadyVoltageRanking]{}
+	TableNameToInterface["u_play_list"] = generic.UserIdWrapper[client.UserPlayList]{}
+
+	TableNameToInterface["u_tower"] = generic.UserIdWrapper[client.UserTower]{}
+	TableNameToInterface["u_subscription_status"] = generic.UserIdWrapper[client.UserSubscriptionStatus]{}
 }

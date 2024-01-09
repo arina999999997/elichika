@@ -1,7 +1,7 @@
 package response
 
 type FetchSubscriptionPassResponse struct {
-	BeforeContinueCount int `json:"before_continue_count"`
+	BeforeContinueCount int32 `json:"before_continue_count"`
 }
 
 type UpdateSubscriptionResponse struct {

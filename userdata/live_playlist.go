@@ -1,11 +1,11 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) UpdateUserPlayList(item model.UserPlayListItem) {
+func (session *Session) UpdateUserPlayList(item client.UserPlayList) {
 	session.UserModel.UserPlayListById.PushBack(item)
 }
 

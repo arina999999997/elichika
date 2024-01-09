@@ -128,16 +128,6 @@ type Profile struct {
 	} `xorm:"-" json:"member_info"`
 }
 
-type UserSetProfile struct {
-	UserSetProfileId        int   `xorm:"-" json:"user_set_profile_id"` // always 0
-	VoltageLiveDifficultyId int32 `xorm:"'voltage_live_difficulty_id'" json:"voltage_live_difficulty_id"`
-	ComboLiveDifficultyId   int32 `xorm:"'commbo_live_difficulty_id'" json:"commbo_live_difficulty_id"`
-}
-
-func (usp *UserSetProfile) Id() int64 {
-	return int64(usp.UserSetProfileId)
-}
-
 func init() {
 
 	type DbUser struct {
@@ -146,6 +136,5 @@ func init() {
 	}
 	TableNameToInterface["u_info"] = generic.UserIdWrapper[DbUser]{}
 
-	// TODO: change this database name
-	TableNameToInterface["u_custom_set_profile"] = generic.UserIdWrapper[UserSetProfile]{}
+
 }

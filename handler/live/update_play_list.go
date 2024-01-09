@@ -4,6 +4,7 @@ import (
 	"elichika/config"
 	"elichika/handler"
 	"elichika/model"
+	"elichika/client"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,7 +25,7 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UpdateUserPlayList(model.UserPlayListItem{
+	session.UpdateUserPlayList(client.UserPlayList{
 		UserPlayListId: req.GroupNum + req.LiveMasterId*10,
 		GroupNum:       req.GroupNum,
 		LiveId:         req.LiveMasterId,

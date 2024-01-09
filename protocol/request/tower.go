@@ -1,18 +1,18 @@
 package request
 
 type FetchTowerTopRequest struct {
-	TowerId int `json:"tower_id"`
+	TowerId int32 `json:"tower_id"`
 }
 
 type ClearedTowerFloorRequest struct {
-	TowerId    int  `json:"tower_id"`
-	FloorNo    int  `json:"floor_no"`
+	TowerId    int32  `json:"tower_id"`
+	FloorNo    int32  `json:"floor_no"`
 	IsAutoMode bool `json:"is_auto_mode"`
 }
 
 type RecoveryTowerCardUsedRequest struct {
-	TowerId       int   `json:"tower_id"`
-	CardMasterIds []int `json:"card_master_ids"`
+	TowerId       int32   `json:"tower_id"`
+	CardMasterIds []int32 `json:"card_master_ids"`
 }
 
 type RecoveryTowerCardUsedAllRequest = FetchTowerTopRequest

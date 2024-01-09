@@ -111,7 +111,7 @@ type Gamedata struct {
 	GachaGroup     map[int]*GachaGroup
 	GachaGuarantee map[int]*GachaGuarantee
 
-	Tower map[int]*Tower
+	Tower map[int32]*Tower
 
 	Trade        map[int]*model.Trade // map from TradeId to Trade
 	TradesByType [3][]*model.Trade    // map from trade type to array of Trade

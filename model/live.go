@@ -1,7 +1,6 @@
 package model
 
 import (
-	"elichika/generic"
 
 	"encoding/json"
 	"reflect"
@@ -94,24 +93,7 @@ func (ul UserLive) MarshalJSON() ([]byte, error) {
 // }
 
 type LiveUpdatePlayListReq struct {
-	LiveMasterId int  `json:"live_master_id"`
-	GroupNum     int  `json:"group_num"`
+	LiveMasterId int32  `json:"live_master_id"`
+	GroupNum     int32  `json:"group_num"`
 	IsSet        bool `json:"is_set"`
-}
-
-type UserPlayListItem struct {
-	UserPlayListId int  `xorm:"pk 'user_play_list_id'" json:"user_play_list_id"`
-	GroupNum       int  `xorm:"'group_num'" json:"group_num"` // UserPlayListId % 10
-	LiveId         int  `xorm:"'live_id'" json:"live_id"`     // UserPlayListId / 10
-	IsNull         bool `xorm:"-" json:"-"`
-}
-
-func (item UserPlayListItem) Id() int64 {
-	return int64(item.UserPlayListId)
-}
-
-func init() {
-
-	// TableNameToInterface["u_live_state"] = LiveState{}
-	TableNameToInterface["u_play_list"] = generic.UserIdWrapper[UserPlayListItem]{}
 }

@@ -13,13 +13,13 @@ import (
 
 type TowerFloor struct {
 	// from m_tower_composition
-	TowerId int `xorm:"pk 'tower_id'"`
-	FloorNo int `xorm:"pk 'floor_no'"`
+	TowerId int32 `xorm:"pk 'tower_id'"`
+	FloorNo int32 `xorm:"pk 'floor_no'"`
 	// Name DictionaryString `xorm:"'name'"`
 	// ThumbnailAssetPath *string `xorm:"'thumbnail_asset_path'"`
 	// PopUpThumbnailAssetPath string `xorm:"'popup_thumbnail_asset_path'"`
 	ConsumePerformance bool `xorm:"'consume_performance'"`
-	TowerCellType      int  `xorm:"'tower_cell_type'"`
+	TowerCellType      int32  `xorm:"'tower_cell_type'" enum:""`
 	// ScenarioScriptAssetPath *string `xorm:"'scenario_script_asset_path'"`
 	// LiveDifficultyId int `xorm:"'live_difficulty_id'"`
 	TargetVoltage int `xorm:"'target_voltage'"`
@@ -47,13 +47,13 @@ func (tf *TowerFloor) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 type Tower struct {
 	// from m_tower
-	TowerId int `xorm:"pk 'tower_id'"`
+	TowerId int32 `xorm:"pk 'tower_id'"`
 	// Title DictionaryString `xorm:"'title'"`
 	// ThumbnailAssetPath string `xorm:"'thumbnail_asset_path'"`
 	// DisplayOrder int `xorm:"'display_order'"`
 	TowerCompositionId   int          `xorm:"'tower_composition_id'"`
 	Floor                []TowerFloor `xorm:"-"` // from m_tower_composition, 1 indexed
-	FloorCount           int          `xorm:"-"`
+	FloorCount           int32          `xorm:"-"`
 	IsVoltageRanked      bool         `xorm:"-"`
 	TradeMasterId        int          `xorm:"'trade_master_id'"`
 	EntryRestrictionType int          `xorm:"'entry_restriction_type'"`
@@ -69,7 +69,7 @@ type Tower struct {
 func (t *Tower) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	err := masterdata_db.Table("m_tower_composition").Where("tower_id = ?", t.TowerId).OrderBy("floor_no").Find(&t.Floor)
 	utils.CheckErr(err)
-	t.FloorCount = len(t.Floor)
+	t.FloorCount = int32(len(t.Floor))
 	t.Floor = append([]TowerFloor{TowerFloor{}}, t.Floor...)
 	for i := range t.Floor {
 		t.Floor[i].populate(gamedata, masterdata_db, serverdata_db, dictionary)
@@ -79,7 +79,7 @@ func (t *Tower) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.
 
 func loadTower(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading Tower")
-	gamedata.Tower = make(map[int]*Tower)
+	gamedata.Tower = make(map[int32]*Tower)
 	err := masterdata_db.Table("m_tower").Find(&gamedata.Tower)
 	utils.CheckErr(err)
 	for _, tower := range gamedata.Tower {

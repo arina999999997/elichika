@@ -76,7 +76,7 @@ func FetchTowerTop(ctx *gin.Context) {
 		//
 		// EachBonusLiveVoltage should be filled with zero for everything, then fill in the score
 
-		respObj.EachBonusLiveVoltage = make([]int, tower.FloorCount)
+		respObj.EachBonusLiveVoltage = make([]int32, tower.FloorCount)
 		respObj.Order = new(int)
 		*respObj.Order = 1
 		// fetch the score

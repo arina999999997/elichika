@@ -1,19 +1,19 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) GetSubsriptionStatus() model.UserSubscriptionStatus {
-	status := model.UserSubscriptionStatus{}
+func (session *Session) GetSubsriptionStatus() client.UserSubscriptionStatus {
+	status := client.UserSubscriptionStatus{}
 	exists, err := session.Db.Table("u_subscription_status").
 		Where("user_id = ?", session.UserId).Get(&status)
 	utils.CheckErr(err)
 	if !exists {
-		status = model.UserSubscriptionStatus{
+		status = client.UserSubscriptionStatus{
 			SubscriptionMasterId: 13001,
-			StartDate:            int(session.Time.Unix()),
+			StartDate:            session.Time.Unix(),
 			ExpireDate:           1<<31 - 1,
 			PlatformExpireDate:   1<<31 - 1,
 			SubscriptionPassId:   session.Time.UnixNano(),

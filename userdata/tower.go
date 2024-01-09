@@ -2,11 +2,12 @@ package userdata
 
 import (
 	"elichika/model"
+	"elichika/client"
 	"elichika/protocol/response"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int) model.UserTowerCardUsedCount {
+func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) model.UserTowerCardUsedCount {
 	cardUsed := model.UserTowerCardUsedCount{}
 	exist, err := session.Db.Table("u_tower_card_used").
 		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, towerId, cardMasterId).Get(&cardUsed)
@@ -33,7 +34,7 @@ func (session *Session) UpdateUserTowerCardUsed(card model.UserTowerCardUsedCoun
 	}
 }
 
-func (session *Session) GetUserTowerCardUsedList(towerId int) []model.UserTowerCardUsedCount {
+func (session *Session) GetUserTowerCardUsedList(towerId int32) []model.UserTowerCardUsedCount {
 	list := []model.UserTowerCardUsedCount{}
 	err := session.Db.Table("u_tower_card_used").
 		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&list)
@@ -41,39 +42,39 @@ func (session *Session) GetUserTowerCardUsedList(towerId int) []model.UserTowerC
 	return list
 }
 
-func (session *Session) GetUserTower(towerId int) model.UserTower {
+func (session *Session) GetUserTower(towerId int32) client.UserTower {
 	pos, exist := session.UserTowerMapping.SetList(&session.UserModel.UserTowerByTowerId).Map[int64(towerId)]
 	if exist {
 		return session.UserModel.UserTowerByTowerId.Objects[pos]
 	}
-	tower := model.UserTower{}
+	tower := client.UserTower{}
 	exist, err := session.Db.Table("u_tower").
 		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Get(&tower)
 	utils.CheckErr(err)
 	if !exist {
-		tower = model.UserTower{
+		tower = client.UserTower{
 			TowerId:                     towerId,
 			ClearedFloor:                0,
 			ReadFloor:                   0,
 			Voltage:                     0,
-			RecoveryPointFullAt:         int(session.Time.Unix() + 86400),
-			RecoveryPointLastConsumedAt: int(session.Time.Unix()),
+			RecoveryPointFullAt:         session.Time.Unix() + 86400,
+			RecoveryPointLastConsumedAt: session.Time.Unix(),
 		}
 	} else {
 
 		// this is to make sure user can always mass recover LP
 		// it's the only way to do this since these things are decided by the timestamps alone (+ plus the limit from the database)
-		tower.RecoveryPointFullAt = int(session.Time.Unix() + 86400)
-		tower.RecoveryPointLastConsumedAt = int(session.Time.Unix())
+		tower.RecoveryPointFullAt = session.Time.Unix() + 86400
+		tower.RecoveryPointLastConsumedAt = session.Time.Unix()
 	}
 	return tower
 }
 
-func (session *Session) UpdateUserTower(tower model.UserTower) {
+func (session *Session) UpdateUserTower(tower client.UserTower) {
 	session.UserTowerMapping.SetList(&session.UserModel.UserTowerByTowerId).Update(tower)
 }
 
-func (session *Session) GetUserTowerVoltageRankingScores(towerId int) []model.UserTowerVoltageRankingScore {
+func (session *Session) GetUserTowerVoltageRankingScores(towerId int32) []model.UserTowerVoltageRankingScore {
 	scores := []model.UserTowerVoltageRankingScore{}
 	err := session.Db.Table("u_tower_voltage_ranking_score").
 		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&scores)
@@ -81,7 +82,7 @@ func (session *Session) GetUserTowerVoltageRankingScores(towerId int) []model.Us
 	return scores
 }
 
-func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int) model.UserTowerVoltageRankingScore {
+func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int32) model.UserTowerVoltageRankingScore {
 	score := model.UserTowerVoltageRankingScore{}
 	exists, err := session.Db.Table("u_tower_voltage_ranking_score").
 		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserId, towerId, floorNo).Get(&score)
@@ -106,7 +107,7 @@ func (session *Session) UpdateUserTowerVoltageRankingScore(score model.UserTower
 	}
 }
 
-func (session *Session) GetTowerRankingCell(towerId int) response.TowerRankingCell {
+func (session *Session) GetTowerRankingCell(towerId int32) response.TowerRankingCell {
 	scores := session.GetUserTowerVoltageRankingScores(towerId)
 	cell := response.TowerRankingCell{
 		Order:            1,

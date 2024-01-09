@@ -45,13 +45,13 @@ func memberFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int) model.UserCommunicationMemberDetailBadge {
+func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int) client.UserCommunicationMemberDetailBadge {
 	pos, exist := session.UserCommunicationMemberDetailBadgeMapping.
 		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeById).Map[int64(memberMasterId)]
 	if exist {
 		return session.UserModel.UserCommunicationMemberDetailBadgeById.Objects[pos]
 	}
-	badge := model.UserCommunicationMemberDetailBadge{}
+	badge := client.UserCommunicationMemberDetailBadge{}
 	exist, err := session.Db.Table("u_communication_member_detail_badge").
 		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).Get(&badge)
 	utils.CheckErr(err)
@@ -62,7 +62,7 @@ func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int
 	return badge
 }
 
-func (session *Session) UpdateUserCommunicationMemberDetailBadge(badge model.UserCommunicationMemberDetailBadge) {
+func (session *Session) UpdateUserCommunicationMemberDetailBadge(badge client.UserCommunicationMemberDetailBadge) {
 	session.UserCommunicationMemberDetailBadgeMapping.
 		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeById).Update(badge)
 }
