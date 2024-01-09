@@ -19,8 +19,8 @@ type UserModel struct {
 	UserLiveDeckById                                                           generic.ObjectByObjectIdList[client.UserLiveDeck]                         `json:"user_live_deck_by_id"`
 	UserLivePartyById                                                          generic.ObjectByObjectIdList[client.UserLiveParty]                        `json:"user_live_party_by_id"`
 	UserLessonDeckById                                                         generic.ObjectByObjectIdList[client.UserLessonDeck]                       `json:"user_lesson_deck_by_id"`
-	UserLiveMvDeckById                                                         generic.ObjectByObjectIdList[model.UserLiveMvDeck]                        `json:"user_live_mv_deck_by_id"`
-	UserLiveMvDeckCustomById                                                   generic.ObjectByObjectIdList[model.UserLiveMvDeck]                        `json:"user_live_mv_deck_custom_by_id"`
+	UserLiveMvDeckById                                                         generic.ObjectByObjectIdList[client.UserLiveMvDeck]                        `json:"user_live_mv_deck_by_id"`
+	UserLiveMvDeckCustomById                                                   generic.ObjectByObjectIdList[client.UserLiveMvDeck]                        `json:"user_live_mv_deck_custom_by_id"`
 	UserLiveDifficultyByDifficultyId                                           generic.ObjectByObjectIdList[model.UserLiveDifficulty]                    `json:"user_live_difficulty_by_difficulty_id"`
 	UserStoryMainByStoryMainId                                                 generic.ObjectByObjectIdList[model.UserStoryMain]                         `json:"user_story_main_by_story_main_id"`
 	UserStoryMainSelectedByStoryMainCellId                                     generic.ObjectByObjectIdList[model.UserStoryMainSelected]                 `json:"user_story_main_selected_by_story_main_cell_id"`

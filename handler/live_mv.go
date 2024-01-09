@@ -3,7 +3,7 @@ package handler
 import (
 	"elichika/config"
 	"elichika/enum"
-	"elichika/model"
+	"elichika/client"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -33,18 +33,18 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
 	type LiveSaveDeckReq struct {
-		LiveMasterId        int   `json:"live_master_id"`
-		LiveMvDeckType      int   `json:"live_mv_deck_type"`
-		MemberMasterIdByPos []int `json:"member_master_id_by_pos"`
-		SuitMasterIdByPos   []int `json:"suit_master_id_by_pos"`
-		ViewStatusByPos     []int `json:"view_status_by_pos"`
+		LiveMasterId        int32   `json:"live_master_id"`
+		LiveMvDeckType      int32   `json:"live_mv_deck_type"`
+		MemberMasterIdByPos []int32 `json:"member_master_id_by_pos"`
+		SuitMasterIdByPos   []int32 `json:"suit_master_id_by_pos"`
+		ViewStatusByPos     []int32 `json:"view_status_by_pos"`
 	}
 
 	req := LiveSaveDeckReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userLiveMvDeck := model.UserLiveMvDeck{
+	userLiveMvDeck := client.UserLiveMvDeck{
 		LiveMasterId: req.LiveMasterId,
 	}
 	deckJsonBytes, err := json.Marshal(userLiveMvDeck)

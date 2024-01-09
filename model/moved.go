@@ -18,4 +18,6 @@ func init() {
 	TableNameToInterface["u_accessory"] = generic.UserIdWrapper[client.UserAccessory]{}
 	TableNameToInterface["u_live_deck"] = generic.UserIdWrapper[client.UserLiveDeck]{}
 	TableNameToInterface["u_live_party"] = generic.UserIdWrapper[client.UserLiveParty]{}
+	TableNameToInterface["u_live_mv_deck"] = generic.UserIdWrapper[client.UserLiveMvDeck]{}
+	TableNameToInterface["u_live_mv_deck_custom"] = generic.UserIdWrapper[client.UserLiveMvDeck]{}
 }
