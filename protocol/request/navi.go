@@ -1,5 +1,5 @@
 package request
 
 type SaveUserNaviVoiceRequest struct {
-	NaviVoiceMasterIds []int `json:"navi_voice_master_ids"`
+	NaviVoiceMasterIds []int32 `json:"navi_voice_master_ids"`
 }

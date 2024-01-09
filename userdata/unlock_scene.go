@@ -1,7 +1,7 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
@@ -10,11 +10,11 @@ import (
 // when unlocked, some tips are shown, then scene_tips is used to not show it again
 // /sceneTips/saveSceneTipsType
 
-func (session *Session) UnlockScene(unlockSceneType, status int) {
+func (session *Session) UnlockScene(unlockSceneType, status int32) {
 	// status must be either 1 or 2, any other value and the game will think it doesn't exist at all
 	// status = 1 is the initial unlock process, it will show an animation
 	// status = 2 is actually unlocked
-	userUnlockScene := model.UserUnlockScene{
+	userUnlockScene := client.UserUnlockScene{
 		UnlockSceneType: unlockSceneType, // not sure what this is
 		Status:          status,
 	}
@@ -32,8 +32,8 @@ func unlockSceneFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) SaveSceneTips(sceneTipsType int) {
-	userSceneTips := model.UserSceneTips{
+func (session *Session) SaveSceneTips(sceneTipsType int32) {
+	userSceneTips := client.UserSceneTips{
 		SceneTipsType: sceneTipsType,
 	}
 	session.UserModel.UserSceneTipsByEnum.PushBack(userSceneTips)

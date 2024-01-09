@@ -22,20 +22,20 @@ type UserModel struct {
 	UserLiveMvDeckById                                                         generic.ObjectByObjectIdList[client.UserLiveMvDeck]                       `json:"user_live_mv_deck_by_id"`
 	UserLiveMvDeckCustomById                                                   generic.ObjectByObjectIdList[client.UserLiveMvDeck]                       `json:"user_live_mv_deck_custom_by_id"`
 	UserLiveDifficultyByDifficultyId                                           generic.ObjectByObjectIdList[client.UserLiveDifficulty]                   `json:"user_live_difficulty_by_difficulty_id"`
-	UserStoryMainByStoryMainId                                                 generic.ObjectByObjectIdList[model.UserStoryMain]                         `json:"user_story_main_by_story_main_id"`
-	UserStoryMainSelectedByStoryMainCellId                                     generic.ObjectByObjectIdList[model.UserStoryMainSelected]                 `json:"user_story_main_selected_by_story_main_cell_id"`
-	UserVoiceByVoiceId                                                         generic.ObjectByObjectIdList[model.UserVoice]                             `json:"user_voice_by_voice_id"`
-	UserEmblemByEmblemId                                                       generic.ObjectByObjectIdList[model.UserEmblem]                            `json:"user_emblem_by_emblem_id"` // TODO: not properly handled
+	UserStoryMainByStoryMainId                                                 generic.ObjectByObjectIdList[client.UserStoryMain]                        `json:"user_story_main_by_story_main_id"`
+	UserStoryMainSelectedByStoryMainCellId                                     generic.ObjectByObjectIdList[client.UserStoryMainSelected]                `json:"user_story_main_selected_by_story_main_cell_id"`
+	UserVoiceByVoiceId                                                         generic.ObjectByObjectIdList[client.UserVoice]                            `json:"user_voice_by_voice_id"`
+	UserEmblemByEmblemId                                                       generic.ObjectByObjectIdList[client.UserEmblem]                           `json:"user_emblem_by_emblem_id"` // TODO: not properly handled
 	UserGachaTicketByTicketId                                                  generic.ObjectByObjectIdList[client.UserGachaTicket]                      `json:"user_gacha_ticket_by_ticket_id"`
 	UserGachaPointByPointId                                                    generic.ObjectByObjectIdList[client.UserGachaPoint]                       `json:"user_gacha_point_by_point_id"`
 	UserLessonEnhancingItemByItemId                                            generic.ObjectByObjectIdList[client.UserLessonEnhancingItem]              `json:"user_lesson_enhancing_item_by_item_id"`
 	UserTrainingMaterialByItemId                                               generic.ObjectByObjectIdList[client.UserTrainingMaterial]                 `json:"user_training_material_by_item_id"`
 	UserGradeUpItemByItemId                                                    generic.ObjectByObjectIdList[client.UserGradeUpItem]                      `json:"user_grade_up_item_by_item_id"`
-	UserCustomBackgroundById                                                   generic.ObjectByObjectIdList[model.UserCustomBackground]                  `json:"user_custom_background_by_id"`
-	UserStorySideById                                                          generic.ObjectByObjectIdList[model.UserStorySide]                         `json:"user_story_side_by_id"`
-	UserStoryMemberById                                                        generic.ObjectByObjectIdList[model.UserStoryMember]                       `json:"user_story_member_by_id"`
+	UserCustomBackgroundById                                                   generic.ObjectByObjectIdList[client.UserCustomBackground]                 `json:"user_custom_background_by_id"`
+	UserStorySideById                                                          generic.ObjectByObjectIdList[client.UserStorySide]                        `json:"user_story_side_by_id"`
+	UserStoryMemberById                                                        generic.ObjectByObjectIdList[client.UserStoryMember]                      `json:"user_story_member_by_id"`
 	UserCommunicationMemberDetailBadgeById                                     generic.ObjectByObjectIdList[model.UserCommunicationMemberDetailBadge]    `json:"user_communication_member_detail_badge_by_id"` // TODO: not properly handled
-	UserStoryEventHistoryById                                                  generic.ObjectByObjectIdList[model.UserStoryEventHistory]                 `json:"user_story_event_history_by_id"`
+	UserStoryEventHistoryById                                                  generic.ObjectByObjectIdList[client.UserStoryEventHistory]                `json:"user_story_event_history_by_id"`
 	UserRecoveryLpById                                                         generic.ObjectByObjectIdList[client.UserRecoveryLp]                       `json:"user_recovery_lp_by_id"`
 	UserRecoveryApById                                                         generic.ObjectByObjectIdList[client.UserRecoveryAp]                       `json:"user_recovery_ap_by_id"`
 	UserMissionByMissionId                                                     generic.ObjectByObjectIdList[model.UserMission]                           `json:"user_mission_by_mission_id"`        // TODO: not properly handled
@@ -48,9 +48,9 @@ type UserModel struct {
 	UserAccessoryByUserAccessoryId                                             generic.ObjectByObjectIdList[client.UserAccessory]                        `json:"user_accessory_by_user_accessory_id"`
 	UserAccessoryLevelUpItemById                                               generic.ObjectByObjectIdList[client.UserAccessoryLevelUpItem]             `json:"user_accessory_level_up_item_by_id"`
 	UserAccessoryRarityUpItemById                                              generic.ObjectByObjectIdList[client.UserAccessoryRarityUpItem]            `json:"user_accessory_rarity_up_item_by_id"`
-	UserUnlockScenesByEnum                                                     generic.ObjectByObjectIdList[model.UserUnlockScene]                       `json:"user_unlock_scenes_by_enum"`
-	UserSceneTipsByEnum                                                        generic.ObjectByObjectIdList[model.UserSceneTips]                         `json:"user_scene_tips_by_enum"`
-	UserRuleDescriptionById                                                    generic.ObjectByObjectIdList[model.UserRuleDescription]                   `json:"user_rule_description_by_id"` // TODO: not properly handled
+	UserUnlockScenesByEnum                                                     generic.ObjectByObjectIdList[client.UserUnlockScene]                      `json:"user_unlock_scenes_by_enum"`
+	UserSceneTipsByEnum                                                        generic.ObjectByObjectIdList[client.UserSceneTips]                        `json:"user_scene_tips_by_enum"`
+	UserRuleDescriptionById                                                    generic.ObjectByObjectIdList[client.UserRuleDescription]                  `json:"user_rule_description_by_id"` // TODO: not properly handled
 	UserExchangeEventPointById                                                 generic.ObjectByObjectIdList[client.UserExchangeEventPoint]               `json:"user_exchange_event_point_by_id"`
 	UserSchoolIdolFestivalIdRewardMissionById                                  generic.ObjectByObjectIdList[model.UserSchoolIdolFestivalIdRewardMission] `json:"user_school_idol_festival_id_reward_mission_by_id"` // not handled
 	UserGpsPresentReceivedById                                                 generic.ObjectByObjectIdList[model.UserGpsPresentReceived]                `json:"user_gps_present_received_by_id"`                   // not handled
@@ -60,13 +60,13 @@ type UserModel struct {
 	UserLiveSkipTicketById                                                     generic.ObjectByObjectIdList[client.UserLiveSkipTicket]                   `json:"user_live_skip_ticket_by_id"`
 	UserStoryEventUnlockItemById                                               generic.ObjectByObjectIdList[client.UserStoryEventUnlockItem]             `json:"user_story_event_unlock_item_by_id"`
 	UserEventMarathonBoosterById                                               generic.ObjectByObjectIdList[client.UserEventMarathonBooster]             `json:"user_event_marathon_booster_by_id"` // TODO: not properly handled
-	UserReferenceBookById                                                      generic.ObjectByObjectIdList[model.UserReferenceBook]                     `json:"user_reference_book_by_id"`
+	UserReferenceBookById                                                      generic.ObjectByObjectIdList[client.UserReferenceBook]                    `json:"user_reference_book_by_id"`
 	UserReviewRequestProcessFlowById                                           generic.ObjectByObjectIdList[model.UserReviewRequestProcessFlow]          `json:"user_review_request_process_flow_by_id"`                                                    // TODO: not properly handled
 	UserTowerByTowerId                                                         generic.ObjectByObjectIdList[model.UserTower]                             `json:"user_tower_by_tower_id"`                                                                    // TODO: not properly handled
 	UserRecoveryTowerCardUsedCountItemByRecoveryTowerCardUsedCountItemMasterId generic.ObjectByObjectIdList[client.UserRecoveryTowerCardUsedCountItem]   `json:"user_recovery_tower_card_used_count_item_by_recovery_tower_card_used_count_item_master_id"` // TODO: not properly handled
-	UserStoryLinkageById                                                       generic.ObjectByObjectIdList[model.UserStoryLinkage]                      `json:"user_story_linkage_by_id"`
+	UserStoryLinkageById                                                       generic.ObjectByObjectIdList[client.UserStoryLinkage]                     `json:"user_story_linkage_by_id"`
 	UserSubscriptionStatusById                                                 generic.ObjectByObjectIdList[model.UserSubscriptionStatus]                `json:"user_subscription_status_by_id"` // TODO: not properly handled
-	UserStoryMainPartDigestMovieById                                           generic.ObjectByObjectIdList[model.UserStoryMainPartDigestMovie]          `json:"user_story_main_part_digest_movie_by_id"`
+	UserStoryMainPartDigestMovieById                                           generic.ObjectByObjectIdList[client.UserStoryMainPartDigestMovie]         `json:"user_story_main_part_digest_movie_by_id"`
 	UserMemberGuildById                                                        generic.ObjectByObjectIdList[model.UserMemberGuild]                       `json:"user_member_guild_by_id"`                // TODO: not properly handled
 	UserMemberGuildSupportItemById                                             generic.ObjectByObjectIdList[model.UserMemberGuildSupportItem]            `json:"user_member_guild_support_item_by_id"`   // TODO: not properly handled
 	UserDailyTheaterByDailyTheaterId                                           generic.ObjectByObjectIdList[model.UserDailyTheater]                      `json:"user_daily_theater_by_daily_theater_id"` // TODO: not properly handled

@@ -1,16 +1,16 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) UpdateUserRuleDescription(ruleDescriptionId int) {
+func (session *Session) UpdateUserRuleDescription(ruleDescriptionId int32) {
 	// rule description is used for popup windows that tell you the rule of things
 	// only encountered in /referenceBook for now, and all of them have display status 2
 	// but some items can have display status 1 or 3
 	// for now always use display status 2 until some exception happens
-	userRuleDescription := model.UserRuleDescription{
+	userRuleDescription := client.UserRuleDescription{
 		RuleDescriptionId: ruleDescriptionId,
 		DisplayStatus:     2,
 	}

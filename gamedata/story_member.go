@@ -38,7 +38,7 @@ func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata
 
 func loadStoryMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading StoryMember")
-	gamedata.StoryMember = make(map[int]*StoryMember)
+	gamedata.StoryMember = make(map[int32]*StoryMember)
 	err := masterdata_db.Table("m_story_member").Find(&gamedata.StoryMember)
 	utils.CheckErr(err)
 	for _, storyMember := range gamedata.StoryMember {

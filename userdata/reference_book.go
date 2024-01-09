@@ -1,11 +1,11 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 )
 
-func (session *Session) InsertReferenceBook(referenceBookId int) {
-	userReferenceBook := model.UserReferenceBook{
+func (session *Session) InsertReferenceBook(referenceBookId int32) {
+	userReferenceBook := client.UserReferenceBook{
 		ReferenceBookId: referenceBookId,
 	}
 	session.UserModel.UserReferenceBookById.PushBack(userReferenceBook)

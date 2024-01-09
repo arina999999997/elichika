@@ -1,11 +1,11 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 )
 
-func (session *Session) UnlockEventStory(eventStoryMasterId int) {
-	userStoryEventHistory := model.UserStoryEventHistory{
+func (session *Session) UnlockEventStory(eventStoryMasterId int32) {
+	userStoryEventHistory := client.UserStoryEventHistory{
 		StoryEventId: eventStoryMasterId,
 	}
 	session.UserModel.UserStoryEventHistoryById.PushBack(userStoryEventHistory)

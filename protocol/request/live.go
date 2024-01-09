@@ -8,7 +8,7 @@ import (
 type LiveStartRequest struct {
 	LiveDifficultyId    int                    `json:"live_difficulty_id"`
 	DeckId              int                    `json:"deck_id"`
-	CellId              *int                   `json:"cell_id"`
+	CellId              *int32                 `json:"cell_id"`
 	PartnerUserId       int                    `json:"partner_user_id"`
 	PartnerCardMasterId int                    `json:"partner_card_master_id"`
 	LpMagnification     int                    `json:"lp_magnification"`

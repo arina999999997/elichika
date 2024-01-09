@@ -1,17 +1,17 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 	"elichika/utils"
 )
 
-func (session *Session) InsertMemberStory(storyMemberMasterId int) {
+func (session *Session) InsertMemberStory(storyMemberMasterId int32) {
 	// this is correct, but it is obsolete since the client unlock all the bond episode when
 	// unlock scene type 4 is set
 	// setting UnlockSceneStatusOpen also works but there's no fancy animation so might as well save 1 request
 	session.UnlockScene(enum.UnlockSceneTypeStoryMember, enum.UnlockSceneStatusOpened)
-	userStoryMember := model.UserStoryMember{
+	userStoryMember := client.UserStoryMember{
 		StoryMemberMasterId: storyMemberMasterId,
 		IsNew:               true,
 		AcquiredAt:          session.Time.Unix(),
@@ -32,13 +32,13 @@ func memberStoryFinalizer(session *Session) {
 
 // return true if this is first clear
 // insert the story if necessary
-func (session *Session) FinishStoryMember(storyMemberMasterId int) bool {
-	userStoryMember := model.UserStoryMember{}
+func (session *Session) FinishStoryMember(storyMemberMasterId int32) bool {
+	userStoryMember := client.UserStoryMember{}
 	exist, err := session.Db.Table("u_story_member").Where("user_id = ? AND story_member_master_id = ?",
 		session.UserId, storyMemberMasterId).Get(&userStoryMember)
 	utils.CheckErr(err)
 	if !exist {
-		userStoryMember = model.UserStoryMember{
+		userStoryMember = client.UserStoryMember{
 			StoryMemberMasterId: storyMemberMasterId,
 			IsNew:               false,
 			AcquiredAt:          session.Time.Unix(),

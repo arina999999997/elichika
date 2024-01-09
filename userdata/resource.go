@@ -168,11 +168,11 @@ func suitResourceHandler(session *Session, _, suitMasterId, _ int32) {
 }
 
 func memberStoryHandler(session *Session, _, memberStoryId, _ int32) {
-	session.InsertMemberStory(int(memberStoryId))
+	session.InsertMemberStory(memberStoryId)
 }
 
 func voiceHandler(session *Session, _, naviVoiceMasterId, _ int32) {
-	session.UpdateVoice(int(naviVoiceMasterId), false)
+	session.UpdateVoice(naviVoiceMasterId, false)
 }
 
 // these resources amount are stored in the user status

@@ -11,7 +11,11 @@ These types are defined in the `client` package, and they must have the exact sa
 
   - `int32` must be `int32` and `int64` must be `int64` and so on.
   - Replicate the type of the fields if necessary, and do not use annonymous types.
-  - If the field can be `null`, use the Nullable generic wrapper.
+  - If the field has type `Nullable`, use the Nullable generic wrapper.
+  - If the field is a pointer then it should be `Nullable` or just a value, depending on whether it can actually be `null` or not.
+  
+    - For example, `string` are always kept as pointer, but some strings are always filled while other can be `null` without having to be marked `Nullable`.
+    - For the time being, we will use the Nullable wrapper for pointer fields that can be `null` and mark them as pointer using the comment
   - For fields that are `enum`, an enum tag to the enum name is required. This currently doesn't do anything but we might want to do enum checking and stuff later, and it just make it easier to keep track of things.
 - If the type is used with `json`, it must works correctly with Marshal and Unmarshal, and it no information would be lost in doing so.
 

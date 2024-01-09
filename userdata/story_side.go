@@ -1,12 +1,12 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) InsertStorySide(storySideMasterId int) {
-	userStorySide := model.UserStorySide{
+func (session *Session) InsertStorySide(storySideMasterId int32) {
+	userStorySide := client.UserStorySide{
 		StorySideMasterId: storySideMasterId,
 		IsNew:             true,
 		AcquiredAt:        session.Time.Unix(),
@@ -14,8 +14,8 @@ func (session *Session) InsertStorySide(storySideMasterId int) {
 	session.UserModel.UserStorySideById.PushBack(userStorySide)
 }
 
-func (session *Session) FinishStorySide(storySideMasterId int) {
-	userStorySide := model.UserStorySide{}
+func (session *Session) FinishStorySide(storySideMasterId int32) {
+	userStorySide := client.UserStorySide{}
 	exist, err := session.Db.Table("u_story_side").Where("user_id = ? AND story_side_master_id = ?",
 		session.UserId, storySideMasterId).Get(&userStorySide)
 	utils.CheckErr(err)

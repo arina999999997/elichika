@@ -1,5 +1,5 @@
 package request
 
 type SaveUnlockedSceneRequest struct {
-	UnlockSceneTypes []int `json:"unlock_scene_types"`
+	UnlockSceneTypes []int32 `json:"unlock_scene_types"`
 }

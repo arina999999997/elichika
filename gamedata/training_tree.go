@@ -16,9 +16,9 @@ type TrainingTreeCardParam struct {
 }
 
 type TrainingTreeCardStorySide struct {
-	TrainingContentType int `xorm:"'training_content_type'"`
-	TrainingContentNo   int `xorm:"'training_content_no'"` // assume to be always 1
-	StorySideMId        int `xorm:"'story_side_m_id'"`
+	TrainingContentType int   `xorm:"'training_content_type'"`
+	TrainingContentNo   int   `xorm:"'training_content_no'"` // assume to be always 1
+	StorySideMId        int32 `xorm:"'story_side_m_id'"`
 }
 
 type TrainingTreeProgressReward struct {
@@ -40,11 +40,11 @@ type TrainingTree struct {
 	// TrainingTreeCardPassiveSkillIncrease
 
 	// from m_training_tree_card_story_side
-	TrainingTreeCardStorySides map[int]int `xorm:"-"` // map from training_content_type to storySideMId
+	TrainingTreeCardStorySides map[int]int32 `xorm:"-"` // map from training_content_type to storySideMId
 	// from m_training_tree_card_suit
 	SuitMIds []int32 `xorm:"-"` // 1 indexed
 	// from m_training_tree_card_voice
-	NaviActionIds []int `xorm:"-"` // 1 indexed
+	NaviActionIds []int32 `xorm:"-"` // 1 indexed
 
 	// from m_training_tree_progress_reward
 	TrainingTreeProgressRewards []TrainingTreeProgressReward `xorm:"-"`
@@ -61,7 +61,7 @@ func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata
 	}
 
 	{
-		tree.TrainingTreeCardStorySides = make(map[int]int)
+		tree.TrainingTreeCardStorySides = make(map[int]int32)
 		stories := []TrainingTreeCardStorySide{}
 		err := masterdata_db.Table("m_training_tree_card_story_side").Where("card_m_id = ?", tree.Id).Find(&stories)
 		utils.CheckErr(err)
@@ -81,7 +81,7 @@ func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata
 		err := masterdata_db.Table("m_training_tree_card_voice").Where("card_m_id = ?", tree.Id).
 			OrderBy("training_content_no").Cols("navi_action_id").Find(&tree.NaviActionIds)
 		utils.CheckErr(err)
-		tree.NaviActionIds = append([]int{0}, tree.NaviActionIds...)
+		tree.NaviActionIds = append([]int32{0}, tree.NaviActionIds...)
 	}
 
 	{

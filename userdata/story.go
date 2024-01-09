@@ -1,13 +1,13 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/enum"
-	"elichika/model"
 	"elichika/utils"
 )
 
-func (session *Session) InsertUserStoryMain(storyMainMasterId int) bool {
-	userStoryMain := model.UserStoryMain{
+func (session *Session) InsertUserStoryMain(storyMainMasterId int32) bool {
+	userStoryMain := client.UserStoryMain{
 		StoryMainMasterId: storyMainMasterId,
 	}
 	if genericDatabaseExist(session, "u_story_main", userStoryMain) {
@@ -39,8 +39,8 @@ func storyMainFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) UpdateUserStoryMainSelected(storyMainCellId, selectedId int) {
-	userStoryMainSelected := model.UserStoryMainSelected{
+func (session *Session) UpdateUserStoryMainSelected(storyMainCellId, selectedId int32) {
+	userStoryMainSelected := client.UserStoryMainSelected{
 		StoryMainCellId: storyMainCellId,
 		SelectedId:      selectedId,
 	}
@@ -58,8 +58,8 @@ func storyMainSelectedFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) InsertUserStoryMainPartDigestMovie(partId int) {
-	userStoryMainPartDigestMovie := model.UserStoryMainPartDigestMovie{
+func (session *Session) InsertUserStoryMainPartDigestMovie(partId int32) {
+	userStoryMainPartDigestMovie := client.UserStoryMainPartDigestMovie{
 		StoryMainPartMasterId: partId,
 	}
 	session.UserModel.UserStoryMainPartDigestMovieById.PushBack(userStoryMainPartDigestMovie)
@@ -73,8 +73,8 @@ func storyMainPartDigestMovieFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterId int) {
-	userStoryLinkage := model.UserStoryLinkage{
+func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterId int32) {
+	userStoryLinkage := client.UserStoryLinkage{
 		StoryLinkageCellMasterId: storyLinkageCellMasterId,
 	}
 	if !genericDatabaseExist(session, "u_story_linkage", userStoryLinkage) {

@@ -45,7 +45,7 @@ type UserLive struct {
 	IsAutoplay      bool            `xorm:"'is_autoplay'" json:"-"`
 	LivePartnerCard PartnerCardInfo `xorm:"extends" json:"live_partner_card"`
 	IsPartnerFriend bool            `xorm:"'is_partner_friend'" json:"is_partner_friend"`
-	CellId          *int            `xorm:"'cell_id' "json:"cell_id"`
+	CellId          *int32          `xorm:"'cell_id' "json:"cell_id"`
 	TowerLive       TowerLive       `xorm:"extends" json:"tower_live"`
 }
 

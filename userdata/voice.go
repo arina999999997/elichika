@@ -1,12 +1,12 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 )
 
-func (session *Session) UpdateVoice(naviVoiceMasterId int, isNew bool) {
-	userVoice := model.UserVoice{}
+func (session *Session) UpdateVoice(naviVoiceMasterId int32, isNew bool) {
+	userVoice := client.UserVoice{}
 	exist, err := session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?",
 		session.UserId, naviVoiceMasterId).Get(&userVoice)
 	utils.CheckErr(err)
@@ -16,7 +16,7 @@ func (session *Session) UpdateVoice(naviVoiceMasterId int, isNew bool) {
 		}
 		userVoice.IsNew = isNew
 	} else {
-		userVoice = model.UserVoice{
+		userVoice = client.UserVoice{
 			NaviVoiceMasterId: naviVoiceMasterId,
 			IsNew:             isNew,
 		}

@@ -64,8 +64,8 @@ type SolverNode struct {
 
 type TrainingTreeSolver struct {
 	// can be reused if single threaded, for multi threading, each will have to have its own data
-	HasNaviVoice        map[int]bool
-	HasStorySide        map[int]bool
+	HasNaviVoice        map[int32]bool
+	HasStorySide        map[int32]bool
 	HasSuit             map[int32]bool
 	Node                [100]SolverNode // need at most 91
 	NodeCount           int
@@ -203,8 +203,8 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 }
 
 func (solver *TrainingTreeSolver) LoadUserLogin(login *response.Login) {
-	solver.HasNaviVoice = make(map[int]bool)
-	solver.HasStorySide = make(map[int]bool)
+	solver.HasNaviVoice = make(map[int32]bool)
+	solver.HasStorySide = make(map[int32]bool)
 	solver.HasSuit = make(map[int32]bool)
 	for _, voice := range login.UserModel.UserVoiceByVoiceId.Objects {
 		solver.HasNaviVoice[voice.NaviVoiceMasterId] = true
