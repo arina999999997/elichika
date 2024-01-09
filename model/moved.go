@@ -57,9 +57,9 @@ func init() {
 	TableNameToInterface["u_member_guild_support_item"] = generic.UserIdWrapper[client.UserMemberGuildSupportItem]{}
 
 	TableNameToInterface["u_daily_theater"] = generic.UserIdWrapper[client.UserDailyTheater]{}
-	
+
 	// TODO(refactor): change this database name
-	TableNameToInterface["u_custom_set_profile"] = generic.UserIdWrapper[client.UserSetProfile]{} 
+	TableNameToInterface["u_custom_set_profile"] = generic.UserIdWrapper[client.UserSetProfile]{}
 
 	TableNameToInterface["u_steady_voltage_ranking"] = generic.UserIdWrapper[client.UserSteadyVoltageRanking]{}
 	TableNameToInterface["u_play_list"] = generic.UserIdWrapper[client.UserPlayList]{}
@@ -67,7 +67,6 @@ func init() {
 	TableNameToInterface["u_tower"] = generic.UserIdWrapper[client.UserTower]{}
 	TableNameToInterface["u_subscription_status"] = generic.UserIdWrapper[client.UserSubscriptionStatus]{}
 
-	
 	// TODO(refactor): Change these table names
 	TableNameToInterface["u_trigger_basic"] = generic.UserIdWrapper[client.UserInfoTriggerBasic]{}
 	TableNameToInterface["u_trigger_card_grade_up"] = generic.UserIdWrapper[client.UserInfoTriggerCardGradeUp]{}

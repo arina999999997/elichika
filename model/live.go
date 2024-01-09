@@ -1,7 +1,6 @@
 package model
 
 import (
-
 	"encoding/json"
 	"reflect"
 )
@@ -93,7 +92,7 @@ func (ul UserLive) MarshalJSON() ([]byte, error) {
 // }
 
 type LiveUpdatePlayListReq struct {
-	LiveMasterId int32  `json:"live_master_id"`
-	GroupNum     int32  `json:"group_num"`
-	IsSet        bool `json:"is_set"`
+	LiveMasterId int32 `json:"live_master_id"`
+	GroupNum     int32 `json:"group_num"`
+	IsSet        bool  `json:"is_set"`
 }

@@ -1,8 +1,8 @@
 package userdata
 
 import (
-	"elichika/model"
 	"elichika/client"
+	"elichika/model"
 	"elichika/protocol/response"
 	"elichika/utils"
 )

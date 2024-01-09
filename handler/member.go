@@ -1,10 +1,10 @@
 package handler
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/client"
 	"elichika/generic"
 	"elichika/protocol/request"
 	"elichika/userdata"

@@ -3,6 +3,7 @@ package handler
 import (
 	"elichika/client"
 	"elichika/config"
+	"elichika/generic"
 	"elichika/protocol/response"
 	"elichika/userdata"
 	"elichika/utils"
@@ -126,7 +127,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 func JoinMemberGuild(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type JoinMemberGuildReq struct {
-		MemberMasterId int `json:"member_master_id"`
+		MemberMasterId int32 `json:"member_master_id"`
 	}
 	req := JoinMemberGuildReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -135,8 +136,7 @@ func JoinMemberGuild(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.MemberGuildMemberMasterId = new(int32)
-	*session.UserStatus.MemberGuildMemberMasterId = int32(req.MemberMasterId)
+	session.UserStatus.MemberGuildMemberMasterId = generic.NewNullable(req.MemberMasterId)
 	signBody := session.Finalize("{}", "user_model")
 
 	resp := SignResp(ctx, signBody, config.SessionKey)

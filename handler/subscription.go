@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"elichika/config"
 	"elichika/client"
+	"elichika/config"
 	"elichika/protocol/response"
 	"elichika/userdata"
 

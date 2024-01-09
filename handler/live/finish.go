@@ -48,10 +48,10 @@ func (obj *LiveResultAchievement) SetId(id int64) {
 }
 
 type LiveResultTower struct {
-	TowerId             int32                            `json:"tower_id"`
-	FloorNo             int32                            `json:"floor_no"`
-	TotalVoltage        int32                            `json:"total_voltage"`
-	GettedVoltage       int32                            `json:"getted_voltage"` // nice engrish
+	TowerId             int32                          `json:"tower_id"`
+	FloorNo             int32                          `json:"floor_no"`
+	TotalVoltage        int32                          `json:"total_voltage"`
+	GettedVoltage       int32                          `json:"getted_voltage"` // nice engrish
 	TowerCardUsedCounts []model.UserTowerCardUsedCount `json:"tower_card_used_counts"`
 }
 

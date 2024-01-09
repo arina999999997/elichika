@@ -18,8 +18,8 @@ type TowerFloor struct {
 	// Name DictionaryString `xorm:"'name'"`
 	// ThumbnailAssetPath *string `xorm:"'thumbnail_asset_path'"`
 	// PopUpThumbnailAssetPath string `xorm:"'popup_thumbnail_asset_path'"`
-	ConsumePerformance bool `xorm:"'consume_performance'"`
-	TowerCellType      int32  `xorm:"'tower_cell_type'" enum:""`
+	ConsumePerformance bool  `xorm:"'consume_performance'"`
+	TowerCellType      int32 `xorm:"'tower_cell_type'" enum:""`
 	// ScenarioScriptAssetPath *string `xorm:"'scenario_script_asset_path'"`
 	// LiveDifficultyId int `xorm:"'live_difficulty_id'"`
 	TargetVoltage int `xorm:"'target_voltage'"`
@@ -53,7 +53,7 @@ type Tower struct {
 	// DisplayOrder int `xorm:"'display_order'"`
 	TowerCompositionId   int          `xorm:"'tower_composition_id'"`
 	Floor                []TowerFloor `xorm:"-"` // from m_tower_composition, 1 indexed
-	FloorCount           int32          `xorm:"-"`
+	FloorCount           int32        `xorm:"-"`
 	IsVoltageRanked      bool         `xorm:"-"`
 	TradeMasterId        int          `xorm:"'trade_master_id'"`
 	EntryRestrictionType int          `xorm:"'entry_restriction_type'"`

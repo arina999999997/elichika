@@ -3,6 +3,7 @@ package handler
 import (
 	"elichika/config"
 	"elichika/enum"
+	"elichika/generic"
 	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
@@ -70,10 +71,8 @@ func SetProfileBirthday(ctx *gin.Context) {
 	defer session.Close()
 
 	// birthdate is probably calculated using gplay or apple id
-	session.UserStatus.BirthDay = new(int32)
-	session.UserStatus.BirthMonth = new(int32)
-	*session.UserStatus.BirthDay = int32(req.Day)
-	*session.UserStatus.BirthMonth = int32(req.Month)
+	session.UserStatus.BirthDay = generic.NewNullable(req.Day)
+	session.UserStatus.BirthMonth = generic.NewNullable(req.Month)
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseNameInput {
 		// session.UserStatus.TutorialPhase = enum.TutorialPhaseStory1

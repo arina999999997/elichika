@@ -5,9 +5,9 @@ type FetchTowerTopRequest struct {
 }
 
 type ClearedTowerFloorRequest struct {
-	TowerId    int32  `json:"tower_id"`
-	FloorNo    int32  `json:"floor_no"`
-	IsAutoMode bool `json:"is_auto_mode"`
+	TowerId    int32 `json:"tower_id"`
+	FloorNo    int32 `json:"floor_no"`
+	IsAutoMode bool  `json:"is_auto_mode"`
 }
 
 type RecoveryTowerCardUsedRequest struct {

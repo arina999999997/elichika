@@ -1,6 +1,6 @@
 package request
 
 type SetProfileBirthdayRequest struct {
-	Month int `json:"month"`
-	Day   int `json"day"`
+	Month int32 `json:"month"`
+	Day   int32 `json"day"`
 }

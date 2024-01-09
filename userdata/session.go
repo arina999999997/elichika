@@ -29,7 +29,7 @@ type Session struct {
 	Ctx                                       *gin.Context
 	UserId                                    int
 	Gamedata                                  *gamedata.Gamedata
-	UserStatus                                *model.UserStatus // link to UserModel.UserStatus
+	UserStatus                                *client.UserStatus // link to UserModel.UserStatus
 	UserCardMapping                           generic.ObjectByObjectIdMapping[client.UserCard]
 	UserMemberMapping                         generic.ObjectByObjectIdMapping[client.UserMember]
 	UserLessonDeckMapping                     generic.ObjectByObjectIdMapping[client.UserLessonDeck]

@@ -2,9 +2,9 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/generic"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/utils"
 )
 

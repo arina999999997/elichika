@@ -7,7 +7,6 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
-	"elichika/model"
 	"elichika/utils"
 
 	// "encoding/json"
@@ -37,7 +36,7 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			tutorialPhase = enum.TutorialPhaseNameInput
 			tutorialEndAt = 0
 		}
-		status := model.UserStatus{
+		status := client.UserStatus{
 			PassWord:                                passWord,
 			LastLoginAt:                             time.Now().Unix(),
 			Rank:                                    1,
@@ -57,9 +56,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			AppleSnsCoin:                              25000,
 			GoogleSnsCoin:                             25000,
 			SubscriptionCoin:                          50000,
-			BirthDate:                                 nil,
-			BirthMonth:                                nil,
-			BirthDay:                                  nil,
 			LatestLiveDeckId:                          1,
 			MainLessonDeckId:                          1,
 			FavoriteMemberId:                          1,
@@ -70,21 +66,18 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			TutorialEndAt:                             tutorialEndAt,
 			LoginDays:                                 1221,
 			NaviTapRecoverAt:                          1688137200,
-			MaxScoreLiveDifficultyMasterId:            nil,
-			MaxComboLiveDifficultyMasterId:            nil,
 			LessonResumeStatus:                        1,
 			AccessoryBoxAdditional:                    400,
 			TermsOfUseVersion:                         2,
 			BootstrapSifidCheckAt:                     1692471111782,
 			GdprVersion:                               4,
-			MemberGuildMemberMasterId:                 nil,
 			MemberGuildLastUpdatedAt:                  1659485328,
 		}
 		status.Name.DotUnderText = "Newcomer"
 		status.Nickname.DotUnderText = "Newcomer"
 		status.Message.DotUnderText = "Hello!"
 		// insert into the db
-		wrapper := generic.UserIdWrapper[model.UserStatus]{
+		wrapper := generic.UserIdWrapper[client.UserStatus]{
 			UserId: userId,
 			Object: &status,
 		}

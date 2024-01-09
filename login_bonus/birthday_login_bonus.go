@@ -56,7 +56,8 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 				},
 			},
 		)
-		if *session.UserStatus.MemberGuildMemberMasterId == int32(member.Id) {
+		if session.UserStatus.MemberGuildMemberMasterId.HasValue &&
+			session.UserStatus.MemberGuildMemberMasterId.Value == member.Id {
 			naviLoginBonus.LoginBonusRewards[0].LoginBonusContents[1].ContentAmount += 25
 		}
 

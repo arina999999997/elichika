@@ -5,10 +5,10 @@ import (
 )
 
 type UserTowerCardUsedCount struct {
-	TowerId        int32   `xorm:"pk 'tower_id'" json:"-"`
-	CardMasterId   int32   `xorm:"pk 'card_master_id'" json:"card_master_id"`
-	UsedCount      int32   `xorm:"'used_count'" json:"used_count"`
-	RecoveredCount int32   `xorm:"'recovered_count'" json:"recovered_count"`
+	TowerId        int32 `xorm:"pk 'tower_id'" json:"-"`
+	CardMasterId   int32 `xorm:"pk 'card_master_id'" json:"card_master_id"`
+	UsedCount      int32 `xorm:"'used_count'" json:"used_count"`
+	RecoveredCount int32 `xorm:"'recovered_count'" json:"recovered_count"`
 	LastUsedAt     int64 `xorm:"'last_used_at'" json:"last_used_at"`
 }
 
@@ -32,7 +32,6 @@ type TowerLive struct {
 
 func init() {
 
-	
 	TableNameToInterface["u_tower_card_used"] = generic.UserIdWrapper[UserTowerCardUsedCount]{}
 	TableNameToInterface["u_tower_voltage_ranking_score"] = generic.UserIdWrapper[UserTowerVoltageRankingScore]{}
 }
