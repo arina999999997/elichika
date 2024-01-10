@@ -24,5 +24,5 @@ func init() {
 		CardWithSuitDict          []int `xorm:"'last_clear_cards_and_suits'" json:"card_with_suit_dict"`
 		SquadDict                 []any `xorm:"'squad_dict'" json:"squad_dict"`
 	}
-	TableNameToInterface["u_live_record"] = generic.UserIdWrapper[DbLiveRecord]{}
+	TableNameToInterface["u_live_difficulty"] = generic.UserIdWrapper[DbLiveRecord]{}
 }

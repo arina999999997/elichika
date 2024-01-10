@@ -20,11 +20,11 @@ func (session *Session) GetUserLiveDeck(userLiveDeckId int) client.UserLiveDeck 
 }
 
 func (session *Session) UpdateUserLiveDeck(liveDeck client.UserLiveDeck) {
-	session.UserLiveDeckMapping.SetList(&session.UserModel.UserLiveDeckById).Update(liveDeck)
+	session.UserModel.UserLiveDeckById.Set(liveDeck.UserLiveDeckId, liveDeck)
 }
 
 func liveDeckFinalizer(session *Session) {
-	for _, deck := range session.UserModel.UserLiveDeckById.Objects {
+	for _, deck := range session.UserModel.UserLiveDeckById.Map {
 		affected, err := session.Db.Table("u_live_deck").
 			Where("user_id = ? AND user_live_deck_id = ?", session.UserId, deck.UserLiveDeckId).AllCols().
 			Update(deck)
@@ -36,7 +36,9 @@ func liveDeckFinalizer(session *Session) {
 }
 
 func (session *Session) InsertLiveDecks(decks []client.UserLiveDeck) {
-	session.UserModel.UserLiveDeckById.Objects = append(session.UserModel.UserLiveDeckById.Objects, decks...)
+	for _, deck := range decks {
+		session.UpdateUserLiveDeck(deck)
+	}
 }
 
 func init() {

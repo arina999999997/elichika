@@ -25,7 +25,6 @@ func (session *Session) GetMember(memberMasterId int32) client.UserMember {
 
 func (session *Session) UpdateMember(member client.UserMember) {
 	session.UserModel.UserMemberByMemberId.Set(member.MemberMasterId, member)
-	// session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Update(member)
 }
 
 func (session *Session) InsertMembers(members []client.UserMember) {
@@ -45,13 +44,11 @@ func memberFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int) client.UserCommunicationMemberDetailBadge {
-	pos, exist := session.UserCommunicationMemberDetailBadgeMapping.
-		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeById).Map[int64(memberMasterId)]
+func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int32) client.UserCommunicationMemberDetailBadge {
+	badge, exist := session.UserModel.UserCommunicationMemberDetailBadgeById.Get(memberMasterId)
 	if exist {
-		return session.UserModel.UserCommunicationMemberDetailBadgeById.Objects[pos]
+		return badge
 	}
-	badge := client.UserCommunicationMemberDetailBadge{}
 	exist, err := session.Db.Table("u_communication_member_detail_badge").
 		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).Get(&badge)
 	utils.CheckErr(err)
@@ -63,13 +60,12 @@ func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int
 }
 
 func (session *Session) UpdateUserCommunicationMemberDetailBadge(badge client.UserCommunicationMemberDetailBadge) {
-	session.UserCommunicationMemberDetailBadgeMapping.
-		SetList(&session.UserModel.UserCommunicationMemberDetailBadgeById).Update(badge)
+	session.UserModel.UserCommunicationMemberDetailBadgeById.Set(badge.MemberMasterId, badge)
 }
 
 func communicationMemberDetailBadgeFinalizer(session *Session) {
 	// TODO: this is only handled on the read side, new items won't change the badge
-	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeById.Objects {
+	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeById.Map {
 		affected, err := session.Db.Table("u_communication_member_detail_badge").
 			Where("user_id = ? AND member_master_id = ?", session.UserId, detailBadge.MemberMasterId).
 			AllCols().Update(detailBadge)

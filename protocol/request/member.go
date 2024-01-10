@@ -7,6 +7,6 @@ type OpenMemberLovePanelRequest struct {
 }
 
 type UpdateUserCommunicationMemberDetailBadgeRequest struct {
-	MemberMasterId                     int `json:"member_master_id"`
-	CommunicationMemberDetailBadgeType int `json:"communication_member_detail_badge_type"`
+	MemberMasterId                     int32 `json:"member_master_id"`
+	CommunicationMemberDetailBadgeType int   `json:"communication_member_detail_badge_type"`
 }

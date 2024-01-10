@@ -168,7 +168,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 					case 1:
 						liveRecord.ClearedDifficultyAchievement2 = generic.NewNullable(int32(2))
 					case 2:
-						liveRecord.ClearedDifficultyAchievement2 = generic.NewNullable(int32(3))
+						liveRecord.ClearedDifficultyAchievement3 = generic.NewNullable(int32(3))
 					}
 				}
 			}

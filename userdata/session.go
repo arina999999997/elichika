@@ -30,12 +30,7 @@ type Session struct {
 	UserId                                    int
 	Gamedata                                  *gamedata.Gamedata
 	UserStatus                                *client.UserStatus // link to UserModel.UserStatus
-	UserCardMapping                           generic.ObjectByObjectIdMapping[client.UserCard]
-	UserMemberMapping                         generic.ObjectByObjectIdMapping[client.UserMember]
-	UserLessonDeckMapping                     generic.ObjectByObjectIdMapping[client.UserLessonDeck]
 	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIdMapping[client.UserCommunicationMemberDetailBadge]
-	UserLiveDeckMapping                       generic.ObjectByObjectIdMapping[client.UserLiveDeck]
-	UserLivePartyMapping                      generic.ObjectByObjectIdMapping[client.UserLiveParty]
 	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[client.UserAccessory]
 	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[client.UserLiveDifficulty]
 	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[client.UserInfoTriggerCardGradeUp]

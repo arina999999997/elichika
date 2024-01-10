@@ -5,7 +5,7 @@ import (
 )
 
 func missionFinalizer(session *Session) {
-	for _, userMission := range session.UserModel.UserMissionByMissionId.Objects {
+	for _, userMission := range session.UserModel.UserMissionByMissionId.Map {
 		affected, err := session.Db.Table("u_mission").Where("user_id = ? AND mission_m_id = ?",
 			session.UserId, userMission.MissionMId).AllCols().Update(userMission)
 		utils.CheckErr(err)
@@ -13,7 +13,7 @@ func missionFinalizer(session *Session) {
 			genericDatabaseInsert(session, "u_mission", userMission)
 		}
 	}
-	for _, userDailyMission := range session.UserModel.UserDailyMissionByMissionId.Objects {
+	for _, userDailyMission := range session.UserModel.UserDailyMissionByMissionId.Map {
 		affected, err := session.Db.Table("u_daily_mission").Where("user_id = ? AND mission_m_id = ?",
 			session.UserId, userDailyMission.MissionMId).AllCols().Update(userDailyMission)
 		utils.CheckErr(err)
@@ -21,7 +21,7 @@ func missionFinalizer(session *Session) {
 			genericDatabaseInsert(session, "u_daily_mission", userDailyMission)
 		}
 	}
-	for _, userWeeklyMission := range session.UserModel.UserWeeklyMissionByMissionId.Objects {
+	for _, userWeeklyMission := range session.UserModel.UserWeeklyMissionByMissionId.Map {
 		affected, err := session.Db.Table("u_weekly_mission").Where("user_id = ? AND mission_m_id = ?",
 			session.UserId, userWeeklyMission.MissionMId).AllCols().Update(userWeeklyMission)
 		utils.CheckErr(err)

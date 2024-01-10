@@ -8,10 +8,10 @@ import (
 	"fmt"
 )
 
-func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *client.UserCard) {
+func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card client.UserCard) {
 	solver.Cells = []model.TrainingTreeCell{}
 	solver.Session = session
-	solver.Card = card
+	solver.Card = &card
 	solver.MasterCard = session.Gamedata.Card[card.CardMasterId]
 	solver.TrainingTree = solver.MasterCard.TrainingTree
 	solver.TrainingTreeMapping = solver.TrainingTree.TrainingTreeMapping
@@ -26,7 +26,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *cli
 		// entirely new card, no need to do anything
 	} else if !solver.SolveForTileSet() { // otherwise we solve for a possible set of tiles
 		fmt.Println("Solving failed for card", card.CardMasterId, ", reseting to default")
-		*card = client.UserCard{
+		session.UserModel.UserCardByCardId.Set(card.CardMasterId, client.UserCard{
 			CardMasterId:        card.CardMasterId,
 			Level:               card.Level,
 			MaxFreePassiveSkill: solver.MasterCard.PassiveSkillSlot,
@@ -37,7 +37,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card *cli
 			PassiveSkillCLevel:  1,
 			AcquiredAt:          card.AcquiredAt,
 			IsNew:               true,
-		}
+		})
 	} // else {
 	// fmt.Println("Found solution for card", card.CardMasterId)
 	// }

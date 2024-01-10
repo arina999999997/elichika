@@ -4,7 +4,9 @@
 // - Convertible to and from jsons [key_1, value_1, key_2, value_2, key_3, value_3, ...]
 // - The keys are sorted increasingly.
 //   - This is the behaviour of the official server.
-//   - Pretty sure the client can gracefully handle this if it's not sorted
+//   - The client can sometime handle things if it's not sorted, but other time it might cause problems
+//   - for example the order of decks
+//
 // - If the map is nil or empty, return []
 // Note that sometime the value can be null, if this is the case, it's up to the user to set the VALUE_TYPE to Nullable
 
@@ -14,6 +16,8 @@
 //     MapField generic.Dictionary[KeyType, ValueType]  `table:"table_name" key:"col_name"`
 // }
 // The system will see if col_name exists in ValueType, and if it doesn't exist then it will use a different interface.
+// Reading is done by passing the db, the user id, the table name and the table key since those exist outside of the mapping types
+// Writing is still done using finalizer because it has to handle update and insert and all that.
 
 package generic
 
@@ -23,11 +27,12 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"sort"
 
 	"xorm.io/xorm"
 )
 
-type Dictionary[K comparable, V any] struct {
+type Dictionary[K int32 | int64, V any] struct {
 	Map map[K]V
 }
 
@@ -90,9 +95,16 @@ func (d *Dictionary[K, V]) UnmarshalJSON(data []byte) error {
 
 func (d Dictionary[K, V]) MarshalJSON() ([]byte, error) {
 	arr := []any{}
-	for key, value := range d.Map {
+	keys := []K{}
+	for key := range d.Map {
+		keys = append(keys, key)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i] < keys[j]
+	})
+	for _, key := range keys {
 		arr = append(arr, key)
-		arr = append(arr, value)
+		arr = append(arr, d.Map[key])
 	}
 	bytes, err := json.Marshal(&arr)
 	return bytes, err

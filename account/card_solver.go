@@ -206,13 +206,13 @@ func (solver *TrainingTreeSolver) LoadUserLogin(login *response.Login) {
 	solver.HasNaviVoice = make(map[int32]bool)
 	solver.HasStorySide = make(map[int32]bool)
 	solver.HasSuit = make(map[int32]bool)
-	for _, voice := range login.UserModel.UserVoiceByVoiceId.Objects {
+	for _, voice := range login.UserModel.UserVoiceByVoiceId.Map {
 		solver.HasNaviVoice[voice.NaviVoiceMasterId] = true
 	}
-	for _, storySide := range login.UserModel.UserStorySideById.Objects {
+	for _, storySide := range login.UserModel.UserStorySideById.Map {
 		solver.HasStorySide[storySide.StorySideMasterId] = true
 	}
-	for _, suit := range login.UserModel.UserSuitBySuitId.Objects {
+	for _, suit := range login.UserModel.UserSuitBySuitId.Map {
 		solver.HasSuit[suit.SuitMasterId] = true
 	}
 }

@@ -11,7 +11,7 @@ func (session *Session) InsertStorySide(storySideMasterId int32) {
 		IsNew:             true,
 		AcquiredAt:        session.Time.Unix(),
 	}
-	session.UserModel.UserStorySideById.PushBack(userStorySide)
+	session.UserModel.UserStorySideById.Set(storySideMasterId, userStorySide)
 }
 
 func (session *Session) FinishStorySide(storySideMasterId int32) {
@@ -26,11 +26,11 @@ func (session *Session) FinishStorySide(storySideMasterId int32) {
 		return
 	}
 	userStorySide.IsNew = false
-	session.UserModel.UserStorySideById.PushBack(userStorySide)
+	session.UserModel.UserStorySideById.Set(storySideMasterId, userStorySide)
 }
 
 func storySideFinalizer(session *Session) {
-	for _, userStorySide := range session.UserModel.UserStorySideById.Objects {
+	for _, userStorySide := range session.UserModel.UserStorySideById.Map {
 		affected, err := session.Db.Table("u_story_side").Where("user_id = ? AND story_side_master_id = ?",
 			session.UserId, userStorySide.StorySideMasterId).AllCols().Update(userStorySide)
 		utils.CheckErr(err)

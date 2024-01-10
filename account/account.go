@@ -62,8 +62,8 @@ func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
 	// insert training tree data to make training consistent
 	solver := TrainingTreeSolver{}
 	solver.LoadUserLogin(&loginData)
-	for i := range loginData.UserModel.UserCardByCardId.Objects {
-		solver.SolveCard(session, &loginData.UserModel.UserCardByCardId.Objects[i])
+	for i := range loginData.UserModel.UserCardByCardId.Map {
+		solver.SolveCard(session, loginData.UserModel.UserCardByCardId.Map[i])
 	}
 	// update term of use and stuff
 

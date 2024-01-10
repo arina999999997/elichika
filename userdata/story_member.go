@@ -16,11 +16,11 @@ func (session *Session) InsertMemberStory(storyMemberMasterId int32) {
 		IsNew:               true,
 		AcquiredAt:          session.Time.Unix(),
 	}
-	session.UserModel.UserStoryMemberById.PushBack(userStoryMember)
+	session.UserModel.UserStoryMemberById.Set(storyMemberMasterId, userStoryMember)
 }
 
 func memberStoryFinalizer(session *Session) {
-	for _, userStoryMember := range session.UserModel.UserStoryMemberById.Objects {
+	for _, userStoryMember := range session.UserModel.UserStoryMemberById.Map {
 		affected, err := session.Db.Table("u_story_member").Where("user_id = ? AND story_member_master_id = ?",
 			session.UserId, userStoryMember.StoryMemberMasterId).AllCols().Update(userStoryMember)
 		utils.CheckErr(err)
@@ -43,13 +43,13 @@ func (session *Session) FinishStoryMember(storyMemberMasterId int32) bool {
 			IsNew:               false,
 			AcquiredAt:          session.Time.Unix(),
 		}
-		session.UserModel.UserStoryMemberById.PushBack(userStoryMember)
+		session.UserModel.UserStoryMemberById.Set(storyMemberMasterId, userStoryMember)
 	}
 	if !userStoryMember.IsNew {
 		return false
 	}
 	userStoryMember.IsNew = false
-	session.UserModel.UserStoryMemberById.PushBack(userStoryMember)
+	session.UserModel.UserStoryMemberById.Set(storyMemberMasterId, userStoryMember)
 	return true
 }
 

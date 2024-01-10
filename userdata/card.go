@@ -8,11 +8,10 @@ import (
 
 // fetch a card, use the value in diff is present, otherwise fetch from db
 func (session *Session) GetUserCard(cardMasterId int32) client.UserCard {
-	pos, exist := session.UserCardMapping.SetList(&session.UserModel.UserCardByCardId).Map[int64(cardMasterId)]
+	card, exist := session.UserModel.UserCardByCardId.Get(cardMasterId)
 	if exist {
-		return session.UserModel.UserCardByCardId.Objects[pos]
+		return card
 	}
-	card := client.UserCard{}
 	exist, err := session.Db.Table("u_card").
 		Where("user_id = ? AND card_master_id = ?", session.UserId, cardMasterId).Get(&card)
 	utils.CheckErr(err)
@@ -37,11 +36,11 @@ func (session *Session) GetUserCard(cardMasterId int32) client.UserCard {
 }
 
 func (session *Session) UpdateUserCard(card client.UserCard) {
-	session.UserCardMapping.SetList(&session.UserModel.UserCardByCardId).Update(card)
+	session.UserModel.UserCardByCardId.Set(card.CardMasterId, card)
 }
 
 func cardFinalizer(session *Session) {
-	for _, card := range session.UserModel.UserCardByCardId.Objects {
+	for _, card := range session.UserModel.UserCardByCardId.Map {
 		affected, err := session.Db.Table("u_card").
 			Where("user_id = ? AND card_master_id = ?", session.UserId, card.CardMasterId).AllCols().Update(card)
 		utils.CheckErr(err)
@@ -53,7 +52,9 @@ func cardFinalizer(session *Session) {
 
 // insert all the cards
 func (session *Session) InsertCards(cards []client.UserCard) {
-	session.UserModel.UserCardByCardId.Objects = append(session.UserModel.UserCardByCardId.Objects, cards...)
+	for _, card := range cards {
+		session.UserModel.UserCardByCardId.Set(card.CardMasterId, card)
+	}
 }
 
 func init() {

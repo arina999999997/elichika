@@ -14,7 +14,7 @@ func (session *Session) InsertUserStoryMain(storyMainMasterId int32) bool {
 		return false
 	}
 
-	session.UserModel.UserStoryMainByStoryMainId.PushBack(userStoryMain)
+	session.UserModel.UserStoryMainByStoryMainId.Set(storyMainMasterId, userStoryMain)
 	// also handle unlocking scene (feature)
 	// use m_scene_unlock_hint for guide as this seems to be entirely server sided
 	// Id is from m_story_main_cell, so maybe load it instead of hard coding
@@ -32,7 +32,7 @@ func (session *Session) InsertUserStoryMain(storyMainMasterId int32) bool {
 }
 
 func storyMainFinalizer(session *Session) {
-	for _, userStoryMain := range session.UserModel.UserStoryMainByStoryMainId.Objects {
+	for _, userStoryMain := range session.UserModel.UserStoryMainByStoryMainId.Map {
 		if !genericDatabaseExist(session, "u_story_main", userStoryMain) {
 			genericDatabaseInsert(session, "u_story_main", userStoryMain)
 		}
@@ -44,11 +44,11 @@ func (session *Session) UpdateUserStoryMainSelected(storyMainCellId, selectedId 
 		StoryMainCellId: storyMainCellId,
 		SelectedId:      selectedId,
 	}
-	session.UserModel.UserStoryMainSelectedByStoryMainCellId.PushBack(userStoryMainSelected)
+	session.UserModel.UserStoryMainSelectedByStoryMainCellId.Set(storyMainCellId, userStoryMainSelected)
 }
 
 func storyMainSelectedFinalizer(session *Session) {
-	for _, userStoryMainSelected := range session.UserModel.UserStoryMainSelectedByStoryMainCellId.Objects {
+	for _, userStoryMainSelected := range session.UserModel.UserStoryMainSelectedByStoryMainCellId.Map {
 		affected, err := session.Db.Table("u_story_main_selected").Where("user_id = ? AND story_main_cell_id = ?",
 			session.UserId, userStoryMainSelected.StoryMainCellId).AllCols().Update(userStoryMainSelected)
 		utils.CheckErr(err)

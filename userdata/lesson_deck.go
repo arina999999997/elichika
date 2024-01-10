@@ -5,12 +5,11 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLessonDeck(userLessonDeckId int) client.UserLessonDeck {
-	pos, exist := session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckById).Map[int64(userLessonDeckId)]
+func (session *Session) GetUserLessonDeck(userLessonDeckId int32) client.UserLessonDeck {
+	deck, exist := session.UserModel.UserLessonDeckById.Get(userLessonDeckId)
 	if exist {
-		return session.UserModel.UserLessonDeckById.Objects[pos]
+		return deck
 	}
-	deck := client.UserLessonDeck{}
 	exist, err := session.Db.Table("u_lesson_deck").
 		Where("user_id = ? AND user_lesson_deck_id = ?", session.UserId, userLessonDeckId).
 		Get(&deck)
@@ -22,11 +21,11 @@ func (session *Session) GetUserLessonDeck(userLessonDeckId int) client.UserLesso
 }
 
 func (session *Session) UpdateLessonDeck(userLessonDeck client.UserLessonDeck) {
-	session.UserLessonDeckMapping.SetList(&session.UserModel.UserLessonDeckById).Update(userLessonDeck)
+	session.UserModel.UserLessonDeckById.Set(userLessonDeck.UserLessonDeckId, userLessonDeck)
 }
 
 func lessonDeckFinalizer(session *Session) {
-	for _, deck := range session.UserModel.UserLessonDeckById.Objects {
+	for _, deck := range session.UserModel.UserLessonDeckById.Map {
 		affected, err := session.Db.Table("u_lesson_deck").
 			Where("user_id = ? AND user_lesson_deck_id = ?", session.UserId, deck.UserLessonDeckId).AllCols().
 			Update(deck)
@@ -38,7 +37,9 @@ func lessonDeckFinalizer(session *Session) {
 }
 
 func (session *Session) InsertLessonDecks(decks []client.UserLessonDeck) {
-	session.UserModel.UserLessonDeckById.Objects = append(session.UserModel.UserLessonDeckById.Objects, decks...)
+	for _, deck := range decks {
+		session.UpdateLessonDeck(deck)
+	}
 }
 
 func init() {

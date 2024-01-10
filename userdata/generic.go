@@ -42,7 +42,7 @@ func addGenericTableFieldPopulator(tableName, fieldName string) {
 	if genericTableFieldPopulators == nil {
 		genericTableFieldPopulators = make(map[string]string)
 	}
-	genericTableFieldPopulators[tableName] = fieldName
+	genericTableFieldPopulators[fieldName] = tableName
 }
 
 func newGenericTableFieldPopulator(session *Session) {
@@ -53,6 +53,7 @@ func newGenericTableFieldPopulator(session *Session) {
 		tableName := rFieldType.Tag.Get("table")
 		keyColumn := rFieldType.Tag.Get("key")
 		if tableName == "" {
+			genericTableFieldPopulator(session, rFieldType.Name)
 			continue
 		}
 		rField := rModel.Elem().Field(i)
@@ -65,27 +66,29 @@ func newGenericTableFieldPopulator(session *Session) {
 	}
 }
 
-func genericTableFieldPopulator(session *Session) {
+func genericTableFieldPopulator(session *Session, fieldName string) {
+	tableName, exists := genericTableFieldPopulators[fieldName]
+	if !exists {
+		return
+	}
 	rModel := reflect.ValueOf(&session.UserModel)
-	for tableName, fieldName := range genericTableFieldPopulators {
-		rField := rModel.Elem().FieldByName(fieldName)
-		if !rField.IsValid() {
-			fmt.Println("Invalid table field pair: ", tableName, "->", fieldName)
-			continue
-		}
-		// fmt.Println(":", tableName, fieldName)
-		if fieldName == "UserMemberByMemberId" {
-			// TODO(refactor): This is temporary
+	rField := rModel.Elem().FieldByName(fieldName)
+	if !rField.IsValid() {
+		fmt.Println("Invalid table field pair: ", tableName, "->", fieldName)
+		return
+	}
+	// fmt.Println(":", tableName, fieldName)
+	if fieldName == "UserMemberByMemberId" {
+		// TODO(refactor): This is temporary
 
-		} else {
-			err := session.Db.Table(tableName).Where("user_id = ?", session.UserId).
-				Find(rField.FieldByName("Objects").Addr().Interface())
-			utils.CheckErr(err)
-		}
+	} else {
+		err := session.Db.Table(tableName).Where("user_id = ?", session.UserId).
+			Find(rField.FieldByName("Objects").Addr().Interface())
+		utils.CheckErr(err)
 	}
 }
 
 func init() {
-	addPopulator(genericTableFieldPopulator)
+	// addPopulator(genericTableFieldPopulator)
 	addPopulator(newGenericTableFieldPopulator)
 }

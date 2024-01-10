@@ -40,11 +40,11 @@ func (session *Session) GetUserLivePartyWithDeckAndCardId(deckId int, cardId int
 }
 
 func (session *Session) UpdateUserLiveParty(liveParty client.UserLiveParty) {
-	session.UserLivePartyMapping.SetList(&session.UserModel.UserLivePartyById).Update(liveParty)
+	session.UserModel.UserLivePartyById.Set(liveParty.PartyId, liveParty)
 }
 
 func livePartyFinalizer(session *Session) {
-	for _, party := range session.UserModel.UserLivePartyById.Objects {
+	for _, party := range session.UserModel.UserLivePartyById.Map {
 		affected, err := session.Db.Table("u_live_party").
 			Where("user_id = ? AND party_id = ?", session.UserId, party.PartyId).AllCols().
 			Update(party)
@@ -65,7 +65,9 @@ func (session *Session) GetAllLivePartiesWithAccessory(accessoryId int64) []clie
 }
 
 func (session *Session) InsertLiveParties(parties []client.UserLiveParty) {
-	session.UserModel.UserLivePartyById.Objects = append(session.UserModel.UserLivePartyById.Objects, parties...)
+	for _, party := range parties {
+		session.UpdateUserLiveParty(party)
+	}
 }
 
 func init() {
