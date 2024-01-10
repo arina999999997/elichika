@@ -73,7 +73,7 @@ func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.P
 	return partnerCard
 }
 
-func GetOtherUserCard(otherUserId, cardMasterId int) client.UserCard {
+func GetOtherUserCard(otherUserId int, cardMasterId int32) client.UserCard {
 	card := client.UserCard{}
 	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).
 		Get(&card)

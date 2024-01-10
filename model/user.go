@@ -14,7 +14,7 @@ type UserBasicInfo struct {
 	} `xorm:"extends" json:"name"` // player name
 	Rank                  int   `json:"rank"` // rank
 	LastPlayedAt          int64 `xorm:"'last_login_at'" json:"last_played_at"`
-	RecommendCardMasterId int   `xorm:"'recommend_card_master_id'" json:"recommend_card_master_id"` // featured / partner card
+	RecommendCardMasterId int32 `xorm:"'recommend_card_master_id'" json:"recommend_card_master_id"` // featured / partner card
 
 	RecommendCardLevel                  int  `xorm:"-" json:"recommend_card_level"`
 	IsRecommendCardImageAwaken          bool `xorm:"-" json:"is_recommend_card_image_awaken"`

@@ -10,7 +10,7 @@ type LiveStartRequest struct {
 	DeckId              int                    `json:"deck_id"`
 	CellId              *int32                 `json:"cell_id"`
 	PartnerUserId       int                    `json:"partner_user_id"`
-	PartnerCardMasterId int                    `json:"partner_card_master_id"`
+	PartnerCardMasterId int32                  `json:"partner_card_master_id"`
 	LpMagnification     int                    `json:"lp_magnification"`
 	IsAutoPlay          bool                   `json:"is_auto_play"`
 	IsReferenceBook     bool                   `json:"is_reference_book"`

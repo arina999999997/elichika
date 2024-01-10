@@ -123,18 +123,6 @@ func (oboid *ObjectByObjectIdList[T]) ToContents() []any {
 	return contents
 }
 
-func (oboid *ObjectByObjectIdList[T]) SetUserId(userId int) {
-	for i := range oboid.Objects {
-		rUserId := reflect.Indirect(reflect.ValueOf(&oboid.Objects[i])).FieldByName("UserId")
-		if rUserId.IsValid() {
-			rUserId.Set(reflect.ValueOf(userId))
-		} else {
-			// fmt.Println("skip UserId for",  reflect.ValueOf(&oboid.Objects[i]).Type())
-			return
-		}
-	}
-}
-
 // handler for an array object, use a map to map to the value for easier selection / tracking
 // note that we don't store the object in the map itself because that lead to complication with xorm, as xorm can't use the Id function and rely on pk mapping
 type ObjectByObjectIdMapping[T any] struct {

@@ -51,7 +51,7 @@ type Session struct {
 	// for now only store delta patch, i.e. user_model_diff
 	// should be fine until we want to keep user state entirely in ram
 	SessionType int
-	UserModel   response.UserModel
+	UserModel   client.UserModel
 
 	UniqueCount int64
 }

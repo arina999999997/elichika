@@ -30,31 +30,31 @@ type UserStatus struct {
 	AppleSnsCoin                              int32                   `json:"apple_sns_coin"`                                 // paid gem ios
 	GoogleSnsCoin                             int32                   `json:"google_sns_coin"`                                // paid gem android
 	SubscriptionCoin                          int32                   `json:"subscription_coin"`                              // member coin
-	BirthDate                                 generic.Nullable[int32] `json:"birth_date"`                                     // yyyymm ?
-	BirthMonth                                generic.Nullable[int32] `json:"birth_month"`
-	BirthDay                                  generic.Nullable[int32] `json:"birth_day"`
+	BirthDate                                 generic.Nullable[int32] `xorm:"json" json:"birth_date"`                         // yyyymm ?
+	BirthMonth                                generic.Nullable[int32] `xorm:"json" json:"birth_month"`
+	BirthDay                                  generic.Nullable[int32] `xorm:"json" json:"birth_day"`
 	LatestLiveDeckId                          int32                   `xorm:"'latest_live_deck_id'" json:"latest_live_deck_id"` // last used live formation
 	MainLessonDeckId                          int32                   `xorm:"'main_lesson_deck_id'" json:"main_lesson_deck_id"` // last used training formation
 	FavoriteMemberId                          int32                   `xorm:"'favorite_member_id'" json:"favorite_member_id"`   // partner id
 	LastLiveDifficultyId                      int32                   `xorm:"'last_live_difficulty_id'" json:"last_live_difficulty_id"`
-	LpMagnification                           int32                   `json:"lp_magnification"`                                                                 // unused feature, always 1
-	EmblemId                                  int32                   `xorm:"'emblem_id' "json:"emblem_id"`                                                     // title
-	DeviceToken                               string                  `json:"device_token"`                                                                     //  some sort of salted encryption?, used to prevent using multiple device
-	TutorialPhase                             int32                   `json:"tutorial_phase"`                                                                   // 99 = done
-	TutorialEndAt                             int64                   `json:"tutorial_end_at"`                                                                  // in unix second
-	LoginDays                                 int32                   `json:"login_days"`                                                                       // amount of days logged in
-	NaviTapCount                              int32                   `json:"navi_tap_count"`                                                                   // number of partner tap that will increase bond
-	NaviTapRecoverAt                          int64                   `json:"navi_tap_recover_at"`                                                              // in unix time
-	IsAutoMode                                bool                    `json:"is_auto_mode"`                                                                     // is autoplay enabled, for restarting app without finishing lives
-	MaxScoreLiveDifficultyMasterId            generic.Nullable[int32] `xorm:"'max_score_live_difficulty_master_id'" json:"max_score_live_difficulty_master_id"` // not the one featured in profile?
+	LpMagnification                           int32                   `json:"lp_magnification"`                                                                      // unused feature, always 1
+	EmblemId                                  int32                   `xorm:"'emblem_id' "json:"emblem_id"`                                                          // title
+	DeviceToken                               string                  `json:"device_token"`                                                                          //  some sort of salted encryption?, used to prevent using multiple device
+	TutorialPhase                             int32                   `json:"tutorial_phase"`                                                                        // 99 = done
+	TutorialEndAt                             int64                   `json:"tutorial_end_at"`                                                                       // in unix second
+	LoginDays                                 int32                   `json:"login_days"`                                                                            // amount of days logged in
+	NaviTapCount                              int32                   `json:"navi_tap_count"`                                                                        // number of partner tap that will increase bond
+	NaviTapRecoverAt                          int64                   `json:"navi_tap_recover_at"`                                                                   // in unix time
+	IsAutoMode                                bool                    `json:"is_auto_mode"`                                                                          // is autoplay enabled, for restarting app without finishing lives
+	MaxScoreLiveDifficultyMasterId            generic.Nullable[int32] `xorm:"json 'max_score_live_difficulty_master_id'" json:"max_score_live_difficulty_master_id"` // not the one featured in profile?
 	LiveMaxScore                              int32                   `json:"live_max_score"`
-	MaxComboLiveDifficultyMasterId            generic.Nullable[int32] `xorm:"'max_combo_live_difficulty_master_id'" json:"max_combo_live_difficulty_master_id"`
+	MaxComboLiveDifficultyMasterId            generic.Nullable[int32] `xorm:"json 'max_combo_live_difficulty_master_id'" json:"max_combo_live_difficulty_master_id"`
 	LiveMaxCombo                              int32                   `json:"live_max_combo"`
-	LessonResumeStatus                        int32                   `json:"lesson_resume_status"`                                                 // for quitting while training, the number probably mean the phase of the training
-	AccessoryBoxAdditional                    int32                   `json:"accessory_box_additional"`                                             // additional accessory slot, max is 400 in official
-	TermsOfUseVersion                         int32                   `json:"terms_of_use_version"`                                                 // 3 mean nothing to accept
-	BootstrapSifidCheckAt                     int64                   `json:"bootstrap_sifid_check_at"`                                             // not really what it sound like, probably safe to ignore it
-	GdprVersion                               int32                   `json:"gdpr_version"`                                                         // set to 0 for outside the EU
-	MemberGuildMemberMasterId                 generic.Nullable[int32] `xorm:"'member_guild_member_master_id'" json:"member_guild_member_master_id"` // member id of the channel joined
-	MemberGuildLastUpdatedAt                  int64                   `json:"member_guild_last_updated_at"`                                         // unix time stamp, last time joining the channel (used to allow only 1 channel changing)
+	LessonResumeStatus                        int32                   `json:"lesson_resume_status"`                                                      // for quitting while training, the number probably mean the phase of the training
+	AccessoryBoxAdditional                    int32                   `json:"accessory_box_additional"`                                                  // additional accessory slot, max is 400 in official
+	TermsOfUseVersion                         int32                   `json:"terms_of_use_version"`                                                      // 3 mean nothing to accept
+	BootstrapSifidCheckAt                     int64                   `json:"bootstrap_sifid_check_at"`                                                  // not really what it sound like, probably safe to ignore it
+	GdprVersion                               int32                   `json:"gdpr_version"`                                                              // set to 0 for outside the EU
+	MemberGuildMemberMasterId                 generic.Nullable[int32] `xorm:"json 'member_guild_member_master_id'" json:"member_guild_member_master_id"` // member id of the channel joined
+	MemberGuildLastUpdatedAt                  int64                   `json:"member_guild_last_updated_at"`                                              // unix time stamp, last time joining the channel (used to allow only 1 channel changing)
 }

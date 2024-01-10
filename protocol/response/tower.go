@@ -1,18 +1,19 @@
 package response
 
 import (
+	"elichika/client"
 	"elichika/model"
 )
 
 type FetchTowerSelectResponse struct {
-	TowerIds      []int      `json:"tower_ids"`
-	UserModelDiff *UserModel `json:"user_model_diff"`
+	TowerIds      []int             `json:"tower_ids"`
+	UserModelDiff *client.UserModel `json:"user_model_diff"`
 }
 
 type FetchTowerTopResponse struct {
 	TowerCardUsedCountRows []model.UserTowerCardUsedCount `json:"tower_card_used_count_rows"`
 	IsShowUnlockEffect     bool                           `json:"is_show_unlock_effect"`
-	UserModelDiff          *UserModel                     `json:"user_model_diff"`
+	UserModelDiff          *client.UserModel              `json:"user_model_diff"`
 
 	// used for bonus lives (ranking one), order will display the small ranking number
 	// each bonus live voltage is an array of number of floor length that store the score to them
@@ -21,17 +22,17 @@ type FetchTowerTopResponse struct {
 }
 
 type ClearedTowerFloorResponse struct {
-	IsShowUnlockEffect bool       `json:"is_show_unlock_effect"`
-	UserModelDiff      *UserModel `json:"user_model_diff"`
+	IsShowUnlockEffect bool              `json:"is_show_unlock_effect"`
+	UserModelDiff      *client.UserModel `json:"user_model_diff"`
 }
 
 type RecoveryTowerCardUsedResponse struct {
 	TowerCardUsedCountRows []model.UserTowerCardUsedCount `json:"tower_card_used_count_rows"`
-	UserModelDiff          *UserModel                     `json:"user_model_diff"`
+	UserModelDiff          *client.UserModel              `json:"user_model_diff"`
 }
 
 type RecoveryTowerCardUsedAllResponse struct {
-	UserModelDiff *UserModel `json:"user_model_diff"`
+	UserModelDiff *client.UserModel `json:"user_model_diff"`
 }
 
 type TowerRankingUser = RankingUser

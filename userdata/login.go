@@ -4,6 +4,7 @@ import (
 	"elichika/protocol/response"
 	"elichika/utils"
 
+	"fmt"
 	"time"
 )
 
@@ -28,9 +29,11 @@ func (session *Session) Login() response.Login {
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	session.SessionType = SessionTypeLogin
 
+	fmt.Println("before")
 	for _, populator := range populators {
 		populator(session)
 	}
+	fmt.Println("after")
 	// only this part is necessary
 	login.MemberLovePanels = session.UserMemberLovePanels
 	return login

@@ -45,6 +45,26 @@ func addGenericTableFieldPopulator(tableName, fieldName string) {
 	genericTableFieldPopulators[tableName] = fieldName
 }
 
+func newGenericTableFieldPopulator(session *Session) {
+	// TODO(refactor): These can be init at the start or something
+	rModel := reflect.ValueOf(&session.UserModel)
+	for i := 0; i < rModel.Type().Elem().NumField(); i++ {
+		rFieldType := rModel.Type().Elem().Field(i)
+		tableName := rFieldType.Tag.Get("table")
+		keyColumn := rFieldType.Tag.Get("key")
+		if tableName == "" {
+			continue
+		}
+		rField := rModel.Elem().Field(i)
+		rMethod := rField.Addr().MethodByName("LoadFromDB")
+		if rMethod.IsValid() {
+			fmt.Println(i, rField, rMethod, tableName, keyColumn)
+			rMethod.Call([]reflect.Value{reflect.ValueOf(session.Db), reflect.ValueOf(session.UserId),
+				reflect.ValueOf(tableName), reflect.ValueOf(keyColumn)})
+		}
+	}
+}
+
 func genericTableFieldPopulator(session *Session) {
 	rModel := reflect.ValueOf(&session.UserModel)
 	for tableName, fieldName := range genericTableFieldPopulators {
@@ -53,12 +73,19 @@ func genericTableFieldPopulator(session *Session) {
 			fmt.Println("Invalid table field pair: ", tableName, "->", fieldName)
 			continue
 		}
-		err := session.Db.Table(tableName).Where("user_id = ?", session.UserId).
-			Find(rField.FieldByName("Objects").Addr().Interface())
-		utils.CheckErr(err)
+		// fmt.Println(":", tableName, fieldName)
+		if fieldName == "UserMemberByMemberId" {
+			// TODO(refactor): This is temporary
+
+		} else {
+			err := session.Db.Table(tableName).Where("user_id = ?", session.UserId).
+				Find(rField.FieldByName("Objects").Addr().Interface())
+			utils.CheckErr(err)
+		}
 	}
 }
 
 func init() {
 	addPopulator(genericTableFieldPopulator)
+	addPopulator(newGenericTableFieldPopulator)
 }

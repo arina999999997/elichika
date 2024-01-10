@@ -72,7 +72,7 @@ type BootstrapSubscription struct {
 }
 
 type FetchBootstrapResponse struct {
-	UserModelDiff                      *UserModel                 `json:"user_model_diff"`
+	UserModelDiff                      *client.UserModel          `json:"user_model_diff"`
 	UserInfoTrigger                    UserInfoTrigger            `json:"user_info_trigger"`                     // TODO(not_really_handled)
 	BillingStateInfo                   BillingStateInfo           `json:"billing_state_info"`                    // TODO(not_really_handled)
 	FetchBootstrapBannerResponse       BootstrapBanner            `json:"fetch_bootstrap_banner_response"`       // TODO(not_really_handled)

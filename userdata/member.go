@@ -9,11 +9,10 @@ import (
 )
 
 func (session *Session) GetMember(memberMasterId int32) client.UserMember {
-	pos, exist := session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Map[int64(memberMasterId)]
+	member, exist := session.UserModel.UserMemberByMemberId.Get(memberMasterId)
 	if exist {
-		return session.UserModel.UserMemberByMemberId.Objects[pos]
+		return member
 	}
-	member := client.UserMember{}
 	exist, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).Get(&member)
 	utils.CheckErr(err)
@@ -25,7 +24,8 @@ func (session *Session) GetMember(memberMasterId int32) client.UserMember {
 }
 
 func (session *Session) UpdateMember(member client.UserMember) {
-	session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Update(member)
+	session.UserModel.UserMemberByMemberId.Set(member.MemberMasterId, member)
+	// session.UserMemberMapping.SetList(&session.UserModel.UserMemberByMemberId).Update(member)
 }
 
 func (session *Session) InsertMembers(members []client.UserMember) {
@@ -35,7 +35,7 @@ func (session *Session) InsertMembers(members []client.UserMember) {
 }
 
 func memberFinalizer(session *Session) {
-	for _, member := range session.UserModel.UserMemberByMemberId.Objects {
+	for _, member := range session.UserModel.UserMemberByMemberId.Map {
 		affected, err := session.Db.Table("u_member").
 			Where("user_id = ? AND member_master_id = ?", session.UserId, member.MemberMasterId).AllCols().Update(member)
 		utils.CheckErr(err)

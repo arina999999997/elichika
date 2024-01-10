@@ -85,8 +85,8 @@ func ChangeFavorite(ctx *gin.Context) {
 func GetOtherUserCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type OtherUserCardReq struct {
-		UserId       int `json:"user_id"`
-		CardMasterId int `json:"card_master_id"`
+		UserId       int   `json:"user_id"`
+		CardMasterId int32 `json:"card_master_id"`
 	}
 	req := OtherUserCardReq{}
 	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
