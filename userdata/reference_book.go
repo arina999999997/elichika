@@ -5,15 +5,14 @@ import (
 )
 
 func (session *Session) InsertReferenceBook(referenceBookId int32) {
-	userReferenceBook := client.UserReferenceBook{
+	session.UserModel.UserReferenceBookById.Set(referenceBookId, client.UserReferenceBook{
 		ReferenceBookId: referenceBookId,
-	}
-	session.UserModel.UserReferenceBookById.PushBack(userReferenceBook)
+	})
 }
 
 func referenceBookFinalizer(session *Session) {
 	// guaranteed to be unique
-	for _, userReferenceBook := range session.UserModel.UserReferenceBookById.Objects {
+	for _, userReferenceBook := range session.UserModel.UserReferenceBookById.Map {
 		genericDatabaseInsert(session, "u_reference_book", userReferenceBook)
 	}
 }

@@ -5,7 +5,7 @@ import (
 )
 
 func schoolIdolFestivalIdRewardMissionFinalizer(session *Session) {
-	for _, userSchoolIdolFestivalIdRewardMissionFinalizer := range session.UserModel.UserSchoolIdolFestivalIdRewardMissionById.Objects {
+	for _, userSchoolIdolFestivalIdRewardMissionFinalizer := range session.UserModel.UserSchoolIdolFestivalIdRewardMissionById.Map {
 		affected, err := session.Db.Table("u_school_idol_festival_id_reward_mission").
 			Where("user_id = ? AND school_idol_festival_id_reward_mission_master_id = ?",
 				session.UserId, userSchoolIdolFestivalIdRewardMissionFinalizer.SchoolIdolFestivalIdRewardMissionMasterId).

@@ -5,7 +5,7 @@ import (
 )
 
 func gpsPresentReceivedFinalizer(session *Session) {
-	for _, userGpsPresentReceived := range session.UserModel.UserGpsPresentReceivedById.Objects {
+	for _, userGpsPresentReceived := range session.UserModel.UserGpsPresentReceivedById.Map {
 		affected, err := session.Db.Table("u_gps_present_received").
 			Where("user_id = ? AND campaign_id = ?",
 				session.UserId, userGpsPresentReceived.CampaignId).

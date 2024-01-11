@@ -18,16 +18,16 @@ func (session *Session) UnlockScene(unlockSceneType, status int32) {
 		UnlockSceneType: unlockSceneType, // not sure what this is
 		Status:          status,
 	}
-	session.UserModel.UserUnlockScenesByEnum.PushBack(userUnlockScene)
+	session.UserModel.UserUnlockScenesByEnum.Set(unlockSceneType, userUnlockScene)
 }
 
 func unlockSceneFinalizer(session *Session) {
-	for _, userUnlockScene := range session.UserModel.UserUnlockScenesByEnum.Objects {
-		affected, err := session.Db.Table("u_unlock_scene").Where("user_id = ? AND unlock_scene_type = ?",
+	for _, userUnlockScene := range session.UserModel.UserUnlockScenesByEnum.Map {
+		affected, err := session.Db.Table("u_unlock_scenes").Where("user_id = ? AND unlock_scene_type = ?",
 			session.UserId, userUnlockScene.UnlockSceneType).Update(userUnlockScene)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
-			genericDatabaseInsert(session, "u_unlock_scene", userUnlockScene)
+			genericDatabaseInsert(session, "u_unlock_scenes", userUnlockScene)
 		}
 	}
 }
@@ -36,11 +36,11 @@ func (session *Session) SaveSceneTips(sceneTipsType int32) {
 	userSceneTips := client.UserSceneTips{
 		SceneTipsType: sceneTipsType,
 	}
-	session.UserModel.UserSceneTipsByEnum.PushBack(userSceneTips)
+	session.UserModel.UserSceneTipsByEnum.Set(sceneTipsType, userSceneTips)
 }
 
 func sceneTipsFinalizer(session *Session) {
-	for _, userSceneTips := range session.UserModel.UserSceneTipsByEnum.Objects {
+	for _, userSceneTips := range session.UserModel.UserSceneTipsByEnum.Map {
 		genericDatabaseInsert(session, "u_scene_tips", userSceneTips)
 	}
 }
@@ -48,6 +48,6 @@ func sceneTipsFinalizer(session *Session) {
 func init() {
 	addFinalizer(unlockSceneFinalizer)
 	addFinalizer(sceneTipsFinalizer)
-	addGenericTableFieldPopulator("u_unlock_scene", "UserUnlockScenesByEnum")
+	addGenericTableFieldPopulator("u_unlock_scenes", "UserUnlockScenesByEnum")
 	addGenericTableFieldPopulator("u_scene_tips", "UserSceneTipsByEnum")
 }

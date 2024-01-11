@@ -2,7 +2,7 @@ package client
 
 type UserEventCoop struct {
 	EventMasterId     int32 `xorm:"pk 'event_master_id'" json:"event_master_id"`
-	CurrentRoomId     int32 `xorm:"pk 'current_room_id'" json:"current_room_id"`
+	CurrentRoomId     int32 `xorm:"'current_room_id'" json:"current_room_id"`
 	EventPoint        int32 `xorm:"'event_point'" json:"event_point"`
 	RecentAwardId     int32 `xorm:"'recent_award_id'" json:"recent_award_id"`
 	EventVoltagePoint int32 `xorm:"'event_voltage_point'" json:"event_voltage_point"`

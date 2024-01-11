@@ -32,7 +32,7 @@ func init() {
 	TableNameToInterface["u_story_side"] = generic.UserIdWrapper[client.UserStorySide]{}
 	TableNameToInterface["u_story_member"] = generic.UserIdWrapper[client.UserStoryMember]{}
 	TableNameToInterface["u_story_event_history"] = generic.UserIdWrapper[client.UserStoryEventHistory]{}
-	TableNameToInterface["u_unlock_scene"] = generic.UserIdWrapper[client.UserUnlockScene]{}
+	TableNameToInterface["u_unlock_scenes"] = generic.UserIdWrapper[client.UserUnlockScene]{}
 	TableNameToInterface["u_scene_tips"] = generic.UserIdWrapper[client.UserSceneTips]{}
 	TableNameToInterface["u_rule_description"] = generic.UserIdWrapper[client.UserRuleDescription]{}
 	TableNameToInterface["u_reference_book"] = generic.UserIdWrapper[client.UserReferenceBook]{}

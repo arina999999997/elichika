@@ -139,18 +139,29 @@ func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int, table, mapKe
 			d.Set(reflect.ValueOf(v).Field(keyField).Interface().(K), v)
 		}
 	} else {
-		// V is likely some sort of wrapper, we will use V's interface to generate the value and key arrays
-		// use reflect because this might not exist
-		var keys []any
 		rLoadFromDB := reflect.ValueOf(valueDummy).MethodByName("LoadFromDb")
 		if rLoadFromDB.IsValid() {
+			// V is a special wrapper like Nullable, we will use V's method to generate the value and key arrays
+			var keys []any
 			rLoadFromDB.Call([]reflect.Value{reflect.ValueOf(db), reflect.ValueOf(userId),
 				reflect.ValueOf(table), reflect.ValueOf(mapKey), reflect.ValueOf(&keys), reflect.ValueOf(&values)})
 			for i := range values {
 				d.Set(keys[i].(K), values[i])
 			}
 		} else {
-			panic(fmt.Sprint("Not supported yet, table: ", table, ", key: ", mapKey))
+			fmt.Println("use default system", table, mapKey)
+			// V is a raw type but the key doesn't exists
+			// we fetch the object and then the key separately, both time ordered
+			err := db.Table(table).Where("user_id = ?", userId).OrderBy(mapKey).Find(&values)
+			utils.CheckErr(err)
+			var keys []K
+			err = db.Table(table).Where("user_id = ?", userId).OrderBy(mapKey).Cols(mapKey).Find(&keys)
+			utils.CheckErr(err)
+			fmt.Println(values)
+			fmt.Println(keys)
+			for i := range keys {
+				d.Set(keys[i], values[i])
+			}
 		}
 	}
 }
