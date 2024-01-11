@@ -57,11 +57,12 @@ func newGenericTableFieldPopulator(session *Session) {
 			continue
 		}
 		rField := rModel.Elem().Field(i)
-		rMethod := rField.Addr().MethodByName("LoadFromDB")
+		rMethod := rField.Addr().MethodByName("LoadFromDb")
 		if rMethod.IsValid() {
-			fmt.Println(i, rField, rMethod, tableName, keyColumn)
 			rMethod.Call([]reflect.Value{reflect.ValueOf(session.Db), reflect.ValueOf(session.UserId),
 				reflect.ValueOf(tableName), reflect.ValueOf(keyColumn)})
+		} else {
+			panic(fmt.Sprint("Tagged but not supported: ", i, rField, rMethod, tableName, keyColumn))
 		}
 	}
 }
@@ -77,7 +78,7 @@ func genericTableFieldPopulator(session *Session, fieldName string) {
 		fmt.Println("Invalid table field pair: ", tableName, "->", fieldName)
 		return
 	}
-	// fmt.Println(":", tableName, fieldName)
+	fmt.Println(tableName, fieldName)
 	if fieldName == "UserMemberByMemberId" {
 		// TODO(refactor): This is temporary
 

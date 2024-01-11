@@ -1,8 +1,13 @@
 package generic
 
 import (
-	// "fmt"
+	"elichika/utils"
+
 	"encoding/json"
+	"fmt"
+	"reflect"
+
+	"xorm.io/xorm"
 )
 
 type Nullable[T any] struct {
@@ -52,3 +57,30 @@ func (n Nullable[T]) MarshalJSON() ([]byte, error) {
 // for example:
 // - Item Nullable[int] `xorm:"json 'item'"`
 // there might be a better way to do this but this is good enough for now
+
+// for dictionary of Nullable only, load the Nullable from a table
+func (n Nullable[T]) LoadFromDb(db *xorm.Session, userId int, table, mapKey string, keyResult *[]any, result *[]Nullable[T]) {
+
+	var valueDummy T
+	rValueType := reflect.TypeOf(valueDummy)
+	valueHasKey := false
+	var keyField int
+	for i := 0; i < rValueType.NumField(); i++ {
+		f := rValueType.Field(i)
+		if mapKey == f.Tag.Get("json") {
+			valueHasKey = true
+			keyField = i
+			break
+		}
+	}
+	if !valueHasKey {
+		panic(fmt.Sprint("Not supported yet, table: ", table, ", key: ", mapKey))
+	}
+	var items []T
+	err := db.Table(table).Where("user_id = ?", userId).Find(&items)
+	utils.CheckErr(err)
+	for _, item := range items {
+		*keyResult = append(*keyResult, reflect.ValueOf(item).Field(keyField).Interface())
+		*result = append(*result, NewNullable(item))
+	}
+}

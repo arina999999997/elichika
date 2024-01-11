@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"elichika/client"
 	"elichika/config"
 	"elichika/model"
 	"elichika/userdata"
@@ -23,11 +22,7 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-
-	session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{
-		TriggerId: req.TriggerId,
-		IsNull:    true,
-	})
+	session.RemoveTriggerCardGradeUp(req.TriggerId)
 
 	resp := session.Finalize("{}", "user_model")
 	resp = SignResp(ctx, resp, config.SessionKey)
@@ -44,11 +39,7 @@ func TriggerRead(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-
-	session.AddTriggerBasic(client.UserInfoTriggerBasic{
-		TriggerId: req.TriggerId,
-		IsNull:    true,
-	})
+	session.DeleteTriggerBasic(req.TriggerId)
 
 	resp := session.Finalize("{}", "user_model")
 	resp = SignResp(ctx, resp, config.SessionKey)

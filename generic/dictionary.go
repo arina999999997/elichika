@@ -26,6 +26,7 @@ import (
 
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"sort"
 
@@ -46,6 +47,11 @@ func (d *Dictionary[K, V]) Set(key K, value V) {
 		d.Map = make(map[K]V)
 	}
 	d.Map[key] = value
+}
+
+func (d *Dictionary[K, V]) SetZero(key K) {
+	var value V
+	d.Set(key, value)
 }
 
 func (d *Dictionary[K, V]) Has(key K) bool {
@@ -111,7 +117,7 @@ func (d Dictionary[K, V]) MarshalJSON() ([]byte, error) {
 }
 
 // Load this from a xorm session
-func (d *Dictionary[K, V]) LoadFromDB(db *xorm.Session, userId int, table, mapKey string) {
+func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int, table, mapKey string) {
 	// TODO(refactor) cache this
 	var valueDummy V
 	rValueType := reflect.TypeOf(valueDummy)
@@ -125,14 +131,26 @@ func (d *Dictionary[K, V]) LoadFromDB(db *xorm.Session, userId int, table, mapKe
 			break
 		}
 	}
+	var values []V
 	if valueHasKey {
-		var values []V
 		err := db.Table(table).Where("user_id = ?", userId).Find(&values)
 		utils.CheckErr(err)
 		for _, v := range values {
 			d.Set(reflect.ValueOf(v).Field(keyField).Interface().(K), v)
 		}
 	} else {
-		panic("Not supported yet")
+		// V is likely some sort of wrapper, we will use V's interface to generate the value and key arrays
+		// use reflect because this might not exist
+		var keys []any
+		rLoadFromDB := reflect.ValueOf(valueDummy).MethodByName("LoadFromDb")
+		if rLoadFromDB.IsValid() {
+			rLoadFromDB.Call([]reflect.Value{reflect.ValueOf(db), reflect.ValueOf(userId),
+				reflect.ValueOf(table), reflect.ValueOf(mapKey), reflect.ValueOf(&keys), reflect.ValueOf(&values)})
+			for i := range values {
+				d.Set(keys[i].(K), values[i])
+			}
+		} else {
+			panic(fmt.Sprint("Not supported yet, table: ", table, ", key: ", mapKey))
+		}
 	}
 }

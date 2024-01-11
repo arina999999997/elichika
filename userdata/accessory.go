@@ -16,20 +16,18 @@ func (session *Session) GetAllUserAccessories() []client.UserAccessory {
 
 func (session *Session) GetUserAccessory(userAccessoryId int64) client.UserAccessory {
 	// if exist then reuse
-	pos, exist := session.UserAccessoryMapping.SetList(&session.UserModel.UserAccessoryByUserAccessoryId).Map[userAccessoryId]
+	accessory, exist := session.UserModel.UserAccessoryByUserAccessoryId.Get(userAccessoryId)
 	if exist {
-		return session.UserModel.UserAccessoryByUserAccessoryId.Objects[pos]
+		return accessory.Value
 	}
 
 	// if not look in db
-	accessory := client.UserAccessory{}
 	exist, err := session.Db.Table("u_accessory").
-		Where("user_id = ? AND user_accessory_id = ?", session.UserId, userAccessoryId).Get(&accessory)
+		Where("user_id = ? AND user_accessory_id = ?", session.UserId, userAccessoryId).Get(&accessory.Value)
 	utils.CheckErr(err)
 	if !exist {
 		// if not exist, create new one
-		accessory = client.UserAccessory{
-			// UserId:             session.UserId,
+		accessory.Value = client.UserAccessory{
 			UserAccessoryId:    userAccessoryId,
 			Level:              1,
 			PassiveSkill1Level: generic.NewNullable(int32(1)),
@@ -38,30 +36,34 @@ func (session *Session) GetUserAccessory(userAccessoryId int64) client.UserAcces
 			AcquiredAt:         session.Time.Unix(),
 		}
 	}
-	return accessory
+	return accessory.Value
 }
 
 func (session *Session) UpdateUserAccessory(accessory client.UserAccessory) {
-	session.UserAccessoryMapping.SetList(&session.UserModel.UserAccessoryByUserAccessoryId).Update(accessory)
+	session.UserModel.UserAccessoryByUserAccessoryId.Set(accessory.UserAccessoryId, generic.NewNullable(accessory))
+}
+
+func (session *Session) DeleteUserAccessory(userAccessoryId int64) {
+	session.UserModel.UserAccessoryByUserAccessoryId.SetZero(userAccessoryId)
 }
 
 func accessoryFinalizer(session *Session) {
-	for _, accessory := range session.UserModel.UserAccessoryByUserAccessoryId.Objects {
-		if accessory.IsNull {
+	for accessoryId, accessory := range session.UserModel.UserAccessoryByUserAccessoryId.Map {
+		if accessory.HasValue {
 			affected, err := session.Db.Table("u_accessory").
-				Where("user_id = ? AND user_accessory_id = ?", session.UserId, accessory.UserAccessoryId).
-				Delete(&accessory)
+				Where("user_id = ? AND user_accessory_id = ?", session.UserId, accessory.Value.UserAccessoryId).
+				AllCols().Update(accessory.Value)
 			utils.CheckErr(err)
-			if affected != 1 {
-				panic("accessory doesn't exist")
+			if affected == 0 {
+				genericDatabaseInsert(session, "u_accessory", accessory.Value)
 			}
 		} else {
 			affected, err := session.Db.Table("u_accessory").
-				Where("user_id = ? AND user_accessory_id = ?", session.UserId, accessory.UserAccessoryId).
-				AllCols().Update(accessory)
+				Where("user_id = ? AND user_accessory_id = ?", session.UserId, accessoryId).
+				Delete(&accessory.Value)
 			utils.CheckErr(err)
-			if affected == 0 {
-				genericDatabaseInsert(session, "u_accessory", accessory)
+			if affected != 1 {
+				panic("accessory doesn't exist")
 			}
 		}
 	}

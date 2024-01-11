@@ -10,8 +10,6 @@ type UserInfoTriggerBasic struct {
 	LimitAt         generic.Nullable[int64]  `json:"limit_at"`    // seems like some sort of timed timestamp, probably for event popup
 	Description     generic.Nullable[string] `json:"description"` // this is a string that can be null
 	ParamInt        generic.Nullable[int32]  `json:"param_int"`
-	// TODO(refactor): Remove this
-	IsNull bool `json:"-" xorm:"-"`
 }
 
 func (uitb *UserInfoTriggerBasic) Id() int64 {
