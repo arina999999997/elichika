@@ -7,16 +7,20 @@
 //   - The client can sometime handle things if it's not sorted, but other time it might cause problems
 //   - for example the order of decks
 //
-// - If the map is nil or empty, return []
-// Note that sometime the value can be null, if this is the case, it's up to the user to set the VALUE_TYPE to Nullable
+// - If the map is nil or empty, return [] for json
+// - The value are stored using pointer, this is consistent with the client
+//   - The pointer can be null, in which case it should be jsonfied as null
+
+// Note that the client implementation seems to be, or at least have the same interface as
+// https://github.com/Rednick16/IL2Cpp-Dictionary/blob/main/IL2CppDictionary.h
+// We will use a golang's map for better speed
 
 // To read and write the map from database, tag the table and map key like so
 // type UserModel struct {
 //     ...
 //     MapField generic.Dictionary[KeyType, ValueType]  `table:"table_name" key:"col_name"`
 // }
-// The system will see if col_name exists in ValueType, and if it doesn't exist then it will use a different interface.
-// Reading is done by passing the db, the user id, the table name and the table key since those exist outside of the mapping types
+// Then call Dictionary.LoadFromDb to load the relevant info.
 // Writing is still done using finalizer because it has to handle update and insert and all that.
 
 package generic
@@ -34,24 +38,27 @@ import (
 )
 
 type Dictionary[K int32 | int64, V any] struct {
-	Map map[K]V
+	Map map[K]*V
 }
 
-func (d *Dictionary[K, V]) Get(key K) (V, bool) {
+func (d *Dictionary[K, V]) Get(key K) (*V, bool) {
 	value, exist := d.Map[key]
 	return value, exist
 }
 
 func (d *Dictionary[K, V]) Set(key K, value V) {
 	if d.Map == nil {
-		d.Map = make(map[K]V)
+		d.Map = make(map[K]*V)
 	}
-	d.Map[key] = value
+	d.Map[key] = new(V)
+	*d.Map[key] = value
 }
 
-func (d *Dictionary[K, V]) SetZero(key K) {
-	var value V
-	d.Set(key, value)
+func (d *Dictionary[K, V]) SetNull(key K) {
+	if d.Map == nil {
+		d.Map = make(map[K]*V)
+	}
+	d.Map[key] = nil
 }
 
 func (d *Dictionary[K, V]) Has(key K) bool {
@@ -63,7 +70,7 @@ func (d *Dictionary[K, V]) Remove(key K) {
 	delete(d.Map, key)
 }
 
-func (d *Dictionary[K, V]) GetOnly(key K) V {
+func (d *Dictionary[K, V]) GetOnly(key K) *V {
 	return d.Map[key]
 }
 

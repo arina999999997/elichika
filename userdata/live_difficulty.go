@@ -48,10 +48,10 @@ func liveDifficultyFinalizer(session *Session) {
 	for _, userLiveDifficulty := range session.UserModel.UserLiveDifficultyByDifficultyId.Map {
 		updated, err := session.Db.Table("u_live_difficulty").
 			Where("user_id = ? AND live_difficulty_id = ?", session.UserId, userLiveDifficulty.LiveDifficultyId).
-			AllCols().Update(&userLiveDifficulty)
+			AllCols().Update(*userLiveDifficulty)
 		utils.CheckErr(err)
 		if updated == 0 {
-			genericDatabaseInsert(session, "u_live_difficulty", userLiveDifficulty)
+			genericDatabaseInsert(session, "u_live_difficulty", *userLiveDifficulty)
 		}
 	}
 

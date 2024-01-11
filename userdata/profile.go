@@ -204,7 +204,7 @@ func (session *Session) FetchProfile(otherUserId int) model.Profile {
 
 func (session *Session) GetOtherUserSetProfile(otherUserId int) client.UserSetProfile {
 	p := client.UserSetProfile{}
-	_, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", otherUserId).Get(&p)
+	_, err := session.Db.Table("u_set_profile").Where("user_id = ?", otherUserId).Get(&p)
 	utils.CheckErr(err)
 	return p
 }
@@ -215,27 +215,27 @@ func (session *Session) GetUserSetProfile() client.UserSetProfile {
 
 // doesn't need to return delta patch or submit at the start because we would need to fetch profile everytime we need this thing
 func (session *Session) SetUserSetProfile(userSetProfile client.UserSetProfile) {
-	affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?", session.UserId).
+	affected, err := session.Db.Table("u_set_profile").Where("user_id = ?", session.UserId).
 		AllCols().Update(&userSetProfile)
 	utils.CheckErr(err)
 	if affected == 0 {
 		// need to insert
-		genericDatabaseInsert(session, "u_custom_set_profile", userSetProfile)
+		genericDatabaseInsert(session, "u_set_profile", userSetProfile)
 	}
 }
 
 func userSetProfileFinalizer(session *Session) {
-	for _, userSetProfile := range session.UserModel.UserSetProfileById.Objects {
-		affected, err := session.Db.Table("u_custom_set_profile").Where("user_id = ?",
-			session.UserId).AllCols().Update(userSetProfile)
+	for _, userSetProfile := range session.UserModel.UserSetProfileById.Map {
+		affected, err := session.Db.Table("u_set_profile").Where("user_id = ?",
+			session.UserId).AllCols().Update(*userSetProfile)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_custom_set_profile", userSetProfile)
+			genericDatabaseInsert(session, "u_set_profile", *userSetProfile)
 		}
 	}
 }
 
 func init() {
 	addFinalizer(userSetProfileFinalizer)
-	addGenericTableFieldPopulator("u_custom_set_profile", "UserSetProfileById")
+	addGenericTableFieldPopulator("u_set_profile", "UserSetProfileById")
 }

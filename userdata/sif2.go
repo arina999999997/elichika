@@ -5,14 +5,14 @@ import (
 )
 
 func sif2DataLinkFinalizer(session *Session) {
-	for _, userSif2DataLink := range session.UserModel.UserSif2DataLinkById.Objects {
+	for _, userSif2DataLink := range session.UserModel.UserSif2DataLinkById.Map {
 		affected, err := session.Db.Table("u_sif_2_data_link").
 			Where("user_id = ? AND sif_2_id = ?",
 				session.UserId, userSif2DataLink.Sif2Id).
-			AllCols().Update(userSif2DataLink)
+			AllCols().Update(*userSif2DataLink)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_sif_2_data_link", userSif2DataLink)
+			genericDatabaseInsert(session, "u_sif_2_data_link", *userSif2DataLink)
 		}
 	}
 }

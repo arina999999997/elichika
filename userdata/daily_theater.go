@@ -5,14 +5,14 @@ import (
 )
 
 func dailyTheaterFinalizer(session *Session) {
-	for _, userDailyTheater := range session.UserModel.UserDailyTheaterByDailyTheaterId.Objects {
+	for _, userDailyTheater := range session.UserModel.UserDailyTheaterByDailyTheaterId.Map {
 		affected, err := session.Db.Table("u_daily_theater").
 			Where("user_id = ? AND daily_theater_id = ?",
 				session.UserId, userDailyTheater.DailyTheaterId).
 			AllCols().Update(userDailyTheater)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_daily_theater", userDailyTheater)
+			genericDatabaseInsert(session, "u_daily_theater", *userDailyTheater)
 		}
 	}
 }

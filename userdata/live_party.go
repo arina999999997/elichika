@@ -47,10 +47,10 @@ func livePartyFinalizer(session *Session) {
 	for _, party := range session.UserModel.UserLivePartyById.Map {
 		affected, err := session.Db.Table("u_live_party").
 			Where("user_id = ? AND party_id = ?", session.UserId, party.PartyId).AllCols().
-			Update(party)
+			Update(*party)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_live_party", party)
+			genericDatabaseInsert(session, "u_live_party", *party)
 		}
 	}
 }

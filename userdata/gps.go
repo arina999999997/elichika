@@ -9,10 +9,10 @@ func gpsPresentReceivedFinalizer(session *Session) {
 		affected, err := session.Db.Table("u_gps_present_received").
 			Where("user_id = ? AND campaign_id = ?",
 				session.UserId, userGpsPresentReceived.CampaignId).
-			AllCols().Update(userGpsPresentReceived)
+			AllCols().Update(*userGpsPresentReceived)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_gps_present_received", userGpsPresentReceived)
+			genericDatabaseInsert(session, "u_gps_present_received", *userGpsPresentReceived)
 		}
 	}
 }

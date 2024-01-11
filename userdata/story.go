@@ -33,8 +33,8 @@ func (session *Session) InsertUserStoryMain(storyMainMasterId int32) bool {
 
 func storyMainFinalizer(session *Session) {
 	for _, userStoryMain := range session.UserModel.UserStoryMainByStoryMainId.Map {
-		if !genericDatabaseExist(session, "u_story_main", userStoryMain) {
-			genericDatabaseInsert(session, "u_story_main", userStoryMain)
+		if !genericDatabaseExist(session, "u_story_main", *userStoryMain) {
+			genericDatabaseInsert(session, "u_story_main", *userStoryMain)
 		}
 	}
 }
@@ -49,26 +49,26 @@ func (session *Session) UpdateUserStoryMainSelected(storyMainCellId, selectedId 
 
 func storyMainSelectedFinalizer(session *Session) {
 	for _, userStoryMainSelected := range session.UserModel.UserStoryMainSelectedByStoryMainCellId.Map {
-		affected, err := session.Db.Table("u_story_main_selected").Where("user_id = ? AND story_main_cell_id = ?",
-			session.UserId, userStoryMainSelected.StoryMainCellId).AllCols().Update(userStoryMainSelected)
+		affected, err := session.Db.Table("u_story_main_selected").
+			Where("user_id = ? AND story_main_cell_id = ?", session.UserId, userStoryMainSelected.StoryMainCellId).
+			AllCols().Update(*userStoryMainSelected)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_story_main_selected", userStoryMainSelected)
+			genericDatabaseInsert(session, "u_story_main_selected", *userStoryMainSelected)
 		}
 	}
 }
 
 func (session *Session) InsertUserStoryMainPartDigestMovie(partId int32) {
-	userStoryMainPartDigestMovie := client.UserStoryMainPartDigestMovie{
+	session.UserModel.UserStoryMainPartDigestMovieById.Set(partId, client.UserStoryMainPartDigestMovie{
 		StoryMainPartMasterId: partId,
-	}
-	session.UserModel.UserStoryMainPartDigestMovieById.PushBack(userStoryMainPartDigestMovie)
+	})
 }
 
 func storyMainPartDigestMovieFinalizer(session *Session) {
-	for _, userStoryMainPartDigestMovie := range session.UserModel.UserStoryMainPartDigestMovieById.Objects {
-		if !genericDatabaseExist(session, "u_story_main_part_digest_movie", userStoryMainPartDigestMovie) {
-			genericDatabaseInsert(session, "u_story_main_part_digest_movie", userStoryMainPartDigestMovie)
+	for _, userStoryMainPartDigestMovie := range session.UserModel.UserStoryMainPartDigestMovieById.Map {
+		if !genericDatabaseExist(session, "u_story_main_part_digest_movie", *userStoryMainPartDigestMovie) {
+			genericDatabaseInsert(session, "u_story_main_part_digest_movie", *userStoryMainPartDigestMovie)
 		}
 	}
 }
@@ -78,14 +78,14 @@ func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterId int32) {
 		StoryLinkageCellMasterId: storyLinkageCellMasterId,
 	}
 	if !genericDatabaseExist(session, "u_story_linkage", userStoryLinkage) {
-		session.UserModel.UserStoryLinkageById.PushBack(userStoryLinkage)
+		session.UserModel.UserStoryLinkageById.Set(storyLinkageCellMasterId, userStoryLinkage)
 	}
 }
 
 func storyLinkageFinalizer(session *Session) {
-	for _, userStoryLinkage := range session.UserModel.UserStoryLinkageById.Objects {
-		if !genericDatabaseExist(session, "u_story_linkage", userStoryLinkage) {
-			genericDatabaseInsert(session, "u_story_linkage", userStoryLinkage)
+	for _, userStoryLinkage := range session.UserModel.UserStoryLinkageById.Map {
+		if !genericDatabaseExist(session, "u_story_linkage", *userStoryLinkage) {
+			genericDatabaseInsert(session, "u_story_linkage", *userStoryLinkage)
 		}
 	}
 }

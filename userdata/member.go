@@ -9,10 +9,11 @@ import (
 )
 
 func (session *Session) GetMember(memberMasterId int32) client.UserMember {
-	member, exist := session.UserModel.UserMemberByMemberId.Get(memberMasterId)
+	ptr, exist := session.UserModel.UserMemberByMemberId.Get(memberMasterId)
 	if exist {
-		return member
+		return *ptr
 	}
+	member := client.UserMember{}
 	exist, err := session.Db.Table("u_member").
 		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).Get(&member)
 	utils.CheckErr(err)
@@ -36,19 +37,20 @@ func (session *Session) InsertMembers(members []client.UserMember) {
 func memberFinalizer(session *Session) {
 	for _, member := range session.UserModel.UserMemberByMemberId.Map {
 		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserId, member.MemberMasterId).AllCols().Update(member)
+			Where("user_id = ? AND member_master_id = ?", session.UserId, member.MemberMasterId).AllCols().Update(*member)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_member", member)
+			genericDatabaseInsert(session, "u_member", *member)
 		}
 	}
 }
 
 func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int32) client.UserCommunicationMemberDetailBadge {
-	badge, exist := session.UserModel.UserCommunicationMemberDetailBadgeById.Get(memberMasterId)
+	ptr, exist := session.UserModel.UserCommunicationMemberDetailBadgeById.Get(memberMasterId)
 	if exist {
-		return badge
+		return *ptr
 	}
+	badge := client.UserCommunicationMemberDetailBadge{}
 	exist, err := session.Db.Table("u_communication_member_detail_badge").
 		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).Get(&badge)
 	utils.CheckErr(err)
@@ -68,10 +70,10 @@ func communicationMemberDetailBadgeFinalizer(session *Session) {
 	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeById.Map {
 		affected, err := session.Db.Table("u_communication_member_detail_badge").
 			Where("user_id = ? AND member_master_id = ?", session.UserId, detailBadge.MemberMasterId).
-			AllCols().Update(detailBadge)
+			AllCols().Update(*detailBadge)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_communication_member_detail_badge", detailBadge)
+			genericDatabaseInsert(session, "u_communication_member_detail_badge", *detailBadge)
 		}
 	}
 }

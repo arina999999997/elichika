@@ -13,7 +13,7 @@ func (session *Session) InsertReferenceBook(referenceBookId int32) {
 func referenceBookFinalizer(session *Session) {
 	// guaranteed to be unique
 	for _, userReferenceBook := range session.UserModel.UserReferenceBookById.Map {
-		genericDatabaseInsert(session, "u_reference_book", userReferenceBook)
+		genericDatabaseInsert(session, "u_reference_book", *userReferenceBook)
 	}
 }
 

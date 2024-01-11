@@ -43,9 +43,9 @@ func (session *Session) GetUserTowerCardUsedList(towerId int32) []model.UserTowe
 }
 
 func (session *Session) GetUserTower(towerId int32) client.UserTower {
-	pos, exist := session.UserTowerMapping.SetList(&session.UserModel.UserTowerByTowerId).Map[int64(towerId)]
+	ptr, exist := session.UserModel.UserTowerByTowerId.Get(towerId)
 	if exist {
-		return session.UserModel.UserTowerByTowerId.Objects[pos]
+		return *ptr
 	}
 	tower := client.UserTower{}
 	exist, err := session.Db.Table("u_tower").
@@ -71,7 +71,7 @@ func (session *Session) GetUserTower(towerId int32) client.UserTower {
 }
 
 func (session *Session) UpdateUserTower(tower client.UserTower) {
-	session.UserTowerMapping.SetList(&session.UserModel.UserTowerByTowerId).Update(tower)
+	session.UserModel.UserTowerByTowerId.Set(tower.TowerId, tower)
 }
 
 func (session *Session) GetUserTowerVoltageRankingScores(towerId int32) []model.UserTowerVoltageRankingScore {
@@ -121,13 +121,13 @@ func (session *Session) GetTowerRankingCell(towerId int32) response.TowerRanking
 }
 
 func towerFinalizer(session *Session) {
-	for _, userTower := range session.UserModel.UserTowerByTowerId.Objects {
+	for _, userTower := range session.UserModel.UserTowerByTowerId.Map {
 		affected, err := session.Db.Table("u_tower").
 			Where("user_id = ? AND tower_id = ?", session.UserId, userTower.TowerId).
-			AllCols().Update(userTower)
+			AllCols().Update(*userTower)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_tower", userTower)
+			genericDatabaseInsert(session, "u_tower", *userTower)
 		}
 	}
 }

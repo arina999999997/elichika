@@ -7,26 +7,26 @@ import (
 func userEventFinalizer(session *Session) {
 	for _, userEvent := range session.UserModel.UserEventMarathonByEventMasterId.Map {
 		affected, err := session.Db.Table("u_event_marathon").Where("user_id = ? AND event_master_id = ?",
-			session.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
+			session.UserId, userEvent.EventMasterId).AllCols().Update(*userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_event_marathon", userEvent)
+			genericDatabaseInsert(session, "u_event_marathon", *userEvent)
 		}
 	}
 	for _, userEvent := range session.UserModel.UserEventMiningByEventMasterId.Map {
 		affected, err := session.Db.Table("u_event_mining").Where("user_id = ? AND event_master_id = ?",
-			session.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
+			session.UserId, userEvent.EventMasterId).AllCols().Update(*userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_event_mining", userEvent)
+			genericDatabaseInsert(session, "u_event_mining", *userEvent)
 		}
 	}
 	for _, userEvent := range session.UserModel.UserEventCoopByEventMasterId.Map {
 		affected, err := session.Db.Table("u_event_coop").Where("user_id = ? AND event_master_id = ?",
-			session.UserId, userEvent.EventMasterId).AllCols().Update(userEvent)
+			session.UserId, userEvent.EventMasterId).AllCols().Update(*userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_event_coop", userEvent)
+			genericDatabaseInsert(session, "u_event_coop", *userEvent)
 		}
 	}
 }

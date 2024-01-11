@@ -25,12 +25,15 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UpdateUserPlayList(client.UserPlayList{
-		UserPlayListId: req.GroupNum + req.LiveMasterId*10,
-		GroupNum:       req.GroupNum,
-		LiveId:         req.LiveMasterId,
-		IsNull:         !req.IsSet,
-	})
+	if req.IsSet {
+		session.AddUserPlayList(client.UserPlayList{
+			UserPlayListId: req.GroupNum + req.LiveMasterId*10,
+			GroupNum:       req.GroupNum,
+			LiveId:         req.LiveMasterId,
+		})
+	} else {
+		session.DeleteUserPlayList(req.GroupNum + req.LiveMasterId*10)
+	}
 
 	signBody := session.Finalize("{}", "user_model_diff")
 	signBody, _ = sjson.Set(signBody, "is_success", true)

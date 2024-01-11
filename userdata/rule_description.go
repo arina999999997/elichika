@@ -28,7 +28,7 @@ func ruleDescriptionFinalizer(session *Session) {
 			}
 			temp := Temp{
 				RuleDescriptionId:   ruleDescriptionId,
-				UserRuleDescription: userRuleDescription,
+				UserRuleDescription: *userRuleDescription,
 			}
 			genericDatabaseInsert(session, "u_rule_description", temp)
 		}

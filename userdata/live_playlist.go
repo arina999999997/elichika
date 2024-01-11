@@ -5,19 +5,24 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) UpdateUserPlayList(item client.UserPlayList) {
-	session.UserModel.UserPlayListById.PushBack(item)
+func (session *Session) AddUserPlayList(userPlayList client.UserPlayList) {
+	session.UserModel.UserPlayListById.Set(userPlayList.UserPlayListId, userPlayList)
+}
+func (session *Session) DeleteUserPlayList(userPlayListId int32) {
+	session.UserModel.UserPlayListById.SetNull(userPlayListId)
 }
 
 func userPlayListFinalizer(session *Session) {
-	for _, item := range session.UserModel.UserPlayListById.Objects {
-		exist, err := session.Db.Table("u_play_list").
-			Where("user_id = ? AND user_play_list_id = ?", session.UserId, item.UserPlayListId).
-			AllCols().Update(&item)
-		utils.CheckErr(err)
-		if exist == 0 {
-			genericDatabaseInsert(session, "u_play_list", item)
+	for userPlayListId, userPlayList := range session.UserModel.UserPlayListById.Map {
+		if userPlayList == nil {
+			_, err := session.Db.Table("u_play_list").
+				Where("user_id = ? AND user_play_list_id = ?", session.UserId, userPlayListId).
+				Delete(userPlayList)
+			utils.CheckErr(err)
+		} else {
+			genericDatabaseInsert(session, "u_play_list", *userPlayList)
 		}
+
 	}
 }
 

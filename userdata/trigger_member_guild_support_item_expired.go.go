@@ -2,17 +2,16 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/generic"
 	"elichika/utils"
 )
 
 func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
-	for _, trigger := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Map {
-		if trigger.HasValue { // delete
-			genericDatabaseInsert(session, "u_info_trigger_member_guild_support_item_expired", trigger.Value)
-		} else { // add
+	for triggerId, trigger := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Map {
+		if trigger != nil { // add
+			genericDatabaseInsert(session, "u_info_trigger_member_guild_support_item_expired", *trigger)
+		} else { // delete
 			_, err := session.Db.Table("u_info_trigger_member_guild_support_item_expired").
-				Where("trigger_id = ?", trigger.Value.TriggerId).
+				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
 				Delete(&client.UserInfoTriggerMemberGuildSupportItemExpired{})
 			utils.CheckErr(err)
 		}
@@ -24,8 +23,7 @@ func (session *Session) ReadMemberGuildSupportItemExpired() {
 		LoadFromDb(session.Db, session.UserId, "u_info_trigger_member_guild_support_item_expired", "trigger_id")
 
 	for key := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Map {
-		session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Set(key,
-			generic.Nullable[client.UserInfoTriggerMemberGuildSupportItemExpired]{})
+		session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.SetNull(key)
 	}
 	// already marked as removed, the finalizer will take care of things
 	// there's also no need to remove the item, the client won't show them if they're expired

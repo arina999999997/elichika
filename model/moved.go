@@ -34,7 +34,11 @@ func init() {
 	TableNameToInterface["u_story_event_history"] = generic.UserIdWrapper[client.UserStoryEventHistory]{}
 	TableNameToInterface["u_unlock_scenes"] = generic.UserIdWrapper[client.UserUnlockScene]{}
 	TableNameToInterface["u_scene_tips"] = generic.UserIdWrapper[client.UserSceneTips]{}
-	TableNameToInterface["u_rule_description"] = generic.UserIdWrapper[client.UserRuleDescription]{}
+	type UserRuleDescriptionDbInterface struct {
+		RuleDescriptionId   int32                      `xorm:"pk 'rule_description_id'"`
+		UserRuleDescription client.UserRuleDescription `xorm:"extends"`
+	}
+	TableNameToInterface["u_rule_description"] = generic.UserIdWrapper[UserRuleDescriptionDbInterface]{}
 	TableNameToInterface["u_reference_book"] = generic.UserIdWrapper[client.UserReferenceBook]{}
 	TableNameToInterface["u_story_linkage"] = generic.UserIdWrapper[client.UserStoryLinkage]{}
 	TableNameToInterface["u_story_main_part_digest_movie"] = generic.UserIdWrapper[client.UserStoryMainPartDigestMovie]{}
@@ -51,15 +55,19 @@ func init() {
 	TableNameToInterface["u_event_marathon"] = generic.UserIdWrapper[client.UserEventMarathon]{}
 	TableNameToInterface["u_event_mining"] = generic.UserIdWrapper[client.UserEventMining]{}
 	TableNameToInterface["u_event_coop"] = generic.UserIdWrapper[client.UserEventCoop]{}
-	TableNameToInterface["u_review_request_process_flow"] = generic.UserIdWrapper[client.UserReviewRequestProcessFlow]{}
+
+	type UserReviewRequestProcessFlowDbInterface struct {
+		ReviewRequestId              int64                               `xorm:"pk 'review_request_id'"`
+		UserReviewRequestProcessFlow client.UserReviewRequestProcessFlow `xorm:"extends"`
+	}
+	TableNameToInterface["u_review_request_process_flow"] = generic.UserIdWrapper[UserReviewRequestProcessFlowDbInterface]{}
 
 	TableNameToInterface["u_member_guild"] = generic.UserIdWrapper[client.UserMemberGuild]{}
 	TableNameToInterface["u_member_guild_support_item"] = generic.UserIdWrapper[client.UserMemberGuildSupportItem]{}
 
 	TableNameToInterface["u_daily_theater"] = generic.UserIdWrapper[client.UserDailyTheater]{}
 
-	// TODO(refactor): change this database name
-	TableNameToInterface["u_custom_set_profile"] = generic.UserIdWrapper[client.UserSetProfile]{}
+	TableNameToInterface["u_set_profile"] = generic.UserIdWrapper[client.UserSetProfile]{}
 
 	TableNameToInterface["u_steady_voltage_ranking"] = generic.UserIdWrapper[client.UserSteadyVoltageRanking]{}
 	TableNameToInterface["u_play_list"] = generic.UserIdWrapper[client.UserPlayList]{}

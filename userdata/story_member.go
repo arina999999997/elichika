@@ -22,10 +22,10 @@ func (session *Session) InsertMemberStory(storyMemberMasterId int32) {
 func memberStoryFinalizer(session *Session) {
 	for _, userStoryMember := range session.UserModel.UserStoryMemberById.Map {
 		affected, err := session.Db.Table("u_story_member").Where("user_id = ? AND story_member_master_id = ?",
-			session.UserId, userStoryMember.StoryMemberMasterId).AllCols().Update(userStoryMember)
+			session.UserId, userStoryMember.StoryMemberMasterId).AllCols().Update(*userStoryMember)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_story_member", userStoryMember)
+			genericDatabaseInsert(session, "u_story_member", *userStoryMember)
 		}
 	}
 }

@@ -8,10 +8,11 @@ import (
 
 // fetch a card, use the value in diff is present, otherwise fetch from db
 func (session *Session) GetUserCard(cardMasterId int32) client.UserCard {
-	card, exist := session.UserModel.UserCardByCardId.Get(cardMasterId)
+	ptr, exist := session.UserModel.UserCardByCardId.Get(cardMasterId)
 	if exist {
-		return card
+		return *ptr
 	}
+	card := client.UserCard{}
 	exist, err := session.Db.Table("u_card").
 		Where("user_id = ? AND card_master_id = ?", session.UserId, cardMasterId).Get(&card)
 	utils.CheckErr(err)
@@ -42,10 +43,10 @@ func (session *Session) UpdateUserCard(card client.UserCard) {
 func cardFinalizer(session *Session) {
 	for _, card := range session.UserModel.UserCardByCardId.Map {
 		affected, err := session.Db.Table("u_card").
-			Where("user_id = ? AND card_master_id = ?", session.UserId, card.CardMasterId).AllCols().Update(card)
+			Where("user_id = ? AND card_master_id = ?", session.UserId, card.CardMasterId).AllCols().Update(*card)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_card", card)
+			genericDatabaseInsert(session, "u_card", *card)
 		}
 	}
 }

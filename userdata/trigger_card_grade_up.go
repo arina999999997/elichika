@@ -2,12 +2,11 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/generic"
 	"elichika/utils"
 )
 
 func (session *Session) RemoveTriggerCardGradeUp(triggerId int64) {
-	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.SetZero(triggerId)
+	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.SetNull(triggerId)
 }
 
 // card grade up trigger is responsible for showing the pop-up animation when openning a card after getting a new copy
@@ -18,33 +17,50 @@ func (session *Session) AddTriggerCardGradeUp(trigger client.UserInfoTriggerCard
 		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
 		session.UniqueCount++
 	}
-	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Set(trigger.TriggerId, generic.NewNullable(trigger))
+	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Set(trigger.TriggerId, trigger)
 }
 
 func triggerCardGradeUpFinalizer(session *Session) {
-	// remove existing triggers for the cards first
+	// keep only the latest one for each card
+	keep := map[int32]int64{}
 	for _, trigger := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Map {
-		if trigger.HasValue {
+		if trigger != nil {
+			if keep[trigger.CardMasterId] < trigger.TriggerId {
+				keep[trigger.CardMasterId] = trigger.TriggerId
+			}
+		}
+	}
+	for triggerId, trigger := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Map {
+		if trigger != nil && triggerId != keep[trigger.CardMasterId] {
+			delete(session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Map, triggerId)
+		}
+	}
+	// remove existing trigger in the database
+	for _, trigger := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Map {
+		if trigger != nil {
 			existingTrigger := client.UserInfoTriggerCardGradeUp{}
 			exist, err := session.Db.Table("u_info_trigger_card_grade_up").
-				Where("user_id = ? AND card_master_id = ?", session.UserId, trigger.Value.CardMasterId).Get(&existingTrigger)
+				Where("user_id = ? AND card_master_id = ?", session.UserId, trigger.CardMasterId).Get(&existingTrigger)
 			utils.CheckErr(err)
 			if exist {
 				session.RemoveTriggerCardGradeUp(existingTrigger.TriggerId)
 			}
 		}
 	}
-	// make the change in the database
+
+	// finally make the change
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Map {
-		if trigger.HasValue {
-			trigger.Value.BeforeLoveLevelLimit = trigger.Value.AfterLoveLevelLimit
-			// db trigger when login have BeforeLoveLevelLimit = AfterLoveLevelLimit
+		if trigger != nil {
+			// triggers for login have BeforeLoveLevelLimit = AfterLoveLevelLimit
 			// if the 2 numbers are equal the level up isn't shown when we open the card.
-			genericDatabaseInsert(session, "u_info_trigger_card_grade_up", trigger.Value)
+			dbTrigger := *trigger
+			dbTrigger.BeforeLoveLevelLimit = dbTrigger.AfterLoveLevelLimit
+			genericDatabaseInsert(session, "u_info_trigger_card_grade_up", dbTrigger)
 		} else {
 			// remove from db
-			_, err := session.Db.Table("u_info_trigger_card_grade_up").Where("trigger_id = ?", triggerId).Delete(
-				&client.UserInfoTriggerCardGradeUp{})
+			_, err := session.Db.Table("u_info_trigger_card_grade_up").
+				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
+				Delete(&client.UserInfoTriggerCardGradeUp{})
 			utils.CheckErr(err)
 		}
 	}

@@ -23,11 +23,12 @@ func (session *Session) InsertUserSuit(suitMasterId int32) {
 
 func suitFinalizer(session *Session) {
 	for _, suit := range session.UserModel.UserSuitBySuitId.Map {
-		affected, err := session.Db.Table("u_suit").Where("user_id = ? AND suit_master_id = ?", session.UserId, suit.SuitMasterId).
-			Update(suit)
+		affected, err := session.Db.Table("u_suit").
+			Where("user_id = ? AND suit_master_id = ?", session.UserId, suit.SuitMasterId).
+			Update(*suit)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_suit", suit)
+			genericDatabaseInsert(session, "u_suit", *suit)
 		}
 	}
 }

@@ -9,10 +9,10 @@ func schoolIdolFestivalIdRewardMissionFinalizer(session *Session) {
 		affected, err := session.Db.Table("u_school_idol_festival_id_reward_mission").
 			Where("user_id = ? AND school_idol_festival_id_reward_mission_master_id = ?",
 				session.UserId, userSchoolIdolFestivalIdRewardMissionFinalizer.SchoolIdolFestivalIdRewardMissionMasterId).
-			AllCols().Update(userSchoolIdolFestivalIdRewardMissionFinalizer)
+			AllCols().Update(*userSchoolIdolFestivalIdRewardMissionFinalizer)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_school_idol_festival_id_reward_mission", userSchoolIdolFestivalIdRewardMissionFinalizer)
+			genericDatabaseInsert(session, "u_school_idol_festival_id_reward_mission", *userSchoolIdolFestivalIdRewardMissionFinalizer)
 		}
 	}
 }

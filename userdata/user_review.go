@@ -19,7 +19,7 @@ func reviewRequestProcessFlowFinalizer(session *Session) {
 			}
 			temp := Temp{
 				ReviewRequestId:              id,
-				UserReviewRequestProcessFlow: userReview,
+				UserReviewRequestProcessFlow: *userReview,
 			}
 			genericDatabaseInsert(session, "u_review_request_process_flow", temp)
 		}

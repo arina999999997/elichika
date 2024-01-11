@@ -24,10 +24,10 @@ func (session *Session) UnlockScene(unlockSceneType, status int32) {
 func unlockSceneFinalizer(session *Session) {
 	for _, userUnlockScene := range session.UserModel.UserUnlockScenesByEnum.Map {
 		affected, err := session.Db.Table("u_unlock_scenes").Where("user_id = ? AND unlock_scene_type = ?",
-			session.UserId, userUnlockScene.UnlockSceneType).Update(userUnlockScene)
+			session.UserId, userUnlockScene.UnlockSceneType).Update(*userUnlockScene)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
-			genericDatabaseInsert(session, "u_unlock_scenes", userUnlockScene)
+			genericDatabaseInsert(session, "u_unlock_scenes", *userUnlockScene)
 		}
 	}
 }
@@ -41,7 +41,7 @@ func (session *Session) SaveSceneTips(sceneTipsType int32) {
 
 func sceneTipsFinalizer(session *Session) {
 	for _, userSceneTips := range session.UserModel.UserSceneTipsByEnum.Map {
-		genericDatabaseInsert(session, "u_scene_tips", userSceneTips)
+		genericDatabaseInsert(session, "u_scene_tips", *userSceneTips)
 	}
 }
 
