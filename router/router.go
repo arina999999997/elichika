@@ -15,7 +15,7 @@ func Router(r *gin.Engine) {
 		api := r.Group("/", middleware.Common)
 		api.POST("/asset/getPackUrl", handler.GetPackUrl)
 
-		api.POST("/billing/fetchBillingHistory", handler.FetchBillingHistory)
+		api.POST("/billing/fetchBillingHistory", handler.BillingHistory)
 		api.POST("/billing/updateSubscription", handler.UpdateSubscription)
 
 		api.POST("/bootstrap/fetchBootstrap", handler.FetchBootstrap)
