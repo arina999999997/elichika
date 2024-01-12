@@ -116,6 +116,7 @@ func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
 
 // fetch profile of another user, from session.UserId's perspective
 // it's possible that otherUserId == session.UserId
+// TODO(refactor): This one is currently broken
 func (session *Session) FetchProfile(otherUserId int) model.Profile {
 	profile := model.Profile{}
 

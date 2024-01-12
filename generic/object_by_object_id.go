@@ -114,15 +114,6 @@ func (oboid *ObjectByObjectIdList[T]) AppendNewWithId(id int64) *T {
 	return &oboid.Objects[oboid.Length-1]
 }
 
-func (oboid *ObjectByObjectIdList[T]) ToContents() []any {
-	contents := []any{}
-	for i := range oboid.Objects {
-		contents = append(contents, reflect.ValueOf(&oboid.Objects[i]).MethodByName("ToContent").
-			Call([]reflect.Value{})[0].Interface())
-	}
-	return contents
-}
-
 // handler for an array object, use a map to map to the value for easier selection / tracking
 // note that we don't store the object in the map itself because that lead to complication with xorm, as xorm can't use the Id function and rely on pk mapping
 type ObjectByObjectIdMapping[T any] struct {

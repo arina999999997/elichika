@@ -3,7 +3,6 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/gamedata"
-	"elichika/generic"
 	"elichika/model"
 	"elichika/protocol/response"
 	"elichika/utils"
@@ -24,19 +23,12 @@ const SessionTypeLogin = 1
 const SessionTypeImportAccount = 2
 
 type Session struct {
-	Time                                      time.Time
-	Db                                        *xorm.Session
-	Ctx                                       *gin.Context
-	UserId                                    int
-	Gamedata                                  *gamedata.Gamedata
-	UserStatus                                *client.UserStatus // link to UserModel.UserStatus
-	UserCommunicationMemberDetailBadgeMapping generic.ObjectByObjectIdMapping[client.UserCommunicationMemberDetailBadge]
-	UserAccessoryMapping                      generic.ObjectByObjectIdMapping[client.UserAccessory]
-	UserLiveDifficultyMapping                 generic.ObjectByObjectIdMapping[client.UserLiveDifficulty]
-	UserTriggerCardGradeUpMapping             generic.ObjectByObjectIdMapping[client.UserInfoTriggerCardGradeUp]
-	UserTriggerBasicMapping                   generic.ObjectByObjectIdMapping[client.UserInfoTriggerBasic]
-	UserTriggerMemberLoveLevelUpMapping       generic.ObjectByObjectIdMapping[client.UserInfoTriggerMemberLoveLevelUp]
-	UserTowerMapping                          generic.ObjectByObjectIdMapping[client.UserTower]
+	Time       time.Time
+	Db         *xorm.Session
+	Ctx        *gin.Context
+	UserId     int
+	Gamedata   *gamedata.Gamedata
+	UserStatus *client.UserStatus // link to UserModel.UserStatus
 	// TODO: change the map to index map?
 	UserMemberLovePanelDiffs map[int32]model.UserMemberLovePanel
 	UserMemberLovePanels     []model.UserMemberLovePanel

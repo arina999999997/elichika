@@ -55,6 +55,9 @@ func newGenericTableFieldPopulator(session *Session) {
 		if tableName == "" {
 			genericTableFieldPopulator(session, rFieldType.Name)
 			continue
+		} else if tableName == "u_resource" {
+			// resource handler will take care of these fields
+			continue
 		}
 		rField := rModel.Elem().Field(i)
 		rMethod := rField.Addr().MethodByName("LoadFromDb")

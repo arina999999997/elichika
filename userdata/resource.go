@@ -109,11 +109,11 @@ func init() {
 
 	resourceHandler[enum.ContentTypeSuit] = suitResourceHandler
 
-	resourceHandler[enum.ContentTypeGachaPoint] = genericResourceHandler // gacha point (quartz)
-	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointId"
-
 	resourceHandler[enum.ContentTypeGachaTicket] = genericResourceHandler
 	userModelField[enum.ContentTypeGachaTicket] = "UserGachaTicketByTicketId"
+
+	resourceHandler[enum.ContentTypeGachaPoint] = genericResourceHandler // gacha point (quartz)
+	userModelField[enum.ContentTypeGachaPoint] = "UserGachaPointByPointId"
 
 	resourceHandler[enum.ContentTypeLessonEnhancingItem] = genericResourceHandler // light bulbs
 	userModelField[enum.ContentTypeLessonEnhancingItem] = "UserLessonEnhancingItemByItemId"
@@ -124,16 +124,11 @@ func init() {
 	resourceHandler[enum.ContentTypeGradeUpper] = genericResourceHandler // card grade up items
 	userModelField[enum.ContentTypeGradeUpper] = "UserGradeUpItemByItemId"
 
-	resourceHandler[enum.ContentTypeRecoveryAp] = genericResourceHandler // training ticket
-	userModelField[enum.ContentTypeRecoveryAp] = "UserRecoveryApById"
-
 	resourceHandler[enum.ContentTypeRecoveryLp] = genericResourceHandler // lp candies
 	userModelField[enum.ContentTypeRecoveryLp] = "UserRecoveryLpById"
 
-	// generics exchange point (SBL / DLP)
-	// also include channel exchanges
-	resourceHandler[enum.ContentTypeExchangeEventPoint] = genericResourceHandler
-	userModelField[enum.ContentTypeExchangeEventPoint] = "UserExchangeEventPointById"
+	resourceHandler[enum.ContentTypeRecoveryAp] = genericResourceHandler // training ticket
+	userModelField[enum.ContentTypeRecoveryAp] = "UserRecoveryApById"
 
 	resourceHandler[enum.ContentTypeAccessoryLevelUp] = genericResourceHandler // accessory stickers
 	userModelField[enum.ContentTypeAccessoryLevelUp] = "UserAccessoryLevelUpItemById"
@@ -141,14 +136,19 @@ func init() {
 	resourceHandler[enum.ContentTypeAccessoryRarityUp] = genericResourceHandler // accessory rarity up items
 	userModelField[enum.ContentTypeAccessoryRarityUp] = "UserAccessoryRarityUpItemById"
 
-	resourceHandler[enum.ContentTypeEventMarathonBooster] = genericResourceHandler // marathon boosters
-	userModelField[enum.ContentTypeEventMarathonBooster] = "UserEventMarathonBoosterById"
+	// generics exchange point (SBL / DLP)
+	// also include channel exchanges
+	resourceHandler[enum.ContentTypeExchangeEventPoint] = genericResourceHandler
+	userModelField[enum.ContentTypeExchangeEventPoint] = "UserExchangeEventPointById"
 
 	resourceHandler[enum.ContentTypeLiveSkipTicket] = genericResourceHandler // skip tickets
 	userModelField[enum.ContentTypeLiveSkipTicket] = "UserLiveSkipTicketById"
 
 	resourceHandler[enum.ContentTypeStoryEventUnlock] = genericResourceHandler // event story unlock key
 	userModelField[enum.ContentTypeStoryEventUnlock] = "UserStoryEventUnlockItemById"
+
+	resourceHandler[enum.ContentTypeEventMarathonBooster] = genericResourceHandler // marathon boosters
+	userModelField[enum.ContentTypeEventMarathonBooster] = "UserEventMarathonBoosterById"
 
 	resourceHandler[enum.ContentTypeRecoveryTowerCardUsedCount] = genericResourceHandler // dlp water bottle
 	userModelField[enum.ContentTypeRecoveryTowerCardUsedCount] = "UserRecoveryTowerCardUsedCountItemByRecoveryTowerCardUsedCountItemMasterId"
@@ -195,22 +195,18 @@ func genericResourceByResourceIdFinalizer(session *Session) {
 	// TODO: user client.Content instead of UserResource
 	rModel := reflect.ValueOf(&session.UserModel)
 	for contentType, resourceDiffByContentId := range session.UserResourceDiffs {
-		rObject := rModel.Elem().FieldByName(userModelField[contentType])
-		if !rObject.IsValid() {
+		rDictionary := rModel.Elem().FieldByName(userModelField[contentType])
+		if !rDictionary.IsValid() {
 			fmt.Println("Invalid field: ", contentType, "->", userModelField[contentType])
 			continue
 		}
-		rObjectPtrType := reflect.PointerTo(rObject.Type())
-		rObjectPushBack, ok := rObjectPtrType.MethodByName("PushBack")
+		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())
+		rDictionarySet, ok := rDictionaryPtrType.MethodByName("Set")
 		if !ok {
-			panic(fmt.Sprintln("Type ", rObjectPtrType, " must have method PushBack"))
+			panic(fmt.Sprintln("Type ", rDictionaryPtrType, " must have method Set"))
 		}
-		rElementType := rObject.FieldByName("Objects").Type().Elem()
-		if rElementType == reflect.ValueOf(0).Type() {
-			fmt.Println("Not handled: ", contentType, userModelField[contentType])
-			continue
-		}
-		rElementPtrType := reflect.PointerTo(rElementType)
+		rElementPtrType := rDictionary.FieldByName("Map").Type().Elem()
+		rElementType := rElementPtrType.Elem()
 		rElementFromContent, ok := rElementPtrType.MethodByName("FromContent")
 		if !ok {
 			panic(fmt.Sprintln("Type ", rElementPtrType, " must have method FromContent"))
@@ -229,7 +225,7 @@ func genericResourceByResourceIdFinalizer(session *Session) {
 
 			obj := reflect.New(rElementType)
 			rElementFromContent.Func.Call([]reflect.Value{obj, reflect.ValueOf(resource.Content)})
-			rObjectPushBack.Func.Call([]reflect.Value{rObject.Addr(), reflect.Indirect(obj)})
+			rDictionarySet.Func.Call([]reflect.Value{rDictionary.Addr(), reflect.ValueOf(resource.Content.ContentId), reflect.Indirect(obj)})
 		}
 	}
 }
@@ -249,22 +245,18 @@ func genericResourceByResourceIdPopulator(session *Session) {
 		if !exist {
 			continue
 		}
-		rObject := rModel.Elem().FieldByName(fieldName)
-		if !rObject.IsValid() {
+		rDictionary := rModel.Elem().FieldByName(fieldName)
+		if !rDictionary.IsValid() {
 			fmt.Println("Invalid field: ", contentType, "->", fieldName)
 			continue
 		}
-		rObjectPtrType := reflect.PointerTo(rObject.Type())
-		rObjectPushBack, ok := rObjectPtrType.MethodByName("PushBack")
+		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())
+		rDictionarySet, ok := rDictionaryPtrType.MethodByName("Set")
 		if !ok {
-			panic(fmt.Sprintln("Type ", rObjectPtrType, " must have method PushBack"))
+			panic(fmt.Sprintln("Type ", rDictionaryPtrType, " must have method Set"))
 		}
-		rElementType := rObject.FieldByName("Objects").Type().Elem()
-		if rElementType == reflect.ValueOf(0).Type() {
-			fmt.Println("Not handled: ", contentType, fieldName)
-			continue
-		}
-		rElementPtrType := reflect.PointerTo(rElementType)
+		rElementPtrType := rDictionary.FieldByName("Map").Type().Elem()
+		rElementType := rElementPtrType.Elem()
 		rElementFromContent, ok := rElementPtrType.MethodByName("FromContent")
 		if !ok {
 			panic(fmt.Sprintln("Type ", rElementPtrType, " must have method FromContent"))
@@ -272,7 +264,7 @@ func genericResourceByResourceIdPopulator(session *Session) {
 		for _, resource := range contents {
 			obj := reflect.New(rElementType)
 			rElementFromContent.Func.Call([]reflect.Value{obj, reflect.ValueOf(resource)})
-			rObjectPushBack.Func.Call([]reflect.Value{rObject.Addr(), reflect.Indirect(obj)})
+			rDictionarySet.Func.Call([]reflect.Value{rDictionary.Addr(), reflect.ValueOf(resource.ContentId), reflect.Indirect(obj)})
 		}
 	}
 }
@@ -281,22 +273,17 @@ func genericResourceByResourceIdPopulator(session *Session) {
 func (session *Session) populateGenericResourceDiffFromUserModel() {
 	rModel := reflect.ValueOf(&session.UserModel)
 	for contentType, fieldName := range userModelField {
-		rObject := rModel.Elem().FieldByName(fieldName)
-		if !rObject.IsValid() {
+		rDictionary := rModel.Elem().FieldByName(fieldName)
+		if !rDictionary.IsValid() {
 			fmt.Println("Invalid field: ", contentType, "->", fieldName)
 			continue
 		}
-		rElementType := rObject.FieldByName("Objects").Type().Elem()
-		if rElementType == reflect.ValueOf(0).Type() {
-			fmt.Println("Not handled: ", contentType, fieldName)
-			continue
-		}
-		rObjectPtrType := reflect.PointerTo(rObject.Type())
-		rObjectToContents, ok := rObjectPtrType.MethodByName("ToContents")
+		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())
+		rDictionaryToContents, ok := rDictionaryPtrType.MethodByName("ToContents")
 		if !ok {
-			panic(fmt.Sprintln("Type ", rObjectPtrType, " must have method ToContents"))
+			panic(fmt.Sprintln("Type ", rDictionaryPtrType, " must have method ToContents"))
 		}
-		contents := rObjectToContents.Func.Call([]reflect.Value{rObject.Addr()})[0].Interface().([]any)
+		contents := rDictionaryToContents.Func.Call([]reflect.Value{rDictionary.Addr()})[0].Interface().([]any)
 		for _, content := range contents {
 			session.UpdateUserResource(UserResource{
 				UserId:  session.UserId,

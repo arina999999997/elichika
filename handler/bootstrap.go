@@ -109,8 +109,8 @@ func FetchBootstrap(ctx *gin.Context) {
 			panic("unexpected type")
 		}
 	}
-
-	session.UserModel.UserSubscriptionStatusById.PushBack(session.GetSubsriptionStatus())
+	status := session.GetSubsriptionStatus()
+	session.UserModel.UserSubscriptionStatusById.Set(status.SubscriptionMasterId, status)
 	session.Finalize("{}", "dummy")
 
 	respBytes, _ := json.Marshal(respObj)

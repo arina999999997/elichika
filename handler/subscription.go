@@ -28,7 +28,7 @@ func FetchSubscriptionPass(ctx *gin.Context) {
 	}
 	// subscriptionStatus.RenewalCount++
 	// subscriptionStatus.ContinueCount++
-	session.UserModel.UserSubscriptionStatusById.PushBack(subscriptionStatus)
+	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
 
 	session.Finalize("{}", "dummy")
 
@@ -67,7 +67,8 @@ func FetchShopSubscription(ctx *gin.Context) {
 	// it would be fancier if people can click on the purcharse button and it them a subscription
 	//  but let's settle on giving everyone who click on this button a subscription anyway
 
-	session.UserModel.UserSubscriptionStatusById.PushBack(
+	session.UserModel.UserSubscriptionStatusById.Set(
+		13001,
 		client.UserSubscriptionStatus{
 			SubscriptionMasterId: 13001,
 			StartDate:            session.Time.Unix(),
@@ -96,7 +97,7 @@ func UpdateSubscription(ctx *gin.Context) {
 
 	subscriptionStatus.ExpireDate = 1<<31 - 1 // preserve the subscription for now
 	subscriptionStatus.PlatformExpireDate = subscriptionStatus.ExpireDate
-	session.UserModel.UserSubscriptionStatusById.PushBack(subscriptionStatus)
+	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
 	session.Finalize("{}", "dummy")
 	respObj := response.UpdateSubscriptionResponse{
 		UserModel: &session.UserModel,
