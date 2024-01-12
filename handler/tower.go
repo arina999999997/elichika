@@ -18,6 +18,7 @@ import (
 	// "github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchTowerSelect(ctx *gin.Context) {
 	// there's no request body
 	userId := ctx.GetInt("user_id")
@@ -36,6 +37,7 @@ func FetchTowerSelect(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchTowerTop(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchTowerTopRequest{}
@@ -94,6 +96,7 @@ func FetchTowerTop(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ClearedTowerFloor(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ClearedTowerFloorRequest{}
@@ -123,6 +126,7 @@ func ClearedTowerFloor(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func RecoveryTowerCardUsed(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.RecoveryTowerCardUsedRequest{}
@@ -163,6 +167,7 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.RecoveryTowerCardUsedAllRequest{}
@@ -192,6 +197,7 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchTowerRanking(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchTowerRankingRequest{}

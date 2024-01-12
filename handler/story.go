@@ -16,6 +16,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FinishStoryMain(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FinishUserStoryMainRequest{}
@@ -52,6 +53,8 @@ func FinishStoryMain(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
+
+// TODO(refactor): Change to use request and response types
 func SaveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveBrowseStoryMainDigestMovieRequest{}
@@ -69,6 +72,7 @@ func SaveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FinishStoryLinkage(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FinishUserStoryLinkageRequest{}

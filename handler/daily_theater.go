@@ -15,6 +15,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchDailyTheater(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -36,6 +37,7 @@ func FetchDailyTheater(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func DailyTheaterSetLike(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetLikeReq struct {
@@ -63,6 +65,7 @@ func DailyTheaterSetLike(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchDailyTheaterArchive(ctx *gin.Context) {
 	// this is used to publish new daily theater without having to update the database
 	// client have the old items in m_daily_theater_archive_client and m_daily_theater_archive_member_client

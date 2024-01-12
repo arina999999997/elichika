@@ -14,6 +14,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func UpdateCardNewFlag(ctx *gin.Context) {
 	// mark the cards as read (is_new = false)
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -38,6 +39,7 @@ func UpdateCardNewFlag(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ChangeIsAwakeningImage(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
@@ -60,6 +62,7 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ChangeFavorite(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 
@@ -82,6 +85,7 @@ func ChangeFavorite(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func GetOtherUserCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type OtherUserCardReq struct {

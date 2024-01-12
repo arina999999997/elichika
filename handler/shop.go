@@ -11,18 +11,21 @@ import (
 
 // Not implementing this system seriously
 
+// TODO(refactor): Change to use request and response types
 func FetchShopTop(ctx *gin.Context) {
 	resp := SignResp(ctx, GetData("fetchShopTop.json"), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchShopPack(ctx *gin.Context) {
 	resp := SignResp(ctx, GetData("fetchShopPack.json"), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchShopSnsCoin(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)

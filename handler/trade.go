@@ -14,6 +14,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchTradeReq struct {
@@ -33,6 +34,7 @@ func FetchTrade(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ExecuteTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ExecuteTradeReq struct {
@@ -62,6 +64,7 @@ func ExecuteTrade(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ExecuteMultiTrade(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ExecuteMultiTradeReq struct {

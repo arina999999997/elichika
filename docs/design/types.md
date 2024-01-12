@@ -11,11 +11,12 @@ These types are defined in the `client` package, and they must have the exact sa
 
   - `int32` must be `int32` and `int64` must be `int64` and so on.
   - Replicate the type of the fields if necessary, and do not use annonymous types.
-  - If the field has type `Nullable`, use the Nullable generic wrapper.
+  - If the field has type `Nullable`, use the Nullable generic.
   - If the field is a pointer then it should be `Nullable` or just a value, depending on whether it can actually be `null` or not.
   
     - For example, `string` are always kept as pointer, but some strings are always filled while other can be `null` without having to be marked `Nullable`.
     - For the time being, we will use the Nullable wrapper for pointer fields that can be `null` and mark them as pointer using the comment
+  - For fields that are `Dictionary`, use the `Dictionary generic`.
   - For fields that are `enum`, an enum tag to the enum name is required. This currently doesn't do anything but we might want to do enum checking and stuff later, and it just make it easier to keep track of things.
 - If the type is used with `json`, it must works correctly with Marshal and Unmarshal, and it no information would be lost in doing so.
 
@@ -24,7 +25,13 @@ These types are defined in the `client` package, and they must have the exact sa
   - The order of array elements IS important, and should be kept.
 - Client types can be used by other types or used directly by handling codes, but they should not be modified to help the handling. 
 
-  - If necessary, use an embedded struct.
+  - If necessary, use an embedded type or a wrapper type.
+- Finally, each type should be in its own file. The file name is derived from the type name, but we use snake_case for file names.
+
+### Request / response types
+Request and response types are also client types and follow the same rules, but they should be put into the `client/request` and `client/response` package instead. This is only done to make them easier to see. Maybe we can also do something like splitig user type into `client/user`.
+
+Note that even if a type is only used as a subtype of a request/response type, it should be in client instead of being in `client/request` or being annonymous.
 
 ## Gamedata types
 Gamedata types are types used to store how the server should work, for example, which event is there, which gacha is available, etc. These types are less constrained than the client types but should still follow:

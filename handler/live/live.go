@@ -19,6 +19,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchLiveMusicSelect(ctx *gin.Context) {
 	now := time.Now()
 	year, month, day := now.Year(), now.Month(), now.Day()
@@ -60,6 +61,7 @@ func FetchLiveMusicSelect(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchLivePartners(ctx *gin.Context) {
 	// a set of partners player (i.e. friends and others), then fetch the card for them
 	// this set include the current user, so we can use our own cards.
@@ -99,6 +101,7 @@ func FetchLivePartners(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func LiveStart(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.LiveStartRequest{}

@@ -13,6 +13,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func SaveReferenceBook(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveReferenceBookRequest{}

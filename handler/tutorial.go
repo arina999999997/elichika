@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO(refactor): Change to use request and response types
 func CorePlayableEnd(ctx *gin.Context) {
 	// there's no request body
 	userId := ctx.GetInt("user_id")
@@ -28,6 +29,7 @@ func CorePlayableEnd(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func TimingAdjusterEnd(ctx *gin.Context) {
 	// there's no request body
 	userId := ctx.GetInt("user_id")
@@ -46,6 +48,7 @@ func TimingAdjusterEnd(ctx *gin.Context) {
 
 }
 
+// TODO(refactor): Change to use request and response types
 func PhaseEnd(ctx *gin.Context) {
 	// there's no request body
 	userId := ctx.GetInt("user_id")
@@ -64,6 +67,7 @@ func PhaseEnd(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func TutorialSkip(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)

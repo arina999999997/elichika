@@ -16,6 +16,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func LiveMvStart(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -28,6 +29,7 @@ func LiveMvStart(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func LiveMvSaveDeck(ctx *gin.Context) {
 	// TODO: actually save this in db
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()

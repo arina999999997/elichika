@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchDataLinks(ctx *gin.Context) {
 	type DataLinks struct {
 		IsPlatformLinked             bool `json:"is_platform_linked"`

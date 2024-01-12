@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO(refactor): Change to use request and response types
 func Sif2DataLink(ctx *gin.Context) {
 	signBody := GetData("sif2DataLink.json")
 	resp := SignResp(ctx, signBody, config.SessionKey)

@@ -12,6 +12,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func GetPackUrl(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
 

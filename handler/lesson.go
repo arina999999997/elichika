@@ -16,6 +16,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func ExecuteLesson(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ExecuteLessonReq struct {
@@ -66,6 +67,7 @@ func ExecuteLesson(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ResultLesson(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -78,6 +80,7 @@ func ResultLesson(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SkillEditResult(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
 
@@ -112,6 +115,7 @@ func SkillEditResult(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SaveDeckLesson(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveDeckReq struct {
@@ -143,6 +147,7 @@ func SaveDeckLesson(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ChangeDeckNameLessonDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ChangeDeckNameReq struct {

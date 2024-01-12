@@ -18,6 +18,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
 	var memberId int32
@@ -52,6 +53,7 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UpdateUserCommunicationMemberDetailBadgeRequest{}
@@ -86,6 +88,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	// mark all the song that this member is featured in as not new
 	// only choose from the song user has access to, so no bond song and story locked songs
@@ -129,6 +132,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FinishUserStorySide(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FinishUserStorySideRequest{}
@@ -148,6 +152,7 @@ func FinishUserStorySide(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FinishUserStoryMember(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FinishUserStoryMemberRequest{}
@@ -181,6 +186,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetTheme(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SetThemeRequest{}
@@ -202,6 +208,7 @@ func SetTheme(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetFavoriteMember(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SetFavoriteMemberRequest{}

@@ -7,6 +7,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func UpdateConsentState(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0]
 	userId := ctx.GetInt("user_id")

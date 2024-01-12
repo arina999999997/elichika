@@ -92,6 +92,7 @@ type LiveDifficultyMission struct {
 	Reward      client.Content `xorm:"extends"`
 }
 
+// TODO(refactor): Change to use request and response types
 func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, session *userdata.Session, live model.UserLive) {
 	liveDifficultyId := session.UserStatus.LastLiveDifficultyId
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
@@ -245,6 +246,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, session *userdata.Session, live model.UserLive) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	// liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
@@ -358,6 +360,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func LiveFinish(ctx *gin.Context) {
 	// this is pretty different for different type of live
 	// for simplicity we just read the request and call different handlers, even though we might be able to save some extra work

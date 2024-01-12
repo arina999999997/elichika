@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO(refactor): Change to use request and response types
 func LoveRankingFetch(ctx *gin.Context) {
 	// TODO: fetch from db instead
 	// probably needs to store the ranking somewhere, or just have very big sql

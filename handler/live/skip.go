@@ -37,6 +37,7 @@ type SkipLiveResult struct {
 	LiveResultMemberGuild         *int                                           `json:"live_result_member_guild"`
 }
 
+// TODO(refactor): Change to use request and response types
 func LiveSkip(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type LiveSkipReq struct {

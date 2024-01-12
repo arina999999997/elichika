@@ -13,6 +13,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchEmblem(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -24,6 +25,7 @@ func FetchEmblem(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ActivateEmblem(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ActivateEmblemRequest{}

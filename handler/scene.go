@@ -14,6 +14,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func SaveUnlockedScene(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveUnlockedSceneRequest{}
@@ -32,6 +33,7 @@ func SaveUnlockedScene(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SaveSceneTipsType(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveSceneTipsTypeRequest{}

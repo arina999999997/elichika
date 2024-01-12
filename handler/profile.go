@@ -15,6 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchProfile(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type FetchProfileReq struct {
@@ -39,6 +40,7 @@ func FetchProfile(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetProfile(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
 	userId := ctx.GetInt("user_id")
@@ -60,6 +62,8 @@ func SetProfile(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
+
+// TODO(refactor): Change to use request and response types
 func SetProfileBirthday(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SetProfileBirthdayRequest{}
@@ -85,6 +89,7 @@ func SetProfileBirthday(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetRecommendCard(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
 	userId := ctx.GetInt("user_id")
@@ -100,6 +105,7 @@ func SetRecommendCard(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetLivePartner(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetLivePartnerReq struct {
@@ -140,6 +146,7 @@ func SetLivePartner(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetScoreOrComboLive(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetScoreOrComboReq struct {

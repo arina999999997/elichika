@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"elichika/config"
 	"elichika/encrypt"
 	"elichika/locale"
 	"elichika/utils"
 
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +26,13 @@ func SignResp(ctx *gin.Context, body, key string) (resp string) {
 
 	resp = fmt.Sprintf("[%s,\"%s\"]", signBody, sign)
 	return
+}
+
+func JsonResponse(ctx *gin.Context, resp any) {
+	signBody, err := json.Marshal(resp)
+	utils.CheckErr(err)
+	ctx.Header("Content-Type", "application/json")
+	ctx.String(http.StatusOK, SignResp(ctx, string(signBody), config.SessionKey))
 }
 
 func GetData(fileName string) string {

@@ -13,6 +13,7 @@ import (
 	// "github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchSubscriptionPass(ctx *gin.Context) {
 	// TODO: everytime someone click on this, give them 1 month of reward because why not
 	// reward is cyclic, after the last month it come back to normal
@@ -38,6 +39,7 @@ func FetchSubscriptionPass(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchShopSubscription(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -87,6 +89,7 @@ func FetchShopSubscription(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func UpdateSubscription(ctx *gin.Context) {
 	// there's no request body
 	userId := ctx.GetInt("user_id")

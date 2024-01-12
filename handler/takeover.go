@@ -45,6 +45,7 @@ type TakeOverData struct {
 	ServiceUserCommonKey *string `json:"service_user_common_key"`
 }
 
+// TODO(refactor): Change to use request and response types
 func CheckTakeOver(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type CheckTakeOverReq struct {
@@ -114,6 +115,7 @@ FINISH_RESPONSE:
 	ctx.String(http.StatusOK, signedResp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SetTakeOver(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SetTakeOverReq struct {
@@ -156,6 +158,7 @@ func SetTakeOver(ctx *gin.Context) {
 
 }
 
+// TODO(refactor): Change to use request and response types
 func UpdatePassWord(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type UpdatePassWordReq struct {

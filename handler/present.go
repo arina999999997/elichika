@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// TODO(refactor): Change to use request and response types
 func FetchPresent(ctx *gin.Context) {
 	signBody := GetData("fetchPresent.json")
 	resp := SignResp(ctx, signBody, config.SessionKey)

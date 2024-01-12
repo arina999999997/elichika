@@ -21,6 +21,7 @@ import (
 	"github.com/tidwall/sjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func SaveDeckAll(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveDeckAllReq struct {
@@ -102,6 +103,7 @@ func SaveDeckAll(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchLiveDeckSelect(ctx *gin.Context) {
 	// return last deck for this song
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -125,6 +127,7 @@ func FetchLiveDeckSelect(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SaveSuit(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveSuitReq struct {
@@ -168,6 +171,7 @@ func SaveSuit(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func SaveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type SaveDeckReq struct {
@@ -270,6 +274,7 @@ func SaveDeck(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type ChangeDeckNameReq struct {

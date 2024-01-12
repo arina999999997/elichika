@@ -18,6 +18,7 @@ import (
 
 // TODO: the logic of this part is wrong or missing
 // the request and response are sound for the most part
+// TODO(refactor): Change to use request and response types
 func FetchMemberGuildTop(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -29,12 +30,14 @@ func FetchMemberGuildTop(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchMemberGuildSelect(ctx *gin.Context) {
 	resp := SignResp(ctx, GetData("fetchMemberGuildSelect.json"), config.SessionKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func FetchMemberGuildRanking(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -105,6 +108,7 @@ func FetchMemberGuildRanking(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func CheerMemberGuild(ctx *gin.Context) {
 	// this is extracted from Serialization_DeserializeCheerMemberGuildResponse
 	// type CheerMemberGuildResp struct {
@@ -124,6 +128,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func JoinMemberGuild(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type JoinMemberGuildReq struct {

@@ -13,6 +13,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Change to use request and response types
 func TriggerReadCardGradeUp(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := model.TriggerReadReq{}
@@ -30,6 +31,7 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func TriggerRead(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := model.TriggerReadReq{}
@@ -47,6 +49,7 @@ func TriggerRead(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
@@ -60,6 +63,7 @@ func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func TriggerReadMemberGuildSupportItemExpired(ctx *gin.Context) {
 	// there's no body, fetch the trigger from db and remove it
 

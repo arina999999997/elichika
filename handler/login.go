@@ -44,6 +44,7 @@ func LoginSessionKey(mask64 string) string {
 	return newKey64
 }
 
+// TODO(refactor): Change to use request and response types
 func StartUp(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type StartUpReq struct {
@@ -68,6 +69,7 @@ func StartUp(ctx *gin.Context) {
 	ctx.String(http.StatusOK, resp)
 }
 
+// TODO(refactor): Change to use request and response types
 func Login(ctx *gin.Context) {
 	reqBody := ctx.GetString("reqBody")
 
