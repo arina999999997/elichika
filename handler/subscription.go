@@ -2,8 +2,9 @@ package handler
 
 import (
 	"elichika/client"
+	"elichika/client/response"
 	"elichika/config"
-	"elichika/protocol/response"
+	"elichika/generic"
 	"elichika/userdata"
 
 	"encoding/json"
@@ -25,7 +26,7 @@ func FetchSubscriptionPass(ctx *gin.Context) {
 	subscriptionStatus := session.GetSubsriptionStatus()
 
 	respObj := response.FetchSubscriptionPassResponse{
-		BeforeContinueCount: subscriptionStatus.RenewalCount,
+		BeforeContinueCount: generic.NewNullable(subscriptionStatus.RenewalCount),
 	}
 	// subscriptionStatus.RenewalCount++
 	// subscriptionStatus.ContinueCount++
@@ -45,13 +46,7 @@ func FetchShopSubscription(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	// there's no request body
-	respObj := response.ShopSubscriptionResponse{
-		BillingStateInfo: response.BillingStateInfo{
-			Age:                        42,
-			CurrentMonthPurcharsePrice: 1337,
-		},
-		ProductList: []response.ShopBillingProduct{},
-	}
+	respObj := response.FetchShopSubscriptionResponse{}
 	// product := response.ShopBillingProduct{
 	// 	ShopProductMasterId: 13001,
 	// 	BillingProductType: 3,
@@ -104,10 +99,6 @@ func UpdateSubscription(ctx *gin.Context) {
 	session.Finalize("{}", "dummy")
 	respObj := response.UpdateSubscriptionResponse{
 		UserModel: &session.UserModel,
-		BillingStateInfo: response.BillingStateInfo{
-			Age:                        42,
-			CurrentMonthPurcharsePrice: 1337,
-		},
 	}
 
 	respBytes, _ := json.Marshal(respObj)

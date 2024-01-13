@@ -13,15 +13,15 @@ import (
 )
 
 type LoginBonus struct {
-	LoginBonusId            int32                      `xorm:"pk 'login_bonus_id'"`
-	LoginBonusType          int32                      `xorm:"'login_bonus_type'" enum:"LoginBonusType"`
-	StartAt                 int64                      `xorm:"'start_at'"`
-	EndAt                   int64                      `xorm:"'end_at'"`
-	BackgroundId            int32                      `xorm:"'background_id'"`
-	WhiteboardTextureAsset  client.TextureStruktur     `xorm:"'whiteboard_texture_asset'"`
-	LoginBonusHandler       string                     `xorm:"'login_bonus_handler'"`
-	LoginBonusHandlerConfig string                     `xorm:"'login_bonus_handler_config'"`
-	LoginBonusRewards       []client.LoginBonusRewards `xorm:"-"`
+	LoginBonusId            int32                                  `xorm:"pk 'login_bonus_id'"`
+	LoginBonusType          int32                                  `xorm:"'login_bonus_type'" enum:"LoginBonusType"`
+	StartAt                 int64                                  `xorm:"'start_at'"`
+	EndAt                   int64                                  `xorm:"'end_at'"`
+	BackgroundId            int32                                  `xorm:"'background_id'"`
+	WhiteboardTextureAsset  client.TextureStruktur                 `xorm:"'whiteboard_texture_asset'"`
+	LoginBonusHandler       string                                 `xorm:"'login_bonus_handler'"`
+	LoginBonusHandlerConfig string                                 `xorm:"'login_bonus_handler_config'"`
+	LoginBonusRewards       generic.List[client.LoginBonusRewards] `xorm:"-"`
 }
 
 func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
@@ -35,9 +35,9 @@ func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 			ContentGrade: generic.NewNullable(day.ContentGrade),
 		}
 		err = serverdata_db.Table("s_login_bonus_reward_content").
-			Where("login_bonus_id = ? AND day = ?", lb.LoginBonusId, day.Day).Find(&reward.LoginBonusContents)
+			Where("login_bonus_id = ? AND day = ?", lb.LoginBonusId, day.Day).Find(&reward.LoginBonusContents.Slice)
 		utils.CheckErr(err)
-		lb.LoginBonusRewards = append(lb.LoginBonusRewards, reward)
+		lb.LoginBonusRewards.Append(reward)
 	}
 }
 
@@ -58,7 +58,7 @@ func init() {
 func (lb *LoginBonus) NaviLoginBonus() client.NaviLoginBonus {
 	return client.NaviLoginBonus{
 		LoginBonusId:           lb.LoginBonusId,
-		LoginBonusRewards:      append([]client.LoginBonusRewards{}, lb.LoginBonusRewards...), // copy the list
+		LoginBonusRewards:      lb.LoginBonusRewards.Copy(),
 		BackgroundId:           lb.BackgroundId,
 		WhiteboardTextureAsset: &lb.WhiteboardTextureAsset,
 		StartAt:                lb.StartAt,

@@ -36,32 +36,34 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		// - 50 memorial
 		// - additional 25 memorial for channel member
 		naviLoginBonus := loginBonus.NaviLoginBonus()
-		naviLoginBonus.LoginBonusRewards = append(naviLoginBonus.LoginBonusRewards,
+		naviLoginBonus.LoginBonusRewards.Append(
 			client.LoginBonusRewards{
 				Day:          1,
 				Status:       enum.LoginBonusReceiveStatusReceiving,
 				ContentGrade: generic.NewNullable(enum.LoginBonusContentGradeRare),
-				LoginBonusContents: []client.Content{
-					client.Content{
-						ContentType:   enum.ContentTypeTrainingMaterial,
-						ContentId:     int32(18000 + member.Id),
-						ContentAmount: 2,
+				LoginBonusContents: generic.Array[client.Content]{
+					Slice: []client.Content{
+						client.Content{
+							ContentType:   enum.ContentTypeTrainingMaterial,
+							ContentId:     int32(18000 + member.Id),
+							ContentAmount: 2,
+						},
+						client.Content{
+							ContentType:   enum.ContentTypeTrainingMaterial,
+							ContentId:     int32(8000 + member.Id),
+							ContentAmount: 50,
+						},
+						item.StarGem.Amount(50),
 					},
-					client.Content{
-						ContentType:   enum.ContentTypeTrainingMaterial,
-						ContentId:     int32(8000 + member.Id),
-						ContentAmount: 50,
-					},
-					item.StarGem.Amount(50),
 				},
 			},
 		)
 		if session.UserStatus.MemberGuildMemberMasterId.HasValue &&
 			session.UserStatus.MemberGuildMemberMasterId.Value == member.Id {
-			naviLoginBonus.LoginBonusRewards[0].LoginBonusContents[1].ContentAmount += 25
+			naviLoginBonus.LoginBonusRewards.Slice[0].LoginBonusContents.Slice[1].ContentAmount += 25
 		}
 
-		for _, content := range naviLoginBonus.LoginBonusRewards[0].LoginBonusContents {
+		for _, content := range naviLoginBonus.LoginBonusRewards.Slice[0].LoginBonusContents.Slice {
 			// TODO(present_box): This correctly has to go to the present box, but we just do it here
 			session.AddResource(content)
 		}
@@ -75,12 +77,12 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		default:
 			panic("not supported")
 		}
-		target.BirthdayMember = append(target.BirthdayMember, client.LoginBonusBirthDayMember{
-			MemberMasterId: generic.NewNullable(int32(member.Id)),
-			SuitMasterId:   generic.NewNullable(int32(memberLoginBonusBirthday.SuitMasterId)),
+		target.BirthdayMember.Append(client.LoginBonusBirthDayMember{
+			MemberMasterId: generic.NewNullable(member.Id),
+			SuitMasterId:   generic.NewNullable(memberLoginBonusBirthday.SuitMasterId),
 		})
-		naviLoginBonus.BackgroundId = int32(memberLoginBonusBirthday.Id)
-		target.BirthdayLoginBonuses = append(target.BirthdayLoginBonuses, naviLoginBonus)
+		naviLoginBonus.BackgroundId = memberLoginBonusBirthday.Id
+		target.BirthdayLoginBonuses.Append(naviLoginBonus)
 	}
 	session.UpdateUserLoginBonus(userLoginBonus)
 }

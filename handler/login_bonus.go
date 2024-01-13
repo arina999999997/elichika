@@ -30,13 +30,6 @@ func ReadLoginBonus(ctx *gin.Context) {
 // TODO(refactor): Change to use request and response types
 func GetBootstrapLoginBonus(ctx *gin.Context, session *userdata.Session) client.BootstrapLoginBonus {
 	res := client.BootstrapLoginBonus{
-		Event2DLoginBonuses:    []client.IllustLoginBonus{},
-		LoginBonuses:           []client.NaviLoginBonus{},
-		Event3DLoginBonus:      []client.NaviLoginBonus{},
-		BeginnerLoginBonuses:   []client.NaviLoginBonus{},
-		ComebackLoginBonuses:   []client.IllustLoginBonus{},
-		BirthdayLoginBonuses:   []client.NaviLoginBonus{},
-		BirthdayMember:         []client.LoginBonusBirthDayMember{},
 		NextLoginBonsReceiveAt: login_bonus.NextLoginBonusTime(session.Time).Unix(),
 	}
 

@@ -35,21 +35,21 @@ func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *ga
 
 	userLoginBonus.LastReceivedAt = session.Time.Unix()
 	userLoginBonus.LastReceivedReward++
-	if userLoginBonus.LastReceivedReward == len(loginBonus.LoginBonusRewards) {
+	if userLoginBonus.LastReceivedReward == loginBonus.LoginBonusRewards.Size() {
 		userLoginBonus.LastReceivedReward = 0
 	}
 	naviLoginBonus := loginBonus.NaviLoginBonus()
-	for i := range naviLoginBonus.LoginBonusRewards {
+	for i := range naviLoginBonus.LoginBonusRewards.Slice {
 		if i < userLoginBonus.LastReceivedReward {
-			naviLoginBonus.LoginBonusRewards[i].Status = enum.LoginBonusReceiveStatusReceived
+			naviLoginBonus.LoginBonusRewards.Slice[i].Status = enum.LoginBonusReceiveStatusReceived
 		} else if i > userLoginBonus.LastReceivedReward {
-			naviLoginBonus.LoginBonusRewards[i].Status = enum.LoginBonusReceiveStatusUnreceived
+			naviLoginBonus.LoginBonusRewards.Slice[i].Status = enum.LoginBonusReceiveStatusUnreceived
 		} else {
-			naviLoginBonus.LoginBonusRewards[i].Status = enum.LoginBonusReceiveStatusReceiving
+			naviLoginBonus.LoginBonusRewards.Slice[i].Status = enum.LoginBonusReceiveStatusReceiving
 		}
 	}
-	target.LoginBonuses = append(target.LoginBonuses, naviLoginBonus)
-	for _, content := range loginBonus.LoginBonusRewards[userLoginBonus.LastReceivedReward].LoginBonusContents {
+	target.LoginBonuses.Append(naviLoginBonus)
+	for _, content := range loginBonus.LoginBonusRewards.Slice[userLoginBonus.LastReceivedReward].LoginBonusContents.Slice {
 		// TODO(present_box): This correctly has to go to the present box, but we just do it here
 		session.AddResource(content)
 	}

@@ -11,9 +11,7 @@
 // - The value are stored using pointer, this is consistent with the client
 //   - The pointer can be null, in which case it should be jsonfied as null
 
-// Note that the client implementation seems to be, or at least have the same interface as
-// https://github.com/Rednick16/IL2Cpp-Dictionary/blob/main/IL2CppDictionary.h
-// We will use a golang's map for better speed
+// Pretty sure the implementation is Dictionary<TKey, TValue> from c#, but we will have our own interface for now.
 
 // To read and write the map from database, tag the table and map key like so
 // type UserModel struct {
