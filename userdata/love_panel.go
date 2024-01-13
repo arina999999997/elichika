@@ -2,71 +2,52 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/model"
 	"elichika/utils"
 )
 
 func (session *Session) GetOtherUserMemberLovePanel(userId, memberId int32) client.MemberLovePanel {
-	result := client.MemberLovePanel{
-		MemberId: memberId,
-	}
-	_, err := session.Db.Table("u_member_love_panel").
+	result := client.MemberLovePanel{}
+	exist, err := session.Db.Table("u_member_love_panel").
 		Where("user_id = ? AND member_id = ?", session.UserId, memberId).
 		Get(&result)
 	utils.CheckErr(err)
+	if !exist {
+		return client.MemberLovePanel{
+			MemberId: memberId,
+		}
+	}
 	return result
 }
-
-func (session *Session) GetMemberLovePanel(memberMasterId int32) model.UserMemberLovePanel {
-	panel, exist := session.UserMemberLovePanelDiffs[memberMasterId]
+func (session *Session) GetMemberLovePanel(memberId int32) client.MemberLovePanel {
+	panel, exist := session.MemberLovePanelDiffs[memberId]
 	if exist {
 		return panel
 	}
-	exist, err := session.Db.Table("u_member").
-		Where("user_id = ? AND member_master_id = ?", session.UserId, memberMasterId).
-		Get(&panel)
-	utils.CheckErr(err)
-	if !exist {
-		panic("doesn't exist")
-	}
-	panel.Fill()
-	return panel
+	return session.GetOtherUserMemberLovePanel(int32(session.UserId), memberId)
 }
 
-func (session *Session) GetLovePanelCellIds(memberId int32) []int32 {
-	userMemberLovePanel := session.GetMemberLovePanel(memberId)
-	userMemberLovePanel.Fill()
-	return userMemberLovePanel.MemberLovePanelCellIds
-}
-
-func (session *Session) UpdateMemberLovePanel(panel model.UserMemberLovePanel) {
-	session.UserMemberLovePanelDiffs[panel.MemberId] = panel
+func (session *Session) UpdateMemberLovePanel(panel client.MemberLovePanel) {
+	session.MemberLovePanelDiffs[panel.MemberId] = panel
 }
 
 func finalizeMemberLovePanelDiffs(session *Session) {
-	for _, panel := range session.UserMemberLovePanelDiffs {
-		session.UserMemberLovePanels = append(session.UserMemberLovePanels, panel)
+	for _, panel := range session.MemberLovePanelDiffs {
+		session.MemberLovePanels = append(session.MemberLovePanels, panel)
 	}
-	for i := range session.UserMemberLovePanels {
-		// TODO: this is not necessary after we split the database
-		session.UserMemberLovePanels[i].Normalize()
-		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserId,
-				session.UserMemberLovePanels[i].MemberId).AllCols().Update(session.UserMemberLovePanels[i])
+	for i := range session.MemberLovePanels {
+		affected, err := session.Db.Table("u_member_love_panel").
+			Where("user_id = ? AND member_id = ?", session.UserId,
+				session.MemberLovePanels[i].MemberId).AllCols().Update(session.MemberLovePanels[i])
 		utils.CheckErr(err)
-		if affected != 1 {
-			panic("wrong number of member affected!")
+		if affected == 0 {
+			genericDatabaseInsert(session, "u_member_love_panel", session.MemberLovePanels[i])
 		}
-		session.UserMemberLovePanels[i].Fill()
 	}
 }
 
 func memberLovePanelPopulator(session *Session) {
-	err := session.Db.Table("u_member").
-		Where("user_id = ?", session.UserId).Find(&session.UserMemberLovePanels)
-	utils.CheckErr(err)
-	for i := range session.UserMemberLovePanels {
-		session.UserMemberLovePanels[i].Fill()
+	for _, member := range session.Gamedata.Member {
+		session.MemberLovePanels = append(session.MemberLovePanels, session.GetMemberLovePanel(member.Id))
 	}
 }
 

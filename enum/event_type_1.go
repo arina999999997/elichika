@@ -1,5 +1,6 @@
 package enum
 
+// EventType is used for input event
 const (
 	EventType1Marathon int32 = 0x00000001
 	EventType1Mining   int32 = 0x00000002

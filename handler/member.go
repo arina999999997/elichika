@@ -12,6 +12,7 @@ import (
 
 	"encoding/json"
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -23,12 +24,19 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	req := request.OpenMemberLovePanelRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+
 	panel := session.GetMemberLovePanel(int32(req.MemberId))
-	panel.LovePanelLastLevelCellIds = append(panel.LovePanelLastLevelCellIds, req.MemberLovePanelCellIds...)
+	for _, cellId := range req.MemberLovePanelCellIds {
+		panel.MemberLovePanelCellIds.Append(cellId)
+	}
+	sort.Slice(panel.MemberLovePanelCellIds.Slice, func(i, j int) bool {
+		return panel.MemberLovePanelCellIds.Slice[i] < panel.MemberLovePanelCellIds.Slice[j]
+	})
 	// remove resource
 	for _, cellId := range req.MemberLovePanelCellIds {
 		for _, resource := range gamedata.MemberLovePanelCell[cellId].Resources {
@@ -37,15 +45,14 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	}
 
 	// if is full panel, then we have to send a basic info trigger to actually open up the next panel
-	if len(panel.LovePanelLastLevelCellIds) == 5 {
+	unlockCount := panel.MemberLovePanelCellIds.Size()
+	if unlockCount%5 == 0 {
 		member := session.GetMember(panel.MemberId)
 		masterLovePanel := gamedata.MemberLovePanel[int32(req.MemberLovePanelId)]
 		if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
-			// TODO: remove magic id from love panel system
-			panel.LevelUp()
 			session.AddTriggerBasic(client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
-				ParamInt:        generic.NewNullable(int32(panel.LovePanelLevel*1000 + panel.MemberId))})
+				ParamInt:        generic.NewNullable(masterLovePanel.NextPanel.Id)})
 		}
 	}
 	session.UpdateMemberLovePanel(panel)

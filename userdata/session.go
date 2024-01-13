@@ -30,9 +30,9 @@ type Session struct {
 	Gamedata   *gamedata.Gamedata
 	UserStatus *client.UserStatus // link to UserModel.UserStatus
 	// TODO: change the map to index map?
-	UserMemberLovePanelDiffs map[int32]model.UserMemberLovePanel
-	UserMemberLovePanels     []model.UserMemberLovePanel
-	UserResourceDiffs        map[int32](map[int32]UserResource) // content_type then content_id
+	MemberLovePanelDiffs map[int32]client.MemberLovePanel
+	MemberLovePanels     []client.MemberLovePanel
+	UserResourceDiffs    map[int32](map[int32]UserResource) // content_type then content_id
 
 	UserTrainingTreeCellDiffs []model.TrainingTreeCell
 	// for now only store delta patch, i.e. user_model_diff
@@ -59,8 +59,8 @@ func (session *Session) Finalize(jsonBody string, mainKey string) string {
 			finalizer(session)
 		}
 		finalizeMemberLovePanelDiffs(session)
-		if len(session.UserMemberLovePanels) != 0 {
-			jsonBody, err = sjson.Set(jsonBody, "member_love_panels", session.UserMemberLovePanels)
+		if len(session.MemberLovePanels) != 0 {
+			jsonBody, err = sjson.Set(jsonBody, "member_love_panels", session.MemberLovePanels)
 			utils.CheckErr(err)
 		}
 	}
@@ -113,7 +113,7 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 	s.UserStatus = &s.UserModel.UserStatus
 	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
-	s.UserMemberLovePanelDiffs = make(map[int32]model.UserMemberLovePanel)
+	s.MemberLovePanelDiffs = make(map[int32]client.MemberLovePanel)
 	return &s
 }
 
@@ -132,7 +132,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login, u
 
 	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
-	s.UserMemberLovePanels = loginData.MemberLovePanels
+	s.MemberLovePanels = loginData.MemberLovePanels
 	genericDatabaseInsert(&s, "u_login", *loginData)
 	utils.CheckErr(err)
 	return &s

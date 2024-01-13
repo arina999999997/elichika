@@ -35,6 +35,6 @@ func (session *Session) Login() response.Login {
 	}
 	fmt.Println("after")
 	// only this part is necessary
-	login.MemberLovePanels = session.UserMemberLovePanels
+	login.MemberLovePanels = session.MemberLovePanels
 	return login
 }

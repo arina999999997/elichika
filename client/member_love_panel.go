@@ -5,7 +5,7 @@ import (
 )
 
 type MemberLovePanel struct {
-	MemberId int32  `xorm:"pk" json:"member_id"`
+	MemberId               int32                `xorm:"pk" json:"member_id"`
 	MemberLovePanelCellIds generic.Array[int32] `xorm:"json" json:"member_love_panel_cell_ids"`
 }
 

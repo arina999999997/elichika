@@ -59,7 +59,7 @@ func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.P
 	// display value in getOtherUserCard is wrong, but if we fill in for own card then it also freeze
 	// TODO: revisit after implmenting friends
 
-	// lovePanel := model.UserMemberLovePanel{}
+	// lovePanel := client.MemberLovePanel{}
 	// exist, err = Engine.Table("u_member").
 	// 	Where("user_id = ? AND member_master_id = ?", card.UserId, memberId).Get(&lovePanel)
 	// if err != nil {

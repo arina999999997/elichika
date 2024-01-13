@@ -17,25 +17,25 @@ func (session *Session) GetOtherUserCard(userId, cardMasterId int32) client.Othe
 	}
 	otherUserCard := client.OtherUserCard{
 		CardMasterId: userCard.CardMasterId,
-		Level: userCard.Level,
-		Grade: userCard.Grade,
+		Level:        userCard.Level,
+		Grade:        userCard.Grade,
 		// LoveLevel: session.Gamedata.LoveLevelFromLovePoint(userCard.LovePoint),
-		LoveLevel: 1, // love level is calculated from card love point, not member love point, and thus it's always 1
-		IsAwakening: userCard.IsAwakening,
-		IsAwakeningImage: userCard.IsAwakeningImage,
+		LoveLevel:              1, // love level is calculated from card love point, not member love point, and thus it's always 1
+		IsAwakening:            userCard.IsAwakening,
+		IsAwakeningImage:       userCard.IsAwakeningImage,
 		IsAllTrainingActivated: userCard.IsAllTrainingActivated,
-		ActiveSkillLevel: userCard.ActiveSkillLevel,
+		ActiveSkillLevel:       userCard.ActiveSkillLevel,
 		// PassiveSkillLevels:
 		// AdditionalPassiveSkillIds:
 		MaxFreePassiveSkill: userCard.MaxFreePassiveSkill,
-		TrainingStamina: userCard.TrainingLife,
-		TrainingAppeal: userCard.TrainingAttack,
-		TrainingTechnique: userCard.TrainingDexterity,
+		TrainingStamina:     userCard.TrainingLife,
+		TrainingAppeal:      userCard.TrainingAttack,
+		TrainingTechnique:   userCard.TrainingDexterity,
 		// MemberLovePanels:
 	}
 	otherUserCard.PassiveSkillLevels.Append(userCard.PassiveSkillALevel)
 	otherUserCard.PassiveSkillLevels.Append(userCard.PassiveSkillBLevel)
-	// otherUserCard.PassiveSkillLevels.Append(userCard.PassiveSkillCLevel) 
+	// otherUserCard.PassiveSkillLevels.Append(userCard.PassiveSkillCLevel)
 	if otherUserCard.MaxFreePassiveSkill >= 1 {
 		otherUserCard.AdditionalPassiveSkillIds.Append(userCard.AdditionalPassiveSkill1Id)
 	}

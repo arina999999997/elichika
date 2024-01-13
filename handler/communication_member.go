@@ -1,68 +1,55 @@
 package handler
 
 import (
+	"elichika/generic"
 	"elichika/client"
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func FetchCommunicationMemberDetail(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
-	var memberId int32
-	gjson.Parse(reqBody).ForEach(func(key, value gjson.Result) bool {
-		if value.Get("member_id").String() != "" {
-			memberId = int32(value.Get("member_id").Int())
-			return false
-		}
-		return true
-	})
-
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	lovePanelCellIds := session.GetLovePanelCellIds(memberId)
-
-	now := time.Now()
-	year, month, day := now.Year(), now.Month(), now.Day()
-	tomorrow := time.Date(year, month, day+1, 0, 0, 0, 0, now.Location()).Unix()
-	weekday := int(now.Weekday())
-	if weekday == 0 {
-		weekday = 7
-	}
-
-	signBody := GetData("fetchCommunicationMemberDetail.json")
-	signBody, _ = sjson.Set(signBody, "member_love_panels.0.member_id", memberId)
-	signBody, _ = sjson.Set(signBody, "member_love_panels.0.member_love_panel_cell_ids", lovePanelCellIds)
-	signBody, _ = sjson.Set(signBody, "weekday_state.weekday", weekday)
-	signBody, _ = sjson.Set(signBody, "weekday_state.next_weekday_at", tomorrow)
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.UpdateUserCommunicationMemberDetailBadgeRequest{}
+	req := request.FetchCommunicationMemberDetailRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
+
+	resp := response.FetchCommunicationMemberDetailResponse{}
+	resp.MemberLovePanels.Append(session.GetMemberLovePanel(req.MemberId))
+
+	year, month, day := session.Time.Date()
+	tomorrow := time.Date(year, month, day+1, 0, 0, 0, 0, session.Time.Location()).Unix()
+	resp.WeekdayState.Weekday = int32(session.Time.Weekday())
+	if resp.WeekdayState.Weekday == 0 {
+		resp.WeekdayState.Weekday = 7
+	}
+	resp.WeekdayState.NextWeekdayAt = tomorrow
+	JsonResponse(ctx, resp)
+}
+
+func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.UpdateMemberDetailBadgeRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
 	detailBadge := session.GetUserCommunicationMemberDetailBadge(req.MemberMasterId)
 	switch req.CommunicationMemberDetailBadgeType {
 	case enum.CommunicationMemberDetailBadgeTypeStoryMember:
@@ -82,26 +69,22 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	}
 	session.UpdateUserCommunicationMemberDetailBadge(detailBadge)
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	// mark all the song that this member is featured in as not new
 	// only choose from the song user has access to, so no bond song and story locked songs
+	// this use the same request as the above, must have been coded around the same time
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type UpdateUserLiveDifficultyNewFlag struct {
-		MemberMasterId int `json:"member_master_id"`
-	}
-	req := UpdateUserLiveDifficultyNewFlag{}
+	req := request.UpdateMemberDetailBadgeRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
 	userId := ctx.GetInt("user_id")
-
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -119,20 +102,19 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 			// it's ok to ignore these for now
 			continue
 		}
-		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[req.MemberMasterId]
+		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[int(req.MemberMasterId)]
 		if exist {
 			liveDifficultyRecord.IsNew = false
 			session.UpdateLiveDifficulty(liveDifficultyRecord)
 		}
 	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func FinishUserStorySide(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FinishUserStorySideRequest{}
@@ -143,16 +125,18 @@ func FinishUserStorySide(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UserStatus.IsAutoMode = req.IsAutoMode
+	if req.IsAutoMode.HasValue {
+		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
+	}
 	session.FinishStorySide(req.StorySideMasterId)
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func FinishUserStoryMember(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FinishUserStoryMemberRequest{}
@@ -164,11 +148,17 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	session.UserStatus.IsAutoMode = req.IsAutoMode
+	if req.IsAutoMode.HasValue {
+		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
+	}
 	if session.FinishStoryMember(req.StoryMemberMasterId) {
 		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterId]
 		if storyMemberMaster.Reward != nil {
 			session.AddResource(*storyMemberMaster.Reward)
+			session.AddTriggerBasic(client.UserInfoTriggerBasic{
+				InfoTriggerType: enum.InfoTriggerTypeStoryMemberReward,
+				ParamInt: generic.NewNullable(req.StoryMemberMasterId),
+			})
 		}
 		if storyMemberMaster.UnlockLiveId != nil {
 			masterLive := gamedata.Live[*storyMemberMaster.UnlockLiveId]
@@ -180,13 +170,12 @@ func FinishUserStoryMember(ctx *gin.Context) {
 		}
 	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func SetTheme(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SetThemeRequest{}
@@ -197,18 +186,17 @@ func SetTheme(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	member := session.GetMember(int32(req.MemberMasterId))
-	member.SuitMasterId = int32(req.SuitMasterId)
-	member.CustomBackgroundMasterId = int32(req.CustomBackgroundMasterId)
+	member := session.GetMember(req.MemberMasterId)
+	member.SuitMasterId = req.SuitMasterId
+	member.CustomBackgroundMasterId = req.CustomBackgroundMasterId
 	session.UpdateMember(member)
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func SetFavoriteMember(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SetFavoriteMemberRequest{}
@@ -218,6 +206,7 @@ func SetFavoriteMember(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
+
 	session.UserStatus.FavoriteMemberId = int32(req.MemberMasterId)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseFavoriateMember {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseLovePointUp
@@ -249,8 +238,8 @@ func SetFavoriteMember(ctx *gin.Context) {
 		session.UpdateMember(member)
 	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }

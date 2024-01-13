@@ -3,9 +3,10 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/enum"
-	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/utils"
+
+	"fmt"
 )
 
 func (session *Session) GetMember(memberMasterId int32) client.UserMember {
@@ -90,8 +91,7 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 	member.LoveLevel = session.Gamedata.LoveLevelFromLovePoint(member.LovePoint)
 	// unlock bond stories, unlock bond board
 	if oldLoveLevel < member.LoveLevel {
-		gamedata := session.Ctx.MustGet("gamedata").(*gamedata.Gamedata)
-		masterMember := gamedata.Member[memberId]
+		masterMember := session.Gamedata.Member[memberId]
 		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
 			for _, reward := range masterMember.LoveLevelRewards[loveLevel] {
 				session.AddResource(reward)
@@ -99,17 +99,19 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 		}
 
 		currentLovePanel := session.GetMemberLovePanel(memberId)
-		if len(currentLovePanel.LovePanelLastLevelCellIds) == 5 {
-			// the current bond board is full, check if we can unlock a new bond board
-			masterLovePanel := gamedata.MemberLovePanelCell[currentLovePanel.LovePanelLastLevelCellIds[0]].MemberLovePanel
-			if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
-				// TODO: remove magic id from love panel system
-				currentLovePanel.LevelUp()
+		unlockCount := currentLovePanel.MemberLovePanelCellIds.Size()
+		if (unlockCount > 0) && (unlockCount%5 == 0) {
+			// love panel is maxed out
+			lastCell := currentLovePanel.MemberLovePanelCellIds.Slice[unlockCount-1]
+			masterLovePanel := session.Gamedata.MemberLovePanelCell[lastCell].MemberLovePanel
+
+			if (masterLovePanel.NextPanel != nil) &&
+				(masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel > oldLoveLevel) {
+				nextPanel := masterLovePanel.NextPanel
+				fmt.Println(nextPanel.Id)
 				session.AddTriggerBasic(client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
-					ParamInt:        generic.NewNullable(int32(currentLovePanel.LovePanelLevel*1000 + currentLovePanel.MemberId))})
-
-				session.UpdateMemberLovePanel(currentLovePanel)
+					ParamInt:        generic.NewNullable(nextPanel.Id)})
 			}
 		}
 		session.AddTriggerMemberLoveLevelUp(client.UserInfoTriggerMemberLoveLevelUp{

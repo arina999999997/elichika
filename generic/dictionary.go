@@ -173,6 +173,7 @@ func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int, table, mapKe
 
 func (d *Dictionary[K, V]) ToContents() []any {
 	contents := []any{}
+	// TODO(refactor): This rely on the ID of the item, change it
 	for _, content := range d.Map {
 		contents = append(contents, reflect.ValueOf(content).MethodByName("ToContent").
 			Call([]reflect.Value{})[0].Interface())

@@ -19,8 +19,8 @@ type Login struct {
 		HasConsentedAdPurposeOfUse bool `xorm:"'has_consented_ad_purpose_of_use'" json:"has_consented_ad_purpose_of_use"`
 		HasConsentedCrashReport    bool `xorm:"'has_consented_crash_report'" json:"has_consented_crash_report"`
 	} `xorm:"extends" json:"gdpr_consented_info"`
-	MemberLovePanels []model.UserMemberLovePanel `xorm:"-" json:"member_love_panels"`
-	CheckMaintenance bool                        `xorm:"-" json:"check_maintenance"`
+	MemberLovePanels []client.MemberLovePanel `xorm:"-" json:"member_love_panels"`
+	CheckMaintenance bool                     `xorm:"-" json:"check_maintenance"`
 	ReproInfo        struct {
 		GroupNo int `xorm:"'group_no'" json:"group_no"`
 	} `xorm:"extends" json:"repro_info"`

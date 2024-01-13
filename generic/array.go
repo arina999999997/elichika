@@ -10,11 +10,15 @@ import (
 	"encoding/json"
 )
 
-// Can't alias generic type in golang
 type Array[T any] struct {
 	Slice []T
 }
 
+// this is not cached so avoid calling it in loop
+// just how go work I suppose
+func (l *Array[T]) Size() int {
+	return len(l.Slice)
+}
 func (l *Array[T]) Append(item T) {
 	l.Slice = append(l.Slice, item)
 }
