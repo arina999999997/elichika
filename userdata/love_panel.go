@@ -1,9 +1,21 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/model"
 	"elichika/utils"
 )
+
+func (session *Session) GetOtherUserMemberLovePanel(userId, memberId int32) client.MemberLovePanel {
+	result := client.MemberLovePanel{
+		MemberId: memberId,
+	}
+	_, err := session.Db.Table("u_member_love_panel").
+		Where("user_id = ? AND member_id = ?", session.UserId, memberId).
+		Get(&result)
+	utils.CheckErr(err)
+	return result
+}
 
 func (session *Session) GetMemberLovePanel(memberMasterId int32) model.UserMemberLovePanel {
 	panel, exist := session.UserMemberLovePanelDiffs[memberMasterId]

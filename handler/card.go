@@ -1,108 +1,91 @@
 package handler
 
 import (
-	"elichika/config"
-	"elichika/model"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func UpdateCardNewFlag(ctx *gin.Context) {
-	// mark the cards as read (is_new = false)
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.UpdateCardNewFlagRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	type UpdateCardNewFlagReq struct {
-		CardMasterIds []int `json:"card_master_ids"`
-	}
-	req := UpdateCardNewFlagReq{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-	for _, cardMasterId := range req.CardMasterIds {
+
+	for _, cardMasterId := range req.CardMasterIds.Slice {
 		card := session.GetUserCard(int32(cardMasterId))
 		card.IsNew = false
 		session.UpdateUserCard(card)
 	}
 
-	signBody := session.Finalize("{}", "user_model_diff")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UpdateCardNewFlagResponse{
+		UserModelDiff: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func ChangeIsAwakeningImage(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-
-	req := model.CardAwakeningReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
+	req := request.ChangeIsAwakeningImageRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	userCard := session.GetUserCard(int32(req.CardMasterId))
+
+	userCard := session.GetUserCard(req.CardMasterId)
 	userCard.IsAwakeningImage = req.IsAwakeningImage
 	session.UpdateUserCard(userCard)
 
-	cardResp := session.Finalize("{}", "user_model_diff")
-	resp := SignResp(ctx, cardResp, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.ChangeIsAwakeningImageResponse{
+		UserModelDiff: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func ChangeFavorite(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-
-	req := model.CardFavoriteReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
+	req := request.ChangeFavoriteRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	userCard := session.GetUserCard(int32(req.CardMasterId))
+
+	userCard := session.GetUserCard(req.CardMasterId)
 	userCard.IsFavorite = req.IsFavorite
 	session.UpdateUserCard(userCard)
 
-	cardResp := session.Finalize("{}", "user_model_diff")
-	resp := SignResp(ctx, cardResp, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, &response.ChangeFavoriteResponse{
+		UserModelDiff: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func GetOtherUserCard(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type OtherUserCardReq struct {
-		UserId       int   `json:"user_id"`
-		CardMasterId int32 `json:"card_master_id"`
-	}
-	req := OtherUserCardReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
+	req := request.GetOtherUserCardRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	partnerCard := session.GetPartnerCardFromUserCard(userdata.GetOtherUserCard(req.UserId, req.CardMasterId))
-	userCardResp, _ := sjson.Set("{}", "other_user_card", partnerCard)
-	resp := SignResp(ctx, userCardResp, config.SessionKey)
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	// the name of request and response is not consistent for this one, for some reason
+	JsonResponse(ctx, response.FetchOtherUserCardResponse{
+		OtherUserCard: session.GetOtherUserCard(req.UserId, req.CardMasterId),
+	})
 }

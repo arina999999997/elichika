@@ -30,6 +30,7 @@ func SignResp(ctx *gin.Context, body, key string) (resp string) {
 
 func JsonResponse(ctx *gin.Context, resp any) {
 	signBody, err := json.Marshal(resp)
+	// fmt.Println(string(signBody))
 	utils.CheckErr(err)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, SignResp(ctx, string(signBody), config.SessionKey))

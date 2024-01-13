@@ -137,7 +137,7 @@ func SetLivePartner(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize("{}", "")
+	session.Finalize("{}", "dummy")
 	// this is correct, the server send {}
 	//
 	resp := SignResp(ctx, "{}", config.SessionKey)
