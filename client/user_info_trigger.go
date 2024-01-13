@@ -5,8 +5,8 @@ import (
 )
 
 type UserInfoTrigger struct {
-	userInfoTriggerGachacPointExchangeRows          generic.List[UserInfoTriggerGachaPointExchangeRow]           `json:"user_info_trigger_gacha_point_exchange_rows"`
-	userInfoTriggerExpiredGiftBoxRows               generic.List[UserInfoTriggerExpiredGiftBox]                  `json:"user_info_trigger_expired_gift_box_rows"`
+	UserInfoTriggerGachacPointExchangeRows          generic.List[UserInfoTriggerGachaPointExchangeRow]           `json:"user_info_trigger_gacha_point_exchange_rows"`
+	UserInfoTriggerExpiredGiftBoxRows               generic.List[UserInfoTriggerExpiredGiftBox]                  `json:"user_info_trigger_expired_gift_box_rows"`
 	UserInfoTriggerEventMarathonShowResultRows      generic.List[UserInfoTriggerEventMarathonShowResultRow]      `json:"user_info_trigger_event_marathon_show_result_rows"`
 	UserInfoTriggerEventMiningShowResultRows        generic.List[UserInfoTriggerEventMiningShowResultRow]        `json:"user_info_trigger_event_mining_show_result_rows"`
 	UserInfoTriggerEventCoopShowResultRows          generic.List[UserInfoTriggerEventCoopShowResultRow]          `json:"user_info_trigger_event_coop_show_result_rows"`

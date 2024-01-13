@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"elichika/generic"
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -130,7 +130,6 @@ func FinishUserStorySide(ctx *gin.Context) {
 	}
 	session.FinishStorySide(req.StorySideMasterId)
 
-	
 	session.Finalize("{}", "dummy")
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
@@ -157,7 +156,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 			session.AddResource(*storyMemberMaster.Reward)
 			session.AddTriggerBasic(client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeStoryMemberReward,
-				ParamInt: generic.NewNullable(req.StoryMemberMasterId),
+				ParamInt:        generic.NewNullable(req.StoryMemberMasterId),
 			})
 		}
 		if storyMemberMaster.UnlockLiveId != nil {
