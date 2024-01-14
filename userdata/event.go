@@ -32,8 +32,4 @@ func userEventFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(userEventFinalizer)
-
-	addGenericTableFieldPopulator("u_event_marathon", "UserEventMarathonByEventMasterId")
-	addGenericTableFieldPopulator("u_event_mining", "UserEventMiningByEventMasterId")
-	addGenericTableFieldPopulator("u_event_coop", "UserEventCoopByEventMasterId")
 }

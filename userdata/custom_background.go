@@ -16,5 +16,4 @@ func customBackgroundFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(customBackgroundFinalizer)
-	addGenericTableFieldPopulator("u_custom_background", "UserCustomBackgroundById")
 }

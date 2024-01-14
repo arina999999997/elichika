@@ -19,5 +19,4 @@ func gpsPresentReceivedFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(gpsPresentReceivedFinalizer)
-	addGenericTableFieldPopulator("u_gps_present_received", "UserGpsPresentReceivedById")
 }

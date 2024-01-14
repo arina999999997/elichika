@@ -71,5 +71,4 @@ func accessoryFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(accessoryFinalizer)
-	addGenericTableFieldPopulator("u_accessory", "UserAccessoryByUserAccessoryId")
 }

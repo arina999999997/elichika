@@ -35,5 +35,4 @@ func suitFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(suitFinalizer)
-	addGenericTableFieldPopulator("u_suit", "UserSuitBySuitId")
 }

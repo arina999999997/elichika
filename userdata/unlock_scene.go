@@ -48,6 +48,4 @@ func sceneTipsFinalizer(session *Session) {
 func init() {
 	addFinalizer(unlockSceneFinalizer)
 	addFinalizer(sceneTipsFinalizer)
-	addGenericTableFieldPopulator("u_unlock_scenes", "UserUnlockScenesByEnum")
-	addGenericTableFieldPopulator("u_scene_tips", "UserSceneTipsByEnum")
 }

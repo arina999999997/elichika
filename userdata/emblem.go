@@ -16,5 +16,4 @@ func emblemFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(emblemFinalizer)
-	addGenericTableFieldPopulator("u_emblem", "UserEmblemByEmblemId")
 }

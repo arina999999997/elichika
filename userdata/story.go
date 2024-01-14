@@ -95,8 +95,4 @@ func init() {
 	addFinalizer(storyMainSelectedFinalizer)
 	addFinalizer(storyMainPartDigestMovieFinalizer)
 	addFinalizer(storyLinkageFinalizer)
-	addGenericTableFieldPopulator("u_story_main", "UserStoryMainByStoryMainId")
-	addGenericTableFieldPopulator("u_story_main_selected", "UserStoryMainSelectedByStoryMainCellId")
-	addGenericTableFieldPopulator("u_story_main_part_digest_movie", "UserStoryMainPartDigestMovieById")
-	addGenericTableFieldPopulator("u_story_linkage", "UserStoryLinkageById")
 }

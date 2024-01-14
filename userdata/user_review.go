@@ -28,5 +28,4 @@ func reviewRequestProcessFlowFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(reviewRequestProcessFlowFinalizer)
-	addGenericTableFieldPopulator("u_review_request_process_flow", "UserReviewRequestProcessFlowById")
 }

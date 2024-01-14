@@ -36,6 +36,7 @@ func Router(r *gin.Engine) {
 
 		api.POST("/emblem/activateEmblem", handler.ActivateEmblem)
 		api.POST("/emblem/fetchEmblem", handler.FetchEmblem)
+		api.POST("/emblem/fetchEmblemById", handler.FetchEmblemById)
 
 		api.POST("/gameSettings/updatePushNotificationSettings", handler.UpdatePushNotificationSettings)
 
@@ -114,6 +115,8 @@ func Router(r *gin.Engine) {
 		api.POST("/trainingTree/levelUpCard", handler.LevelUpCard)
 		api.POST("/trainingTree/gradeUpCard", handler.GradeUpCard)
 		api.POST("/trainingTree/activateTrainingTreeCell", handler.ActivateTrainingTreeCell)
+
+		api.POST("/userAccountDeletion/checkUserAccountDeleted", handler.CheckUserAccountDeleted)
 
 		api.POST("/userProfile/fetchProfile", handler.FetchProfile)
 		api.POST("/userProfile/setProfile", handler.SetProfile)

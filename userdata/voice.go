@@ -35,5 +35,4 @@ func voiceFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(voiceFinalizer)
-	addGenericTableFieldPopulator("u_voice", "UserVoiceByVoiceId")
 }

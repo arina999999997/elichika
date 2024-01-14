@@ -238,5 +238,4 @@ func userSetProfileFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(userSetProfileFinalizer)
-	addGenericTableFieldPopulator("u_set_profile", "UserSetProfileById")
 }

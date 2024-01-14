@@ -19,5 +19,4 @@ func steadyVoltageRankingFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(steadyVoltageRankingFinalizer)
-	addGenericTableFieldPopulator("u_steady_voltage_ranking", "UserSteadyVoltageRankingById")
 }

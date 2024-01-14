@@ -41,6 +41,5 @@ func storySideFinalizer(session *Session) {
 }
 
 func init() {
-	addGenericTableFieldPopulator("u_story_side", "UserStorySideById")
 	addFinalizer(storySideFinalizer)
 }

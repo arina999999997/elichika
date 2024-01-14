@@ -19,5 +19,4 @@ func sif2DataLinkFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(sif2DataLinkFinalizer)
-	addGenericTableFieldPopulator("u_sif_2_data_link", "UserSif2DataLinkById")
 }

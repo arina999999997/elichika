@@ -19,5 +19,4 @@ func schoolIdolFestivalIdRewardMissionFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(schoolIdolFestivalIdRewardMissionFinalizer)
-	addGenericTableFieldPopulator("u_school_idol_festival_id_reward_mission", "UserSchoolIdolFestivalIdRewardMissionById")
 }

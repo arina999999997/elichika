@@ -19,5 +19,4 @@ func referenceBookFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(referenceBookFinalizer)
-	addGenericTableFieldPopulator("u_reference_book", "UserReferenceBookById")
 }

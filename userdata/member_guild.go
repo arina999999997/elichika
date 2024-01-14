@@ -25,6 +25,4 @@ func memberGuildFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(memberGuildFinalizer)
-	addGenericTableFieldPopulator("u_member_guild", "UserMemberGuildById")
-	addGenericTableFieldPopulator("u_member_guild_support_item", "UserMemberGuildSupportItemById")
 }

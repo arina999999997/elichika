@@ -37,5 +37,4 @@ func ruleDescriptionFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(ruleDescriptionFinalizer)
-	addGenericTableFieldPopulator("u_rule_description", "UserRuleDescriptionById")
 }

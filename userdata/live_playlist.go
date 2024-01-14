@@ -28,5 +28,4 @@ func userPlayListFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(userPlayListFinalizer)
-	addGenericTableFieldPopulator("u_play_list", "UserPlayListById")
 }

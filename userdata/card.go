@@ -107,5 +107,4 @@ func (session *Session) InsertCards(cards []client.UserCard) {
 
 func init() {
 	addFinalizer(cardFinalizer)
-	addGenericTableFieldPopulator("u_card", "UserCardByCardId")
 }

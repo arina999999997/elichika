@@ -33,7 +33,4 @@ func missionFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(missionFinalizer)
-	addGenericTableFieldPopulator("u_mission", "UserMissionByMissionId")
-	addGenericTableFieldPopulator("u_daily_mission", "UserDailyMissionByMissionId")
-	addGenericTableFieldPopulator("u_weekly_mission", "UserWeeklyMissionByMissionId")
 }

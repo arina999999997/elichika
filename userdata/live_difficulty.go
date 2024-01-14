@@ -124,5 +124,4 @@ func (session *Session) SetLastPlayLiveDifficultyDeck(deck model.LastPlayLiveDif
 
 func init() {
 	addFinalizer(liveDifficultyFinalizer)
-	addGenericTableFieldPopulator("u_live_difficulty", "UserLiveDifficultyByDifficultyId")
 }

@@ -43,5 +43,4 @@ func (session *Session) InsertLiveDecks(decks []client.UserLiveDeck) {
 
 func init() {
 	addFinalizer(liveDeckFinalizer)
-	addGenericTableFieldPopulator("u_live_deck", "UserLiveDeckById")
 }

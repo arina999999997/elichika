@@ -19,5 +19,4 @@ func dailyTheaterFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(dailyTheaterFinalizer)
-	addGenericTableFieldPopulator("u_daily_theater", "UserDailyTheaterByDailyTheaterId")
 }

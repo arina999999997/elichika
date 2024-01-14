@@ -3,6 +3,7 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/model"
 	"elichika/protocol/response"
 	"elichika/utils"
@@ -92,6 +93,15 @@ func userStatusFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(userStatusFinalizer)
+}
+
+func UserExist(userId int32) bool {
+	exist, err := Engine.Table("u_info").Exist(
+		&generic.UserIdWrapper[client.UserStatus]{
+			UserId: int(userId),
+		})
+	utils.CheckErr(err)
+	return exist
 }
 
 func GetSession(ctx *gin.Context, userId int) *Session {

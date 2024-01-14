@@ -45,5 +45,4 @@ func (session *Session) InsertLessonDecks(decks []client.UserLessonDeck) {
 
 func init() {
 	addFinalizer(lessonDeckFinalizer)
-	addGenericTableFieldPopulator("u_lesson_deck", "UserLessonDeckById")
 }

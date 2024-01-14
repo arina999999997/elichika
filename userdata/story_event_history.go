@@ -19,5 +19,4 @@ func eventStoryFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(eventStoryFinalizer)
-	addGenericTableFieldPopulator("u_story_event_history", "UserStoryEventHistoryById")
 }

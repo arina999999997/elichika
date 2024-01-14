@@ -134,5 +134,4 @@ func towerFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(towerFinalizer)
-	addGenericTableFieldPopulator("u_tower", "UserTowerByTowerId")
 }

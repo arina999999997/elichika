@@ -1,8 +1,6 @@
 package userdata
 
 import (
-	"elichika/utils"
-
 	"fmt"
 	"reflect"
 )
@@ -18,8 +16,6 @@ type handler = func(*Session)
 var (
 	populators map[uintptr]handler
 	finalizers map[uintptr]handler
-
-	genericTableFieldPopulators map[string]string // map from a database table name to a UserModel field
 )
 
 func addPopulator(p handler) {
@@ -38,26 +34,38 @@ func addFinalizer(f handler) {
 	finalizers[reflect.ValueOf(f).Pointer()] = f
 }
 
-func addGenericTableFieldPopulator(tableName, fieldName string) {
-	if genericTableFieldPopulators == nil {
-		genericTableFieldPopulators = make(map[string]string)
+// TODO(refactor): This is kinda ugly
+func (session *Session) PopulateUserModelField(fieldName string) {
+	rModel := reflect.ValueOf(&session.UserModel)
+	for i := 0; i < rModel.Type().Elem().NumField(); i++ {
+		rFieldType := rModel.Type().Elem().Field(i)
+		if rFieldType.Name != fieldName {
+			continue
+		}
+		tableName := rFieldType.Tag.Get("table")
+		keyColumn := rFieldType.Tag.Get("key")
+		rField := rModel.Elem().Field(i)
+		rMethod := rField.Addr().MethodByName("LoadFromDb")
+		if rMethod.IsValid() {
+			rMethod.Call([]reflect.Value{reflect.ValueOf(session.Db), reflect.ValueOf(session.UserId),
+				reflect.ValueOf(tableName), reflect.ValueOf(keyColumn)})
+		} else {
+			panic(fmt.Sprint("Tagged but not supported: ", i, rField, rMethod, tableName, keyColumn))
+		}
 	}
-	genericTableFieldPopulators[fieldName] = tableName
 }
 
-func newGenericTableFieldPopulator(session *Session) {
+func genericTableFieldPopulator(session *Session) {
 	// TODO(refactor): These can be init at the start or something
 	rModel := reflect.ValueOf(&session.UserModel)
 	for i := 0; i < rModel.Type().Elem().NumField(); i++ {
 		rFieldType := rModel.Type().Elem().Field(i)
 		tableName := rFieldType.Tag.Get("table")
 		keyColumn := rFieldType.Tag.Get("key")
-		if tableName == "" {
-			genericTableFieldPopulator(session, rFieldType.Name)
+		if rFieldType.Name == "UserStatus" || tableName == "u_resource" {
 			continue
-		} else if tableName == "u_resource" {
-			// resource handler will take care of these fields
-			continue
+		} else if tableName == "" {
+			panic(rFieldType.Name)
 		}
 		rField := rModel.Elem().Field(i)
 		rMethod := rField.Addr().MethodByName("LoadFromDb")
@@ -70,29 +78,6 @@ func newGenericTableFieldPopulator(session *Session) {
 	}
 }
 
-func genericTableFieldPopulator(session *Session, fieldName string) {
-	tableName, exists := genericTableFieldPopulators[fieldName]
-	if !exists {
-		return
-	}
-	rModel := reflect.ValueOf(&session.UserModel)
-	rField := rModel.Elem().FieldByName(fieldName)
-	if !rField.IsValid() {
-		fmt.Println("Invalid table field pair: ", tableName, "->", fieldName)
-		return
-	}
-	fmt.Println(tableName, fieldName)
-	if fieldName == "UserMemberByMemberId" {
-		// TODO(refactor): This is temporary
-
-	} else {
-		err := session.Db.Table(tableName).Where("user_id = ?", session.UserId).
-			Find(rField.FieldByName("Objects").Addr().Interface())
-		utils.CheckErr(err)
-	}
-}
-
 func init() {
-	// addPopulator(genericTableFieldPopulator)
-	addPopulator(newGenericTableFieldPopulator)
+	addPopulator(genericTableFieldPopulator)
 }

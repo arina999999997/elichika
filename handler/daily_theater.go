@@ -72,7 +72,6 @@ func DailyTheaterSetLike(ctx *gin.Context) {
 	})
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchDailyTheaterArchive(ctx *gin.Context) {
 	// this is used to publish new daily theater without having to update the database
 	// client have the old items in m_daily_theater_archive_client and m_daily_theater_archive_member_client

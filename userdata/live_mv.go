@@ -24,6 +24,4 @@ func liveMvFinalizer(session *Session) {
 }
 func init() {
 	addFinalizer(liveMvFinalizer)
-	addGenericTableFieldPopulator("u_live_mv_deck", "UserLiveMvDeckById")
-	addGenericTableFieldPopulator("u_live_mv_deck_custom", "UserLiveMvDeckCustomById")
 }

@@ -124,8 +124,6 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 }
 
 func init() {
-	addGenericTableFieldPopulator("u_member", "UserMemberByMemberId")
 	addFinalizer(memberFinalizer)
-	addGenericTableFieldPopulator("u_communication_member_detail_badge", "UserCommunicationMemberDetailBadgeById")
 	addFinalizer(communicationMemberDetailBadgeFinalizer)
 }

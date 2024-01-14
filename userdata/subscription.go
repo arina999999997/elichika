@@ -42,5 +42,4 @@ func subscriptionStatusFinalizer(session *Session) {
 
 func init() {
 	addFinalizer(subscriptionStatusFinalizer)
-	addGenericTableFieldPopulator("u_subscription_status", "UserSubscriptionStatusById")
 }

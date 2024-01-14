@@ -72,5 +72,4 @@ func (session *Session) InsertLiveParties(parties []client.UserLiveParty) {
 
 func init() {
 	addFinalizer(livePartyFinalizer)
-	addGenericTableFieldPopulator("u_live_party", "UserLivePartyById")
 }

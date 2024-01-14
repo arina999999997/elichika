@@ -55,5 +55,4 @@ func (session *Session) FinishStoryMember(storyMemberMasterId int32) bool {
 
 func init() {
 	addFinalizer(memberStoryFinalizer)
-	addGenericTableFieldPopulator("u_story_member", "UserStoryMemberById")
 }
