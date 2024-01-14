@@ -3,6 +3,7 @@ package serverdata
 import (
 	"elichika/client"
 	"elichika/enum"
+	"elichika/generic"
 	"elichika/item"
 	"elichika/model"
 	"elichika/utils"
@@ -24,7 +25,7 @@ func InitialiseLoginBonus(session *xorm.Session) {
 		LoginBonusType: enum.LoginBonusTypeNormal,
 		BackgroundId:   100100700,
 		WhiteboardTextureAsset: &client.TextureStruktur{
-			V: ":7S",
+			V: generic.NewNullable(":7S"),
 		},
 		StartAt:                 0,
 		EndAt:                   1<<31 - 1,
@@ -80,7 +81,7 @@ func InitialiseLoginBonus(session *xorm.Session) {
 		LoginBonusType: enum.LoginBonusTypeNormal,
 		BackgroundId:   100100700,
 		WhiteboardTextureAsset: &client.TextureStruktur{
-			V: "/4n",
+			V: generic.NewNullable("/4n"),
 		},
 		StartAt:                 0,
 		EndAt:                   1<<31 - 1,

@@ -1,9 +1,13 @@
 package gacha
 
 import (
+	"elichika/enum"
+	"elichika/generic"
 	"elichika/client"
+	"elichika/client/request"
+	"elichika/item"
 	"elichika/gamedata"
-	"elichika/model"
+	"elichika/serverdata"
 	"elichika/userdata"
 
 	"math/rand"
@@ -12,11 +16,11 @@ import (
 )
 
 // it's not too bad to call this function multiple time, but maybe it's better to have a function that return multiple
-func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int {
+func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []serverdata.GachaCard) int32 {
 	if len(cards) == 0 { // no card
 		return 0
 	}
-	groups := map[int]([]int){}
+	groups := map[int32]([]int32){}
 	totalWeight := int64(0)
 	for _, card := range cards {
 		_, exist := groups[card.GroupMasterId]
@@ -36,42 +40,34 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []model.GachaCard) int 
 	panic("this shouldn't happen")
 }
 
-func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed bool) model.ResultCard {
+func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed bool) client.AddedGachaCardResult {
 	card := session.GetUserCard(cardMasterId)
 	cardRarity := session.Gamedata.Card[cardMasterId].CardRarityType
 	member := session.GetMember(session.Gamedata.Card[cardMasterId].Member.Id)
-	resultCard := model.ResultCard{
-		GachaLotType:         1,
-		CardMasterId:         int(cardMasterId),
+	resultCard := client.AddedGachaCardResult{
+		GachaLotType:         enum.GachaLotTypeNormal,
+		CardMasterId:         cardMasterId,
 		Level:                1,
-		BeforeGrade:          int(card.Grade),
-		AfterGrade:           int(card.Grade) + 1,
-		Content:              nil,
-		LimitExceeded:        false,
-		BeforeLoveLevelLimit: int(session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)),
-		AfterLoveLevelLimit:  0,
+		BeforeGrade:          card.Grade,
+		AfterGrade:           card.Grade + 1,
+		BeforeLoveLevelLimit: session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit),
 	}
-	// if isGuaranteed {
-	// 	// if more than 1 card have this then the the client might refuse to show the result.
-	// 	// it's not doing anything visible, so might as well not set it
-	// 	// resultCard.GachaLotType = 2
-	// }
+	if isGuaranteed {
+		resultCard.GachaLotType = enum.GachaLotTypeAssurance
+	}
 	if resultCard.AfterGrade == 6 { // maxed out card
 		resultCard.AfterGrade = 5
-		resultCard.Content = &client.Content{
-			ContentType:   13,
-			ContentId:     1800,
-			ContentAmount: 1,
-		}
+		content := item.SchoolIdolRadiance
 		// 30 20 10 for UR, SR, R
 		for i := cardRarity; i > 10; i -= 10 {
-			resultCard.Content.ContentAmount *= 5
+			content.ContentAmount *= 5
 		}
-		session.AddResource(*resultCard.Content)
+		resultCard.Content = generic.NewNullable(content)
+		session.AddResource(content)
 	} else {
-		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + int(cardRarity/10)
-		if resultCard.AfterLoveLevelLimit > int(session.Gamedata.MemberLoveLevelCount) {
-			resultCard.AfterLoveLevelLimit = int(session.Gamedata.MemberLoveLevelCount)
+		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + cardRarity/10
+		if resultCard.AfterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
+			resultCard.AfterLoveLevelLimit = session.Gamedata.MemberLoveLevelCount
 		}
 		member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[resultCard.AfterLoveLevelLimit]
 		card.Grade++ // new grade,
@@ -94,30 +90,31 @@ func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed 
 	return resultCard
 }
 
-func HandleGacha(ctx *gin.Context, req model.GachaDrawReq) (model.Gacha, []model.ResultCard) {
+func HandleGacha(ctx *gin.Context, req request.DrawGachaRequest) (client.Gacha, generic.List[client.AddedGachaCardResult]) {
 	session := ctx.MustGet("session").(*userdata.Session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	draw := *gamedata.GachaDraw[req.GachaDrawMasterId]
-	gacha := *gamedata.Gacha[draw.GachaMasterId]
-	cardPool := []model.GachaCard{}
-	for _, group := range gacha.DbGachaGroups {
+
+	gacha := *gamedata.Gacha[req.GachaDrawMasterId/10]
+	cardPool := []serverdata.GachaCard{}
+	for _, group := range gacha.GachaGroups {
 		cardPool = append(cardPool, gamedata.GachaGroup[group].Cards...)
 		// allow 1 card to be in multiple group
 	}
 	ctx.Set("gacha_card_pool", cardPool)
 	// TODO: gacha recovery and economy
 	// for now just get this to work
-	resultCards := []model.ResultCard{}
-	for _, guaranteeId := range draw.Guarantees {
+	resultCards := generic.List[client.AddedGachaCardResult]{}
+	for _, guaranteeId := range gamedata.GachaDrawGuarantee[req.GachaDrawMasterId].GuaranteeIds {
 		gachaGuarantee := gamedata.GachaGuarantee[guaranteeId]
 		cardMasterId := GuaranteeHandlers[gachaGuarantee.GuaranteeHandler](ctx, gachaGuarantee)
 		if cardMasterId == 0 {
 			continue
 		}
-		resultCards = append(resultCards, MakeResultCard(session, int32(cardMasterId), true))
+		resultCards.Append(MakeResultCard(session, cardMasterId, true))
 	}
-	for i := len(resultCards); i < draw.DrawCount; i++ {
-		resultCards = append(resultCards, MakeResultCard(session, int32(ChooseRandomCard(gamedata, cardPool)), false))
+	for i := int32(resultCards.Size()); i < draw.DrawCount; i++ {
+		resultCards.Append(MakeResultCard(session, int32(ChooseRandomCard(gamedata, cardPool)), false))
 	}
-	return gacha, resultCards
+	return gacha.ClientGacha, resultCards
 }

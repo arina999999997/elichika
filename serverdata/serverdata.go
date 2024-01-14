@@ -35,12 +35,11 @@ func InitTable(tableName string, structure interface{}, overwrite bool) {
 }
 
 func InitTables(overwrite bool) {
-	InitTable("s_gacha_appeal", model.GachaAppeal{}, overwrite)
-	InitTable("s_gacha_draw", model.GachaDraw{}, overwrite)
-	InitTable("s_gacha", model.Gacha{}, overwrite)
-	InitTable("s_gacha_group", model.GachaGroup{}, overwrite)
-	InitTable("s_gacha_card", model.GachaCard{}, overwrite)
-	InitTable("s_gacha_guarantee", model.GachaGuarantee{}, overwrite)
+
+	InitTable("s_gacha_guarantee", GachaGuarantee{}, overwrite)
+	InitTable("s_gacha", ServerGacha{}, overwrite)
+	InitTable("s_gacha_group", GachaGroup{}, overwrite)
+	InitTable("s_gacha_card", GachaCard{}, overwrite)
 	InitTable("s_trade", model.Trade{}, overwrite)
 	InitTable("s_trade_product", model.TradeProduct{}, overwrite)
 	InitTable("s_login_bonus", model.LoginBonus{}, overwrite)

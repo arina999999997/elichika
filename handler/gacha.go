@@ -1,41 +1,38 @@
 package handler
 
 import (
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
 	"elichika/gacha"
-	"elichika/model"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func FetchGachaMenu(ctx *gin.Context) {
+	// there is no request body
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	gachaList := session.GetGachaList()
-	signBody := session.Finalize("{}", "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "gacha_list", gachaList)
-	signBody, _ = sjson.Set(signBody, "gacha_unconfirmed", nil)
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+
+	JsonResponse(ctx, &response.FetchGachaMenuResponse{
+		GachaList:     session.GetGachaList(),
+		UserModelDiff: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
+// TODO(now): Change to use request and response types
 func GachaDraw(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := model.GachaDrawReq{}
+	req := request.DrawGachaRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
@@ -46,14 +43,11 @@ func GachaDraw(ctx *gin.Context) {
 
 	ctx.Set("session", session)
 	gacha, resultCards := gacha.HandleGacha(ctx, req)
-	signBody := session.Finalize("{}", "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "gacha", gacha)
-	signBody, _ = sjson.Set(signBody, "result_cards", resultCards)
-	signBody, _ = sjson.Set(signBody, "result_bonuses", nil)
-	signBody, _ = sjson.Set(signBody, "retry_gacha", nil)
-	signBody, _ = sjson.Set(signBody, "stepup_next_step", nil)
 
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.DrawGachaResponse{
+		Gacha:         gacha,
+		ResultCards:   resultCards,
+		UserModelDiff: &session.UserModel,
+	})
 }

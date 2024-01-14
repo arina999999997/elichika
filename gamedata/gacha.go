@@ -2,26 +2,19 @@ package gamedata
 
 import (
 	"elichika/dictionary"
-	"elichika/model"
+	"elichika/serverdata"
 	"elichika/utils"
 
 	"xorm.io/xorm"
 )
 
-// Gacha design is not very good, so use modelGacha for now
-type Gacha = model.Gacha
+type Gacha = serverdata.ServerGacha
 
 func populateGacha(gacha *Gacha, gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := serverdata_db.Table("s_gacha_appeal").In("gacha_appeal_master_id", gacha.DbGachaAppeals).
-		Find(&gacha.GachaAppeals)
-	utils.CheckErr(err)
-	err = serverdata_db.Table("s_gacha_draw").In("gacha_draw_master_id", gacha.DbGachaDraws).
-		Find(&gacha.GachaDraws)
-	utils.CheckErr(err)
 }
 
 func loadGacha(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	gamedata.Gacha = make(map[int]*Gacha)
+	gamedata.Gacha = make(map[int32]*Gacha)
 	err := serverdata_db.Table("s_gacha").OrderBy("gacha_master_id").Find(&gamedata.GachaList)
 	utils.CheckErr(err)
 	for _, gacha := range gamedata.GachaList {

@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/dictionary"
-	"elichika/model"
+	"elichika/serverdata"
 	"elichika/utils"
 
 	"xorm.io/xorm"
@@ -10,13 +10,13 @@ import (
 
 type GachaGroup struct {
 	// s_gacha_group
-	GroupMasterId int   `xorm:"pk 'group_master_id'"`
+	GroupMasterId int32 `xorm:"pk 'group_master_id'"`
 	GroupWeight   int64 `xorm:"'group_weight'"`
 	// s_gacha_card
-	Cards []model.GachaCard `xorm:"-"`
+	Cards []serverdata.GachaCard `xorm:"-"`
 }
 
-func (gachaGroup *GachaGroup) PickRandomCard(randOutput int64) int {
+func (gachaGroup *GachaGroup) PickRandomCard(randOutput int64) int32 {
 	return gachaGroup.Cards[int(randOutput%int64(len(gachaGroup.Cards)))].CardMasterId
 }
 
@@ -26,7 +26,7 @@ func (gachaGroup *GachaGroup) populate(gamedata *Gamedata, masterdata_db, server
 }
 
 func loadGachaGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	gamedata.GachaGroup = make(map[int]*GachaGroup)
+	gamedata.GachaGroup = make(map[int32]*GachaGroup)
 	err := serverdata_db.Table("s_gacha_group").Find(&gamedata.GachaGroup)
 	utils.CheckErr(err)
 	for _, gachaGroup := range gamedata.GachaGroup {

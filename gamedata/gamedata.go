@@ -105,11 +105,12 @@ type Gamedata struct {
 
 	StoryMember map[int32]*StoryMember
 
-	Gacha          map[int]*Gacha
-	GachaList      []*Gacha
-	GachaDraw      map[int]*GachaDraw
-	GachaGroup     map[int]*GachaGroup
-	GachaGuarantee map[int]*GachaGuarantee
+	Gacha              map[int32]*Gacha
+	GachaList          []*Gacha
+	GachaDraw          map[int32]*GachaDraw
+	GachaDrawGuarantee map[int32]*GachaDrawGuarantee
+	GachaGroup         map[int32]*GachaGroup
+	GachaGuarantee     map[int32]*GachaGuarantee
 
 	Tower map[int32]*Tower
 
