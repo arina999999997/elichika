@@ -1,12 +1,12 @@
 package gacha
 
 import (
-	"elichika/enum"
-	"elichika/generic"
 	"elichika/client"
 	"elichika/client/request"
-	"elichika/item"
+	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
+	"elichika/item"
 	"elichika/serverdata"
 	"elichika/userdata"
 

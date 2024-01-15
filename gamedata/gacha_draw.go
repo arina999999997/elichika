@@ -21,9 +21,7 @@ func loadGachaDrawGuarantee(gamedata *Gamedata, masterdata_db, serverdata_db *xo
 			id := gacha.ClientGacha.GachaDraws.Slice[i].GachaDrawMasterId
 			gamedata.GachaDraw[id] = &gacha.ClientGacha.GachaDraws.Slice[i]
 			gamedata.GachaDrawGuarantee[id] = new(GachaDrawGuarantee)
-			for _, guaranteed := range gacha.DrawGuarantees[i] {
-				gamedata.GachaDrawGuarantee[id].GuaranteeIds = append(gamedata.GachaDrawGuarantee[id].GuaranteeIds, guaranteed)
-			}
+			gamedata.GachaDrawGuarantee[id].GuaranteeIds = append(gamedata.GachaDrawGuarantee[id].GuaranteeIds, gacha.DrawGuarantees[i]...)
 		}
 	}
 }

@@ -1,170 +1,183 @@
 package handler
 
 import (
-	"elichika/config"
-	"elichika/model"
+	"elichika/client"
+	"elichika/client/request"
+	"elichika/client/response"
+	"elichika/generic"
 	"elichika/userdata"
 	"elichika/utils"
-	"fmt"
-	"net/http"
-	"strings"
+
+	"reflect"
 
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func ExecuteLesson(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type ExecuteLessonReq struct {
-		ExecuteLessonIds   []int `json:"execute_lesson_ids"`
-		ConsumedContentIds []int `json:"consumed_content_ids"`
-		SelectedDeckId     int32 `json:"selected_deck_id"`
-		IsThreeTimes       bool  `json:"is_three_times"`
-	}
-	req := ExecuteLessonReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
-
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	deckBytes, _ := json.Marshal(session.GetUserLessonDeck(req.SelectedDeckId))
-	deckInfo := string(deckBytes)
-	var actionList []model.LessonMenuAction
-
-	gjson.Parse(deckInfo).ForEach(func(key, value gjson.Result) bool {
-		if strings.Contains(key.String(), "card_master_id") {
-			actionList = append(actionList, model.LessonMenuAction{
-				CardMasterId:                  value.Int(),
-				Position:                      0,
-				IsAddedPassiveSkill:           true,
-				IsAddedSpecialPassiveSkill:    true,
-				IsRankupedPassiveSkill:        true,
-				IsRankupedSpecialPassiveSkill: true,
-				IsPromotedSkill:               true,
-				MaxRarity:                     4,
-				UpCount:                       1,
-			})
-		}
-		return true
-	})
-
-	session.UserStatus.MainLessonDeckId = int32(req.SelectedDeckId)
-	signBody := session.Finalize(GetData("executeLesson.json"), "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "lesson_menu_actions.1", actionList)
-	signBody, _ = sjson.Set(signBody, "lesson_menu_actions.3", actionList)
-	signBody, _ = sjson.Set(signBody, "lesson_menu_actions.5", actionList)
-	signBody, _ = sjson.Set(signBody, "lesson_menu_actions.7", actionList)
-
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func ResultLesson(ctx *gin.Context) {
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	signBody := session.Finalize(GetData("resultLesson.json"), "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "selected_deck_id", session.UserStatus.MainLessonDeckId)
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func SkillEditResult(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
-
-	req := gjson.Parse(reqBody).Array()[0]
-
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	skillList := req.Get("selected_skill_ids")
-	skillList.ForEach(func(key, cardId gjson.Result) bool {
-		if key.Int()%2 == 0 {
-			userCard := session.GetUserCard(int32(cardId.Int()))
-			skills := skillList.Get(fmt.Sprintf("%d", key.Int()+1))
-			cardJsonBytes, _ := json.Marshal(userCard)
-			cardJson := string(cardJsonBytes)
-			skills.ForEach(func(kk, vv gjson.Result) bool {
-				skillIdKey := fmt.Sprintf("additional_passive_skill_%d_id", kk.Int()+1)
-				cardJson, _ = sjson.Set(cardJson, skillIdKey, vv.Int())
-				return true
-			})
-			if err := json.Unmarshal([]byte(cardJson), &userCard); err != nil {
-				panic(err)
-			}
-			session.UpdateUserCard(userCard)
-		}
-		return true
-	})
-	signBody := session.Finalize(GetData("skillEditResult.json"), "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func SaveDeckLesson(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type SaveDeckReq struct {
-		DeckId        int32   `json:"deck_id"`
-		CardMasterIds []int32 `json:"card_master_ids"`
-	}
-	req := SaveDeckReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
-
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	userLessonDeck := session.GetUserLessonDeck(req.DeckId)
-	deckByte, _ := json.Marshal(userLessonDeck)
-	deckInfo := string(deckByte)
-	for i := 0; i < len(req.CardMasterIds); i += 2 {
-		deckInfo, _ = sjson.Set(deckInfo, fmt.Sprintf("card_master_id_%d", req.CardMasterIds[i]), req.CardMasterIds[i+1])
-	}
-	if err := json.Unmarshal([]byte(deckInfo), &userLessonDeck); err != nil {
-		panic(err)
-	}
-	session.UpdateLessonDeck(userLessonDeck)
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func ChangeDeckNameLessonDeck(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type ChangeDeckNameReq struct {
-		DeckId   int32  `json:"deck_id"`
-		DeckName string `json:"deck_name"`
-	}
-	req := ChangeDeckNameReq{}
+	req := request.ExecuteLessonRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
+
+	resp := response.ExecuteLessonResponse{
+		UserModelDiff: &session.UserModel,
+	}
+
+	deck := session.GetUserLessonDeck(req.SelectedDeckId)
+	repeatCount := int32(1)
+	if req.IsThreeTimes {
+		repeatCount = 3
+	}
+
+	for lesson := int32(1); lesson <= 4; lesson++ {
+		// TODO(lesson): Generate the drops and put them into database here
+		// Note that the items are already generated and added at this step based on official server response
+		actions := generic.List[client.LessonMenuAction]{}
+		drops := generic.List[int32]{}
+		for i := 1; i <= 9; i++ {
+			cardMasterId := reflect.ValueOf(deck).Field(i + 1).Interface().(generic.Nullable[int32]).Value
+			actions.Append(client.LessonMenuAction{
+				CardMasterId: cardMasterId,
+				Position:     int32(i),
+			})
+		}
+		if lesson <= 3 {
+			for i := 1; i <= int(repeatCount*lesson*10); i++ {
+				drops.Append(int32(i%2 + 1))
+			}
+		}
+		resp.LessonMenuActions.Set(lesson%4, actions)
+		resp.LessonDropRarityList.Set(lesson%4, drops)
+	}
+	resp.IsSubscription = true
+	JsonResponse(ctx, resp)
+}
+
+// For now return fixed good skills:
+// Appeal+ Ms
+// Skill+ Ms
+// Type Effect +
+func ResultLesson(ctx *gin.Context) {
+	// there is no request body
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
+	// TODO(lesson): Get the data from the database and fill it in
+	// Note that the items are already decided and added to the account by this point, but we need to display it
+	// Also the selected deck id is relevant so need to save it
+	resp := response.LessonResultResponse{
+		UserModelDiff:  &session.UserModel,
+		SelectedDeckId: 1,
+	}
+	// can only return 12 max
+	skills := []int32{
+		30000041, // Appeal+ (L)
+		30000482, // Appeal+ (M):Group
+		30000517, // Appeal+ (M):Same Attribute
+		// 30000502, // Appeal+ (M):Same School
+		30000507, // Appeal+ (M):Same Strategy
+		30000492, // Appeal+ (M):Same Year
+		30000512, // Appeal+ (M):Type
+		30000044, // Skill Activation %+ (L)
+		30000485, // Skill Activation %+ (M):Group
+		30000520, // Skill Activation %+ (M):Same Attribute
+		// 30000505, // Skill Activation %+ (M):Same School
+		30000510, // Skill Activation %+ (M):Same Strategy
+		30000495, // Skill Activation %+ (M):Same Year
+		// 30000515, // Skill Activation %+ (M):Type
+		30000045, // Type Effect+ (M)
+	}
+	for position := int32(1); position <= 9; position++ {
+		for _, skillId := range skills {
+			resp.DropSkillList.Append(client.LessonResultDropPassiveSkill{
+				Position:       position,
+				PassiveSkillId: skillId,
+			})
+		}
+	}
+
+	JsonResponse(ctx, resp)
+}
+
+func SkillEditResult(ctx *gin.Context) {
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SkillEditResultRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
+	for cardMasterId, selectedSkills := range req.SelectedSkillIds.Map {
+		card := session.GetUserCard(cardMasterId)
+		for i, skillId := range selectedSkills.Slice {
+			switch i {
+			case 0:
+				card.AdditionalPassiveSkill1Id = skillId
+			case 1:
+				card.AdditionalPassiveSkill2Id = skillId
+			case 2:
+				card.AdditionalPassiveSkill3Id = skillId
+			case 3:
+				card.AdditionalPassiveSkill4Id = skillId
+			}
+		}
+		session.UpdateUserCard(card) // this is always updated even if no skill change happen
+	}
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
+}
+
+func SaveDeckLesson(ctx *gin.Context) {
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SaveLessonDeckRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+	
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
+	userLessonDeck := session.GetUserLessonDeck(req.DeckId)
+	for position, cardMasterId := range req.CardMasterIds.Map {
+		reflect.ValueOf(&userLessonDeck).Elem().Field(int(position) + 1).Set(reflect.ValueOf(*cardMasterId))
+	}
+	session.UpdateLessonDeck(userLessonDeck)
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
+}
+
+func ChangeDeckNameLessonDeck(ctx *gin.Context) {
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.ChangeNameLessonDeckRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
 	lessonDeck := session.GetUserLessonDeck(req.DeckId)
 	lessonDeck.Name = req.DeckName
 	session.UpdateLessonDeck(lessonDeck)
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
