@@ -2,9 +2,9 @@ package account
 
 import (
 	"elichika/client"
+	"elichika/client/response"
 	"elichika/gamedata"
 	"elichika/model"
-	"elichika/protocol/response"
 	"elichika/userdata"
 )
 
@@ -202,7 +202,7 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 	return true
 }
 
-func (solver *TrainingTreeSolver) LoadUserLogin(login *response.Login) {
+func (solver *TrainingTreeSolver) LoadUserLogin(login *response.LoginResponse) {
 	solver.HasNaviVoice = make(map[int32]bool)
 	solver.HasStorySide = make(map[int32]bool)
 	solver.HasSuit = make(map[int32]bool)

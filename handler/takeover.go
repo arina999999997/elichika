@@ -110,7 +110,7 @@ func CheckTakeOver(ctx *gin.Context) {
 
 FINISH_RESPONSE:
 	respBody, _ := json.Marshal(resp)
-	signedResp := SignResp(ctx, string(respBody), ctx.MustGet("locale").(*locale.Locale).StartUpKey)
+	signedResp := SignResp(ctx, string(respBody), ctx.MustGet("locale").(*locale.Locale).StartupKey)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, signedResp)
 }
@@ -141,7 +141,7 @@ func SetTakeOver(ctx *gin.Context) {
 	}
 	resp := TakeOverData{}
 	resp.UserId = linkedSession.UserId
-	resp.AuthorizationKey = StartUpAuthorizationKey(req.Mask)
+	resp.AuthorizationKey = StartupAuthorizationKey(req.Mask)
 	resp.ServiceUserCommonKey = nil
 	resp.Name.DotUnderText = linkedSession.UserStatus.Name.DotUnderText
 	resp.LastLoginAt = linkedSession.UserStatus.LastLoginAt
@@ -151,7 +151,7 @@ func SetTakeOver(ctx *gin.Context) {
 
 	signedResp, _ := sjson.Set("{}", "data", resp)
 
-	signedResp = SignResp(ctx, signedResp, ctx.MustGet("locale").(*locale.Locale).StartUpKey)
+	signedResp = SignResp(ctx, signedResp, ctx.MustGet("locale").(*locale.Locale).StartupKey)
 
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, signedResp)

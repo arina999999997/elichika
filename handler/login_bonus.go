@@ -2,32 +2,24 @@ package handler
 
 import (
 	"elichika/client"
-	"elichika/config"
+	// "elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
 	"elichika/login_bonus"
-	"elichika/protocol/request"
 	"elichika/userdata"
-	"elichika/utils"
-
-	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func ReadLoginBonus(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.ReadLoginBonusRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-	resp := SignResp(ctx, "{}", config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	// this doesn't need to do anything
+	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	// req := request.ReadLoginBonusRequest{}
+	// err := json.Unmarshal([]byte(reqBody), &req)
+	// utils.CheckErr(err)
+	JsonResponse(ctx, &response.EmptyResponse{})
 }
 
-// TODO(refactor): Change to use request and response types
 func GetBootstrapLoginBonus(ctx *gin.Context, session *userdata.Session) client.BootstrapLoginBonus {
 	res := client.BootstrapLoginBonus{
 		NextLoginBonsReceiveAt: login_bonus.NextLoginBonusTime(session.Time).Unix(),

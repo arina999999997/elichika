@@ -24,7 +24,7 @@ func UpdateConsentState(ctx *gin.Context) {
 	defer session.Close()
 
 	session.UserStatus.GdprVersion = req.Version
-	loginData := session.GetLoginData()
+	loginData := session.GetLoginResponse()
 	for _, consent := range req.ConsentList.Slice {
 		switch consent.GdprType {
 		case enum.GdprConsentTypeAdIdIos:

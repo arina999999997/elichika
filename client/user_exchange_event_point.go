@@ -7,6 +7,7 @@ import (
 )
 
 // TODO(refactor): Remove the id field once we rewrite the map
+// also pretty sure this is broken
 type UserExchangeEventPoint struct {
 	PointId int32 `json:"-"`
 	Amount  int32 `json:"amount"`

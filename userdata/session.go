@@ -2,10 +2,10 @@ package userdata
 
 import (
 	"elichika/client"
+	"elichika/client/response"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/model"
-	"elichika/protocol/response"
 	"elichika/utils"
 
 	"time"
@@ -127,7 +127,7 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 	return &s
 }
 
-func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login, userId int) *Session {
+func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginResponse, userId int) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.SessionType = SessionTypeImportAccount
@@ -142,7 +142,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.Login, u
 
 	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
 
-	s.MemberLovePanels = loginData.MemberLovePanels
+	s.MemberLovePanels = loginData.MemberLovePanels.Slice
 	genericDatabaseInsert(&s, "u_login", *loginData)
 	utils.CheckErr(err)
 	return &s

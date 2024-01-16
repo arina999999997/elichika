@@ -72,7 +72,7 @@ func Router(r *gin.Engine) {
 		api.POST("/tutorial/timingAdjusterEnd", handler.TimingAdjusterEnd)
 
 		api.POST("/login/login", handler.Login)
-		api.POST("/login/startup", handler.StartUp)
+		api.POST("/login/startup", handler.Startup)
 
 		api.POST("/loginBonus/readLoginBonus", handler.ReadLoginBonus)
 

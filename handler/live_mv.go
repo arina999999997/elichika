@@ -2,101 +2,75 @@ package handler
 
 import (
 	"elichika/client"
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
+	"elichika/generic"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
-	"net/http"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func LiveMvStart(ctx *gin.Context) {
+	// we don't really need the request
+	// maybe it's once needed or it's only used for gathering data
+	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	// req := request.StartLiveMvRequest{}
+	// err := json.Unmarshal([]byte(reqBody), &req)
+	// utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	signBody := session.Finalize("{}", "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "uniq_id", session.Time.UnixNano())
-	resp := SignResp(ctx, signBody, config.SessionKey)
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &response.StartLiveMvResponse{
+		UniqId:        session.Time.UnixNano(),
+		UserModelDiff: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func LiveMvSaveDeck(ctx *gin.Context) {
-	// TODO: actually save this in db
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-
-	type LiveSaveDeckReq struct {
-		LiveMasterId        int32   `json:"live_master_id"`
-		LiveMvDeckType      int32   `json:"live_mv_deck_type"`
-		MemberMasterIdByPos []int32 `json:"member_master_id_by_pos"`
-		SuitMasterIdByPos   []int32 `json:"suit_master_id_by_pos"`
-		ViewStatusByPos     []int32 `json:"view_status_by_pos"`
-	}
-
-	req := LiveSaveDeckReq{}
+	req := request.SaveLiveMvDeckRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
 
 	userLiveMvDeck := client.UserLiveMvDeck{
 		LiveMasterId: req.LiveMasterId,
 	}
-	deckJsonBytes, err := json.Marshal(userLiveMvDeck)
-	utils.CheckErr(err)
-	deckJson := string(deckJsonBytes)
 
-	for k, v := range req.MemberMasterIdByPos {
-		if k%2 == 0 {
-			memberId := req.MemberMasterIdByPos[k+1]
-			deckJson, err = sjson.Set(deckJson, fmt.Sprintf("member_master_id_%d", v), memberId)
-			utils.CheckErr(err)
-		}
+	for pos, memberMasterId := range req.MemberMasterIdByPos.Map {
+		reflect.ValueOf(&userLiveMvDeck).Elem().Field(int(pos)).Set(reflect.ValueOf(generic.NewNullable(*memberMasterId)))
 	}
-	for k, v := range req.SuitMasterIdByPos {
-		if k%2 == 0 {
-			suitId := req.SuitMasterIdByPos[k+1]
-			deckJson, err = sjson.Set(deckJson, fmt.Sprintf("suit_master_id_%d", v), suitId)
-			utils.CheckErr(err)
-		}
+	for pos, suitMasterId := range req.SuitMasterIdByPos.Map {
+		reflect.ValueOf(&userLiveMvDeck).Elem().Field(12 + int(pos)).Set(reflect.ValueOf(*suitMasterId))
 	}
-	err = json.Unmarshal([]byte(deckJson), &userLiveMvDeck)
-	utils.CheckErr(err)
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	for k := range req.ViewStatusByPos {
-		if k%2 == 0 {
-			memberId := req.MemberMasterIdByPos[k+1]
-			// Rina-chan board toggle
-			if memberId == enum.MemberMasterIdRina {
-				RinaChan := session.GetMember(enum.MemberMasterIdRina)
-				RinaChan.ViewStatus = int32(req.ViewStatusByPos[k+1])
-				session.UpdateMember(RinaChan)
-			}
+	for pos, viewStatus := range req.ViewStatusByPos.Map {
+		memberId := req.MemberMasterIdByPos.GetOnly(pos)
+		if *memberId == enum.MemberMasterIdRina {
+			RinaChan := session.GetMember(enum.MemberMasterIdRina)
+			RinaChan.ViewStatus = *viewStatus
+			session.UpdateMember(RinaChan)
 		}
 	}
 
-	var userLiveMvDeckCustomById []any
-	userLiveMvDeckCustomById = append(userLiveMvDeckCustomById, req.LiveMasterId)
-	userLiveMvDeckCustomById = append(userLiveMvDeckCustomById, userLiveMvDeck)
-
-	signBody := session.Finalize("{}", "user_model")
-	if req.LiveMvDeckType == 1 {
-		signBody, _ = sjson.Set(signBody, "user_model.user_live_mv_deck_by_id", userLiveMvDeckCustomById)
+	if req.LiveMvDeckType == enum.LiveMvDeckTypeOriginal {
+		session.UserModel.UserLiveMvDeckById.Set(req.LiveMasterId, userLiveMvDeck)
 	} else {
-		signBody, _ = sjson.Set(signBody, "user_model.user_live_mv_deck_custom_by_id", userLiveMvDeckCustomById)
+		session.UserModel.UserLiveMvDeckCustomById.Set(req.LiveMasterId, userLiveMvDeck)
 	}
 
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }

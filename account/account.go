@@ -2,7 +2,7 @@ package account
 
 import (
 	"elichika/client"
-	"elichika/protocol/response"
+	"elichika/client/response"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -47,7 +47,7 @@ func ExportUser(ctx *gin.Context) string {
 }
 
 func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
-	loginData := response.Login{}
+	loginData := response.LoginResponse{}
 	loginData.UserModel = new(client.UserModel)
 	err := json.Unmarshal([]byte(loginJson), &loginData)
 	if err != nil {

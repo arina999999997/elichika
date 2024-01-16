@@ -113,7 +113,6 @@ func SaveSuit(ctx *gin.Context) {
 	})
 }
 
-// TODO(now): Change to use request and response types
 func SaveDeck(ctx *gin.Context) {
 
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -127,7 +126,7 @@ func SaveDeck(ctx *gin.Context) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	for position, cardMasterId := range req.CardMasterIds.Map {
-		// there should only be 1 pair here 
+		// there should only be 1 pair here
 		deck := session.GetUserLiveDeck(req.DeckId)
 		replacedCardMasterId := reflect.ValueOf(deck).Field(1 + int(position)).Interface().(generic.Nullable[int32]).Value
 		replacedSuitMasterId := reflect.ValueOf(deck).Field(1 + int(position) + 9).Interface().(generic.Nullable[int32]).Value
@@ -200,7 +199,7 @@ func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 	liveDeck := session.GetUserLiveDeck(req.DeckId)
 	liveDeck.Name.DotUnderText = req.DeckName
 	session.UpdateUserLiveDeck(liveDeck)
-	
+
 	session.Finalize("{}", "dummy")
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,

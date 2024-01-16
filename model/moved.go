@@ -2,6 +2,7 @@ package model
 
 import (
 	"elichika/client"
+	"elichika/client/response"
 	"elichika/generic"
 )
 
@@ -79,4 +80,7 @@ func init() {
 
 	TableNameToInterface["u_live_difficulty"] = generic.UserIdWrapper[client.UserLiveDifficulty]{}
 	TableNameToInterface["u_last_play_live_difficulty_deck"] = generic.UserIdWrapper[client.LastPlayLiveDifficultyDeck]{}
+
+	TableNameToInterface["u_login"] = generic.UserIdWrapper[response.LoginResponse]{}
+
 }

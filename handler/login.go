@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"elichika/account"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/config"
 	"elichika/encrypt"
 	"elichika/locale"
@@ -18,11 +19,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func StartUpAuthorizationKey(mask64 string) string {
+func StartupAuthorizationKey(mask64 string) string {
 	mask, err := base64.StdEncoding.DecodeString(mask64)
-	if err != nil {
-		panic(err)
-	}
+	utils.CheckErr(err)
 	randomBytes := encrypt.RSA_DecryptOAEP(mask, "privatekey.pem")
 	newKey := utils.Xor(randomBytes, []byte(config.SessionKey))
 	newKey64 := base64.StdEncoding.EncodeToString(newKey)
@@ -44,61 +43,49 @@ func LoginSessionKey(mask64 string) string {
 	return newKey64
 }
 
-// TODO(refactor): Change to use request and response types
-func StartUp(ctx *gin.Context) {
+func Startup(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type StartUpReq struct {
-		Mask                        string `json:"mask"`
-		ResemaraDetectionIdentifier string `json:"resemara_detection_identifier"` // reset marathon (reroll)
-		TimeDifference              int    `json:"time_difference"`               // second different from utc + 0
-		RecaptchaToken              string `json:"recaptcha_token"`               // not necessary
-	}
-	req := StartUpReq{}
+	req := request.StartupRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	type StartUpResp struct {
-		UserId           int    `json:"user_id"`
-		AuthorizationKey string `json:"authorization_key"`
-	}
-	respObj := StartUpResp{}
-	respObj.UserId = userdata.CreateNewAccount(ctx, -1, "")
-	respObj.AuthorizationKey = StartUpAuthorizationKey(req.Mask)
-	startupBody, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(startupBody), ctx.MustGet("locale").(*locale.Locale).StartUpKey)
+
+	resp := response.StartupResponse{}
+	resp.UserId = int32(userdata.CreateNewAccount(ctx, -1, ""))
+	resp.AuthorizationKey = StartupAuthorizationKey(req.Mask)
+	// note that this use a different key than the common one
+	startupBody, _ := json.Marshal(resp)
+	respBody := SignResp(ctx, string(startupBody), ctx.MustGet("locale").(*locale.Locale).StartupKey)
 	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	ctx.String(http.StatusOK, respBody)
 }
 
 // TODO(refactor): Change to use request and response types
 func Login(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.LoginRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
-	var mask64 string
-	req := gjson.Parse(reqBody)
-	req.ForEach(func(key, value gjson.Result) bool {
-		if value.Get("mask").String() != "" {
-			mask64 = value.Get("mask").String()
-			return false
-		}
-		return true
-	})
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
+
 	if session == nil {
 		userdata.CreateNewAccount(ctx, userId, "")
 		session = userdata.GetSession(ctx, userId)
 		defer session.Close()
 	}
+
 	fmt.Println("User logins: ", userId)
-	loginResponse := session.Login()
-	loginResponse.SessionKey = LoginSessionKey(mask64)
-	session.Finalize("{}", "user_model")
-	loginBody, err := json.Marshal(loginResponse)
-	utils.CheckErr(err)
-	resp := SignResp(ctx, string(loginBody), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-	utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", userId, ".json"), account.ExportUser(ctx))
-	// fmt.Println(resp)
+
+	resp := session.Login()
+	resp.SessionKey = LoginSessionKey(req.Mask)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, resp)
+
+	{
+		backupText, err := json.Marshal(resp)
+		utils.CheckErr(err)
+		utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", userId, ".json"), string(backupText))
+	}
 }

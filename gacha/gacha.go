@@ -52,9 +52,10 @@ func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed 
 		AfterGrade:           card.Grade + 1,
 		BeforeLoveLevelLimit: session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit),
 	}
-	if isGuaranteed {
-		resultCard.GachaLotType = enum.GachaLotTypeAssurance
-	}
+	// if isGuaranteed {
+	// if all 10 cards has this it can crash so let's not assign it
+	// 	resultCard.GachaLotType = enum.GachaLotTypeAssurance
+	// }
 	if resultCard.AfterGrade == 6 { // maxed out card
 		resultCard.AfterGrade = 5
 		content := item.SchoolIdolRadiance

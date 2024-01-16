@@ -14,7 +14,7 @@ type Locale struct {
 	// Loaded bool
 	Path          string
 	Language      string
-	StartUpKey    string
+	StartupKey    string
 	MasterVersion string
 	Gamedata      *gamedata.Gamedata
 	Dictionary    *dictionary.Dictionary
@@ -41,7 +41,7 @@ func addLocale(path, language, masterVersion, startUpKey string) {
 		Path:          path,
 		Language:      language,
 		MasterVersion: masterVersion,
-		StartUpKey:    startUpKey,
+		StartupKey:    startUpKey,
 	}
 	locale.Load()
 	Locales[language] = &locale
@@ -49,8 +49,8 @@ func addLocale(path, language, masterVersion, startUpKey string) {
 
 func init() {
 	Locales = make(map[string](*Locale))
-	addLocale(config.GlMasterdataPath, "en", config.MasterVersionGl, config.GlStartUpKey)
-	addLocale(config.GlMasterdataPath, "zh", config.MasterVersionGl, config.GlStartUpKey)
-	addLocale(config.GlMasterdataPath, "ko", config.MasterVersionGl, config.GlStartUpKey)
-	addLocale(config.JpMasterdataPath, "ja", config.MasterVersionJp, config.JpStartUpKey)
+	addLocale(config.GlMasterdataPath, "en", config.MasterVersionGl, config.GlStartupKey)
+	addLocale(config.GlMasterdataPath, "zh", config.MasterVersionGl, config.GlStartupKey)
+	addLocale(config.GlMasterdataPath, "ko", config.MasterVersionGl, config.GlStartupKey)
+	addLocale(config.JpMasterdataPath, "ja", config.MasterVersionJp, config.JpStartupKey)
 }

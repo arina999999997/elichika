@@ -1,22 +1,21 @@
 package userdata
 
 import (
-	"elichika/protocol/response"
+	"elichika/client/response"
 	"elichika/utils"
 
 	"fmt"
 	"time"
 )
 
-func (session *Session) GetLoginData() response.Login {
-	login := response.Login{}
+func (session *Session) GetLoginResponse() response.LoginResponse {
+	login := response.LoginResponse{}
 	exists, err := session.Db.Table("u_login").Where("user_id = ?", session.UserId).Get(&login)
 	utils.CheckErr(err)
 	if !exists {
-		login = response.Login{
+		login = response.LoginResponse{
 			IsPlatformServiceLinked: true,
 			LastTimestamp:           time.Now().UnixMilli(),
-			Cautions:                []int{},
 			CheckMaintenance:        true,
 			FromEea:                 false,
 		}
@@ -26,7 +25,7 @@ func (session *Session) GetLoginData() response.Login {
 	return login
 }
 
-func (session *Session) UpdateLoginData(login response.Login) {
+func (session *Session) UpdateLoginData(login response.LoginResponse) {
 	affected, err := session.Db.Table("u_login").Where("user_id = ?", session.UserId).AllCols().Update(&login)
 	utils.CheckErr(err)
 	if affected == 0 {
@@ -34,9 +33,9 @@ func (session *Session) UpdateLoginData(login response.Login) {
 	}
 }
 
-func (session *Session) Login() response.Login {
+func (session *Session) Login() response.LoginResponse {
 	// perform a login, load the relevant data into UserModel and load login data into login
-	login := session.GetLoginData()
+	login := session.GetLoginResponse()
 	login.UserModel = &session.UserModel
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	session.SessionType = SessionTypeLogin
@@ -47,6 +46,6 @@ func (session *Session) Login() response.Login {
 	}
 	fmt.Println("after")
 	// only this part is necessary
-	login.MemberLovePanels = session.MemberLovePanels
+	login.MemberLovePanels.Slice = session.MemberLovePanels
 	return login
 }

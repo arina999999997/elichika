@@ -33,8 +33,8 @@ var (
 	MasterVersionGl = "2d61e7b4e89961c7" // read from GL database, so user can update db just by changing that
 	MasterVersionJp = "b66ec2295e9a00aa" // ditto
 
-	GlStartUpKey = "TxQFwgNcKDlesb93"
-	JpStartUpKey = "5f7IZY1QrAX0D49g"
+	GlStartupKey = "TxQFwgNcKDlesb93"
+	JpStartupKey = "5f7IZY1QrAX0D49g"
 
 	StaticDataPath = "static/"
 
