@@ -2,13 +2,8 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/model"
+	"elichika/generic"
 	"elichika/utils"
-
-	"encoding/json"
-	"strings"
-
-	"github.com/tidwall/gjson"
 )
 
 func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficultyId int32) client.UserLiveDifficulty {
@@ -57,69 +52,27 @@ func liveDifficultyFinalizer(session *Session) {
 
 }
 
-func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyId int) *model.LastPlayLiveDifficultyDeck {
-	lastPlayDeck := model.LastPlayLiveDifficultyDeck{}
-	exist, err := session.Db.Table("u_live_difficulty").
+func (session *Session) GetLastPlayLiveDifficultyDeck(liveDifficultyId int32) generic.Nullable[client.LastPlayLiveDifficultyDeck] {
+	lastPlayDeck := client.LastPlayLiveDifficultyDeck{}
+
+	exist, err := session.Db.Table("u_last_play_live_difficulty_deck").
 		Where("user_id = ? AND live_difficulty_id = ?", session.UserId, liveDifficultyId).
 		Get(&lastPlayDeck)
 	utils.CheckErr(err)
 	if !exist {
-		return nil
+		return generic.Nullable[client.LastPlayLiveDifficultyDeck]{}
+	} else {
+		return generic.NewNullable(lastPlayDeck)
 	}
-	return &lastPlayDeck
 }
 
-func (session *Session) BuildLastPlayLiveDifficultyDeck(deckId, liveDifficultyId int) model.LastPlayLiveDifficultyDeck {
-	lastPlayDeck := model.LastPlayLiveDifficultyDeck{
-		LiveDifficultyId: liveDifficultyId,
-		Voltage:          0,     // filled by handler
-		IsCleared:        false, // filled by handler
-		RecordedAt:       session.Time.Unix()}
-	lastPlayDeck.CardWithSuitDict = make([]int, 18)
-	userLiveDeck := session.GetUserLiveDeck(deckId)
-	userLiveDeckJson, _ := json.Marshal(userLiveDeck)
-
-	gjson.Parse(string(userLiveDeckJson)).ForEach(func(key, value gjson.Result) bool {
-		k := key.String()
-		if strings.Contains(k, "_master_id_") {
-			id := int(k[len(k)-1] - '0')
-			if strings.Contains(k, "card_master_id") {
-				lastPlayDeck.CardWithSuitDict[id*2-2] = int(value.Int())
-			} else {
-				lastPlayDeck.CardWithSuitDict[id*2-1] = int(value.Int())
-			}
-		}
-		return true
-	})
-
-	liveParties := session.GetUserLivePartiesWithDeckId(deckId)
-	for i, party := range liveParties {
-		squad := model.DeckSquadDict{}
-		partyJson, _ := json.Marshal(party)
-		gjson.Parse(string(partyJson)).ForEach(func(key, value gjson.Result) bool {
-			k := key.String()
-			if strings.Contains(k, "card_master_id_") {
-				squad.CardMasterIds = append(squad.CardMasterIds, int32(value.Int()))
-			} else if strings.Contains(k, "user_accessory_id_") {
-				ptr := new(int64)
-				*ptr = value.Int()
-				squad.UserAccessoryIds = append(squad.UserAccessoryIds, ptr)
-			}
-			return true
-		})
-		lastPlayDeck.SquadDict = append(lastPlayDeck.SquadDict, i)
-		lastPlayDeck.SquadDict = append(lastPlayDeck.SquadDict, squad)
-	}
-
-	return lastPlayDeck
-}
-
-func (session *Session) SetLastPlayLiveDifficultyDeck(deck model.LastPlayLiveDifficultyDeck) {
-	// TODO: maybe this can be put in finalizer
-	// always call after inserting the actual live play, so we can just update
-	_, err := session.Db.Table("u_live_difficulty").Where("user_id = ? and live_difficulty_id = ?", session.UserId, deck.LiveDifficultyId).
+func (session *Session) UpdateLastPlayLiveDifficultyDeck(deck client.LastPlayLiveDifficultyDeck) {
+	affected, err := session.Db.Table("u_last_play_live_difficulty_deck").Where("user_id = ? and live_difficulty_id = ?", session.UserId, deck.LiveDifficultyId).
 		AllCols().Update(&deck)
 	utils.CheckErr(err)
+	if affected == 0 {
+		genericDatabaseInsert(session, "u_last_play_live_difficulty_deck", deck)
+	}
 }
 
 func init() {

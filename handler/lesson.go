@@ -145,7 +145,7 @@ func SaveDeckLesson(ctx *gin.Context) {
 	req := request.SaveLessonDeckRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()

@@ -15,6 +15,7 @@ import (
 
 	"encoding/json"
 	"net/http"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -112,8 +113,29 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 	// record this live
 	liveRecord := session.GetLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
 	liveRecord.IsNew = false
-	lastPlayDeck := session.BuildLastPlayLiveDifficultyDeck(live.DeckId, int(liveDifficultyId))
-	lastPlayDeck.Voltage = req.LiveScore.CurrentScore
+	lastPlayDeck := client.LastPlayLiveDifficultyDeck{
+		LiveDifficultyId: liveDifficultyId,
+		Voltage:          int32(req.LiveScore.CurrentScore),
+		IsCleared:        req.LiveFinishStatus == enum.LiveFinishStatusSucceeded,
+		RecordedAt:       session.Time.Unix(),
+	}
+	liveDeck := session.GetUserLiveDeck(session.UserStatus.LatestLiveDeckId)
+	for position := 1; position <= 9; position++ {
+		cardMasterId := reflect.ValueOf(liveDeck).Field(1 + position).Interface().(generic.Nullable[int32]).Value
+		suitMasterId := reflect.ValueOf(liveDeck).Field(1 + position + 9).Interface().(generic.Nullable[int32]).Value
+		lastPlayDeck.CardWithSuitDict.Set(cardMasterId, suitMasterId)
+	}
+	liveParties := session.GetUserLivePartiesWithDeckId(session.UserStatus.LatestLiveDeckId)
+	for _, liveParty := range liveParties {
+		liveSquad := client.LiveSquad{}
+		liveSquad.CardMasterIds.Append(liveParty.CardMasterId1.Value)
+		liveSquad.CardMasterIds.Append(liveParty.CardMasterId2.Value)
+		liveSquad.CardMasterIds.Append(liveParty.CardMasterId3.Value)
+		liveSquad.UserAccessoryIds.Append(liveParty.UserAccessoryId1)
+		liveSquad.UserAccessoryIds.Append(liveParty.UserAccessoryId2)
+		liveSquad.UserAccessoryIds.Append(liveParty.UserAccessoryId3)
+		lastPlayDeck.SquadDict.Set(liveParty.PartyId%10-1, liveSquad)
+	}
 
 	liveResult := LiveFinishLiveResult{
 		LiveDifficultyMasterId: int(session.UserStatus.LastLiveDifficultyId),
@@ -127,10 +149,10 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 		LiveFinishStatus:       req.LiveFinishStatus}
 
 	liveRecord.PlayCount++
-	lastPlayDeck.IsCleared = req.LiveFinishStatus == enum.LiveFinishStatusSucceeded
 	liveResult.LiveResultAchievements.AppendNewWithId(1).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement1.HasValue
 	liveResult.LiveResultAchievements.AppendNewWithId(2).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2.HasValue
 	liveResult.LiveResultAchievements.AppendNewWithId(3).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3.HasValue
+
 	if lastPlayDeck.IsCleared {
 		// add story if it is a story mode
 		if live.CellId != nil {
@@ -237,7 +259,8 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 		*liveResult.Partner = session.GetOtherUserBasicProfile(live.PartnerUserId)
 	}
 	session.UpdateLiveDifficulty(liveRecord)
-	session.SetLastPlayLiveDifficultyDeck(lastPlayDeck)
+
+	session.UpdateLastPlayLiveDifficultyDeck(lastPlayDeck)
 	liveFinishResp := session.Finalize("{}", "user_model_diff")
 	liveFinishResp, _ = sjson.Set(liveFinishResp, "live_result", liveResult)
 

@@ -41,9 +41,9 @@ type SkipLiveResult struct {
 func LiveSkip(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	type LiveSkipReq struct {
-		LiveDifficultyMasterId int `json:"live_difficulty_master_id"`
-		DeckId                 int `json:"deck_id"`
-		TicketUseCount         int `json:"ticket_use_count"`
+		LiveDifficultyMasterId int   `json:"live_difficulty_master_id"`
+		DeckId                 int32 `json:"deck_id"`
+		TicketUseCount         int   `json:"ticket_use_count"`
 	}
 	req := LiveSkipReq{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -69,7 +69,7 @@ func LiveSkip(ctx *gin.Context) {
 
 	skipLiveResult := SkipLiveResult{
 		LiveDifficultyMasterId: req.LiveDifficultyMasterId,
-		LiveDeckId:             req.DeckId,
+		LiveDeckId:             int(req.DeckId),
 		GainUserExp:            liveDifficulty.RewardUserExp * req.TicketUseCount}
 
 	for i := 1; i <= req.TicketUseCount; i++ {

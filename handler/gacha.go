@@ -26,7 +26,6 @@ func FetchGachaMenu(ctx *gin.Context) {
 	})
 }
 
-// TODO(now): Change to use request and response types
 func GachaDraw(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.DrawGachaRequest{}

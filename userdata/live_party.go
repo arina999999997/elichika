@@ -17,7 +17,7 @@ func (session *Session) GetUserLiveParty(partyId int) client.UserLiveParty {
 	return liveParty
 }
 
-func (session *Session) GetUserLivePartiesWithDeckId(deckId int) []client.UserLiveParty {
+func (session *Session) GetUserLivePartiesWithDeckId(deckId int32) []client.UserLiveParty {
 	liveParties := []client.UserLiveParty{}
 	err := session.Db.Table("u_live_party").
 		Where("user_id = ? AND user_live_deck_id = ?", session.UserId, deckId).
@@ -26,7 +26,7 @@ func (session *Session) GetUserLivePartiesWithDeckId(deckId int) []client.UserLi
 	return liveParties
 }
 
-func (session *Session) GetUserLivePartyWithDeckAndCardId(deckId int, cardId int) client.UserLiveParty {
+func (session *Session) GetUserLivePartyWithDeckAndCardId(deckId, cardId int32) client.UserLiveParty {
 	liveParty := client.UserLiveParty{}
 	exist, err := session.Db.Table("u_live_party").
 		Where("user_id = ? AND user_live_deck_id = ? AND (card_master_id_1 = ? OR card_master_id_2 = ? OR card_master_id_3 = ?)",

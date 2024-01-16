@@ -2,16 +2,18 @@
 // Dictionary_2_<KEY_TYPE>_DotUnder_<VALUE_TYPE>
 // requirement:
 // - Convertible to and from jsons [key_1, value_1, key_2, value_2, key_3, value_3, ...]
-// - The keys are sorted increasingly.
-//   - This is the behaviour of the official server.
-//   - The client can sometime handle things if it's not sorted, but other time it might cause problems
-//   - for example the order of decks
-//
+// - Ordered, in the sense that key_1, key_2, will be in the order they are first inserted
+//   - Sometime this doesn't matter, sometime it doesn't.
 // - If the map is nil or empty, return [] for json
+// implementation choices:
 // - The value are stored using pointer, this is consistent with the client
 //   - The pointer can be null, in which case it should be jsonfied as null
+// - the dictionary type is insert only
+// - User can do unordered iteration using d.Map
+// - Or ordered iteration using d.Order
+// - User can access the inner pointer directly
 
-// Pretty sure the implementation is Dictionary<TKey, TValue> from c#, but we will have our own interface for now.
+// Pretty sure the implementation is Dictionary<TKey, TValue> from c# with some modification, but we will have our own interface for now.
 
 // To read and write the map from database, tag the table and map key like so
 // type UserModel struct {
@@ -36,7 +38,8 @@ import (
 )
 
 type Dictionary[K int32 | int64, V any] struct {
-	Map map[K]*V
+	Map   map[K]*V
+	Order []K
 }
 
 func (d *Dictionary[K, V]) Get(key K) (*V, bool) {
@@ -48,6 +51,9 @@ func (d *Dictionary[K, V]) Set(key K, value V) {
 	if d.Map == nil {
 		d.Map = make(map[K]*V)
 	}
+	if !d.Has(key) {
+		d.Order = append(d.Order, key)
+	}
 	d.Map[key] = new(V)
 	*d.Map[key] = value
 }
@@ -55,6 +61,9 @@ func (d *Dictionary[K, V]) Set(key K, value V) {
 func (d *Dictionary[K, V]) SetNull(key K) {
 	if d.Map == nil {
 		d.Map = make(map[K]*V)
+	}
+	if !d.Has(key) {
+		d.Order = append(d.Order, key)
 	}
 	d.Map[key] = nil
 }
@@ -64,8 +73,10 @@ func (d *Dictionary[K, V]) Has(key K) bool {
 	return exist
 }
 
-func (d *Dictionary[K, V]) Remove(key K) {
-	delete(d.Map, key)
+func (d *Dictionary[K, V]) Sort() {
+	sort.Slice(d.Order, func(i, j int) bool {
+		return d.Order[i] < d.Order[j]
+	})
 }
 
 func (d *Dictionary[K, V]) GetOnly(key K) *V {
@@ -106,14 +117,7 @@ func (d *Dictionary[K, V]) UnmarshalJSON(data []byte) error {
 
 func (d Dictionary[K, V]) MarshalJSON() ([]byte, error) {
 	arr := []any{}
-	keys := []K{}
-	for key := range d.Map {
-		keys = append(keys, key)
-	}
-	sort.Slice(keys, func(i, j int) bool {
-		return keys[i] < keys[j]
-	})
-	for _, key := range keys {
+	for _, key := range d.Order { // because the map is insert only, this is guaranteed to exist
 		arr = append(arr, key)
 		arr = append(arr, d.Map[key])
 	}
@@ -138,7 +142,7 @@ func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int, table, mapKe
 	}
 	var values []V
 	if valueHasKey {
-		err := db.Table(table).Where("user_id = ?", userId).Find(&values)
+		err := db.Table(table).Where("user_id = ?", userId).OrderBy(mapKey).Find(&values)
 		utils.CheckErr(err)
 		for _, v := range values {
 			d.Set(reflect.ValueOf(v).Field(keyField).Interface().(K), v)
@@ -162,8 +166,6 @@ func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int, table, mapKe
 			var keys []K
 			err = db.Table(table).Where("user_id = ?", userId).OrderBy(mapKey).Cols(mapKey).Find(&keys)
 			utils.CheckErr(err)
-			fmt.Println(values)
-			fmt.Println(keys)
 			for i := range keys {
 				d.Set(keys[i], values[i])
 			}

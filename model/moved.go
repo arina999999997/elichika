@@ -76,4 +76,7 @@ func init() {
 	TableNameToInterface["u_info_trigger_member_guild_support_item_expired"] = generic.UserIdWrapper[client.UserInfoTriggerMemberGuildSupportItemExpired]{}
 
 	TableNameToInterface["u_member_love_panel"] = generic.UserIdWrapper[client.MemberLovePanel]{}
+
+	TableNameToInterface["u_live_difficulty"] = generic.UserIdWrapper[client.UserLiveDifficulty]{}
+	TableNameToInterface["u_last_play_live_difficulty_deck"] = generic.UserIdWrapper[client.LastPlayLiveDifficultyDeck]{}
 }

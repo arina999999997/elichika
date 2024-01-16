@@ -5,7 +5,7 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLiveDeck(userLiveDeckId int) client.UserLiveDeck {
+func (session *Session) GetUserLiveDeck(userLiveDeckId int32) client.UserLiveDeck {
 	liveDeck := client.UserLiveDeck{}
 	exist, err := session.Db.Table("u_live_deck").
 		Where("user_id = ? AND user_live_deck_id = ?", session.UserId, userLiveDeckId).
