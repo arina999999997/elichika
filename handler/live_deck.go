@@ -185,7 +185,6 @@ func SaveDeck(ctx *gin.Context) {
 	})
 }
 
-// TODO(refactor): Change to use request and response types
 func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ChangeNameLiveDeckRequest{}

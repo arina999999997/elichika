@@ -112,7 +112,7 @@ func (session *Session) GetTowerRankingCell(towerId int32) response.TowerRanking
 	cell := response.TowerRankingCell{
 		Order:            1,
 		SumVoltage:       0,
-		TowerRankingUser: session.GetRankingUser(),
+		TowerRankingUser: session.GetTowerRankingUser(),
 	}
 	for _, score := range scores {
 		cell.SumVoltage += score.Voltage

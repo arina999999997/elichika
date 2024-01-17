@@ -59,7 +59,6 @@ func Startup(ctx *gin.Context) {
 	ctx.String(http.StatusOK, respBody)
 }
 
-// TODO(refactor): Change to use request and response types
 func Login(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.LoginRequest{}

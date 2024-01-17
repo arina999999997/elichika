@@ -35,8 +35,6 @@ type RecoveryTowerCardUsedAllResponse struct {
 	UserModelDiff *client.UserModel `json:"user_model_diff"`
 }
 
-type TowerRankingUser = RankingUser
-
 type TowerRankingCell struct {
 	Order            int32            `json:"order"`
 	SumVoltage       int32            `json:"sum_voltage"`

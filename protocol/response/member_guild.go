@@ -24,7 +24,7 @@ type MemberGuildRanking struct {
 	MemberGuildRankingList []MemberGuildRankingOneTerm `json:"member_guild_ranking_list"`
 }
 
-type MemberGuildUserRankingUserData = RankingUser
+type MemberGuildUserRankingUserData = TowerRankingUser
 
 type MemberGuildUserRankingCell struct {
 	Order                          int64                          `json:"order"`

@@ -2,149 +2,175 @@ package handler
 
 import (
 	"elichika/client"
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/generic"
-	"elichika/protocol/response"
+	"elichika/item"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 // TODO: the logic of this part is wrong or missing
-// the request and response are sound for the most part
-// TODO(refactor): Change to use request and response types
+
 func FetchMemberGuildTop(ctx *gin.Context) {
+	// There is no request body
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	// this does't work
-	signBody := session.Finalize(GetData("fetchMemberGuildTop.json"), "user_model_diff")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+
+	resp := response.FetchMemberGuildTopResponse{
+		UserModelDiff: &session.UserModel,
+	}
+	rank := int32(0)
+	for _, member := range session.Gamedata.Member {
+		rank++
+		resp.MemberGuildTopStatus.MemberGuildRankingAnimationInfo.Append(
+			client.MemberGuildRankingAnimationInfo{
+				MemberMasterId:          member.Id,
+				MemberGuildRankingOrder: rank,
+				MemberGuildRankingPoint: 100000 - rank*1000,
+			})
+	}
+
+	JsonResponse(ctx, resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchMemberGuildSelect(ctx *gin.Context) {
-	resp := SignResp(ctx, GetData("fetchMemberGuildSelect.json"), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func FetchMemberGuildRanking(ctx *gin.Context) {
+	// There is no request body
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	respObj := response.FetchMemberGuildRankingResponse{}
-	respObj.MemberGuildRanking.ViewYear = 2022
-	respObj.MemberGuildRanking.NextYear = 2023
-	respObj.MemberGuildRanking.PreviousYear = 2021
-	oneTerm := response.MemberGuildRankingOneTerm{
+	// this just work
+	resp := response.FetchMemberGuildSelectResponse{}
+
+	JsonResponse(ctx, resp)
+}
+
+func FetchMemberGuildRanking(ctx *gin.Context) {
+	// There is no request body
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
+	resp := response.FetchMemberGuildRankingResponse{}
+	resp.MemberGuildRanking.ViewYear = 2024
+	// resp.MemberGuildRanking.NextYear = 2023
+	// resp.MemberGuildRanking.PreviousYear = 2021
+	oneTerm := client.MemberGuildRankingOneTerm{
 		MemberGuildId: 1,
 		StartAt:       1,
 		EndAt:         1,
 	}
-	{
-		order := 1
-		for group := 0; group <= 2; group++ {
-			for id := 1; id <= 12; id++ {
-				if (id > 9) && (group != 2) {
-					break
-				}
-				memberId := group*100 + id
-				oneTerm.Channels = append(oneTerm.Channels, response.MemberGuildRankingOneTermCell{
-					Order:          order,
-					TotalPoint:     1000000,
-					MemberMasterId: memberId,
-				})
-				order++
-			}
-		}
+
+	rank := int32(0)
+	for _, member := range session.Gamedata.Member {
+		rank++
+		oneTerm.Channels.Append(client.MemberGuildRankingOneTermCell{
+			Order:          rank,
+			TotalPoint:     1000000,
+			MemberMasterId: member.Id,
+		})
 	}
 
-	respObj.MemberGuildRanking.MemberGuildRankingList = append(respObj.MemberGuildRanking.MemberGuildRankingList, oneTerm)
+	resp.MemberGuildRanking.MemberGuildRankingList.Append(oneTerm)
 
-	mgur := response.MemberGuildUserRanking{
+	mgur := client.MemberGuildUserRanking{
 		MemberGuildId: 1,
 	}
-	userData := response.MemberGuildUserRankingUserData{
-		UserId:                 session.UserId,
-		UserRank:               int(session.UserStatus.Rank),
-		CardMasterId:           int(session.UserStatus.RecommendCardMasterId),
+	userData := client.MemberGuildUserRankingUserData{
+		UserId:                 int32(session.UserId),
+		UserName:               session.UserStatus.Name,
+		UserRank:               session.UserStatus.Rank,
+		CardMasterId:           session.UserStatus.RecommendCardMasterId,
 		Level:                  80,
 		IsAwakening:            true,
 		IsAllTrainingActivated: true,
-		EmblemMasterId:         int(session.UserStatus.EmblemId),
+		EmblemMasterId:         session.UserStatus.EmblemId,
 	}
-	userData.UserName.DotUnderText = session.UserStatus.Name.DotUnderText
-	userRankingCell := response.MemberGuildUserRankingCell{
-		Order:                          1,
+	userRankingCell := client.MemberGuildUserRankingCell{
+		Order:                          generic.NewNullable(int32(1)),
 		TotalPoint:                     1000000,
 		MemberGuildUserRankingUserData: userData,
 	}
-	mgur.TopRanking = append(mgur.TopRanking, userRankingCell)
-	mgur.MyRanking = append(mgur.MyRanking, userRankingCell)
-	rankingBorderInfo := response.MemberGuildUserRankingBorderInfo{
-		RankingOrderPoint: 1,
-		UpperRank:         1,
-		LowerRank:         1,
-		DisplayOrder:      1,
+	mgur.TopRanking.Append(userRankingCell)
+	mgur.MyRanking.Append(userRankingCell)
+	rankingBorderInfo := client.MemberGuildUserRankingBorderInfo{
+		RankingBorderPoint: 1,
+		UpperRank:          1,
+		// LowerRank:         1,
+		DisplayOrder: 1,
 	}
-	mgur.RankingBorders = append(mgur.RankingBorders, rankingBorderInfo)
-	respObj.MemberGuildUserRankingList = append(respObj.MemberGuildUserRankingList, mgur)
+	mgur.RankingBorders.Append(rankingBorderInfo)
+	resp.MemberGuildUserRankingList.Append(mgur)
 
-	respBytes, err := json.Marshal(respObj)
-	utils.CheckErr(err)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func CheerMemberGuild(ctx *gin.Context) {
-	// this is extracted from Serialization_DeserializeCheerMemberGuildResponse
-	// type CheerMemberGuildResp struct {
-	// 	Rewards              []client.Content `json:"rewards"`
-	// 	MemberGuildTopStatus []any           `json:"member_guild_top_status"`
-	// 	UserModelDiff        []any           `json:"user_model_diff"`
-	// }
-
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	signBody := session.Finalize(GetData("fetchMemberGuildTop.json"), "user_model_diff")
-	signBody, _ = sjson.Set(signBody, "rewards", []client.Content{})
-
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func JoinMemberGuild(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type JoinMemberGuildReq struct {
-		MemberMasterId int32 `json:"member_master_id"`
-	}
-	req := JoinMemberGuildReq{}
+	req := request.CheerMemberGuildRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserStatus.MemberGuildMemberMasterId = generic.NewNullable(req.MemberMasterId)
-	signBody := session.Finalize("{}", "user_model")
 
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	resp := response.CheerMemberGuildResponse{
+		UserModelDiff: &session.UserModel,
+	}
+	// this is the same with FetchMemberGuildTop
+	rank := int32(0)
+	for _, member := range session.Gamedata.Member {
+		rank++
+		resp.MemberGuildTopStatus.MemberGuildRankingAnimationInfo.Append(
+			client.MemberGuildRankingAnimationInfo{
+				MemberMasterId:          member.Id,
+				MemberGuildRankingOrder: rank,
+				MemberGuildRankingPoint: 100000 - rank*1000,
+			})
+	}
+
+	// for now award 10 stargems, but we do have the drop table available
+	// it's not clear whether the chance are the same though
+	// also the items are actually given to the reward box instead
+	if !req.CheerItemAmount.HasValue {
+		req.CheerItemAmount.Value = 1
+		// mark the free chance as used
+	}
+
+	// remove the items or update the free cheer
+
+	for i := int32(0); i < req.CheerItemAmount.Value; i++ {
+		session.AddResource(item.StarGem.Amount(100))
+		resp.Rewards.Append(item.StarGem.Amount(100))
+	}
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, &resp)
+}
+
+func JoinMemberGuild(ctx *gin.Context) {
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.JoinMemberGuildRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
+	session.UserStatus.MemberGuildMemberMasterId = generic.NewNullable(req.MemberMasterId)
+	session.UserStatus.MemberGuildLastUpdatedAt = session.Time.Unix()
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }

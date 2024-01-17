@@ -4,7 +4,7 @@ import (
 	"elichika/client"
 )
 
-type RankingUser struct {
+type TowerRankingUser struct {
 	UserId                 int                  `json:"user_id"`
 	UserName               client.LocalizedText `json:"user_name"`
 	UserRank               int                  `json:"user_rank"`
