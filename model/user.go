@@ -50,29 +50,29 @@ type LivePartnerCard struct {
 	PartnerCard                 PartnerCardInfo `json:"partner_card"`
 }
 
-type Profile struct {
-	ProfileInfo UserProfileInfo `xorm:"extends" json:"profile_info"`
-	GuestInfo   struct {
-		LivePartnersCards []LivePartnerCard `json:"live_partner_cards"`
-	} `xorm:"-" json:"guest_info"`
-	PlayInfo struct {
-		LivePlayCount          []int          `xorm:"-" json:"live_play_count"`
-		LiveClearCount         []int          `xorm:"-" json:"live_clear_count"`
-		JoinedLiveCardRanking  []CardPlayInfo `xorm:"-" json:"joined_live_card_ranking"`
-		PlaySkillCardRanking   []CardPlayInfo `xorm:"-" json:"play_skill_card_ranking"`
-		MaxScoreLiveDifficulty struct {
-			LiveDifficultyMasterId int32 `xorm:"'max_score_live_difficulty_master_id'" json:"live_difficulty_master_id"`
-			Score                  int32 `xorm:"'live_max_score'" json:"score"`
-		} `xorm:"extends" json:"max_score_live_difficulty"`
-		MaxComboLiveDifficulty struct {
-			LiveDifficultyMasterId int32 `xorm:"'max_combo_live_difficulty_master_id'" json:"live_difficulty_master_id"`
-			Score                  int32 `xorm:"'live_max_combo'" json:"score"`
-		} `xorm:"extends" json:"max_combo_live_difficulty"`
-	} `xorm:"extends" json:"play_info"`
-	MemberInfo struct {
-		UserMembers []MemberPublicInfo `json:"user_members"`
-	} `xorm:"-" json:"member_info"`
-}
+// type Profile struct {
+// 	ProfileInfo UserProfileInfo `xorm:"extends" json:"profile_info"`
+// 	GuestInfo   struct {
+// 		LivePartnersCards []LivePartnerCard `json:"live_partner_cards"`
+// 	} `xorm:"-" json:"guest_info"`
+// 	PlayInfo struct {
+// 		LivePlayCount          []int          `xorm:"-" json:"live_play_count"`
+// 		LiveClearCount         []int          `xorm:"-" json:"live_clear_count"`
+// 		JoinedLiveCardRanking  []CardPlayInfo `xorm:"-" json:"joined_live_card_ranking"`
+// 		PlaySkillCardRanking   []CardPlayInfo `xorm:"-" json:"play_skill_card_ranking"`
+// 		MaxScoreLiveDifficulty struct {
+// 			LiveDifficultyMasterId int32 `xorm:"'max_score_live_difficulty_master_id'" json:"live_difficulty_master_id"`
+// 			Score                  int32 `xorm:"'live_max_score'" json:"score"`
+// 		} `xorm:"extends" json:"max_score_live_difficulty"`
+// 		MaxComboLiveDifficulty struct {
+// 			LiveDifficultyMasterId int32 `xorm:"'max_combo_live_difficulty_master_id'" json:"live_difficulty_master_id"`
+// 			Score                  int32 `xorm:"'live_max_combo'" json:"score"`
+// 		} `xorm:"extends" json:"max_combo_live_difficulty"`
+// 	} `xorm:"extends" json:"play_info"`
+// 	MemberInfo struct {
+// 		UserMembers []MemberPublicInfo `json:"user_members"`
+// 	} `xorm:"-" json:"member_info"`
+// }
 
 func init() {
 

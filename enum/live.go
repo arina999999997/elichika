@@ -21,15 +21,6 @@ const (
 )
 
 const (
-	LiveDifficultyTypeNormal         = 0x0000000a // 10
-	LiveDifficultyTypeHard           = 0x00000014 // 20
-	LiveDifficultyTypeExpert         = 0x0000001e // 30
-	LiveDifficultyTypeExpertPlus     = 0x00000023 // 35
-	LiveDifficultyTypeExpertPlusPlus = 0x00000025 // 37
-	LiveDifficultyTypeMaster         = 0x00000028 // 40
-)
-
-const (
 	LiveTypeManual = 0x00000001
 	LiveTypeMv     = 0x00000002
 	LiveTypeCoop   = 0x00000003

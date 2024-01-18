@@ -2,7 +2,7 @@ package handler
 
 import (
 	"elichika/client/response"
-	
+
 	"github.com/gin-gonic/gin"
 )
 

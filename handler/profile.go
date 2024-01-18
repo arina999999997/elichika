@@ -1,72 +1,64 @@
 package handler
 
 import (
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
 	"elichika/generic"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func FetchProfile(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type FetchProfileReq struct {
-		UserId int `json:"user_id"`
-	}
-	req := FetchProfileReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
-
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	profile := session.FetchProfile(req.UserId)
-
-	signBody, err := json.Marshal(profile)
+	req := request.UserProfileRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	resp := SignResp(ctx, string(signBody), config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
-}
-
-// TODO(refactor): Change to use request and response types
-func SetProfile(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	req := gjson.Parse(reqBody).Array()[0]
-	if req.Get("name").String() != "" {
-		session.UserStatus.Name.DotUnderText = gjson.Parse(reqBody).Array()[0].Get("name").String()
-	} else if req.Get("nickname").String() != "" {
-		session.UserStatus.Nickname.DotUnderText = gjson.Parse(reqBody).Array()[0].Get("nickname").String()
-	} else if req.Get("message").String() != "" {
-		session.UserStatus.Message.DotUnderText = gjson.Parse(reqBody).Array()[0].Get("message").String()
-	}
-
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, session.FetchProfile(req.UserId))
 }
 
-// TODO(refactor): Change to use request and response types
+func SetProfile(ctx *gin.Context) {
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SetUserProfileRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
+	if req.Name.HasValue {
+		session.UserStatus.Name.DotUnderText = req.Name.Value
+	}
+	if req.Nickname.HasValue {
+		session.UserStatus.Nickname.DotUnderText = req.Nickname.Value
+	}
+	if req.Message.HasValue {
+		session.UserStatus.Message.DotUnderText = req.Message.Value
+	}
+	if req.DeviceToken.HasValue {
+		session.UserStatus.DeviceToken = req.DeviceToken.Value
+	}
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
+}
+
 func SetProfileBirthday(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SetProfileBirthdayRequest{}
+	req := request.SetUserProfileBirthDayRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -79,56 +71,53 @@ func SetProfileBirthday(ctx *gin.Context) {
 	session.UserStatus.BirthMonth = generic.NewNullable(req.Month)
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseNameInput {
-		// session.UserStatus.TutorialPhase = enum.TutorialPhaseStory1
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseCorePlayable
 	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func SetRecommendCard(ctx *gin.Context) {
-	reqBody := ctx.GetString("reqBody")
+	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	req := request.SetRecommendCardRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	cardMasterId := int(gjson.Parse(reqBody).Array()[0].Get("card_master_id").Int())
-	session.UserStatus.RecommendCardMasterId = int32(cardMasterId)
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
+	session.UserStatus.RecommendCardMasterId = req.CardMasterId
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func SetLivePartner(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type SetLivePartnerReq struct {
-		LivePartnerCategoryId int `json:"live_partner_category_id"`
-		CardMasterId          int `json:"card_master_id"`
-	}
-	req := SetLivePartnerReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
+	req := request.SetLivePartnerCardRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
 	// set the bit on the correct card
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	newCard := session.GetUserCard(int32(req.CardMasterId))
+
+	newCard := session.GetUserCard(req.CardMasterId)
 	newCard.LivePartnerCategories |= (1 << req.LivePartnerCategoryId)
 	session.UpdateUserCard(newCard)
 
+	// TODO(refactor): Get rid of this bit hacking stuff
 	// remove the bit on the other cards
 	partnerCards := userdata.FetchPartnerCards(userId)
 	for _, card := range partnerCards {
-		if int(card.CardMasterId) == req.CardMasterId {
+		if card.CardMasterId == req.CardMasterId {
 			continue
 		}
 		if (card.LivePartnerCategories & (1 << req.LivePartnerCategoryId)) != 0 {
@@ -138,27 +127,19 @@ func SetLivePartner(ctx *gin.Context) {
 	}
 
 	session.Finalize("{}", "dummy")
-	// this is correct, the server send {}
-	//
-	resp := SignResp(ctx, "{}", config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, response.EmptyResponse{})
 }
 
-// TODO(refactor): Change to use request and response types
 func SetScoreOrComboLive(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type SetScoreOrComboReq struct {
-		LiveDifficultyMasterId int32 `json:"live_difficulty_master_id"`
-	}
-	req := SetScoreOrComboReq{}
+	req := request.SetLiveRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
+
 	setProfile := session.GetUserSetProfile()
 	if ctx.Request.URL.Path == "/userProfile/setScoreLive" {
 		setProfile.VoltageLiveDifficultyId = req.LiveDifficultyMasterId
@@ -166,8 +147,9 @@ func SetScoreOrComboLive(ctx *gin.Context) {
 		setProfile.CommboLiveDifficultyId = req.LiveDifficultyMasterId
 	}
 	session.SetUserSetProfile(setProfile)
+
 	session.Finalize("{}", "dummy")
-	resp := SignResp(ctx, reqBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, response.SetLiveResponse{
+		LiveDifficultyMasterId: req.LiveDifficultyMasterId,
+	})
 }

@@ -17,6 +17,6 @@ type OtherUser struct {
 	IsNew                               bool                    `json:"is_new"`
 	IntroductionMessage                 LocalizedText           `json:"introduction_message"`
 	FriendApprovedAt                    generic.Nullable[int64] `json:"friend_approved_at"`
-	RequestStatus                       int32                   `json:"request_status" enum:""`
+	RequestStatus                       int32                   `json:"request_status" enum:"FriendRequestStatus"`
 	IsRequestPending                    bool                    `json:"is_request_pending"`
 }

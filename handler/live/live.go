@@ -76,7 +76,7 @@ func FetchLivePartners(ctx *gin.Context) {
 	for _, partnerId := range partnerIds {
 		partner := model.LiveStartLivePartner{}
 		partner.IsFriend = true
-		userdata.FetchDBProfile(partnerId, &partner)
+		userdata.FetchDBProfile(int32(partnerId), &partner)
 		partnerCards := userdata.FetchPartnerCards(partnerId) // client.UserCard
 		if len(partnerCards) == 0 {
 			continue
@@ -156,7 +156,7 @@ func LiveStart(ctx *gin.Context) {
 
 	if req.PartnerUserId != 0 {
 		live.LivePartnerCard = session.GetPartnerCardFromUserCard(
-			userdata.GetOtherUserCard(req.PartnerUserId, req.PartnerCardMasterId))
+			userdata.GetOtherUserCard(int32(req.PartnerUserId), req.PartnerCardMasterId))
 	}
 
 	liveStartResp := session.Finalize("{}", "user_model_diff")

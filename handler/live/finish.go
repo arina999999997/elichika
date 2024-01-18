@@ -256,7 +256,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 	liveResult.LiveResultAchievementStatus.RemainingStamina = req.LiveScore.RemainingStamina
 	if live.PartnerUserId != 0 {
 		liveResult.Partner = new(model.UserBasicInfo)
-		*liveResult.Partner = session.GetOtherUserBasicProfile(live.PartnerUserId)
+		*liveResult.Partner = session.GetOtherUserBasicProfile(int32(live.PartnerUserId))
 	}
 	session.UpdateLiveDifficulty(liveRecord)
 
