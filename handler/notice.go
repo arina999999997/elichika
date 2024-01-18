@@ -1,17 +1,23 @@
 package handler
 
 import (
-	"elichika/config"
-	"net/http"
+	"elichika/client"
+	"elichika/client/response"
 
 	"github.com/gin-gonic/gin"
 )
 
-// TODO(refactor): Change to use request and response types
+// TODO(notice): This is not implemented although it could be cool to use it to put guide or stuff
 func FetchNotice(ctx *gin.Context) {
-	signBody := GetData("fetchNotice.json")
-	resp := SignResp(ctx, signBody, config.SessionKey)
+	// there is no request body
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	resp := response.FetchNoticeResponse{
+		NoticeNoCheckAt: 2019600000, // this is used to check if news are already displayed for today
+	}
+	for i := int32(1); i <= 5; i++ {
+		resp.NoticeLists.Set(i, client.NoticeList{
+			Category: i,
+		})
+	}
+	JsonResponse(ctx, &resp)
 }

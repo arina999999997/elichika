@@ -1,20 +1,19 @@
 package handler
 
 import (
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/config"
 	"elichika/enum"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func SaveUserNaviVoice(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveUserNaviVoiceRequest{}
@@ -25,37 +24,33 @@ func SaveUserNaviVoice(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	for _, naviVoiceMasterId := range req.NaviVoiceMasterIds {
+	for _, naviVoiceMasterId := range req.NaviVoiceMasterIds.Slice {
 		session.UpdateVoice(naviVoiceMasterId, false)
 	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func TapLovePoint(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	type TapLovePointReq struct {
-		MemberMasterId int `json:"member_master_id"`
-	}
+	req := request.TapLovePointRequest{}
+	err := json.Unmarshal([]byte(reqBody), &req)
+	utils.CheckErr(err)
 
-	req := TapLovePointReq{}
-	if err := json.Unmarshal([]byte(reqBody), &req); err != nil {
-		panic(err)
-	}
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.AddLovePoint(int32(req.MemberMasterId), int32(*config.Conf.TapBondGain))
+
+	session.AddLovePoint(req.MemberMasterId, *config.Conf.TapBondGain)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseLovePointUp {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingLevelUp
 	}
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }

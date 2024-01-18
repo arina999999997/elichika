@@ -1,17 +1,14 @@
 package handler
 
 import (
-	"elichika/config"
-	"net/http"
-
+	"elichika/client/response"
+	
 	"github.com/gin-gonic/gin"
 )
 
-// TODO(refactor): Change to use request and response types
+// TODO(present): Implement presents
 func FetchPresent(ctx *gin.Context) {
-	signBody := GetData("fetchPresent.json")
-	resp := SignResp(ctx, signBody, config.SessionKey)
+	// there is no request body
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &response.FetchPresentResponse{})
 }

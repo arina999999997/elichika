@@ -10,7 +10,7 @@ import (
 type RuntimeConfig struct {
 	CdnServer        *string `json:"cdn_server"`
 	ServerAddress    *string `json:"server_address"`
-	TapBondGain      *int    `json:"tap_bond_gain"`
+	TapBondGain      *int32  `json:"tap_bond_gain"`
 	AutoJudgeType    *int    `json:"auto_judge_type"`
 	Tutorial         *bool   `json:"tutorial"`
 	LoginBonusSecond *int    `json:"login_bonus_second"` // the second from mid-night till login bonus
@@ -21,7 +21,7 @@ func defaultConfigs() *RuntimeConfig {
 	configs := RuntimeConfig{
 		CdnServer:        new(string), // self-hosted
 		ServerAddress:    new(string),
-		TapBondGain:      new(int),
+		TapBondGain:      new(int32),
 		AutoJudgeType:    new(int),
 		Tutorial:         new(bool),
 		LoginBonusSecond: new(int),
