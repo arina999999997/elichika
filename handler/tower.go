@@ -1,43 +1,34 @@
 package handler
 
 import (
-	"elichika/config"
+	"elichika/client"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
-	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/item"
-	"elichika/protocol/request"
-	"elichika/protocol/response"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	// "github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func FetchTowerSelect(ctx *gin.Context) {
 	// there's no request body
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	// no need to return anything, the same use database for this
-	respObj := response.FetchTowerSelectResponse{
-		TowerIds:      []int{},
+	// no need to return anything, the client uses database for this
+	// probably used to add DLP without having to add anything to database
+	JsonResponse(ctx, &response.FetchTowerSelectResponse{
 		UserModelDiff: &session.UserModel,
-	}
-
-	respBytes, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchTowerTop(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchTowerTopRequest{}
@@ -47,22 +38,20 @@ func FetchTowerTop(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	respObj := response.FetchTowerTopResponse{
+	resp := response.FetchTowerTopResponse{
 		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
-		IsShowUnlockEffect:     false,
 		// other fields are for DLP with voltage ranking
 	}
 
 	userTower := session.GetUserTower(req.TowerId)
-	tower := gamedata.Tower[req.TowerId]
+	tower := session.Gamedata.Tower[req.TowerId]
 	if userTower.ClearedFloor == userTower.ReadFloor {
-		tower := gamedata.Tower[req.TowerId]
+		tower := session.Gamedata.Tower[req.TowerId]
 		if userTower.ReadFloor < tower.FloorCount {
 			userTower.ReadFloor += 1
-			respObj.IsShowUnlockEffect = true
+			resp.IsShowUnlockEffect = true
 			// unlock all the bonus live at once
 			for ; userTower.ReadFloor < tower.FloorCount; userTower.ReadFloor++ {
 				if tower.Floor[userTower.ReadFloor].TowerCellType != enum.TowerCellTypeBonusLive {
@@ -75,28 +64,21 @@ func FetchTowerTop(ctx *gin.Context) {
 
 	// if tower with voltage ranking, then we have to prepare that
 	if tower.IsVoltageRanked {
-		//
 		// EachBonusLiveVoltage should be filled with zero for everything, then fill in the score
 
-		respObj.EachBonusLiveVoltage = make([]int32, tower.FloorCount)
-		respObj.Order = new(int)
-		*respObj.Order = 1
+		resp.EachBonusLiveVoltage.Slice = make([]int32, tower.FloorCount)
+		resp.Order = generic.NewNullable(int32(1))
 		// fetch the score
 		scores := session.GetUserTowerVoltageRankingScores(req.TowerId)
 		for _, score := range scores {
-			respObj.EachBonusLiveVoltage[score.FloorNo-1] = score.Voltage
+			resp.EachBonusLiveVoltage.Slice[score.FloorNo-1] = score.Voltage
 		}
 	}
 
 	session.Finalize("", "dummy")
-
-	respBytes, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func ClearedTowerFloor(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ClearedTowerFloorRequest{}
@@ -107,26 +89,21 @@ func ClearedTowerFloor(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	respObj := response.ClearedTowerFloorResponse{
-		UserModelDiff:      &session.UserModel,
-		IsShowUnlockEffect: false,
-	}
-
 	userTower := session.GetUserTower(req.TowerId)
 	if userTower.ClearedFloor < req.FloorNo {
 		userTower.ClearedFloor = req.FloorNo
 		session.UpdateUserTower(userTower)
 	}
-	session.UserStatus.IsAutoMode = req.IsAutoMode
-	session.Finalize("", "dummy")
+	if req.IsAutoMode.HasValue {
+		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
+	}
 
-	respBytes, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("", "dummy")
+	JsonResponse(ctx, &response.ClearedTowerFloorResponse{
+		UserModelDiff: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func RecoveryTowerCardUsed(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.RecoveryTowerCardUsedRequest{}
@@ -136,41 +113,33 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	tower := gamedata.Tower[req.TowerId]
-
-	for _, cardMasterId := range req.CardMasterIds {
+	for _, cardMasterId := range req.CardMasterIds.Slice {
 		cardUsedCount := session.GetUserTowerCardUsed(req.TowerId, cardMasterId)
 		cardUsedCount.UsedCount--
 		cardUsedCount.RecoveredCount++
-		session.UpdateUserTowerCardUsed(cardUsedCount)
+		session.UpdateUserTowerCardUsed(req.TowerId, cardUsedCount)
 	}
 	// remove the item
-	has := session.GetUserResource(enum.ContentTypeRecoveryTowerCardUsedCount, 24001).Content.ContentAmount
-	if has >= int32(len(req.CardMasterIds)) {
-		session.RemoveResource(item.PerformanceDrink.Amount(int32(len(req.CardMasterIds))))
+	has := session.GetUserResourceByContent(item.PerformanceDrink).Content.ContentAmount
+	cardCount := int32(req.CardMasterIds.Size())
+	if has >= cardCount {
+		session.RemoveResource(item.PerformanceDrink.Amount(cardCount))
 	} else {
 		session.RemoveResource(item.PerformanceDrink.Amount(has))
-		session.RemoveSnsCoin((int32(len(req.CardMasterIds)) - has) * int32(tower.RecoverCostBySnsCoin))
-
+		session.RemoveSnsCoin((cardCount - has) * int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin))
 	}
+
 	session.Finalize("", "dummy")
-	respObj := response.RecoveryTowerCardUsedResponse{
+	JsonResponse(ctx, &response.RecoveryTowerCardUsedResponse{
 		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
-	}
-
-	respBytes, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.RecoveryTowerCardUsedAllRequest{}
+	req := request.RecoveryTowerCardUsedRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -178,26 +147,20 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	respObj := response.RecoveryTowerCardUsedResponse{
+	resp := response.RecoveryTowerCardUsedResponse{
 		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
 	}
-	for i := range respObj.TowerCardUsedCountRows {
-		respObj.TowerCardUsedCountRows[i].UsedCount = 0
-		respObj.TowerCardUsedCountRows[i].RecoveredCount = 0
-		session.UpdateUserTowerCardUsed(respObj.TowerCardUsedCountRows[i])
+	for i := range resp.TowerCardUsedCountRows.Slice {
+		resp.TowerCardUsedCountRows.Slice[i].UsedCount = 0
+		resp.TowerCardUsedCountRows.Slice[i].RecoveredCount = 0
+		session.UpdateUserTowerCardUsed(req.TowerId, resp.TowerCardUsedCountRows.Slice[i])
 	}
-	userTower := session.GetUserTower(req.TowerId)
-	session.UpdateUserTower(userTower)
 
 	session.Finalize("", "dummy")
-	respBytes, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchTowerRanking(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchTowerRankingRequest{}
@@ -208,34 +171,26 @@ func FetchTowerRanking(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	// TODO(multiplayer ranking): return actual data for this
-	respObj := response.FetchTowerRankingResponse{
-		MyOrder: 1,
-	}
-	towerRankingCell := session.GetTowerRankingCell(req.TowerId)
-	respObj.TopRankingCells = append(respObj.TopRankingCells, towerRankingCell)
-	respObj.MyRankingCells = append(respObj.MyRankingCells, towerRankingCell)
-	respObj.FriendRankingCells = append(respObj.FriendRankingCells, towerRankingCell)
-	respObj.RankingBorderInfo = append(respObj.RankingBorderInfo,
-		response.TowerRankingBorderInfo{
-			RankingBorderVoltage: 0,
-			RankingBorderMasterRow: response.TowerRankingBorderMasterRow{
-				RankingType:  enum.EventCommonRankingTypeAll,
-				UpperRank:    1,
-				LowerRank:    1,
-				DisplayOrder: 1,
-			}})
-	respObj.RankingBorderInfo = append(respObj.RankingBorderInfo,
-		response.TowerRankingBorderInfo{
-			RankingBorderVoltage: 0,
-			RankingBorderMasterRow: response.TowerRankingBorderMasterRow{
-				RankingType:  enum.EventCommonRankingTypeFriend,
-				UpperRank:    1,
-				LowerRank:    1,
-				DisplayOrder: 1,
-			}})
-	respBytes, _ := json.Marshal(respObj)
-	resp := SignResp(ctx, string(respBytes), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	// // TODO(multiplayer ranking): return actual data for this
+	resp := response.FetchTowerRankingResponse{}
+	resp.TopRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
+	resp.MyRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
+	resp.FriendRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
+	resp.RankingBorderInfo.Append(client.TowerRankingBorderInfo{
+		RankingBorderVoltage: 0,
+		RankingBorderMasterRow: client.TowerRankingBorderMasterRow{
+			RankingType:  enum.EventCommonRankingTypeAll,
+			UpperRank:    1,
+			DisplayOrder: 1,
+		}})
+	resp.RankingBorderInfo.Append(client.TowerRankingBorderInfo{
+		RankingBorderVoltage: 0,
+		RankingBorderMasterRow: client.TowerRankingBorderMasterRow{
+			RankingType:  enum.EventCommonRankingTypeFriend,
+			UpperRank:    1,
+			DisplayOrder: 1,
+		}})
+	resp.MyOrder = generic.NewNullable(int32(1))
+
+	JsonResponse(ctx, &resp)
 }

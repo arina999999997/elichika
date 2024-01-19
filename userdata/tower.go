@@ -2,19 +2,18 @@ package userdata
 
 import (
 	"elichika/client"
+	"elichika/generic"
 	"elichika/model"
-	"elichika/protocol/response"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) model.UserTowerCardUsedCount {
-	cardUsed := model.UserTowerCardUsedCount{}
+func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) client.TowerCardUsedCount {
+	cardUsed := client.TowerCardUsedCount{}
 	exist, err := session.Db.Table("u_tower_card_used").
 		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, towerId, cardMasterId).Get(&cardUsed)
 	utils.CheckErr(err)
 	if !exist {
-		cardUsed = model.UserTowerCardUsedCount{
-			TowerId:        towerId,
+		cardUsed = client.TowerCardUsedCount{
 			CardMasterId:   cardMasterId,
 			UsedCount:      0,
 			RecoveredCount: 0,
@@ -24,20 +23,27 @@ func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) model.
 	return cardUsed
 }
 
-func (session *Session) UpdateUserTowerCardUsed(card model.UserTowerCardUsedCount) {
+func (session *Session) UpdateUserTowerCardUsed(towerId int32, card client.TowerCardUsedCount) {
 	affected, err := session.Db.Table("u_tower_card_used").
-		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, card.TowerId, card.CardMasterId).
+		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, towerId, card.CardMasterId).
 		AllCols().Update(card)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_tower_card_used", card)
+		type Wrapper struct {
+			Card    client.TowerCardUsedCount `xorm:"extends"`
+			TowerId int32                     `xorm:"pk 'tower_id'"`
+		}
+		genericDatabaseInsert(session, "u_tower_card_used", Wrapper{
+			Card:    card,
+			TowerId: towerId,
+		})
 	}
 }
 
-func (session *Session) GetUserTowerCardUsedList(towerId int32) []model.UserTowerCardUsedCount {
-	list := []model.UserTowerCardUsedCount{}
+func (session *Session) GetUserTowerCardUsedList(towerId int32) generic.List[client.TowerCardUsedCount] {
+	list := generic.List[client.TowerCardUsedCount]{}
 	err := session.Db.Table("u_tower_card_used").
-		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&list)
+		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&list.Slice)
 	utils.CheckErr(err)
 	return list
 }
@@ -107,9 +113,9 @@ func (session *Session) UpdateUserTowerVoltageRankingScore(score model.UserTower
 	}
 }
 
-func (session *Session) GetTowerRankingCell(towerId int32) response.TowerRankingCell {
+func (session *Session) GetTowerRankingCell(towerId int32) client.TowerRankingCell {
 	scores := session.GetUserTowerVoltageRankingScores(towerId)
-	cell := response.TowerRankingCell{
+	cell := client.TowerRankingCell{
 		Order:            1,
 		SumVoltage:       0,
 		TowerRankingUser: session.GetTowerRankingUser(),

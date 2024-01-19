@@ -49,11 +49,11 @@ func (obj *LiveResultAchievement) SetId(id int64) {
 }
 
 type LiveResultTower struct {
-	TowerId             int32                          `json:"tower_id"`
-	FloorNo             int32                          `json:"floor_no"`
-	TotalVoltage        int32                          `json:"total_voltage"`
-	GettedVoltage       int32                          `json:"getted_voltage"` // nice engrish
-	TowerCardUsedCounts []model.UserTowerCardUsedCount `json:"tower_card_used_counts"`
+	TowerId             int32                                   `json:"tower_id"`
+	FloorNo             int32                                   `json:"floor_no"`
+	TotalVoltage        int32                                   `json:"total_voltage"`
+	GettedVoltage       int32                                   `json:"getted_voltage"` // nice engrish
+	TowerCardUsedCounts generic.List[client.TowerCardUsedCount] `json:"tower_card_used_counts"`
 }
 
 type LiveFinishLiveResult struct {
@@ -289,11 +289,10 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 		BeforeUserExp:          int(session.UserStatus.Exp),
 		LiveFinishStatus:       req.LiveFinishStatus,
 		LiveResultTower: &LiveResultTower{
-			TowerId:             *live.TowerLive.TowerId,
-			FloorNo:             *live.TowerLive.FloorNo,
-			TotalVoltage:        int32(req.LiveScore.CurrentScore),
-			GettedVoltage:       int32(req.LiveScore.CurrentScore) - *live.TowerLive.StartVoltage,
-			TowerCardUsedCounts: []model.UserTowerCardUsedCount{},
+			TowerId:       *live.TowerLive.TowerId,
+			FloorNo:       *live.TowerLive.FloorNo,
+			TotalVoltage:  int32(req.LiveScore.CurrentScore),
+			GettedVoltage: int32(req.LiveScore.CurrentScore) - *live.TowerLive.StartVoltage,
 		}}
 
 	for i := range req.LiveScore.CardStatDict.Objects {
@@ -346,8 +345,8 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 			cardUsedCount := session.GetUserTowerCardUsed(*live.TowerLive.TowerId, int32(liveFinishCard.CardMasterId))
 			cardUsedCount.UsedCount++
 			cardUsedCount.LastUsedAt = session.Time.Unix()
-			session.UpdateUserTowerCardUsed(cardUsedCount)
-			liveResult.LiveResultTower.TowerCardUsedCounts = append(liveResult.LiveResultTower.TowerCardUsedCounts, cardUsedCount)
+			session.UpdateUserTowerCardUsed(tower.TowerId, cardUsedCount)
+			liveResult.LiveResultTower.TowerCardUsedCounts.Append(cardUsedCount)
 		}
 	}
 	if awardFirstClearReward {

@@ -26,8 +26,8 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/dictionary"
-	"elichika/model"
 
 	"fmt"
 	"reflect"
@@ -114,9 +114,9 @@ type Gamedata struct {
 
 	Tower map[int32]*Tower
 
-	Trade        map[int]*model.Trade // map from TradeId to Trade
-	TradesByType [3][]*model.Trade    // map from trade type to array of Trade
-	TradeProduct map[int]*model.TradeProduct
+	Trade        map[int32]*Trade   // map from TradeId to Trade
+	TradesByType [3][]*client.Trade // map from trade type to array of Trade
+	TradeProduct map[int32]*client.TradeProduct
 
 	LoginBonus map[int32]*LoginBonus
 }

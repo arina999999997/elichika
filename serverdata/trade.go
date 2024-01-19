@@ -1,7 +1,7 @@
 package serverdata
 
 import (
-	"elichika/model"
+	"elichika/client"
 	"elichika/utils"
 
 	"encoding/json"
@@ -14,24 +14,20 @@ func InsertTrade(session *xorm.Session, args []string) {
 	// insert trades from json
 
 	file := args[0]
-	// tradeType := int(args[1][0]) - '0'
 
-	trades := []model.Trade{}
+	trades := []client.Trade{}
 	err := json.Unmarshal([]byte(utils.ReadAllText(file)), &trades)
 	utils.CheckErr(err)
 
 	for i, trade := range trades {
-		// trades[i].TradeType = tradeType
-		// client use int32 so settle with this until patching client
-		trades[i].EndAt = 0x7fffffff
-		trades[i].ResetAt = 0x7fffffff
-		for j, product := range trade.Products {
+		trades[i].EndAt.HasValue = false
+		trades[i].ResetAt.HasValue = false
+		for j, product := range trade.Products.Slice {
 			product.TradeId = trade.TradeId
-			product.ActualContent = product.Contents[0]
-			product.StockAmount = nil // set the stock to inf
-			trades[i].Products[j] = product
+			product.StockAmount.HasValue = false // set the stock to inf
+			trades[i].Products.Slice[j] = product
 		}
-		_, err = session.Table("s_trade_product").Insert(trades[i].Products)
+		_, err = session.Table("s_trade_product").Insert(trades[i].Products.Slice)
 		utils.CheckErr(err)
 	}
 	_, err = session.Table("s_trade").Insert(trades)

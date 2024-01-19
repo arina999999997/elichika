@@ -2,12 +2,13 @@ package userdata
 
 import (
 	"elichika/client"
+	"elichika/generic"
 	"elichika/model"
 	"elichika/utils"
 )
 
-func (session *Session) GetTradeProductUser(productId int) int {
-	result := 0
+func (session *Session) GetTradeProductUser(productId int32) int32 {
+	result := int32(0)
 	exist, err := session.Db.Table("u_trade_product").
 		Where("user_id = ? AND product_id = ?", session.UserId, productId).
 		Cols("traded_count").Get(&result)
@@ -18,10 +19,10 @@ func (session *Session) GetTradeProductUser(productId int) int {
 	return result
 }
 
-func (session *Session) SetTradeProductUser(productId, newTradedCount int) {
+func (session *Session) SetTradeProductUser(productId, newTradedCount int32) {
 	record := model.TradeProductUser{
-		ProductId:   productId,
-		TradedCount: newTradedCount,
+		ProductId:   int(productId),
+		TradedCount: int(newTradedCount),
 	}
 	exist, err := session.Db.Table("u_trade_product").
 		Where("user_id = ? AND product_id = ?", session.UserId, productId).
@@ -32,21 +33,21 @@ func (session *Session) SetTradeProductUser(productId, newTradedCount int) {
 	}
 }
 
-func (session *Session) GetTrades(tradeType int32) []model.Trade {
-	trades := []model.Trade{}
+func (session *Session) GetTrades(tradeType int32) generic.Array[client.Trade] {
+	trades := generic.Array[client.Trade]{}
 	for _, trade_ptr := range session.Gamedata.TradesByType[tradeType] {
 		trade := *trade_ptr
-		for j, product := range trade.Products {
+		for j, product := range trade.Products.Slice {
 			product.TradedCount = session.GetTradeProductUser(product.ProductId)
-			trade.Products[j] = product
+			trade.Products.Slice[j] = product
 		}
-		trades = append(trades, trade)
+		trades.Append(trade)
 	}
 	return trades
 }
 
 // return whether the item is added to present box
-func (session *Session) ExecuteTrade(productId int, tradeCount int) bool {
+func (session *Session) ExecuteTrade(productId, tradeCount int32) bool {
 	// update count
 	tradedCount := session.GetTradeProductUser(productId)
 	tradedCount += tradeCount
@@ -55,13 +56,14 @@ func (session *Session) ExecuteTrade(productId int, tradeCount int) bool {
 	// award items and take away source item
 	product := session.Gamedata.TradeProduct[productId]
 	trade := session.Gamedata.Trade[product.TradeId]
-	content := product.ActualContent
-	content.ContentAmount *= int32(tradeCount)
-	session.AddResource(content)
+	for _, content := range product.Contents.Slice {
+		content.ContentAmount *= int32(tradeCount)
+		session.AddResource(content)
+	}
 	session.RemoveResource(client.Content{
 		ContentType:   trade.SourceContentType,
-		ContentId:     int32(trade.SourceContentId),
-		ContentAmount: int32(product.SourceAmount) * int32(tradeCount),
+		ContentId:     trade.SourceContentId,
+		ContentAmount: product.SourceAmount * tradeCount,
 	})
 	return true
 }

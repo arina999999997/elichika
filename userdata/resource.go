@@ -74,6 +74,10 @@ func (session *Session) GetUserResource(contentType, contentId int32) UserResour
 	return resource
 }
 
+func (session *Session) GetUserResourceByContent(content client.Content) UserResource {
+	return session.GetUserResource(content.ContentType, content.ContentId)
+}
+
 func (session *Session) UpdateUserResource(resource UserResource) {
 	_, exist := session.UserResourceDiffs[resource.Content.ContentType]
 	if !exist {

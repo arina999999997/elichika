@@ -1,15 +1,13 @@
 package model
 
 import (
+	"elichika/client"
 	"elichika/generic"
 )
 
 type UserTowerCardUsedCount struct {
-	TowerId        int32 `xorm:"pk 'tower_id'" json:"-"`
-	CardMasterId   int32 `xorm:"pk 'card_master_id'" json:"card_master_id"`
-	UsedCount      int32 `xorm:"'used_count'" json:"used_count"`
-	RecoveredCount int32 `xorm:"'recovered_count'" json:"recovered_count"`
-	LastUsedAt     int64 `xorm:"'last_used_at'" json:"last_used_at"`
+	TowerId int32 `xorm:"pk 'tower_id'" json:"-"`
+	client.TowerCardUsedCount
 }
 
 type UserTowerVoltageRankingScore struct {
