@@ -1,16 +1,17 @@
 package handler
 
 import (
-	"elichika/config"
-	"net/http"
+	"elichika/client/response"
 
 	"github.com/gin-gonic/gin"
 )
 
-// TODO(refactor): Change to use request and response types
+// TODO(push_notification): Support this once we figure push notifications out
 func UpdatePushNotificationSettings(ctx *gin.Context) {
-	resp := SignResp(ctx, "{}", config.SessionKey)
+	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	// req := request.PushNotificationSettingsRequest{}
+	// err := json.Unmarshal([]byte(reqBody), &req)
+	// utils.CheckErr(err)
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, response.EmptyResponse{})
 }

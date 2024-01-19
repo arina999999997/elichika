@@ -1,23 +1,21 @@
 package handler
 
 import (
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/item"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func UnlockStory(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.UnlockStoryRequest{}
+	req := request.UnlockStoryEventHistoryRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -28,16 +26,14 @@ func UnlockStory(ctx *gin.Context) {
 	session.UnlockEventStory(req.EventStoryMasterId)
 	session.RemoveResource(item.MemoryKey)
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func FinishStory(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.FinishStoryRequest{}
+	req := request.FinishStoryEventHistoryRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -46,10 +42,11 @@ func FinishStory(ctx *gin.Context) {
 	defer session.Close()
 
 	// there is no cleared tracking so all this request does is set story mode
-	session.UserStatus.IsAutoMode = req.IsAutoMode
+	if req.IsAutoMode.HasValue {
+		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
+	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }

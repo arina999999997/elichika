@@ -1,53 +1,52 @@
 package handler
 
 import (
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func SaveUnlockedScene(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveUnlockedSceneRequest{}
+	req := request.SaveUnlockedSceneRequest1{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	for _, sceneType := range req.UnlockSceneTypes {
+
+	for _, sceneType := range req.UnlockSceneTypes.Slice {
 		session.UnlockScene(sceneType, enum.UnlockSceneStatusOpened)
 	}
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }
 
-// TODO(refactor): Change to use request and response types
 func SaveSceneTipsType(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveSceneTipsTypeRequest{}
+	req := request.SaveSceneTipsRequest1{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-	// response with user model
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	session.SaveSceneTips(req.SceneTipsType)
 
-	signBody := session.Finalize("{}", "user_model")
-	resp := SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	JsonResponse(ctx, response.UserModelResponse{
+		UserModel: &session.UserModel,
+	})
 }

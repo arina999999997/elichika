@@ -1,39 +1,70 @@
 package handler
 
 import (
-	"elichika/config"
-	"elichika/userdata"
+	"elichika/enum"
 
-	"net/http"
+	"elichika/client"
+	"elichika/client/response"
+	"elichika/generic"
+	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Not implementing this system seriously
 
-// TODO(refactor): Change to use request and response types
 func FetchShopTop(ctx *gin.Context) {
-	resp := SignResp(ctx, GetData("fetchShopTop.json"), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	// There is no request body
+	resp := response.FetchShopTopResponse{}
+	{
+		arr := generic.Array[client.ShopTopIsOpen]{}
+		arr.Append(client.ShopTopIsOpen{
+			IsOpen: true,
+		})
+		resp.IsOpenByShopType.Set(enum.ShopTypeBillingPack, arr)
+	}
+	{
+		arr := generic.Array[client.ShopTopIsOpen]{}
+		arr.Append(client.ShopTopIsOpen{
+			IsOpen: true,
+		})
+		resp.IsOpenByShopType.Set(enum.ShopTypeBillingNormal, arr)
+	}
+	{
+		arr := generic.Array[client.ShopTopIsOpen]{}
+		arr.Append(client.ShopTopIsOpen{
+			IsOpen: false,
+		})
+		resp.IsOpenByShopType.Set(enum.ShopTypeEventExchange, arr)
+	}
+	{
+		arr := generic.Array[client.ShopTopIsOpen]{}
+		arr.Append(client.ShopTopIsOpen{
+			IsOpen: false,
+		})
+		resp.IsOpenByShopType.Set(enum.ShopTypeItemExchange, arr)
+	}
+	{
+		arr := generic.Array[client.ShopTopIsOpen]{}
+		arr.Append(client.ShopTopIsOpen{
+			IsOpen: false,
+		})
+		resp.IsOpenByShopType.Set(enum.ShopTypeBillingSubscription, arr)
+	}
+	JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchShopPack(ctx *gin.Context) {
-	resp := SignResp(ctx, GetData("fetchShopPack.json"), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &response.FetchShopPackResponse{})
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchShopSnsCoin(ctx *gin.Context) {
+	// there is no request body
+	// special behaviour to add 10000 gems if someone try to buy gem
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.UserModel.UserStatus.FreeSnsCoin += 10000 // add 10000 gems everytime someone try to buy gem
+	session.UserModel.UserStatus.FreeSnsCoin += 10000
 	session.Finalize("{}", "dummy")
-
-	resp := SignResp(ctx, GetData("fetchShopSnsCoin.json"), config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	JsonResponse(ctx, &response.FetchShopSnsCoinResponse{})
 }

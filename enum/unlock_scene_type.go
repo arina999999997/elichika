@@ -1,11 +1,6 @@
 package enum
 
 const (
-	UnlockSceneStatusOpen   int32 = 0x00000001
-	UnlockSceneStatusOpened int32 = 0x00000002
-)
-
-const (
 	UnlockSceneTypeLesson              int32 = 0x00000001
 	UnlockSceneTypeFreeLive            int32 = 0x00000002
 	UnlockSceneTypeAccessory           int32 = 0x00000003

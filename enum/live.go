@@ -30,7 +30,7 @@ const (
 var (
 	// beginner, intermediate, advanced, expert (advanced+), challenge
 	// 40 is also used in network (not in db), but not sure what it represent
-	// TODO: use a map instead of array for this
+	// TODO(refactor): use a map instead of array for this
 	LiveDifficultyTypes = [5]int{10, 20, 30, 35, 37}
 	LiveDifficultyIndex = map[int]int{
 		10: 0,
