@@ -62,7 +62,7 @@ func FetchBootstrap(ctx *gin.Context) {
 			panic("unexpected type")
 		}
 	}
-	status := session.GetSubsriptionStatus()
+	status := session.GetSubsriptionStatus(13001)
 	session.UserModel.UserSubscriptionStatusById.Set(status.SubscriptionMasterId, status)
 	session.Finalize("{}", "dummy")
 	JsonResponse(ctx, resp)
