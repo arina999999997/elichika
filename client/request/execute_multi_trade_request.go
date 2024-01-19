@@ -1,8 +1,10 @@
 package request
+
 import (
-	"elichika/generic"
 	"elichika/client"
+	"elichika/generic"
 )
+
 type ExecuteMultiTradeRequest struct {
 	TradeOrders generic.Array[client.TradeOrder] `json:"trade_orders"`
 }

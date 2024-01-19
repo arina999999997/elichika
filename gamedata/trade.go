@@ -24,31 +24,31 @@ import (
 )
 
 type Trade struct {
-	TradeId                  int32                       `xorm:"pk" json:"trade_id"`
-	TradeType                int32                       `xorm:"-" enum:"TradeType"`
+	TradeId                  int32                              `xorm:"pk" json:"trade_id"`
+	TradeType                int32                              `xorm:"-" enum:"TradeType"`
 	BannerImagePath          client.TextureStruktur             `xorm:"json" json:"banner_image_path"`
-	SourceContentType        int32                       `json:"source_content_type" enum:"ContentType"`
-	SourceContentId          int32                       `json:"source_content_id"`
+	SourceContentType        int32                              `json:"source_content_type" enum:"ContentType"`
+	SourceContentId          int32                              `json:"source_content_id"`
 	SourceThumbnailAssetPath client.TextureStruktur             `xorm:"json" json:"source_thumbnail_asset_path"`
-	StartAt                  int64                       `json:"start_at"`
-	EndAt                    generic.Nullable[int64]     `xorm:"json" json:"end_at"`
-	ResetAt                  generic.Nullable[int64]     `xorm:"json" json:"reset_at"`
-	MonthlyReset             bool                        `json:"monthly_reset"`
+	StartAt                  int64                              `json:"start_at"`
+	EndAt                    generic.Nullable[int64]            `xorm:"json" json:"end_at"`
+	ResetAt                  generic.Nullable[int64]            `xorm:"json" json:"reset_at"`
+	MonthlyReset             bool                               `json:"monthly_reset"`
 	Products                 generic.Array[client.TradeProduct] `xorm:"-" json:"products"`
 }
 
 func (t Trade) ToClientTrade() *client.Trade {
 	return &client.Trade{
-		TradeId: t.TradeId,
-		BannerImagePath: t.BannerImagePath,
-		SourceContentType: t.SourceContentType,
-		SourceContentId: t.SourceContentId,
+		TradeId:                  t.TradeId,
+		BannerImagePath:          t.BannerImagePath,
+		SourceContentType:        t.SourceContentType,
+		SourceContentId:          t.SourceContentId,
 		SourceThumbnailAssetPath: t.SourceThumbnailAssetPath,
-		StartAt: t.StartAt,
-		EndAt: t.EndAt,
-		ResetAt: t.ResetAt,
-		MonthlyReset: t.MonthlyReset,
-		Products: t.Products,
+		StartAt:                  t.StartAt,
+		EndAt:                    t.EndAt,
+		ResetAt:                  t.ResetAt,
+		MonthlyReset:             t.MonthlyReset,
+		Products:                 t.Products,
 	}
 }
 

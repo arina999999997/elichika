@@ -2,14 +2,13 @@ package account
 
 import (
 	"elichika/client"
-	"elichika/model"
 	"elichika/userdata"
 
 	"fmt"
 )
 
 func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card client.UserCard) {
-	solver.Cells = []model.TrainingTreeCell{}
+	solver.Cells = []client.UserCardTrainingTreeCell{}
 	solver.Session = session
 	solver.Card = &card
 	solver.MasterCard = session.Gamedata.Card[card.CardMasterId]
@@ -41,7 +40,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card clie
 	} // else {
 	// fmt.Println("Found solution for card", card.CardMasterId)
 	// }
-	session.InsertTrainingTreeCells(solver.Cells)
+	session.InsertTrainingTreeCells(card.CardMasterId, solver.Cells)
 	if int32(len(solver.Cells)) != card.TrainingActivatedCellCount {
 		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterId))
 	}

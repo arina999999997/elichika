@@ -4,7 +4,6 @@ import (
 	"elichika/client"
 	"elichika/client/response"
 	"elichika/gamedata"
-	"elichika/model"
 	"elichika/userdata"
 )
 
@@ -73,7 +72,7 @@ type TrainingTreeSolver struct {
 	TrainingTreeMapping *gamedata.TrainingTreeMapping
 	TrainingTreeDesign  *gamedata.TrainingTreeDesign
 	MasterCard          *gamedata.Card
-	Cells               []model.TrainingTreeCell
+	Cells               []client.UserCardTrainingTreeCell
 	TimeStamp           int64
 	Session             *userdata.Session
 	Card                *client.UserCard
@@ -221,9 +220,7 @@ func (solver *TrainingTreeSolver) AddCell(cellId int) {
 	if cellId == 0 {
 		return
 	}
-	solver.Cells = append(solver.Cells,
-		model.TrainingTreeCell{
-			CardMasterId: int(solver.Card.CardMasterId),
-			CellId:       cellId,
-			ActivatedAt:  solver.TimeStamp})
+	solver.Cells = append(solver.Cells, client.UserCardTrainingTreeCell{
+		CellId:      int32(cellId),
+		ActivatedAt: solver.TimeStamp})
 }

@@ -13,7 +13,7 @@ type TrainingTreeCellContent struct {
 	// from m_training_tree_cell_content
 	// Id int `xorm:"'id'"`
 	CellId                     int                      `xorm:"'cell_id'"`
-	TrainingTreeCellType       int                      `xorm:"'training_tree_cell_type'"`
+	TrainingTreeCellType       int                      `xorm:"'training_tree_cell_type'" enum:"TrainingTreeCellType"`
 	TrainingContentNo          int                      `xorm:"'training_content_no'"`
 	RequiredGrade              int                      `xorm:"'required_grade'"`
 	TrainingTreeCellItemSetMId *int                     `xorm:"'training_tree_cell_item_set_m_id'"`
