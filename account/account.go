@@ -67,7 +67,7 @@ func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
 	}
 	// update term of use and stuff
 
-	session.Finalize("{}", "user_model")
+	session.Finalize()
 
 	return "OK"
 }

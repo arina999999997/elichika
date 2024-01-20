@@ -38,7 +38,7 @@ func FinishStoryMain(ctx *gin.Context) {
 		session.UpdateUserStoryMainSelected(req.CellId, req.MemberId.Value)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 
@@ -53,7 +53,7 @@ func SaveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	defer session.Close()
 	session.InsertUserStoryMainPartDigestMovie(req.PartId)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -74,7 +74,7 @@ func FinishStoryLinkage(ctx *gin.Context) {
 	}
 	session.InsertUserStoryLinkage(req.CellId)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.AddStoryLinkageResponse{
 		UserModelDiff: &session.UserModel,
 	})

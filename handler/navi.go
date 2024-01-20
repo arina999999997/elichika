@@ -28,7 +28,7 @@ func SaveUserNaviVoice(ctx *gin.Context) {
 		session.UpdateVoice(naviVoiceMasterId, false)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -49,7 +49,7 @@ func TapLovePoint(ctx *gin.Context) {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingLevelUp
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

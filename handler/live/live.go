@@ -56,7 +56,7 @@ func FetchLiveMusicSelect(ctx *gin.Context) {
 		})
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	handler.JsonResponse(ctx, &resp)
 }
 
@@ -163,6 +163,6 @@ func LiveStart(ctx *gin.Context) {
 
 	session.SaveUserLive(resp.Live)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	handler.JsonResponse(ctx, &resp)
 }

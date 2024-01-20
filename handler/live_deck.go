@@ -60,7 +60,7 @@ func SaveDeckAll(ctx *gin.Context) {
 		session.UpdateUserLiveParty(userLiveParty)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -107,7 +107,7 @@ func SaveSuit(ctx *gin.Context) {
 		session.UpdateMember(RinaChan)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -179,7 +179,7 @@ func SaveDeck(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -199,7 +199,7 @@ func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 	liveDeck.Name.DotUnderText = req.DeckName
 	session.UpdateUserLiveDeck(liveDeck)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

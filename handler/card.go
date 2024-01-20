@@ -28,7 +28,7 @@ func UpdateCardNewFlag(ctx *gin.Context) {
 		session.UpdateUserCard(card)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UpdateCardNewFlagResponse{
 		UserModelDiff: &session.UserModel,
 	})
@@ -48,7 +48,7 @@ func ChangeIsAwakeningImage(ctx *gin.Context) {
 	userCard.IsAwakeningImage = req.IsAwakeningImage
 	session.UpdateUserCard(userCard)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.ChangeIsAwakeningImageResponse{
 		UserModelDiff: &session.UserModel,
 	})
@@ -68,7 +68,7 @@ func ChangeFavorite(ctx *gin.Context) {
 	userCard.IsFavorite = req.IsFavorite
 	session.UpdateUserCard(userCard)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.ChangeFavoriteResponse{
 		UserModelDiff: &session.UserModel,
 	})

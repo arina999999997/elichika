@@ -27,7 +27,7 @@ func SaveRuleDescription(ctx *gin.Context) {
 		session.UpdateUserRuleDescription(ruleDescriptionId)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

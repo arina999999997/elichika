@@ -31,7 +31,7 @@ func AccessoryUpdateIsLock(ctx *gin.Context) {
 	accessory.IsLock = req.IsLock
 	session.UpdateUserAccessory(accessory)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -48,7 +48,7 @@ func AccessoryUpdateIsNew(ctx *gin.Context) {
 		accessory.IsNew = false
 		session.UpdateUserAccessory(accessory)
 	}
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.EmptyResponse{})
 }
 
@@ -69,7 +69,7 @@ func AccessoryMelt(ctx *gin.Context) {
 		session.DeleteUserAccessory(userAccessoryId)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -186,7 +186,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	session.UpdateUserAccessory(userAccessory)
 	session.RemoveGameMoney(int32(moneyUsed))
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 
@@ -231,7 +231,7 @@ func AccessoryRarityUp(ctx *gin.Context) {
 
 	// finalize and send the response
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 
@@ -258,7 +258,7 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 		}
 		session.UpdateUserLiveParty(liveParty)
 	}
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,

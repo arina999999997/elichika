@@ -24,7 +24,7 @@ func SaveReferenceBook(ctx *gin.Context) {
 
 	session.InsertReferenceBook(req.ReferenceBookId)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

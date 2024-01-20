@@ -134,7 +134,7 @@ func SkillEditResult(ctx *gin.Context) {
 		session.UpdateUserCard(card) // this is always updated even if no skill change happen
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -156,7 +156,7 @@ func SaveDeckLesson(ctx *gin.Context) {
 	}
 	session.UpdateLessonDeck(userLessonDeck)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -176,7 +176,7 @@ func ChangeDeckNameLessonDeck(ctx *gin.Context) {
 	lessonDeck.Name = req.DeckName
 	session.UpdateLessonDeck(lessonDeck)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

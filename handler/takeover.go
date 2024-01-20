@@ -132,7 +132,7 @@ func UpdatePassWord(ctx *gin.Context) {
 	defer session.Close()
 
 	session.UserStatus.PassWord = req.PassWord
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, &response.UpdatePassWordResponse{
 		TakeOverId: fmt.Sprint(userId),

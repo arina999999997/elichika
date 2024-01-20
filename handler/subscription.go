@@ -30,7 +30,7 @@ func FetchSubscriptionPass(ctx *gin.Context) {
 	// subscriptionStatus.RenewalCount++
 	// subscriptionStatus.ContinueCount++
 	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, response.FetchSubscriptionPassResponse{
 		BeforeContinueCount: generic.NewNullable(subscriptionStatus.RenewalCount),
@@ -63,7 +63,7 @@ func FetchShopSubscription(ctx *gin.Context) {
 
 	session.UserModel.UserSubscriptionStatusById.Set(13001, session.GetSubsriptionStatus(13001))
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 
@@ -78,7 +78,7 @@ func UpdateSubscription(ctx *gin.Context) {
 	subscriptionStatus.ExpireDate = 1<<31 - 1 // preserve the subscription for now
 	subscriptionStatus.PlatformExpireDate = subscriptionStatus.ExpireDate
 	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, &response.UpdateSubscriptionResponse{
 		UserModel: &session.UserModel,

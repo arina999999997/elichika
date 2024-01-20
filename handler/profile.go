@@ -50,7 +50,7 @@ func SetProfile(ctx *gin.Context) {
 		session.UserStatus.DeviceToken = req.DeviceToken.Value
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -74,7 +74,7 @@ func SetProfileBirthday(ctx *gin.Context) {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseCorePlayable
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -92,7 +92,7 @@ func SetRecommendCard(ctx *gin.Context) {
 
 	session.UserStatus.RecommendCardMasterId = req.CardMasterId
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -126,7 +126,7 @@ func SetLivePartner(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.EmptyResponse{})
 }
 
@@ -148,7 +148,7 @@ func SetScoreOrComboLive(ctx *gin.Context) {
 	}
 	session.SetUserSetProfile(setProfile)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.SetLiveResponse{
 		LiveDifficultyMasterId: req.LiveDifficultyMasterId,
 	})

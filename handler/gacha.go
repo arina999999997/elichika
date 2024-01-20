@@ -43,7 +43,7 @@ func GachaDraw(ctx *gin.Context) {
 	ctx.Set("session", session)
 	gacha, resultCards := gacha.HandleGacha(ctx, req)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.DrawGachaResponse{
 		Gacha:         gacha,
 		ResultCards:   resultCards,

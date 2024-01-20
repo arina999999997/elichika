@@ -30,7 +30,7 @@ func FetchDailyTheater(ctx *gin.Context) {
 	}
 	// fetch and track the item
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, response.FetchDailyTheaterResponse{
 		DailyTheaterDetail: client.DailyTheaterDetail{
@@ -66,7 +66,7 @@ func DailyTheaterSetLike(ctx *gin.Context) {
 			IsLiked:        req.IsLike,
 		})
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

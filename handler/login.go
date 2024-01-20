@@ -79,7 +79,7 @@ func Login(ctx *gin.Context) {
 
 	resp := session.Login()
 	resp.SessionKey = LoginSessionKey(req.Mask)
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, resp)
 
 	{

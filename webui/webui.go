@@ -76,7 +76,7 @@ func Birthday(ctx *gin.Context) {
 	session.UserStatus.BirthDate = generic.NewNullable(int32(year*10000 + month*100 + day))
 	session.UserStatus.BirthDay = generic.NewNullable(int32(day))
 	session.UserStatus.BirthMonth = generic.NewNullable(int32(month))
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprintf("Success: update birthday for user %d to %d/%d/%d", userId, year, month, day))
 }
 
@@ -140,6 +140,6 @@ func Accessory(ctx *gin.Context) {
 			session.UpdateUserAccessory(accessory)
 		}
 	}
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Success: Added ", total, " accessories"))
 }

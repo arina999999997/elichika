@@ -48,7 +48,7 @@ func ActivateEmblem(ctx *gin.Context) {
 
 	session.UserStatus.EmblemId = req.EmblemMasterId
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.ActivateEmblemResponse{
 		UserModel: &session.UserModel,
 	})

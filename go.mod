@@ -6,7 +6,6 @@ require (
 	github.com/arina999999997/gohwdecrypt v1.0.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/tidwall/gjson v1.14.4
-	github.com/tidwall/sjson v1.2.5
 	modernc.org/sqlite v1.23.1
 	xorm.io/xorm v1.3.6
 )

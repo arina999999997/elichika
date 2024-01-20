@@ -53,7 +53,7 @@ func LevelUpCard(ctx *gin.Context) {
 	card.Level += req.AdditionalLevel
 	session.UpdateUserCard(card)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.LevelUpCardResponse{
 		UserModelDiff: &session.UserModel,
 	})
@@ -93,7 +93,7 @@ func GradeUpCard(ctx *gin.Context) {
 		BeforeLoveLevelLimit: int32(currentLoveLevel - masterCard.CardRarityType/10),
 		AfterLoveLevelLimit:  int32(currentLoveLevel)})
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.GradeUpCardResponse{
 		UserModelDiff: &session.UserModel,
 	})
@@ -200,7 +200,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	}
 
 	session.InsertTrainingTreeCells(req.CardMasterId, unlockedCells)
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, &response.ActivateTrainingTreeCellResponse{
 		UserCardTrainingTreeCellList: session.GetTrainingTree(req.CardMasterId),

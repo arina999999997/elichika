@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/sjson"
 	"xorm.io/xorm"
 )
 
@@ -47,7 +46,7 @@ type Session struct {
 // Push update into the db and create the diff
 // The actual response depend on the API, but they often contain the diff somewhere
 // The mainKey is the key to the diff
-func (session *Session) Finalize(jsonBody string, mainKey string) string {
+func (session *Session) Finalize() {
 	var err error
 	if session.SessionType == SessionTypeLogin {
 		// if login then we only need to update a thing
@@ -60,16 +59,9 @@ func (session *Session) Finalize(jsonBody string, mainKey string) string {
 			finalizer(session)
 		}
 		finalizeMemberLovePanelDiffs(session)
-		if len(session.MemberLovePanels) != 0 {
-			jsonBody, err = sjson.Set(jsonBody, "member_love_panels", session.MemberLovePanels)
-			utils.CheckErr(err)
-		}
 	}
-	jsonBody, err = sjson.Set(jsonBody, mainKey, session.UserModel)
-	utils.CheckErr(err)
 	err = session.Db.Commit()
 	utils.CheckErr(err)
-	return jsonBody
 }
 
 func (session *Session) Close() {

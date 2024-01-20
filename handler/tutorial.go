@@ -28,7 +28,7 @@ func CorePlayableEnd(ctx *gin.Context) {
 	}
 	session.UserStatus.TutorialPhase = enum.TutorialPhaseTimingAdjuster
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -45,7 +45,7 @@ func TimingAdjusterEnd(ctx *gin.Context) {
 	}
 	session.UserStatus.TutorialPhase = enum.TutorialPhaseFavoriateMember
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -63,7 +63,7 @@ func PhaseEnd(ctx *gin.Context) {
 	session.UserStatus.TutorialPhase = enum.TutorialPhaseTutorialEnd
 	session.UserStatus.TutorialEndAt = session.Time.Unix()
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -114,7 +114,7 @@ func TutorialSkip(ctx *gin.Context) {
 		session.UpdateUserLiveParty(userLiveParty)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

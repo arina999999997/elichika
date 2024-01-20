@@ -152,7 +152,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 		resp.Rewards.Append(item.StarGem.Amount(100))
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 
@@ -169,7 +169,7 @@ func JoinMemberGuild(ctx *gin.Context) {
 	session.UserStatus.MemberGuildMemberMasterId = generic.NewNullable(req.MemberMasterId)
 	session.UserStatus.MemberGuildLastUpdatedAt = session.Time.Unix()
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

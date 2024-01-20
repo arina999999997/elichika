@@ -40,6 +40,6 @@ func ResetProgress(ctx *gin.Context) {
 	case "/webui/reset_dlp":
 		session.RemoveUserProgress("u_tower")
 	}
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	ctx.Redirect(http.StatusFound, commonPrefix+"reseted progress, relogin to see the change")
 }

@@ -23,7 +23,7 @@ func Agreement(ctx *gin.Context) {
 	defer session.Close()
 
 	session.UserStatus.TermsOfUseVersion = req.TermsVersion
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 
 	JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,

@@ -197,7 +197,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 
 	session.UpdateLastPlayLiveDifficultyDeck(lastPlayDeck)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	handler.JsonResponse(ctx, &resp)
 }
 
@@ -307,7 +307,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 
 	session.UpdateLiveDifficulty(userLiveDifficulty)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	handler.JsonResponse(ctx, &resp)
 }
 

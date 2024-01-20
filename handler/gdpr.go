@@ -39,7 +39,7 @@ func UpdateConsentState(ctx *gin.Context) {
 	}
 	session.UpdateLoginData(loginData)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UpdateGdprConsentStateResponse{
 		UserModel:     &session.UserModel,
 		ConsentedInfo: loginData.GdprConsentedInfo,

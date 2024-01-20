@@ -203,7 +203,8 @@ func (session *Session) FetchProfile(otherUserId int32) response.UserProfileResp
 	}
 
 	// can get from members[] to save sql
-	session.Db.Table("u_member").Where("user_id = ?", otherUserId).Find(&resp.MemberInfo.UserMembers.Slice)
+	err := session.Db.Table("u_member").Where("user_id = ?", otherUserId).Find(&resp.MemberInfo.UserMembers.Slice)
+	utils.CheckErr(err)
 	return resp
 }
 

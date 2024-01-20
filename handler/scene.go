@@ -27,7 +27,7 @@ func SaveUnlockedScene(ctx *gin.Context) {
 		session.UnlockScene(sceneType, enum.UnlockSceneStatusOpened)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -45,7 +45,7 @@ func SaveSceneTipsType(ctx *gin.Context) {
 
 	session.SaveSceneTips(req.SceneTipsType)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

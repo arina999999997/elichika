@@ -34,7 +34,7 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 		session.DeleteUserPlayList(req.GroupNum + req.LiveMasterId*10)
 	}
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 	handler.JsonResponse(ctx, &response.UpdatePlayListResponse{
 		IsSuccess:     true,
 		UserModelDiff: &session.UserModel,

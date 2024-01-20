@@ -69,7 +69,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 		session.UserModel.UserLiveMvDeckCustomById.Set(req.LiveMasterId, userLiveMvDeck)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

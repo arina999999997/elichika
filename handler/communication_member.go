@@ -69,7 +69,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	}
 	session.UpdateUserCommunicationMemberDetailBadge(detailBadge)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -109,7 +109,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -130,7 +130,7 @@ func FinishUserStorySide(ctx *gin.Context) {
 	}
 	session.FinishStorySide(req.StorySideMasterId)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -169,7 +169,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -190,7 +190,7 @@ func SetTheme(ctx *gin.Context) {
 	member.CustomBackgroundMasterId = req.CustomBackgroundMasterId
 	session.UpdateMember(member)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -237,7 +237,7 @@ func SetFavoriteMember(ctx *gin.Context) {
 		session.UpdateMember(member)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

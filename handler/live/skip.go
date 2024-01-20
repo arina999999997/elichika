@@ -103,6 +103,6 @@ func LiveSkip(ctx *gin.Context) {
 		session.UpdateUserLiveStats(liveStats)
 	}
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	handler.JsonResponse(ctx, &resp)
 }

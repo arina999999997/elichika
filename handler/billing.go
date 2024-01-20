@@ -30,7 +30,7 @@ func BillingHistory(ctx *gin.Context) {
 		BillingDepositHistoryList: []client.BillingDepositHistory{},
 		BillingConsumeHistoryList: []client.BillingConsumeHistory{},
 	}
-	// session.Finalize("{}", "dummy")
+	// session.Finalize()
 
 	JsonResponse(ctx, resp)
 }

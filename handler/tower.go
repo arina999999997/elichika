@@ -75,7 +75,7 @@ func FetchTowerTop(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 
@@ -98,7 +98,7 @@ func ClearedTowerFloor(ctx *gin.Context) {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
 	}
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.ClearedTowerFloorResponse{
 		UserModelDiff: &session.UserModel,
 	})
@@ -130,7 +130,7 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 		session.RemoveSnsCoin((cardCount - has) * int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin))
 	}
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &response.RecoveryTowerCardUsedResponse{
 		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
 		UserModelDiff:          &session.UserModel,
@@ -157,7 +157,7 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 		session.UpdateUserTowerCardUsed(req.TowerId, resp.TowerCardUsedCountRows.Slice[i])
 	}
 
-	session.Finalize("", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
 

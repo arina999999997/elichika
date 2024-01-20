@@ -58,6 +58,6 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	}
 	resp.MemberLovePanels.Append(panel)
 
-	session.Finalize("{}", "dummy")
+	session.Finalize()
 	JsonResponse(ctx, &resp)
 }
