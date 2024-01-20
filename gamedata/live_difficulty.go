@@ -1,10 +1,11 @@
 package gamedata
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/dictionary"
 	"elichika/enum"
-	"elichika/model"
+	"elichika/generic"
 	"elichika/utils"
 
 	"encoding/json"
@@ -16,42 +17,42 @@ import (
 
 type LiveDifficulty struct {
 	// from m_live_difficulty
-	LiveDifficultyId int   `xorm:"pk 'live_difficulty_id'"`
-	LiveId           *int  `xorm:"'live_id'"`
-	Live             *Live `xorm:"-"`
+	LiveDifficultyId int32  `xorm:"pk 'live_difficulty_id'"`
+	LiveId           *int32 `xorm:"'live_id'"`
+	Live             *Live  `xorm:"-"`
 	// Live3DAssetMasterId *int
-	LiveDifficultyType int `xorm:"'live_difficulty_type'"`
-	UnlockPattern      int `xorm:"'unlock_pattern'"`
-	// DefaultAttribute int
-	TargetVoltage int `xorm:"'target_voltage'"`
-	NoteEmitMsec  int `xorm:"'note_emit_msec'"`
-	ConsumedLP    int `xorm:"'consumed_lp'"`
-	RewardUserExp int `xorm:"'reward_user_exp'"`
-	// JudgeId int
-	NoteDropGroupId *int `xorm:"'note_drop_group_id'"`
+	LiveDifficultyType int32 `xorm:"'live_difficulty_type'" enum:""`
+	UnlockPattern      int32 `xorm:"'unlock_pattern'" enum:""`
+	// DefaultAttribute int32
+	TargetVoltage int32 `xorm:"'target_voltage'"`
+	NoteEmitMsec  int32 `xorm:"'note_emit_msec'"`
+	ConsumedLP    int32 `xorm:"'consumed_lp'"`
+	RewardUserExp int32 `xorm:"'reward_user_exp'"`
+	// JudgeId int32
+	NoteDropGroupId *int32 `xorm:"'note_drop_group_id'"`
 
 	// NoteDropGroup *NoteDropGroup `xorm:"-"`
-	DropChooseCount    int  `xorm:"'drop_choose_count'"`
-	RateDropRate       int  `xorm:"'rare_drop_rate'"`
-	DropContentGroupId *int `xorm:"'drop_content_group_id'"`
+	DropChooseCount    int32  `xorm:"'drop_choose_count'"`
+	RateDropRate       int32  `xorm:"'rare_drop_rate'"`
+	DropContentGroupId *int32 `xorm:"'drop_content_group_id'"`
 	// DropContentGroup *DropContentGroup `xorm:"-"`
-	RareDropContentGroupId *int `xorm:"'rare_drop_content_group_id'"`
+	RareDropContentGroupId *int32 `xorm:"'rare_drop_content_group_id'"`
 	// RareDropContentGroup *RareDropContentGroup `xorm:"-"`
-	AdditionalDropContentGroupId *int `xorm:"'additional_drop_content_group_id'"`
+	AdditionalDropContentGroupId *int32 `xorm:"'additional_drop_content_group_id'"`
 	// AdditionalDropContentGroup *AdditionalDropContentGroup `xorm:"-"`
 	// ?????
-	BottomTechnique              int `xorm:"'bottom_technique'"`
-	AdditionalDropDecayTechnique int `xorm:"'additional_drop_decay_technique'"`
+	BottomTechnique              int32 `xorm:"'bottom_technique'"`
+	AdditionalDropDecayTechnique int32 `xorm:"'additional_drop_decay_technique'"`
 
-	RewardBaseLovePoint int `xorm:"'reward_base_love_point'"`
-	EvaluationSScore    int `xorm:"'evaluation_s_score'"`
-	EvaluationAScore    int `xorm:"'evaluation_a_score'"`
-	EvaluationBScore    int `xorm:"'evaluation_b_score'"`
-	EvaluationCScore    int `xorm:"'evaluation_c_score'"`
+	RewardBaseLovePoint int32 `xorm:"'reward_base_love_point'"`
+	EvaluationSScore    int32 `xorm:"'evaluation_s_score'"`
+	EvaluationAScore    int32 `xorm:"'evaluation_a_score'"`
+	EvaluationBScore    int32 `xorm:"'evaluation_b_score'"`
+	EvaluationCScore    int32 `xorm:"'evaluation_c_score'"`
 	// UpdatedAt int `xorm:"'updated_at'"`
 	LoseAtDeath bool `xorm:"'lose_at_death'"`
 	// AutoplayRequirementId *int `xorm:"'autoplay_requirement_id'"`
-	SkipMasterId *int `xorm:"'skip_master_id'"`
+	SkipMasterId *int32 `xorm:"'skip_master_id'"`
 	// StaminaVoltageGroupId int
 	// ComboVoltageGroupId int
 	// DifficultyConstMasterId int
@@ -62,8 +63,8 @@ type LiveDifficulty struct {
 	Missions []LiveDifficultyMission `xorm:"-"`
 
 	// lazily constructed?
-	LiveStage       *model.LiveStage `xorm:"-"`
-	SimpleLiveStage *SimpleLiveStage `xorm:"-"`
+	LiveStage       *client.LiveStage `xorm:"-"`
+	SimpleLiveStage *SimpleLiveStage  `xorm:"-"`
 
 	// from m_live_difficulty_gimmick
 	LiveDifficultyGimmick *LiveDifficultyGimmick `xorm:"-"`
@@ -172,7 +173,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 		if text == "" {
 			panic(fmt.Sprintf("Stage %d doesn't exists in assets/stages", ld.LiveDifficultyId))
 		}
-		ld.LiveStage = new(model.LiveStage)
+		ld.LiveStage = new(client.LiveStage)
 		err := json.Unmarshal([]byte(text), &ld.LiveStage)
 		if err != nil {
 			panic(fmt.Sprintf("Failed to load stage %d: wrong format", ld.LiveDifficultyId))
@@ -189,51 +190,48 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	}
 
 	// make the object and set relevant stuff
-	ld.LiveStage = new(model.LiveStage)
+	ld.LiveStage = new(client.LiveStage)
 	ld.LiveStage.LiveDifficultyId = ld.LiveDifficultyId
-	ld.LiveStage.LiveNotes = []model.LiveNote{}
-	ld.LiveStage.NoteGimmicks = []model.NoteGimmick{}
-	ld.LiveStage.LiveWaveSettings = []model.LiveWaveSetting{}
-	ld.LiveStage.StageGimmickDict = []any{}
 
-	ld.LiveStage.LiveNotes = append(ld.LiveStage.LiveNotes, ld.SimpleLiveStage.LiveNotes...)
-	for i := range ld.LiveStage.LiveNotes {
-		ld.LiveStage.LiveNotes[i].Id = i + 1
-		ld.LiveStage.LiveNotes[i].AutoJudgeType = enum.JudgeTypeGreat         // can be overwritten at runtime
-		ld.LiveStage.LiveNotes[i].NoteRandomDropColor = enum.NoteDropColorNon // can be overwritten at runtime
+	ld.LiveStage.LiveNotes.Slice = append(ld.LiveStage.LiveNotes.Slice, ld.SimpleLiveStage.LiveNotes...)
+	for i := range ld.LiveStage.LiveNotes.Slice {
+		ld.LiveStage.LiveNotes.Slice[i].Id = int32(i + 1)
+		ld.LiveStage.LiveNotes.Slice[i].AutoJudgeType = enum.JudgeTypeGreat         // can be overwritten at runtime
+		ld.LiveStage.LiveNotes.Slice[i].NoteRandomDropColor = enum.NoteDropColorNon // can be overwritten at runtime
 	}
-	ld.LiveStage.LiveWaveSettings = append(ld.LiveStage.LiveWaveSettings, ld.SimpleLiveStage.LiveWaveSettings...)
+	ld.LiveStage.LiveWaveSettings.Slice = append(ld.LiveStage.LiveWaveSettings.Slice, ld.SimpleLiveStage.LiveWaveSettings...)
 
 	// each note store its own gimmick, and the stage store unique note gimmicks in it
-	noteGimmickDict := map[int]bool{}
+	noteGimmickDict := map[int32]bool{}
 	for _, noteGimmick := range ld.LiveDifficultyNoteGimmicks {
-		ld.LiveStage.LiveNotes[noteGimmick.NoteId-1].GimmickId = noteGimmick.Id
+		ld.LiveStage.LiveNotes.Slice[noteGimmick.NoteId-1].GimmickId = noteGimmick.Id
 		if !noteGimmickDict[noteGimmick.Id] {
 			noteGimmickDict[noteGimmick.Id] = true
-			ld.LiveStage.NoteGimmicks = append(ld.LiveStage.NoteGimmicks,
-				model.NoteGimmick{
-					Id:              noteGimmick.Id,
-					NoteGimmickType: noteGimmick.NoteGimmickType,
-					EffectMId:       noteGimmick.SkillMasterId,
-					IconType:        noteGimmick.NoteGimmickIconType,
-				})
+			ld.LiveStage.NoteGimmicks.Append(client.NoteGimmick{
+				Id:              noteGimmick.Id,
+				NoteGimmickType: noteGimmick.NoteGimmickType,
+				EffectMId:       noteGimmick.SkillMasterId,
+				IconType:        noteGimmick.NoteGimmickIconType,
+			})
 		}
 	}
-	sort.Slice(ld.LiveStage.NoteGimmicks, func(i, j int) bool {
-		return ld.LiveStage.NoteGimmicks[i].Id < ld.LiveStage.NoteGimmicks[j].Id
+	sort.Slice(ld.LiveStage.NoteGimmicks.Slice, func(i, j int) bool {
+		return ld.LiveStage.NoteGimmicks.Slice[i].Id < ld.LiveStage.NoteGimmicks.Slice[j].Id
 	})
-	for i := range ld.LiveStage.NoteGimmicks {
-		ld.LiveStage.NoteGimmicks[i].UniqId = 2001 + i
+	for i := range ld.LiveStage.NoteGimmicks.Slice {
+		ld.LiveStage.NoteGimmicks.Slice[i].UniqId = int32(2001 + i)
 	}
 	if ld.LiveDifficultyGimmick != nil {
-		ld.LiveStage.StageGimmickDict = append(ld.LiveStage.StageGimmickDict, ld.LiveDifficultyGimmick.TriggerType)
-		ld.LiveStage.StageGimmickDict = append(ld.LiveStage.StageGimmickDict, []model.StageGimmick{model.StageGimmick{
-			GimmickMasterId:    ld.LiveDifficultyGimmick.Id,
-			ConditionMasterId1: ld.LiveDifficultyGimmick.ConditionMasterId1,
-			ConditionMasterId2: ld.LiveDifficultyGimmick.ConditionMasterId2,
-			SkillMasterId:      ld.LiveDifficultyGimmick.SkillMasterId,
-			UniqId:             1001,
-		}})
+		ld.LiveStage.StageGimmickDict.Set(ld.LiveDifficultyGimmick.TriggerType, generic.Array[client.LiveStageGimmick]{
+			Slice: []client.LiveStageGimmick{client.LiveStageGimmick{
+				GimmickMasterId:    ld.LiveDifficultyGimmick.Id,
+				ConditionMasterId1: ld.LiveDifficultyGimmick.ConditionMasterId1,
+				ConditionMasterId2: generic.NewNullable(ld.LiveDifficultyGimmick.ConditionMasterId2),
+				SkillMasterId:      ld.LiveDifficultyGimmick.SkillMasterId,
+				UniqId:             1001,
+			},
+			}})
+
 	}
 
 	// save the new map
@@ -255,25 +253,22 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 		// fmt.Println("Newly generated map: ", ld.LiveDifficultyId)
 		return
 	}
-	pregeneratedStage := model.LiveStage{}
+	pregeneratedStage := client.LiveStage{}
 	err := json.Unmarshal([]byte(text), &pregeneratedStage)
 	utils.CheckErr(err)
 	if !pregeneratedStage.IsSame(ld.LiveStage) {
-		validDiff := map[int]bool{}
-		if !validDiff[ld.LiveDifficultyId] {
-			panic(fmt.Sprint("Difference detected for: ", ld.LiveDifficultyId, "\n", ld.LiveStage, "\n_______________\n", pregeneratedStage))
-		}
+		panic(fmt.Sprint("Difference detected for: ", ld.LiveDifficultyId, "\n", ld.LiveStage, "\n_______________\n", pregeneratedStage))
 	}
 
 }
 
 func loadLiveDifficulty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading LiveDifficulty")
-	gamedata.LiveDifficulty = make(map[int]*LiveDifficulty)
+	gamedata.LiveDifficulty = make(map[int32]*LiveDifficulty)
 	err := masterdata_db.Table("m_live_difficulty").Find(&gamedata.LiveDifficulty)
 	utils.CheckErr(err)
 	// ordered iteration is important here
-	ids := []int{}
+	ids := []int32{}
 	for id := range gamedata.LiveDifficulty {
 		ids = append(ids, id)
 	}

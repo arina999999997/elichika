@@ -11,7 +11,7 @@ type RuntimeConfig struct {
 	CdnServer        *string `json:"cdn_server"`
 	ServerAddress    *string `json:"server_address"`
 	TapBondGain      *int32  `json:"tap_bond_gain"`
-	AutoJudgeType    *int    `json:"auto_judge_type"`
+	AutoJudgeType    *int32  `json:"auto_judge_type"`
 	Tutorial         *bool   `json:"tutorial"`
 	LoginBonusSecond *int    `json:"login_bonus_second"` // the second from mid-night till login bonus
 	TimeZone         *string `json:"timezone"`           // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -22,7 +22,7 @@ func defaultConfigs() *RuntimeConfig {
 		CdnServer:        new(string), // self-hosted
 		ServerAddress:    new(string),
 		TapBondGain:      new(int32),
-		AutoJudgeType:    new(int),
+		AutoJudgeType:    new(int32),
 		Tutorial:         new(bool),
 		LoginBonusSecond: new(int),
 		TimeZone:         new(string),

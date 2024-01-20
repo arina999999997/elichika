@@ -23,7 +23,7 @@ func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficul
 	return userLiveDifficulty
 }
 
-func (session *Session) GetLiveDifficulty(liveDifficultyId int32) client.UserLiveDifficulty {
+func (session *Session) GetUserLiveDifficulty(liveDifficultyId int32) client.UserLiveDifficulty {
 	return session.GetOtherUserLiveDifficulty(session.UserId, liveDifficultyId)
 }
 

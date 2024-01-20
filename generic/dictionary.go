@@ -42,6 +42,18 @@ type Dictionary[K int32 | int64, V any] struct {
 	Order []K
 }
 
+func (d *Dictionary[K, V]) Copy() Dictionary[K, V] {
+	res := Dictionary[K, V]{}
+	for _, key := range d.Order {
+		res.Set(key, *d.Map[key])
+	}
+	return res
+}
+
+func (d *Dictionary[K, V]) Size() int {
+	return len(d.Order)
+}
+
 func (d *Dictionary[K, V]) Get(key K) (*V, bool) {
 	value, exist := d.Map[key]
 	return value, exist

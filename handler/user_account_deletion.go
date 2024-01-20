@@ -13,14 +13,13 @@ import (
 )
 
 func CheckUserAccountDeleted(ctx *gin.Context) {
-	// request is UserAccountDeletionRequest
-	// response with an empty response, or more precisely UserAccountDeletionRecoverableExceptionResponse if the user exist
-	// do not response otherwise
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UserAccountDeletionRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
+	// response with an empty response, or more precisely UserAccountDeletionRecoverableExceptionResponse if the user exist
+	// do not response otherwise
 	if !userdata.UserExist(req.UserId) {
 		return
 	}

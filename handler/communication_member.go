@@ -96,13 +96,13 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 			continue
 		}
 		// update if it feature this member
-		liveDifficultyMaster := gamedata.LiveDifficulty[int(liveDifficultyRecord.LiveDifficultyId)]
+		liveDifficultyMaster := gamedata.LiveDifficulty[liveDifficultyRecord.LiveDifficultyId]
 		if liveDifficultyMaster == nil {
 			// some song no longer exists but official server still send them
 			// it's ok to ignore these for now
 			continue
 		}
-		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[int(req.MemberMasterId)]
+		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[req.MemberMasterId]
 		if exist {
 			liveDifficultyRecord.IsNew = false
 			session.UpdateLiveDifficulty(liveDifficultyRecord)
@@ -160,11 +160,11 @@ func FinishUserStoryMember(ctx *gin.Context) {
 			})
 		}
 		if storyMemberMaster.UnlockLiveId != nil {
-			masterLive := gamedata.Live[*storyMemberMaster.UnlockLiveId]
+			masterLive := gamedata.Live[int32(*storyMemberMaster.UnlockLiveId)]
 			// insert empty record for relevant items
 			for _, masterLiveDifficulty := range masterLive.LiveDifficulties {
-				liveDifficulty := session.GetLiveDifficulty(int32(masterLiveDifficulty.LiveDifficultyId))
-				session.UpdateLiveDifficulty(liveDifficulty)
+				userLiveDifficulty := session.GetUserLiveDifficulty(masterLiveDifficulty.LiveDifficultyId)
+				session.UpdateLiveDifficulty(userLiveDifficulty)
 			}
 		}
 	}

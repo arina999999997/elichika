@@ -5,7 +5,7 @@ import (
 )
 
 type LastPlayLiveDifficultyDeck struct {
-	LiveDifficultyId int32                                                  `json:"live_difficulty_id"`
+	LiveDifficultyId int32                                                  `xorm:"pk" json:"live_difficulty_id"`
 	Voltage          int32                                                  `json:"voltage"`
 	IsCleared        bool                                                   `json:"is_cleared"`
 	RecordedAt       int64                                                  `json:"recorded_at"`

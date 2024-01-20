@@ -2,127 +2,64 @@ package live
 
 import (
 	"elichika/client"
-	"elichika/config"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/enum"
-	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler"
 	"elichika/klab"
-	"elichika/model"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-type MemberLoveStatus struct {
-	// TODO(refactor): remove this field
-	CardMasterId    int32 `json:"-"`
-	RewardLovePoint int32 `json:"reward_love_point"`
-}
+func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live) {
+	resp := response.FinishLiveResponse{
+		LiveResult: client.LiveResult{
+			LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
+			LiveDeckId:             session.UserStatus.LatestLiveDeckId,
+			Voltage:                req.LiveScore.CurrentScore,
+			BeforeUserExp:          session.UserStatus.Exp,
+			LiveFinishStatus:       req.LiveFinishStatus,
+		},
+		UserModelDiff: &session.UserModel,
+	}
 
-func (mls *MemberLoveStatus) Id() int64 {
-	return int64(mls.CardMasterId)
-}
-func (mls *MemberLoveStatus) SetId(id int64) {
-	mls.CardMasterId = int32(id)
-}
+	gamedata := session.Gamedata
+	liveDifficulty := gamedata.LiveDifficulty[resp.LiveResult.LiveDifficultyMasterId]
+	isCenter := map[int32]bool{}
 
-type LiveResultAchievement struct {
-	Position            int  `json:"position"`
-	IsAlreadyAchieved   bool `json:"is_already_achieved"`
-	IsCurrentlyAchieved bool `json:"is_currently_achieved"`
-}
-
-func (obj *LiveResultAchievement) Id() int64 {
-	return int64(obj.Position)
-}
-func (obj *LiveResultAchievement) SetId(id int64) {
-	obj.Position = int(id)
-}
-
-type LiveResultTower struct {
-	TowerId             int32                                   `json:"tower_id"`
-	FloorNo             int32                                   `json:"floor_no"`
-	TotalVoltage        int32                                   `json:"total_voltage"`
-	GettedVoltage       int32                                   `json:"getted_voltage"` // nice engrish
-	TowerCardUsedCounts generic.List[client.TowerCardUsedCount] `json:"tower_card_used_counts"`
-}
-
-type LiveFinishLiveResult struct {
-	LiveDifficultyMasterId int                                            `json:"live_difficulty_master_id"`
-	LiveDeckId             int                                            `json:"live_deck_id"`
-	StandardDrops          []any                                          `json:"standard_drops"`
-	AdditionalDrops        []any                                          `json:"additional_drops"`
-	GimmickDrops           []any                                          `json:"gimmick_drops"`
-	MemberLoveStatuses     generic.ObjectByObjectIdList[MemberLoveStatus] `json:"member_love_statuses"`
-	MVP                    struct {
-		CardMasterId        int32 `json:"card_master_id"`
-		GetVoltage          int   `json:"get_voltage"`
-		SkillTriggeredCount int   `json:"skill_triggered_count"`
-		AppealCount         int   `json:"appeal_count"`
-	} `json:"mvp"`
-	Partner                     *model.UserBasicInfo                                `json:"partner"`
-	LiveResultAchievements      generic.ObjectByObjectIdList[LiveResultAchievement] `json:"live_result_achievements"`
-	LiveResultAchievementStatus struct {
-		ClearCount       int `json:"clear_count"`
-		GotVoltage       int `json:"got_voltage"`
-		RemainingStamina int `json:"remaining_stamina"`
-	} `json:"live_result_achievement_status"`
-	Voltage                       int              `json:"voltage"`
-	LastBestVoltage               int              `json:"last_best_voltage"`
-	BeforeUserExp                 int              `json:"before_user_exp"`
-	GainUserExp                   int              `json:"gain_user_exp"`
-	IsRewardAccessoryInPresentBox bool             `json:"is_reward_accessory_in_present_box"`
-	ActiveEventResult             *any             `json:"active_event_result"`
-	LiveResultTower               *LiveResultTower `json:"live_result_tower"`
-	LiveResultMemberGuild         *any             `json:"live_result_member_guild"`
-	LiveFinishStatus              int              `json:"live_finish_status"`
-}
-
-type LiveDifficultyMission struct {
-	Position    int
-	TargetValue int
-	Reward      client.Content `xorm:"extends"`
-}
-
-// TODO(refactor): Change to use request and response types
-func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, session *userdata.Session, live model.UserLive) {
-	liveDifficultyId := session.UserStatus.LastLiveDifficultyId
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	liveDifficulty := gamedata.LiveDifficulty[int(liveDifficultyId)]
-	isCenter := map[int]bool{}
 	for _, memberMapping := range liveDifficulty.Live.LiveMemberMapping {
 		if memberMapping.IsCenter && (memberMapping.Position <= 9) {
-			isCenter[memberMapping.Position-1] = true
+			isCenter[int32(memberMapping.Position-1)] = true
 		}
 	}
-	rewardCenterLovePoint := 0
+
+	rewardCenterLovePoint := int32(0)
 	if len(isCenter) != 0 {
 		// liella songs have no center
-		rewardCenterLovePoint = klab.CenterBondGainBasedOnBondGain(liveDifficulty.RewardBaseLovePoint) / len(isCenter)
+		rewardCenterLovePoint = klab.CenterBondGainBasedOnBondGain(liveDifficulty.RewardBaseLovePoint) / int32(len(isCenter))
 	}
 
-	// record this live
-	liveRecord := session.GetLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
-	liveRecord.IsNew = false
+	// record this live and build the last played deck
+	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
+	userLiveDifficulty.IsNew = false
 	lastPlayDeck := client.LastPlayLiveDifficultyDeck{
-		LiveDifficultyId: liveDifficultyId,
-		Voltage:          int32(req.LiveScore.CurrentScore),
+		LiveDifficultyId: resp.LiveResult.LiveDifficultyMasterId,
+		Voltage:          req.LiveScore.CurrentScore,
 		IsCleared:        req.LiveFinishStatus == enum.LiveFinishStatusSucceeded,
 		RecordedAt:       session.Time.Unix(),
 	}
-	liveDeck := session.GetUserLiveDeck(session.UserStatus.LatestLiveDeckId)
+
+	userLiveDeck := session.GetUserLiveDeck(session.UserStatus.LatestLiveDeckId)
 	for position := 1; position <= 9; position++ {
-		cardMasterId := reflect.ValueOf(liveDeck).Field(1 + position).Interface().(generic.Nullable[int32]).Value
-		suitMasterId := reflect.ValueOf(liveDeck).Field(1 + position + 9).Interface().(generic.Nullable[int32]).Value
+		cardMasterId := reflect.ValueOf(userLiveDeck).Field(1 + position).Interface().(generic.Nullable[int32]).Value
+		suitMasterId := reflect.ValueOf(userLiveDeck).Field(1 + position + 9).Interface().(generic.Nullable[int32]).Value
 		lastPlayDeck.CardWithSuitDict.Set(cardMasterId, suitMasterId)
 	}
 	liveParties := session.GetUserLivePartiesWithDeckId(session.UserStatus.LatestLiveDeckId)
@@ -137,79 +74,79 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 		lastPlayDeck.SquadDict.Set(liveParty.PartyId%10-1, liveSquad)
 	}
 
-	liveResult := LiveFinishLiveResult{
-		LiveDifficultyMasterId: int(session.UserStatus.LastLiveDifficultyId),
-		LiveDeckId:             int(session.UserStatus.LatestLiveDeckId),
-		StandardDrops:          []any{},
-		AdditionalDrops:        []any{},
-		GimmickDrops:           []any{},
-		Voltage:                req.LiveScore.CurrentScore,
-		LastBestVoltage:        int(liveRecord.MaxScore),
-		BeforeUserExp:          int(session.UserStatus.Exp),
-		LiveFinishStatus:       req.LiveFinishStatus}
-
-	liveRecord.PlayCount++
-	liveResult.LiveResultAchievements.AppendNewWithId(1).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement1.HasValue
-	liveResult.LiveResultAchievements.AppendNewWithId(2).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement2.HasValue
-	liveResult.LiveResultAchievements.AppendNewWithId(3).IsAlreadyAchieved = liveRecord.ClearedDifficultyAchievement3.HasValue
+	userLiveDifficulty.PlayCount++
+	resp.LiveResult.LiveResultAchievements.Set(1, client.LiveResultAchievement{
+		Position:          1,
+		IsAlreadyAchieved: userLiveDifficulty.ClearedDifficultyAchievement1.HasValue,
+	})
+	resp.LiveResult.LiveResultAchievements.Set(2, client.LiveResultAchievement{
+		Position:          2,
+		IsAlreadyAchieved: userLiveDifficulty.ClearedDifficultyAchievement2.HasValue,
+	})
+	resp.LiveResult.LiveResultAchievements.Set(3, client.LiveResultAchievement{
+		Position:          3,
+		IsAlreadyAchieved: userLiveDifficulty.ClearedDifficultyAchievement3.HasValue,
+	})
 
 	if lastPlayDeck.IsCleared {
 		// add story if it is a story mode
-		if live.CellId != nil {
-			session.InsertUserStoryMain(*live.CellId)
+		if live.CellId.HasValue {
+			session.InsertUserStoryMain(live.CellId.Value)
 		}
 
 		// update clear record
-		liveRecord.ClearCount++
-		if liveRecord.MaxScore < int32(req.LiveScore.CurrentScore) { // if new high score
-			liveRecord.MaxScore = int32(req.LiveScore.CurrentScore)
+		userLiveDifficulty.ClearCount++
+		if userLiveDifficulty.MaxScore < req.LiveScore.CurrentScore {
+			userLiveDifficulty.MaxScore = req.LiveScore.CurrentScore
 		}
-		if liveRecord.MaxCombo < int32(req.LiveScore.HighestComboCount) {
-			liveRecord.MaxCombo = int32(req.LiveScore.HighestComboCount)
+		if userLiveDifficulty.MaxCombo < req.LiveScore.HighestComboCount {
+			userLiveDifficulty.MaxCombo = req.LiveScore.HighestComboCount
 		}
-		if liveDifficulty.IsCountTarget { // counted toward target and profiles
+
+		if liveDifficulty.IsCountTarget { // counted toward target and profiles and missions
 			liveStats := session.GetUserLiveStats()
 			// TODO: just use the map instead of this
 			idx := enum.LiveDifficultyIndex[liveDifficulty.LiveDifficultyType]
 			liveStats.LivePlayCount[idx]++
-			if liveRecord.ClearCount == 1 { // 1st clear
+			if userLiveDifficulty.ClearCount == 1 { // 1st clear
 				liveStats.LiveClearCount[idx]++
 			}
 			session.UpdateUserLiveStats(liveStats)
 		}
 
-		// and award items
+		// award items
 		for i, mission := range liveDifficulty.Missions {
-			// TODO: the award condition is not checked totally correctly
-			if (i == 0) || (req.LiveScore.CurrentScore >= mission.TargetValue) {
-				liveResult.LiveResultAchievements.Objects[i].IsCurrentlyAchieved = true
-				if !liveResult.LiveResultAchievements.Objects[i].IsAlreadyAchieved { // new, add reward
+			if (i == 0) || (int(req.LiveScore.CurrentScore) >= mission.TargetValue) {
+				resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsCurrentlyAchieved = true
+				if !resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsAlreadyAchieved { // new, add reward
 					session.AddResource(mission.Reward)
 					switch i {
 					case 0:
-						liveRecord.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
+						userLiveDifficulty.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
 					case 1:
-						liveRecord.ClearedDifficultyAchievement2 = generic.NewNullable(int32(2))
+						userLiveDifficulty.ClearedDifficultyAchievement2 = generic.NewNullable(int32(2))
 					case 2:
-						liveRecord.ClearedDifficultyAchievement3 = generic.NewNullable(int32(3))
+						userLiveDifficulty.ClearedDifficultyAchievement3 = generic.NewNullable(int32(3))
 					}
 				}
 			}
 		}
-		liveResult.GainUserExp = liveDifficulty.RewardUserExp
+		resp.LiveResult.GainUserExp = int32(liveDifficulty.RewardUserExp)
 	}
 
-	memberPos := make(map[int32]int)
-	loveAmount := [9]int32{}
-	for i := range req.LiveScore.CardStatDict.Objects {
-		liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
+	resp.LiveResult.LastBestVoltage = userLiveDifficulty.MaxScore
+
+	memberRepresentativeCard := make(map[int32]int32)
+	memberLoveGained := make(map[int32]int32)
+	for i := range req.LiveScore.CardStatDict.Map {
+		liveFinishCard := req.LiveScore.CardStatDict.Map[i]
 
 		// calculate mvp
-		if liveFinishCard.GotVoltage > liveResult.MVP.GetVoltage {
-			liveResult.MVP.GetVoltage = liveFinishCard.GotVoltage
-			liveResult.MVP.CardMasterId = liveFinishCard.CardMasterId
-			liveResult.MVP.SkillTriggeredCount = liveFinishCard.SkillTriggeredCount
-			liveResult.MVP.AppealCount = liveFinishCard.AppealCount
+		if liveFinishCard.GotVoltage > resp.LiveResult.Mvp.GetVoltage {
+			resp.LiveResult.Mvp.GetVoltage = liveFinishCard.GotVoltage
+			resp.LiveResult.Mvp.CardMasterId = liveFinishCard.CardMasterId
+			resp.LiveResult.Mvp.SkillTriggeredCount = liveFinishCard.SkillTriggeredCount
+			resp.LiveResult.Mvp.AppealCount = liveFinishCard.AppealCount
 		}
 
 		// update card stat and member bond if cleared
@@ -222,114 +159,109 @@ func handleLiveTypeManual(ctx *gin.Context, req request.LiveFinishRequest, sessi
 
 			userCard := session.GetUserCard(liveFinishCard.CardMasterId)
 			userCard.LiveJoinCount++
-			userCard.ActiveSkillPlayCount += liveFinishCard.SkillTriggeredCount
+			userCard.ActiveSkillPlayCount += int(liveFinishCard.SkillTriggeredCount)
 			session.UpdateUserCard(userCard)
 			// update member love point
 			memberMasterId := gamedata.Card[liveFinishCard.CardMasterId].Member.Id
 
-			_, exist := memberPos[memberMasterId]
+			_, exist := memberRepresentativeCard[memberMasterId]
 			// only use 1 card master id or an idol might be shown multiple times
 			if !exist {
-				memberPos[memberMasterId] = i
+				memberRepresentativeCard[memberMasterId] = liveFinishCard.CardMasterId
 			}
-			loveAmount[memberPos[memberMasterId]] += int32(addedLove)
+			memberLoveGained[memberMasterId] += int32(addedLove)
 		}
 	}
 	// it's normal to show +0 on the bond screen if the person is already maxed
 	// this is checked against (video) recording
-	for i := range loveAmount {
-		liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
+	for _, i := range req.LiveScore.CardStatDict.Order {
+		liveFinishCard := req.LiveScore.CardStatDict.Map[i]
 		memberMasterId := gamedata.Card[liveFinishCard.CardMasterId].Member.Id
-		if memberPos[memberMasterId] != i {
+		if memberRepresentativeCard[memberMasterId] != i {
 			continue
 		}
-		addedLove := session.AddLovePoint(memberMasterId, loveAmount[i])
-		liveResult.MemberLoveStatuses.PushBack(
-			MemberLoveStatus{
-				CardMasterId:    liveFinishCard.CardMasterId,
-				RewardLovePoint: addedLove,
-			})
+		addedLove := session.AddLovePoint(memberMasterId, memberLoveGained[memberMasterId])
+		resp.LiveResult.MemberLoveStatuses.Set(liveFinishCard.CardMasterId, client.LiveResultMemberLoveStatus{
+			RewardLovePoint: addedLove,
+		})
 	}
 
-	liveResult.LiveResultAchievementStatus.ClearCount = int(liveRecord.ClearCount)
-	liveResult.LiveResultAchievementStatus.GotVoltage = req.LiveScore.CurrentScore
-	liveResult.LiveResultAchievementStatus.RemainingStamina = req.LiveScore.RemainingStamina
-	if live.PartnerUserId != 0 {
-		liveResult.Partner = new(model.UserBasicInfo)
-		*liveResult.Partner = session.GetOtherUserBasicProfile(int32(live.PartnerUserId))
-	}
-	session.UpdateLiveDifficulty(liveRecord)
+	resp.LiveResult.LiveResultAchievementStatus.ClearCount = userLiveDifficulty.ClearCount
+	resp.LiveResult.LiveResultAchievementStatus.GotVoltage = req.LiveScore.CurrentScore
+	resp.LiveResult.LiveResultAchievementStatus.RemainingStamina = req.LiveScore.RemainingStamina
+	// TODO(refactor): Actually handle this, will need to store extra info in the db
+	// if live.LivePartnerCard.HasValue {
+	// 	resp.LiveResult.Partner = generic.NewNullable(session.GetOtherUser(int32(live.PartnerUserId)))
+	// }
+	session.UpdateLiveDifficulty(userLiveDifficulty)
 
 	session.UpdateLastPlayLiveDifficultyDeck(lastPlayDeck)
-	liveFinishResp := session.Finalize("{}", "user_model_diff")
-	liveFinishResp, _ = sjson.Set(liveFinishResp, "live_result", liveResult)
 
-	resp := handler.SignResp(ctx, liveFinishResp, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	handler.JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
-func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, session *userdata.Session, live model.UserLive) {
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live) {
+	gamedata := session.Gamedata
 	// liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
 
 	// official server only record the Id, all other field are zero-valued
-	liveRecord := session.GetLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
-	liveRecord.IsNew = false
-	liveRecord.IsAutoplay = live.IsAutoplay
-	liveResult := LiveFinishLiveResult{
-		LiveDifficultyMasterId: int(session.UserStatus.LastLiveDifficultyId),
-		LiveDeckId:             int(session.UserStatus.LatestLiveDeckId),
-		StandardDrops:          []any{},
-		AdditionalDrops:        []any{},
-		GimmickDrops:           []any{},
-		Voltage:                req.LiveScore.CurrentScore,
-		LastBestVoltage:        int(liveRecord.MaxScore),
-		BeforeUserExp:          int(session.UserStatus.Exp),
-		LiveFinishStatus:       req.LiveFinishStatus,
-		LiveResultTower: &LiveResultTower{
-			TowerId:       *live.TowerLive.TowerId,
-			FloorNo:       *live.TowerLive.FloorNo,
-			TotalVoltage:  int32(req.LiveScore.CurrentScore),
-			GettedVoltage: int32(req.LiveScore.CurrentScore) - *live.TowerLive.StartVoltage,
-		}}
+	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
+	userLiveDifficulty.IsNew = false
+	// TODO(refactor): Get this from the request instead
+	// userLiveDifficulty.IsAutoplay = live.IsAutoplay
 
-	for i := range req.LiveScore.CardStatDict.Objects {
-		liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
+	resp := response.FinishLiveResponse{
+		LiveResult: client.LiveResult{
+			LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
+			LiveDeckId:             session.UserStatus.LatestLiveDeckId,
+			Voltage:                req.LiveScore.CurrentScore,
+			LastBestVoltage:        userLiveDifficulty.MaxScore,
+			BeforeUserExp:          session.UserStatus.Exp,
+			LiveFinishStatus:       req.LiveFinishStatus,
+			LiveResultTower: generic.NewNullable(client.LiveResultTower{
+				TowerId:       live.TowerLive.Value.TowerId,
+				FloorNo:       live.TowerLive.Value.FloorNo,
+				TotalVoltage:  req.LiveScore.CurrentScore,
+				GettedVoltage: req.LiveScore.CurrentScore - live.TowerLive.Value.StartVoltage,
+			})},
+		UserModelDiff: &session.UserModel,
+	}
+
+	for _, liveFinishCard := range req.LiveScore.CardStatDict.Map {
 		// calculate mvp
-		if liveFinishCard.GotVoltage > liveResult.MVP.GetVoltage {
-			liveResult.MVP.GetVoltage = liveFinishCard.GotVoltage
-			liveResult.MVP.CardMasterId = liveFinishCard.CardMasterId
-			liveResult.MVP.SkillTriggeredCount = liveFinishCard.SkillTriggeredCount
-			liveResult.MVP.AppealCount = liveFinishCard.AppealCount
+		if liveFinishCard.GotVoltage > resp.LiveResult.Mvp.GetVoltage {
+			resp.LiveResult.Mvp.GetVoltage = liveFinishCard.GotVoltage
+			resp.LiveResult.Mvp.CardMasterId = liveFinishCard.CardMasterId
+			resp.LiveResult.Mvp.SkillTriggeredCount = liveFinishCard.SkillTriggeredCount
+			resp.LiveResult.Mvp.AppealCount = liveFinishCard.AppealCount
 		}
 	}
 
 	increasePlayCount := false
 	awardFirstClearReward := false
-	tower := gamedata.Tower[*live.TowerLive.TowerId]
+	tower := gamedata.Tower[live.TowerLive.Value.TowerId]
 	// manually quiting out shouldn't count as a clear
 	if req.LiveFinishStatus == enum.LiveFinishStatusSucceeded || req.LiveFinishStatus == enum.LiveFinishStatusFailure {
-		userTower := session.GetUserTower(*live.TowerLive.TowerId)
-		if tower.Floor[*live.TowerLive.FloorNo].TowerCellType == enum.TowerCellTypeBonusLive {
+		userTower := session.GetUserTower(live.TowerLive.Value.TowerId)
+		if tower.Floor[live.TowerLive.Value.FloorNo].TowerCellType == enum.TowerCellTypeBonusLive {
 			// bonus live is only accepted when it's fully cleared
 			if req.LiveFinishStatus == enum.LiveFinishStatusSucceeded {
 				// update the max score, while we can reuse user_live_difficulty, they seems to have zero values for the official server
 				// so it's better to just use something else
 				// that will also help with displaying the ranking
-				currentScore := session.GetUserTowerVoltageRankingScore(*live.TowerLive.TowerId, *live.TowerLive.FloorNo)
-				if (req.LiveScore.CurrentScore >= req.LiveScore.TargetScore) && (int(currentScore.Voltage) < req.LiveScore.CurrentScore) {
+				currentScore := session.GetUserTowerVoltageRankingScore(live.TowerLive.Value.TowerId, live.TowerLive.Value.FloorNo)
+				if (req.LiveScore.CurrentScore >= req.LiveScore.TargetScore) && (currentScore.Voltage < req.LiveScore.CurrentScore) {
 					increasePlayCount = true
 					awardFirstClearReward = currentScore.Voltage == 0
-					currentScore.Voltage = int32(req.LiveScore.CurrentScore)
+					currentScore.Voltage = req.LiveScore.CurrentScore
 					session.UpdateUserTowerVoltageRankingScore(currentScore)
 				}
 			}
 		} else if req.LiveScore.CurrentScore >= req.LiveScore.TargetScore { // first clear
 			increasePlayCount = true
 			awardFirstClearReward = true
-			userTower.ClearedFloor = *live.TowerLive.FloorNo
+			userTower.ClearedFloor = live.TowerLive.Value.FloorNo
 			userTower.Voltage = 0
 		} else { // not cleared
 			increasePlayCount = true
@@ -340,54 +272,50 @@ func handleLiveTypeTower(ctx *gin.Context, req request.LiveFinishRequest, sessio
 
 	if increasePlayCount {
 		// update card used stuff
-		for i := range req.LiveScore.CardStatDict.Objects {
-			liveFinishCard := req.LiveScore.CardStatDict.Objects[i]
-			cardUsedCount := session.GetUserTowerCardUsed(*live.TowerLive.TowerId, int32(liveFinishCard.CardMasterId))
+		for i := range req.LiveScore.CardStatDict.Map {
+			liveFinishCard := req.LiveScore.CardStatDict.Map[i]
+			cardUsedCount := session.GetUserTowerCardUsed(live.TowerLive.Value.TowerId, liveFinishCard.CardMasterId)
 			cardUsedCount.UsedCount++
 			cardUsedCount.LastUsedAt = session.Time.Unix()
 			session.UpdateUserTowerCardUsed(tower.TowerId, cardUsedCount)
-			liveResult.LiveResultTower.TowerCardUsedCounts.Append(cardUsedCount)
+			resp.LiveResult.LiveResultTower.Value.TowerCardUsedCounts.Append(cardUsedCount)
 		}
 	}
 	if awardFirstClearReward {
 		// TODO(present box): Reward are actually added to present box in official server, we just add them directly here
-		if tower.Floor[*live.TowerLive.FloorNo].TowerClearRewardId != nil {
+		if tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewardId != nil {
 			session.AddTriggerBasic(
 				client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopClearRewardReceived,
-					ParamInt:        generic.NewNullable(*live.TowerLive.TowerId),
+					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
-			for _, reward := range tower.Floor[*live.TowerLive.FloorNo].TowerClearRewards {
+			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewards {
 				session.AddResource(reward)
 			}
 		}
-		if tower.Floor[*live.TowerLive.FloorNo].TowerProgressRewardId != nil {
+		if tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewardId != nil {
 			session.AddTriggerBasic(
 				client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopProgressRewardReceived,
-					ParamInt:        generic.NewNullable(*live.TowerLive.TowerId),
+					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
-			for _, reward := range tower.Floor[*live.TowerLive.FloorNo].TowerProgressRewards {
+			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewards {
 				session.AddResource(reward)
 			}
 		}
 	}
 
-	session.UpdateLiveDifficulty(liveRecord)
+	session.UpdateLiveDifficulty(userLiveDifficulty)
 
-	liveFinishResp := session.Finalize("{}", "user_model_diff")
-	liveFinishResp, _ = sjson.Set(liveFinishResp, "live_result", liveResult)
-	resp := handler.SignResp(ctx, liveFinishResp, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	handler.JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func LiveFinish(ctx *gin.Context) {
 	// this is pretty different for different type of live
 	// for simplicity we just read the request and call different handlers, even though we might be able to save some extra work
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.LiveFinishRequest{}
+	req := request.FinishLiveRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 

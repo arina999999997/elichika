@@ -1,6 +1,6 @@
 package klab
 
-func CenterBondGainBasedOnBondGain(gain int) int {
+func CenterBondGainBasedOnBondGain(gain int32) int32 {
 	// https://suyo.be/sifas/wiki/gameplay/live-rewards
 	// this doesn't seem to be in DB, so it's probably server sided
 	// the amount of bond and LP isn't consistent, because story stage give less bond

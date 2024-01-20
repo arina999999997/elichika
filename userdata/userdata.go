@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/generic"
 	"elichika/model"
@@ -46,7 +47,8 @@ func InitTables(overwrite bool) {
 		ContentAmount int32 `xorm:"'content_amount'" json:"content_amount"`
 	}
 	InitTable("u_resource", generic.UserIdWrapper[ContentWithPk]{}, overwrite)
-	InitTable("u_live_state", generic.UserIdWrapper[model.UserLive]{}, true) // always nuke the live state db because we might have a new format for it
+	// TODO(rename)
+	InitTable("u_live_state", generic.UserIdWrapper[client.Live]{}, true) // always nuke the live state db because we might have a new format for it
 }
 
 func init() {

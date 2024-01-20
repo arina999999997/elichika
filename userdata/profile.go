@@ -117,21 +117,21 @@ func GetOtherUserCard(otherUserId, cardMasterId int32) client.UserCard {
 	return card
 }
 
-func (session *Session) GetOtherUserBasicProfile(otherUserId int32) model.UserBasicInfo {
-	basicInfo := model.UserBasicInfo{}
-	FetchDBProfile(otherUserId, &basicInfo)
-	recommendCard := GetOtherUserCard(otherUserId, basicInfo.RecommendCardMasterId)
+func (session *Session) GetOtherUser(otherUserId int32) client.OtherUser {
+	otherUser := client.OtherUser{}
+	FetchDBProfile(otherUserId, &otherUser)
+	recommendCard := GetOtherUserCard(otherUserId, otherUser.RecommendCardMasterId)
 
-	basicInfo.RecommendCardLevel = int(recommendCard.Level)
-	basicInfo.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
-	basicInfo.IsRecommendCardAllTrainingActivated = recommendCard.IsAllTrainingActivated
+	otherUser.RecommendCardLevel = recommendCard.Level
+	otherUser.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
+	otherUser.IsRecommendCardAllTrainingActivated = recommendCard.IsAllTrainingActivated
 
-	// friend system, not implemented
-	basicInfo.FriendApprovedAt = new(int64)
-	*basicInfo.FriendApprovedAt = 0
-	basicInfo.RequestStatus = 3
-	basicInfo.IsRequestPending = false
-	return basicInfo
+	// TODO(friend): not implemented
+	// otherUser.FriendApprovedAt = new(int64)
+	// *otherUser.FriendApprovedAt = 0
+	// otherUser.RequestStatus = 3
+	// otherUser.IsRequestPending = false
+	return otherUser
 }
 
 func (session *Session) GetOtherUserLiveStats(otherUserId int) model.UserProfileLiveStats {

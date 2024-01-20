@@ -204,6 +204,6 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 
 	JsonResponse(ctx, &response.ActivateTrainingTreeCellResponse{
 		UserCardTrainingTreeCellList: session.GetTrainingTree(req.CardMasterId),
-		UserModelDiff: &session.UserModel,
+		UserModelDiff:                &session.UserModel,
 	})
 }

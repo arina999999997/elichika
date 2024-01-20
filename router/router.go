@@ -178,7 +178,7 @@ func Router(r *gin.Engine) {
 
 		// TODO:
 		// /schoolIdolFestivalIdReward/fetch: this can be accessed by unlocking a button, cool to see this again especially if you kept your data
-		//
+		// /voltageRanking/getVoltageRanking: this is the voltage ranking button
 	}
 
 	{

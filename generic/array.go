@@ -19,6 +19,7 @@ type Array[T any] struct {
 func (l *Array[T]) Size() int {
 	return len(l.Slice)
 }
+
 func (l *Array[T]) Append(item T) {
 	l.Slice = append(l.Slice, item)
 }

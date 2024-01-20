@@ -1,13 +1,6 @@
 package enum
 
 const (
-	LiveFinishStatusSucceeded = 0x00000001
-	LiveFinishStatusFailure   = 0x0000000b
-	LiveFinishStatusRetired   = 0x0000000c
-	LiveFinishStatusSurrender = 0x00000015
-)
-
-const (
 	LiveUnlockPatternOpen                 = 0x00000001
 	LiveUnlockPatternRequiringStoryMain   = 0x00000002 // no longer necessary after the last update
 	LiveUnlockPatternClosed               = 0x00000003
@@ -31,8 +24,8 @@ var (
 	// beginner, intermediate, advanced, expert (advanced+), challenge
 	// 40 is also used in network (not in db), but not sure what it represent
 	// TODO(refactor): use a map instead of array for this
-	LiveDifficultyTypes = [5]int{10, 20, 30, 35, 37}
-	LiveDifficultyIndex = map[int]int{
+	LiveDifficultyTypes = [5]int32{10, 20, 30, 35, 37}
+	LiveDifficultyIndex = map[int32]int32{
 		10: 0,
 		20: 1,
 		30: 2,

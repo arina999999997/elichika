@@ -1,0 +1,59 @@
+package enum
+
+// too much to bother naming I suppose
+const (
+	NoteGimmickIconTypeNoteGimmickIconType1                 int32 = 0x00000001
+	NoteGimmickIconTypeNoteGimmickIconType2                 int32 = 0x00000002
+	NoteGimmickIconTypeNoteGimmickIconType3                 int32 = 0x00000003
+	NoteGimmickIconTypeNoteGimmickIconType4                 int32 = 0x00000004
+	NoteGimmickIconTypeNoteGimmickIconType5                 int32 = 0x00000005
+	NoteGimmickIconTypeNoteGimmickIconType6                 int32 = 0x00000006
+	NoteGimmickIconTypeNoteGimmickIconType7                 int32 = 0x00000007
+	NoteGimmickIconTypeNoteGimmickIconType8                 int32 = 0x00000008
+	NoteGimmickIconTypeNoteGimmickIconType9                 int32 = 0x00000009
+	NoteGimmickIconTypeNoteGimmickIconType10                int32 = 0x0000000a
+	NoteGimmickIconTypeNoteGimmickIconType11                int32 = 0x0000000b
+	NoteGimmickIconTypeNoteGimmickIconType12                int32 = 0x0000000c
+	NoteGimmickIconTypeNoteGimmickIconType13                int32 = 0x0000000d
+	NoteGimmickIconTypeNoteGimmickIconType14                int32 = 0x0000000e
+	NoteGimmickIconTypeNoteGimmickIconType15                int32 = 0x0000000f
+	NoteGimmickIconTypeNoteGimmickIconType16                int32 = 0x00000010
+	NoteGimmickIconTypeNoteGimmickIconType17                int32 = 0x00000011
+	NoteGimmickIconTypeNoteGimmickIconType18                int32 = 0x00000012
+	NoteGimmickIconTypeNoteGimmickIconType19                int32 = 0x00000013
+	NoteGimmickIconTypeNoteGimmickIconType20                int32 = 0x00000014
+	NoteGimmickIconTypeNoteGimmickIconType21                int32 = 0x00000015
+	NoteGimmickIconTypeNoteGimmickIconType22                int32 = 0x00000016
+	NoteGimmickIconTypeNoteGimmickIconType23                int32 = 0x00000017
+	NoteGimmickIconTypeNoteGimmickIconType24                int32 = 0x00000018
+	NoteGimmickIconTypeNoteGimmickIconType25                int32 = 0x00000019
+	NoteGimmickIconTypeNoteGimmickIconType26                int32 = 0x0000001a
+	NoteGimmickIconTypeNoteGimmickIconType27                int32 = 0x0000001b
+	NoteGimmickIconTypeNoteGimmickIconType28                int32 = 0x0000001c
+	NoteGimmickIconTypeNoteGimmickIconType29                int32 = 0x0000001d
+	NoteGimmickIconTypeNoteGimmickIconType30                int32 = 0x0000001e
+	NoteGimmickIconTypeNoteGimmickIconType31                int32 = 0x0000001f
+	NoteGimmickIconTypeNoteGimmickIconType32                int32 = 0x00000020
+	NoteGimmickIconTypeNoteGimmickIconType33                int32 = 0x00000021
+	NoteGimmickIconTypeNoteGimmickIconType34                int32 = 0x00000022
+	NoteGimmickIconTypeNoteGimmickIconType35                int32 = 0x00000023
+	NoteGimmickIconTypeNoteGimmickIconType36                int32 = 0x00000024
+	NoteGimmickIconTypeNoteGimmickIconType37                int32 = 0x00000025
+	NoteGimmickIconTypeNoteGimmickIconType38                int32 = 0x00000026
+	NoteGimmickIconTypeNoteGimmickIconType39                int32 = 0x00000027
+	NoteGimmickIconTypeNoteGimmickIconType40                int32 = 0x00000028
+	NoteGimmickIconTypeNoteGimmickIconType41                int32 = 0x00000029
+	NoteGimmickIconTypeNoteGimmickIconType42                int32 = 0x0000002a
+	NoteGimmickIconTypeNoteGimmickIconType43                int32 = 0x0000002b
+	NoteGimmickIconTypeNoteGimmickIconType44                int32 = 0x0000002c
+	NoteGimmickIconTypeNoteGimmickIconType45                int32 = 0x0000002d
+	NoteGimmickIconTypeNoteGimmickIconType46                int32 = 0x0000002e
+	NoteGimmickIconTypeNoteGimmickIconType47                int32 = 0x0000002f
+	NoteGimmickIconTypeNoteGimmickIconType48                int32 = 0x00000030
+	NoteGimmickIconTypeNoteGimmickIconType49                int32 = 0x00000031
+	NoteGimmickIconTypeNoteGimmickIconType50                int32 = 0x00000032
+	NoteGimmickIconTypeNoteGimmickIconType51                int32 = 0x00000033
+	NoteGimmickIconTypeNoteIconAddStaminaBlockGimmickDebuff int32 = 0x00000034
+	NoteGimmickIconTypeNoteIconAddDirectRateDamage          int32 = 0x00000035
+	NoteGimmickIconTypeNoteGimmickIconTypeNone              int32 = 0x00000063
+)

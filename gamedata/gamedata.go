@@ -87,11 +87,11 @@ type Gamedata struct {
 	MemberLovePanelLevelAtLoveLevel []int32
 	MemberByBirthday                map[int32]([]*Member)
 
-	Live              map[int]*Live
+	Live              map[int32]*Live
 	LiveParty         LiveParty
-	LiveDaily         map[int]*LiveDaily
-	LiveMemberMapping map[int]LiveMemberMapping
-	LiveDifficulty    map[int]*LiveDifficulty
+	LiveDaily         map[int32]*LiveDaily
+	LiveMemberMapping map[int32]LiveMemberMapping
+	LiveDifficulty    map[int32]*LiveDifficulty
 
 	TrainingTreeCellItemSet map[int]*TrainingTreeCellItemSet
 	TrainingTreeDesign      map[int]*TrainingTreeDesign

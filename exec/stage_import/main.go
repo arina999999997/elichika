@@ -37,7 +37,7 @@ type SimpleLiveStartResponse struct {
 	} `json:"live"`
 }
 
-type FullLiveStage = model.LiveStage
+type FullLiveStage = client.LiveStage
 type FullLiveStartResponse struct {
 	Live struct {
 		LiveStage FullLiveStage `json:"live_stage"`

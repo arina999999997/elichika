@@ -1,169 +1,168 @@
 package live
 
 import (
+	"elichika/client"
+	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/generic"
 	"elichika/handler"
-	"elichika/model"
-	"elichika/protocol/request"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
-// TODO(refactor): Change to use request and response types
 func FetchLiveMusicSelect(ctx *gin.Context) {
+	// ther is no request body
+
+	userId := ctx.GetInt("user_id")
+	session := userdata.GetSession(ctx, userId)
+	defer session.Close()
+
 	now := time.Now()
 	year, month, day := now.Year(), now.Month(), now.Day()
-	// does this work if it's EOY?
 	tomorrow := time.Date(year, month, day+1, 0, 0, 0, 0, now.Location()).Unix()
-	weekday := int(now.Weekday())
+
+	weekday := int32(now.Weekday())
 	if weekday == 0 {
 		weekday = 7
 	}
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	liveDailyList := []model.LiveDaily{}
+
+	resp := response.FetchLiveMusicSelectResponse{
+		WeekdayState: client.WeekdayState{
+			Weekday:       weekday,
+			NextWeekdayAt: tomorrow,
+		},
+		UserModelDiff: &session.UserModel,
+	}
 	for _, liveDaily := range gamedata.LiveDaily {
 		if liveDaily.Weekday != weekday {
 			continue
 		}
-		liveDailyList = append(liveDailyList,
-			model.LiveDaily{
-				LiveDailyMasterId: liveDaily.Id,
-				LiveMasterId:      liveDaily.LiveId,
-			})
-	}
-	for k := range liveDailyList {
-		liveDailyList[k].EndAt = int(tomorrow)
-		liveDailyList[k].RemainingPlayCount = 5
-		liveDailyList[k].RemainingRecoveryCount = 10
+		resp.LiveDailyList.Append(client.LiveDaily{
+			LiveDailyMasterId:      liveDaily.Id,
+			LiveMasterId:           liveDaily.LiveId,
+			EndAt:                  tomorrow,
+			RemainingPlayCount:     5, // this is not kept track of
+			RemainingRecoveryCount: generic.NewNullable(int32(10)),
+		})
 	}
 
-	signBody := handler.GetData("fetchLiveMusicSelect.json")
-	signBody, _ = sjson.Set(signBody, "weekday_state.weekday", weekday)
-	signBody, _ = sjson.Set(signBody, "weekday_state.next_weekday_at", tomorrow)
-	signBody, _ = sjson.Set(signBody, "live_daily_list", liveDailyList)
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-	signBody = session.Finalize(signBody, "user_model_diff")
-	resp := handler.SignResp(ctx, signBody, config.SessionKey)
-
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	handler.JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func FetchLivePartners(ctx *gin.Context) {
 	// a set of partners player (i.e. friends and others), then fetch the card for them
 	// this set include the current user, so we can use our own cards.
 	// currently only have current user
-	// note that all card are available, but we need to use the filter functionality to actually get them to show up.
-	partnerIds := []int{}
+	// note that all card are available, but we need to use the filter functionality in the client to actually get them to show up.
+
+	resp := response.FetchLiveParntersResponse{}
+
+	// there is no request body
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	partnerIds = append(partnerIds, userId)
-	livePartners := []model.LiveStartLivePartner{}
-	for _, partnerId := range partnerIds {
-		partner := model.LiveStartLivePartner{}
+
+	partnerUserIds := []int32{} // TODO(friend): Fill this with some users
+	partnerUserIds = append(partnerUserIds, int32(userId))
+
+	for _, partnerId := range partnerUserIds {
+
+		partner := client.LivePartner{}
+		userdata.FetchDBProfile(partnerId, &partner)
+
 		partner.IsFriend = true
-		userdata.FetchDBProfile(int32(partnerId), &partner)
-		partnerCards := userdata.FetchPartnerCards(partnerId) // client.UserCard
+		partnerCards := userdata.FetchPartnerCards(int(partnerId)) // client.UserCard
 		if len(partnerCards) == 0 {
 			continue
 		}
 		for _, card := range partnerCards {
 			for i := 1; i <= 7; i++ {
 				if (card.LivePartnerCategories & (1 << i)) != 0 {
-					partnerCardInfo := session.GetPartnerCardFromUserCard(card)
-					partner.CardByCategory = append(partner.CardByCategory, i)
-					partner.CardByCategory = append(partner.CardByCategory, partnerCardInfo)
+					partner.CardByCategory.Set(int32(i), session.GetOtherUserCard(partnerId, card.CardMasterId))
 				}
 			}
 		}
-		livePartners = append(livePartners, partner)
+		resp.PartnerSelectState.LivePartners.Append(partner)
 	}
-
-	signBody := "{}"
-	signBody, _ = sjson.Set(signBody, "partner_select_state.live_partners", livePartners)
-	signBody, _ = sjson.Set(signBody, "partner_select_state.friend_count", len(livePartners))
-	resp := handler.SignResp(ctx, signBody, config.SessionKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	resp.PartnerSelectState.FriendCount = int32(resp.PartnerSelectState.LivePartners.Size())
+	handler.JsonResponse(ctx, &resp)
 }
 
-// TODO(refactor): Change to use request and response types
 func LiveStart(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.LiveStartRequest{}
+	req := request.StartLiveRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
+
 	userId := ctx.GetInt("user_id")
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+	gamedata := session.Gamedata
+
 	masterLiveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyId]
 	masterLiveDifficulty.ConstructLiveStage(gamedata)
-	session.UserStatus.LastLiveDifficultyId = int32(req.LiveDifficultyId)
-	session.UserStatus.LatestLiveDeckId = int32(req.DeckId)
+	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyId
+	session.UserStatus.LatestLiveDeckId = req.DeckId
 
 	// 保存请求包因为 /live/finish 接口的响应包里有部分字段不在该接口的请求包里
 	// live is stored in db
-	live := model.UserLive{
-		PartnerUserId:   req.PartnerUserId,
-		LiveId:          time.Now().UnixNano(),
-		LiveType:        enum.LiveTypeManual,
-		IsPartnerFriend: true,
-		DeckId:          req.DeckId,
-		CellId:          req.CellId,
-		IsAutoplay:      req.IsAutoPlay,
+	// TODO(refactor): Let's also store the request too
+	resp := response.StartLiveResponse{
+		Live: client.Live{
+			// PartnerUserId:   req.PartnerUserId,
+			LiveId:          time.Now().UnixNano(),
+			LiveType:        enum.LiveTypeManual,
+			IsPartnerFriend: true,
+			DeckId:          req.DeckId,
+			CellId:          req.CellId,
+			// IsAutoplay:      req.IsAutoPlay,
+		},
+		UserModelDiff: &session.UserModel,
 	}
-	live.LiveStage = masterLiveDifficulty.LiveStage.Copy()
+	resp.Live.LiveStage = masterLiveDifficulty.LiveStage.Copy()
+	// TODO(drop): fill in note here
 
-	if req.LiveTowerStatus != nil {
+	if req.LiveTowerStatus.HasValue {
 		// is tower live, fetch this tower
 		// TODO: fetch from database instead
-		userTower := session.GetUserTower(req.LiveTowerStatus.TowerId)
-
-		if userTower.ReadFloor != req.LiveTowerStatus.FloorNo {
-			userTower.ReadFloor = req.LiveTowerStatus.FloorNo
+		userTower := session.GetUserTower(req.LiveTowerStatus.Value.TowerId)
+		reqTower := &req.LiveTowerStatus.Value
+		if userTower.ReadFloor != reqTower.FloorNo {
+			userTower.ReadFloor = reqTower.FloorNo
 			session.UpdateUserTower(userTower)
 		}
-		dummy := int32(gamedata.Tower[req.LiveTowerStatus.TowerId].Floor[req.LiveTowerStatus.FloorNo].TargetVoltage)
-		live.TowerLive = model.TowerLive{
-			TowerId:       &req.LiveTowerStatus.TowerId,
-			FloorNo:       &req.LiveTowerStatus.FloorNo,
-			TargetVoltage: &dummy,
-			StartVoltage:  &userTower.Voltage,
-		}
-		live.LiveType = enum.LiveTypeTower
+		resp.Live.TowerLive = generic.NewNullable(client.TowerLive{
+			TowerId:       reqTower.TowerId,
+			FloorNo:       reqTower.FloorNo,
+			TargetVoltage: int32(gamedata.Tower[reqTower.TowerId].Floor[reqTower.FloorNo].TargetVoltage),
+			StartVoltage:  userTower.Voltage,
+		})
+		resp.Live.LiveType = enum.LiveTypeTower
 	}
 
 	if req.IsAutoPlay {
-		for k := range live.LiveStage.LiveNotes {
-			live.LiveStage.LiveNotes[k].AutoJudgeType = *config.Conf.AutoJudgeType
+		for k := range resp.Live.LiveStage.LiveNotes.Slice {
+			resp.Live.LiveStage.LiveNotes.Slice[k].AutoJudgeType = *config.Conf.AutoJudgeType
 		}
 	}
 
 	if req.PartnerUserId != 0 {
-		live.LivePartnerCard = session.GetPartnerCardFromUserCard(
-			userdata.GetOtherUserCard(int32(req.PartnerUserId), req.PartnerCardMasterId))
+		resp.Live.LivePartnerCard = generic.NewNullable(session.GetOtherUserCard(req.PartnerUserId, req.PartnerCardMasterId))
 	}
 
-	liveStartResp := session.Finalize("{}", "user_model_diff")
-	liveStartResp, _ = sjson.Set(liveStartResp, "live", live)
-	session.SaveUserLive(live)
-	resp := handler.SignResp(ctx, liveStartResp, config.SessionKey)
+	session.SaveUserLive(resp.Live)
 
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, resp)
+	session.Finalize("{}", "dummy")
+	handler.JsonResponse(ctx, &resp)
 }
