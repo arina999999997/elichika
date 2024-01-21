@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 )
 
+// TODO(refactor)
 type BillingHistoryResponse struct {
 	BillingBalanceHistoryList []client.BillingBalanceHistory `json:"billing_balance_history_list"`
 	BillingDepositHistoryList []client.BillingDepositHistory `json:"billing_deposit_history_list"`

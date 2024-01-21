@@ -5,6 +5,9 @@ import "elichika/config"
 import (
 	"elichika/router"
 
+	_ "elichika/handler"
+	_ "elichika/handler/live"
+
 	"fmt"
 	"os"
 	"runtime"

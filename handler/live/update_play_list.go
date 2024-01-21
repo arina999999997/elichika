@@ -4,7 +4,7 @@ import (
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/handler"
+	"elichika/handler/common"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -35,7 +35,7 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 	}
 
 	session.Finalize()
-	handler.JsonResponse(ctx, &response.UpdatePlayListResponse{
+	common.JsonResponse(ctx, &response.UpdatePlayListResponse{
 		IsSuccess:     true,
 		UserModelDiff: &session.UserModel,
 	})

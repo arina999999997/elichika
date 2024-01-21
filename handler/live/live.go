@@ -8,7 +8,8 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
-	"elichika/handler"
+	"elichika/handler/common"
+	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -57,46 +58,7 @@ func FetchLiveMusicSelect(ctx *gin.Context) {
 	}
 
 	session.Finalize()
-	handler.JsonResponse(ctx, &resp)
-}
-
-func FetchLivePartners(ctx *gin.Context) {
-	// a set of partners player (i.e. friends and others), then fetch the card for them
-	// this set include the current user, so we can use our own cards.
-	// currently only have current user
-	// note that all card are available, but we need to use the filter functionality in the client to actually get them to show up.
-
-	resp := response.FetchLiveParntersResponse{}
-
-	// there is no request body
-	userId := ctx.GetInt("user_id")
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	partnerUserIds := []int32{} // TODO(friend): Fill this with some users
-	partnerUserIds = append(partnerUserIds, int32(userId))
-
-	for _, partnerId := range partnerUserIds {
-
-		partner := client.LivePartner{}
-		userdata.FetchDBProfile(partnerId, &partner)
-
-		partner.IsFriend = true
-		partnerCards := userdata.FetchPartnerCards(int(partnerId)) // client.UserCard
-		if len(partnerCards) == 0 {
-			continue
-		}
-		for _, card := range partnerCards {
-			for i := 1; i <= 7; i++ {
-				if (card.LivePartnerCategories & (1 << i)) != 0 {
-					partner.CardByCategory.Set(int32(i), session.GetOtherUserCard(partnerId, card.CardMasterId))
-				}
-			}
-		}
-		resp.PartnerSelectState.LivePartners.Append(partner)
-	}
-	resp.PartnerSelectState.FriendCount = int32(resp.PartnerSelectState.LivePartners.Size())
-	handler.JsonResponse(ctx, &resp)
+	common.JsonResponse(ctx, &resp)
 }
 
 func LiveStart(ctx *gin.Context) {
@@ -164,5 +126,14 @@ func LiveStart(ctx *gin.Context) {
 	session.SaveUserLive(resp.Live)
 
 	session.Finalize()
-	handler.JsonResponse(ctx, &resp)
+	common.JsonResponse(ctx, &resp)
+}
+
+func init() {
+	router.AddHandler("/live/fetchLiveMusicSelect", FetchLiveMusicSelect)
+	router.AddHandler("/live/start", LiveStart)
+	router.AddHandler("/live/finish", LiveFinish)
+	router.AddHandler("/live/skip", LiveSkip)
+	router.AddHandler("/live/updatePlayList", LiveUpdatePlayList)
+	router.AddHandler("/live/finishTutorial", LiveFinish) // this works
 }

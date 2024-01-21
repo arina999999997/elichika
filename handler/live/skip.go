@@ -6,7 +6,7 @@ import (
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/generic"
-	"elichika/handler"
+	"elichika/handler/common"
 	"elichika/item"
 	"elichika/klab"
 	"elichika/userdata"
@@ -104,5 +104,5 @@ func LiveSkip(ctx *gin.Context) {
 	}
 
 	session.Finalize()
-	handler.JsonResponse(ctx, &resp)
+	common.JsonResponse(ctx, &resp)
 }

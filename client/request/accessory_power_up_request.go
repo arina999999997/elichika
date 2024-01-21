@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 )
 
+// TODO(refactor)
 type AccessoryPowerUpRequest struct {
 	UserAccessoryId       int64                         `json:"user_accessory_id"`
 	PowerUpAccessoryIds   []int64                       `json:"power_up_user_accessory_ids"`

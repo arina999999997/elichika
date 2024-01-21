@@ -1,0 +1,237 @@
+# Endpoints
+Here is a list of endpoints found in the client, for reference.
+
+Ticked endpoint means that the server see the end point (not 404), it doesn't mean the feature is fully handled.
+
+Also note that some endpoints won't need to be handled at all either because they're no longer used, or because they are just irrelevant.
+
+
+- [x] /accessory/allUnequip
+- [x] /accessory/melt
+- [x] /accessory/powerUp
+- [x] /accessory/rarityUp
+- [x] /accessory/updateIsLock
+- [x] /accessory/updateIsNew
+- [x] /asset/getPackUrl
+- [ ] /billing/applePurchase
+- [x] /billing/fetchBillingHistory
+- [ ] /billing/googlePurchase
+- [ ] /billing/prePurchase
+- [ ] /billing/purchaseSubscriptionTrial
+- [ ] /billing/restoreAppleSubscription
+- [ ] /billing/restoreGoogleSubscription
+- [ ] /billing/saveOperationLog
+- [ ] /billing/saveUserBirth
+- [x] /billing/updateSubscription
+- [x] /bootstrap/fetchBootstrap
+- [x] /bootstrap/getClearedPlatformAchievement
+- [x] /card/changeFavorite
+- [x] /card/changeIsAwakeningImage
+- [x] /card/getOtherUserCard
+- [x] /card/updateCardNewFlag
+- [ ] /caution/read
+- [ ] /challenge/fetchBeginner
+- [ ] /challenge/receiveRewardBeginner
+- [x] /communicationMember/fetchCommunicationMemberDetail
+- [x] /communicationMember/finishUserStoryMember
+- [x] /communicationMember/finishUserStorySide
+- [x] /communicationMember/setFavoriteMember
+- [x] /communicationMember/setTheme
+- [ ] /communicationMember/updateUserCardNewFlag
+- [x] /communicationMember/updateUserCommunicationMemberDetailBadge       
+- [ ] /communicationMember/updateUserCustomBackgroundNewFlag
+- [x] /communicationMember/updateUserLiveDifficultyNewFlag
+- [ ] /communicationMember/updateUserStoryMemberNewFlag
+- [ ] /communicationMember/updateUserStorySideNewFlag
+- [ ] /communicationMember/updateUserSuitNewFlag
+- [ ] /communicationMember/updateUserThemeNewFlag
+- [ ] /communicationMember/updateUserVoiceNewFlag
+- [ ] /coop/login
+- [ ] /coopLive/create
+- [ ] /coopLive/createRoom
+- [ ] /coopLive/fetchRoomFinish
+- [ ] /coopLive/fetchRoomHistory
+- [ ] /coopLive/fetchRoomHistoryDeck
+- [ ] /coopLive/fetchRoomResultUserDeck
+- [ ] /coopLive/finishRoom
+- [ ] /coopLive/finishSolo
+- [ ] /coopLive/start
+- [x] /dailyTheater/fetchDailyTheater
+- [x] /dailyTheater/setLike
+- [x] /dailyTheaterArchive/fetchDailyTheaterArchive
+- [x] /dataLink/fetchDataLinks
+- [ ] /dataLink/fetchGameServiceData
+- [ ] /dataLink/fetchGameServiceDataBeforeLogin
+- [ ] /dataLink/fetchSchoolIdolFestivalIdDataAfterLogin
+- [ ] /dataLink/fetchSchoolIdolFestivalIdDataBeforeLogin
+- [ ] /dataLink/linkGameService
+- [ ] /dataLink/linkOnStartUpGameService
+- [ ] /dataLink/linkSchoolIdolFestivalId
+- [ ] /dataLink/migrateGameService
+- [ ] /dataLink/migrateGameServiceBeforeLogin
+- [ ] /dataLink/migrateSchoolIdolFestivalId
+- [ ] /dataLink/migrateSchoolIdolFestivalIdBeforeLogin
+- [ ] /dataLink/unlinkGameService
+- [ ] /dataLink/unlinkSchoolIdolFestivalId
+- [x] /emblem/activateEmblem
+- [x] /emblem/fetchEmblem
+- [x] /emblem/fetchEmblemById
+- [ ] /eventCoop/fetchLobby
+- [ ] /eventCoopRanking/fetchEventCoopRanking
+- [ ] /eventMarathon/fetchEventMarathon
+- [ ] /eventMarathon/finishEventStory
+- [ ] /eventMarathonRanking/fetchEventMarathonRanking
+- [ ] /eventMining/fetchEventMining
+- [ ] /eventMining/finishEventMiningStory
+- [ ] /eventMining/likeEventMiningPanel
+- [ ] /eventMiningRanking/fetchEventMiningRanking
+- [ ] /externalMovie/fetchBrowseExternalMovie
+- [ ] /externalMovie/saveBrowseExternalMovie
+- [ ] /friend/apply
+- [ ] /friend/applyOtherScene
+- [ ] /friend/approve
+- [ ] /friend/approveOtherScene
+- [ ] /friend/cancel
+- [ ] /friend/cancelOtherScene
+- [x] /friend/fetchFriendList
+- [ ] /friend/refuse
+- [ ] /friend/remove
+- [ ] /friend/removeOtherScene
+- [ ] /friend/searchUserId
+- [x] /gacha/draw
+- [x] /gacha/fetchGachaMenu
+- [ ] /gacha/fixRetry
+- [ ] /gacha/retry
+- [x] /gameSettings/updatePushNotificationSettings
+- [x] /gdpr/updateConsentState
+- [ ] /gpsPresent/saveCampaignLocation
+- [x] /infoTrigger/read
+- [ ] /infoTrigger/readByType
+- [x] /infoTrigger/readCardGradeUp
+- [ ] /infoTrigger/readEventCommonShowResult
+- [ ] /infoTrigger/readEventMarathonResult
+- [ ] /infoTrigger/readEventMiningResult
+- [ ] /infoTrigger/readExpiredGiftBox
+- [ ] /infoTrigger/readGachaPointExchange
+- [ ] /infoTrigger/readMemberGuildRankingResult
+- [x] /infoTrigger/readMemberGuildSupportItemExpired
+- [x] /infoTrigger/readMemberLoveLevelUp
+- [ ] /infoTrigger/readSubscriptionEnd
+- [ ] /infoTrigger/readSubscriptionTrialEnd
+- [ ] /itemDetail/fetchItemDetailRelateLiveList
+- [x] /lesson/changeDeckNameLessonDeck
+- [x] /lesson/executeLesson
+- [ ] /lesson/resetDeck
+- [x] /lesson/resultLesson
+- [x] /lesson/saveDeck
+- [x] /lesson/skillEditResult
+- [x] /live/fetchLiveMusicSelect
+- [x] /live/finish
+- [ ] /live/finishTutorial
+- [ ] /live/recoverDailyLiveMusicPlayable
+- [ ] /live/resume
+- [x] /live/skip
+- [x] /live/start
+- [ ] /live/surrender
+- [x] /live/updatePlayList
+- [x] /liveDeck/changeDeckNameLiveDeck
+- [ ] /liveDeck/changeNameLiveParty
+- [x] /liveDeck/fetchLiveDeckSelect
+- [ ] /liveDeck/resetDeck
+- [x] /liveDeck/saveDeck
+- [x] /liveDeck/saveDeckAll
+- [ ] /liveDeck/saveOverwriteDeck
+- [ ] /liveDeck/saveSquad
+- [x] /liveDeck/saveSuit
+- [x] /liveMv/saveDeck
+- [x] /liveMv/start
+- [x] /livePartners/fetch
+- [x] /livePartners/setLivePartner
+- [x] /login/login
+- [x] /login/startup
+- [x] /loginBonus/readLoginBonus
+- [x] /loveRanking/fetch
+- [ ] /member/fetchMemberLovePanel
+- [x] /member/openMemberLovePanel
+- [x] /memberGuild/cheerMemberGuild
+- [x] /memberGuild/fetchMemberGuildRanking
+- [x] /memberGuild/fetchMemberGuildRankingYear
+- [x] /memberGuild/fetchMemberGuildSelect
+- [x] /memberGuild/fetchMemberGuildTop
+- [x] /memberGuild/joinMemberGuild
+- [x] /mission/clearMissionNewBadge
+- [x] /mission/fetchMission
+- [ ] /mission/receiveReward
+- [x] /navi/saveUserNaviVoice
+- [x] /navi/tapLovePoint
+- [ ] /noop/noop
+- [x] /notice/fetchNotice
+- [ ] /notice/fetchNoticeDetail
+- [ ] /notice/fetchNoticeList
+- [ ] /notice/saveUserSuperNotice
+- [x] /present/fetch
+- [ ] /present/receive
+- [x] /referenceBook/saveReferenceBook
+- [ ] /refundInformation/fetchRefundInformation
+- [ ] /reviewRequest/finishReviewRequestProcessFlow
+- [ ] /room/
+- [ ] /rooms
+- [ ] /rooms/filter
+- [ ] /rooms/filter/assign
+- [ ] /rooms/number/
+- [x] /ruleDescription/saveRuleDescription
+- [x] /sceneTips/saveSceneTipsType
+- [ ] /schoolIdolFestivalIdReward/fetch
+- [ ] /shop/exchangeShopEventExchange
+- [ ] /shop/exchangeShopItemExchange
+- [ ] /shop/fetchShopEventExchange
+- [ ] /shop/fetchShopItemExchange
+- [x] /shop/fetchShopPack
+- [x] /shop/fetchShopSnsCoin
+- [x] /shop/fetchShopSubscription
+- [x] /shop/fetchShopTop
+- [x] /sif2DataLink/dataLink
+- [ ] /steadyRanking/fetch
+- [ ] /steadyRanking/getSteadyRankingDeck
+- [ ] /steadyRanking/selectDifficulty
+- [x] /still/fetch
+- [x] /subscription/fetchSubscriptionPass
+- [ ] /subscription/readContinueReward
+- [x] /takeOver/checkTakeOver
+- [x] /takeOver/setTakeOver
+- [x] /takeOver/updatePassWord
+- [x] /terms/agreement
+- [x] /tower/clearedTowerFloor
+- [x] /tower/fetchTowerSelect
+- [x] /tower/fetchTowerTop
+- [x] /tower/recoveryTowerCardUsed
+- [x] /tower/recoveryTowerCardUsedAll
+- [x] /towerRanking/fetchTowerRanking
+- [x] /trade/executeMultiTrade
+- [x] /trade/executeTrade
+- [x] /trade/fetchTrade
+- [x] /trainingTree/activateTrainingTreeCell
+- [x] /trainingTree/fetchTrainingTree
+- [x] /trainingTree/gradeUpCard
+- [x] /trainingTree/levelUpCard
+- [x] /tutorial/corePlayableEnd
+- [x] /tutorial/phaseEnd
+- [ ] /tutorial/playableTutorialSkip
+- [x] /tutorial/timingAdjusterEnd
+- [x] /tutorial/tutorialSkip
+- [x] /unlockScene/saveUnlockedScene
+- [ ] /user/addAccessoryBoxLimit
+- [ ] /user/recoverAp
+- [ ] /user/recoverLp
+- [ ] /user/recoverLpSubscription
+- [x] /userAccountDeletion/checkUserAccountDeleted
+- [ ] /userAccountDeletion/deleteUserAccount
+- [ ] /userProfile/fetchDeck
+- [x] /userProfile/fetchProfile
+- [x] /userProfile/setCommboLive
+- [x] /userProfile/setProfile
+- [x] /userProfile/setProfileBirthday
+- [x] /userProfile/setRecommendCard
+- [x] /userProfile/setScoreLive
+- [ ] /voltageRanking/getVoltageRanking
+- [ ] /voltageRanking/getVoltageRankingDeck

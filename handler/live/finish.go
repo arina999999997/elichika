@@ -6,7 +6,7 @@ import (
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/generic"
-	"elichika/handler"
+	"elichika/handler/common"
 	"elichika/klab"
 	"elichika/userdata"
 	"elichika/utils"
@@ -198,7 +198,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	session.UpdateLastPlayLiveDifficultyDeck(lastPlayDeck)
 
 	session.Finalize()
-	handler.JsonResponse(ctx, &resp)
+	common.JsonResponse(ctx, &resp)
 }
 
 func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live) {
@@ -308,7 +308,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 	session.UpdateLiveDifficulty(userLiveDifficulty)
 
 	session.Finalize()
-	handler.JsonResponse(ctx, &resp)
+	common.JsonResponse(ctx, &resp)
 }
 
 func LiveFinish(ctx *gin.Context) {
