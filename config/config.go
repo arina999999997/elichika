@@ -27,7 +27,6 @@ var (
 	ServerdataPath = "serverdata.db"
 	UserdataPath   = "userdata.db"
 
-	PresetDataPath     = "presets/"
 	UserDataBackupPath = "backup/"
 
 	MasterVersionGl = "2d61e7b4e89961c7" // read from GL database, so user can update db just by changing that

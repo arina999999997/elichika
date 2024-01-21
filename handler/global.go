@@ -14,9 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var (
-	presetDataPath = "presets/"
-)
 
 func SignResp(ctx *gin.Context, body, key string) (resp string) {
 	ep := ctx.MustGet("ep").(string)
@@ -34,13 +31,4 @@ func JsonResponse(ctx *gin.Context, resp any) {
 	utils.CheckErr(err)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, SignResp(ctx, string(signBody), config.SessionKey))
-}
-
-func GetData(fileName string) string {
-	presetDataFile := presetDataPath + fileName
-	if !utils.PathExists(presetDataFile) {
-		panic("File not exist: " + fileName)
-	}
-
-	return utils.ReadAllText(presetDataFile)
 }

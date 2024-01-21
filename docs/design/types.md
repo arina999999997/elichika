@@ -7,7 +7,7 @@ Client types are all the types used by the client (with exception being mentione
 These types are defined in the `client` package, and they must have the exact same construction as the type in the client. This includes the following:
 
 - The name must match perfectly, down to the which letter are capitalised (with the exception of the first letter since we're using Go).
-- The fields' types must match perfectly:
+- The fields' types must match:
 
   - `int32` must be `int32` and `int64` must be `int64` and so on.
   - Replicate the type of the fields if necessary, and do not use annonymous types.
