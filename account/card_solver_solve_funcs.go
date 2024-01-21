@@ -44,13 +44,6 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card clie
 	if int32(len(solver.Cells)) != card.TrainingActivatedCellCount {
 		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterId))
 	}
-	// update stat for this member
-	userMember := session.GetMember(solver.MasterCard.Member.Id)
-	userMember.OwnedCardCount++
-	if card.IsAllTrainingActivated {
-		userMember.AllTrainingCardCount++
-	}
-	session.UpdateMember(userMember)
 }
 
 func (solver *TrainingTreeSolver) SolveForTileSet() bool {

@@ -2,9 +2,6 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/client/response"
-	"elichika/enum"
-	"elichika/generic"
 	"elichika/model"
 	"elichika/utils"
 
@@ -12,7 +9,7 @@ import (
 )
 
 func FetchDBProfile(userId int32, result interface{}) {
-	exist, err := Engine.Table("u_info").Where("user_id = ?", userId).Get(result)
+	exist, err := Engine.Table("u_status").Where("user_id = ?", userId).Get(result)
 	utils.CheckErrMustExist(err, exist)
 }
 
@@ -78,7 +75,7 @@ func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.P
 func (session *Session) GetOtherUserProfileInformation(otherUserId int32) client.ProfileInfomation {
 	// TODO(friend): Actually calculate the friend links
 	otherUserStatus := client.UserStatus{}
-	exist, err := Engine.Table("u_info").Where("user_id = ?", otherUserId).Get(&otherUserStatus)
+	exist, err := Engine.Table("u_status").Where("user_id = ?", otherUserId).Get(&otherUserStatus)
 	utils.CheckErrMustExist(err, exist)
 	otherUserCard := session.GetOtherUserCard(otherUserId, otherUserStatus.RecommendCardMasterId)
 	otherUser := client.OtherUser{
@@ -136,7 +133,7 @@ func (session *Session) GetOtherUser(otherUserId int32) client.OtherUser {
 
 func (session *Session) GetOtherUserLiveStats(otherUserId int) model.UserProfileLiveStats {
 	stats := model.UserProfileLiveStats{}
-	_, err := Engine.Table("u_info").Where("user_id = ?", otherUserId).Get(&stats)
+	_, err := Engine.Table("u_status").Where("user_id = ?", otherUserId).Get(&stats)
 	utils.CheckErr(err)
 	return stats
 }
@@ -146,67 +143,12 @@ func (session *Session) GetUserLiveStats() model.UserProfileLiveStats {
 }
 
 func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
-	_, err := session.Db.Table("u_info").Where("user_id = ?", session.UserId).AllCols().Update(&stats)
+	_, err := session.Db.Table("u_status").Where("user_id = ?", session.UserId).AllCols().Update(&stats)
 	utils.CheckErr(err)
 }
 
 // fetch profile of another user, from session.UserId's perspective
 // it's possible that otherUserId == session.UserId
-
-func (session *Session) FetchProfile(otherUserId int32) response.UserProfileResponse {
-	resp := response.UserProfileResponse{
-		ProfileInfo: session.GetOtherUserProfileInformation(otherUserId),
-	}
-
-	// need to return this in order, so make the array then write to it
-	// this also prevent the game from freezing if 2 cards or more have the same bit
-	// TODO(refactor, guest): Rewrite this once we get there
-	for i := int32(1); i <= 7; i++ {
-		resp.GuestInfo.LivePartnerCards.Append(client.ProfileLivePartnerCard{
-			LivePartnerCategoryMasterId: i,
-		})
-	}
-
-	partnerCards := FetchPartnerCards(int(otherUserId))
-	for _, card := range partnerCards {
-		partnerCard := session.GetOtherUserCard(otherUserId, card.CardMasterId)
-		for i := 1; i <= 7; i++ {
-			if (card.LivePartnerCategories & (1 << i)) != 0 {
-				resp.GuestInfo.LivePartnerCards.Slice[i-1].PartnerCard = partnerCard
-			}
-		}
-	}
-
-	// live clear stats
-	liveStats := session.GetOtherUserLiveStats(int(otherUserId))
-	for i, liveDifficultyType := range enum.LiveDifficultyTypes {
-		resp.PlayInfo.LivePlayCount.Set(int32(liveDifficultyType), int32(liveStats.LivePlayCount[i]))
-		resp.PlayInfo.LiveClearCount.Set(int32(liveDifficultyType), int32(liveStats.LiveClearCount[i]))
-	}
-
-	session.Db.Table("u_card").Where("user_id = ?", otherUserId).
-		OrderBy("live_join_count DESC").Limit(3).Find(&resp.PlayInfo.JoinedLiveCardRanking.Slice)
-	session.Db.Table("u_card").Where("user_id = ?", otherUserId).
-		OrderBy("active_skill_play_count DESC").Limit(3).Find(&resp.PlayInfo.PlaySkillCardRanking.Slice)
-
-	// custom profile
-	customProfile := session.GetOtherUserSetProfile(int(otherUserId))
-	if customProfile.VoltageLiveDifficultyId != 0 {
-		resp.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.VoltageLiveDifficultyId)
-		resp.PlayInfo.MaxScoreLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(int(otherUserId), customProfile.VoltageLiveDifficultyId).MaxScore
-	}
-	if customProfile.CommboLiveDifficultyId != 0 {
-		resp.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.CommboLiveDifficultyId)
-		resp.PlayInfo.MaxComboLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(int(otherUserId), customProfile.CommboLiveDifficultyId).MaxCombo
-	}
-
-	// can get from members[] to save sql
-	err := session.Db.Table("u_member").Where("user_id = ?", otherUserId).Find(&resp.MemberInfo.UserMembers.Slice)
-	utils.CheckErr(err)
-	return resp
-}
 
 func (session *Session) GetOtherUserSetProfile(otherUserId int) client.UserSetProfile {
 	p := client.UserSetProfile{}

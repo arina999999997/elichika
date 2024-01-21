@@ -9,7 +9,7 @@ import (
 
 func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) client.TowerCardUsedCount {
 	cardUsed := client.TowerCardUsedCount{}
-	exist, err := session.Db.Table("u_tower_card_used").
+	exist, err := session.Db.Table("u_tower_card_used_count").
 		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, towerId, cardMasterId).Get(&cardUsed)
 	utils.CheckErr(err)
 	if !exist {
@@ -24,7 +24,7 @@ func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) client
 }
 
 func (session *Session) UpdateUserTowerCardUsed(towerId int32, card client.TowerCardUsedCount) {
-	affected, err := session.Db.Table("u_tower_card_used").
+	affected, err := session.Db.Table("u_tower_card_used_count").
 		Where("user_id = ? AND tower_id = ? AND card_master_id = ?", session.UserId, towerId, card.CardMasterId).
 		AllCols().Update(card)
 	utils.CheckErr(err)
@@ -33,7 +33,7 @@ func (session *Session) UpdateUserTowerCardUsed(towerId int32, card client.Tower
 			Card    client.TowerCardUsedCount `xorm:"extends"`
 			TowerId int32                     `xorm:"pk 'tower_id'"`
 		}
-		genericDatabaseInsert(session, "u_tower_card_used", Wrapper{
+		genericDatabaseInsert(session, "u_tower_card_used_count", Wrapper{
 			Card:    card,
 			TowerId: towerId,
 		})
@@ -42,7 +42,7 @@ func (session *Session) UpdateUserTowerCardUsed(towerId int32, card client.Tower
 
 func (session *Session) GetUserTowerCardUsedList(towerId int32) generic.List[client.TowerCardUsedCount] {
 	list := generic.List[client.TowerCardUsedCount]{}
-	err := session.Db.Table("u_tower_card_used").
+	err := session.Db.Table("u_tower_card_used_count").
 		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&list.Slice)
 	utils.CheckErr(err)
 	return list

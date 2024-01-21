@@ -34,8 +34,15 @@ The gamedata database is the combination of the serverdata and masterdata databa
 
 This database can have its own type or use `client` types.
 
-### Handling database
-The handling database (or event database (naming TBD)) store things like ranking. This database should only store things derived from the userdata database, and it should be calculatable from the existing database.
+### Cacheing database
+The cacheing database store things like ranking. This database should only store things derived from the userdata database.
+
+To make handling things simple, this database should ONLY be CALCULATED from the userdata database, with a caching invalidation policy. 
+
+For now, there is no cache, but the following should work:
+- Each data cache has a expiration time, and will be throwed away if expired.
+- Cached data related to specific user expires if that user request it.
+
 
 ## Subsystems layer
 The subsystem (name subjected to change) layer handle the subsystems of the game.

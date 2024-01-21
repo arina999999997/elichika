@@ -225,7 +225,6 @@ func SetFavoriteMember(ctx *gin.Context) {
 		member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[afterLoveLevelLimit]
 		card.Grade++ // new grade,
 		if card.Grade == 0 {
-			member.OwnedCardCount++
 		} else {
 			// add trigger card grade up so animation play when opening the card
 			session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{

@@ -185,7 +185,6 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	if card.TrainingActivatedCellCount+1 == int32(len(cellContents)) {
 		card.IsAllTrainingActivated = true
 		member := session.GetMember(*masterCard.MemberMasterId)
-		member.AllTrainingCardCount++
 		session.UpdateMember(member)
 	}
 

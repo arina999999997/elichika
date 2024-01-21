@@ -3,10 +3,9 @@ package main
 import "elichika/config"
 
 import (
-	"elichika/router"
-
 	_ "elichika/handler"
-	_ "elichika/handler/live"
+
+	"elichika/router"
 
 	"fmt"
 	"os"

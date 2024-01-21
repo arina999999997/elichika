@@ -81,11 +81,11 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 			UserId: userId,
 			Object: &status,
 		}
-		_, err = db.Table("u_info").AllCols().Insert(wrapper)
+		_, err = db.Table("u_status").AllCols().Insert(wrapper)
 		if (err != nil) && (isRandomId) { // reroll once for random userId
 			userId = rand.Intn(1000000000)
 			wrapper.UserId = userId
-			_, err = db.Table("u_info").AllCols().Insert(&status)
+			_, err = db.Table("u_status").AllCols().Insert(&status)
 		}
 		utils.CheckErr(err)
 		db.Commit()
@@ -107,8 +107,6 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 				LovePointLimit:           member.MemberInit.LovePointLimit,
 				ViewStatus:               1,
 				IsNew:                    false,
-				OwnedCardCount:           1,
-				AllTrainingCardCount:     0,
 			})
 			cards = append(cards, client.UserCard{
 				CardMasterId:               member.MemberInit.SuitMasterId,

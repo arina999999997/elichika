@@ -9,9 +9,6 @@ type UserMember struct {
 	LoveLevel                int32 `json:"love_level"`
 	ViewStatus               int32 `json:"view_status"`
 	IsNew                    bool  `json:"is_new"`
-	// TODO(refactor): split this into own stats
-	OwnedCardCount       int `json:"-"`
-	AllTrainingCardCount int `json:"-"`
 }
 
 func (um *UserMember) Id() int64 {

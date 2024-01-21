@@ -74,7 +74,6 @@ func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed 
 		card.Grade++ // new grade,
 		if card.Grade == 0 {
 			// entirely new card
-			member.OwnedCardCount++
 			resultCard.BeforeGrade = 0
 		} else {
 			// add trigger card grade up so animation play when opening the card

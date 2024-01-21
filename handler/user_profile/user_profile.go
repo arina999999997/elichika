@@ -7,6 +7,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/profile"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,7 +27,7 @@ func FetchProfile(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	common.JsonResponse(ctx, session.FetchProfile(req.UserId))
+	common.JsonResponse(ctx, profile.FetchProfile(session, req.UserId))
 }
 
 func SetProfile(ctx *gin.Context) {

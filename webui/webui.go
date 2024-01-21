@@ -37,7 +37,7 @@ func Common(ctx *gin.Context) {
 	userId := -1
 	userId, err = strconv.Atoi(userIdString)
 	if err != nil {
-		exist, err := userdata.Engine.Table("u_info").OrderBy("last_login_at DESC").Limit(1).Cols("user_id").Get(&userId)
+		exist, err := userdata.Engine.Table("u_status").OrderBy("last_login_at DESC").Limit(1).Cols("user_id").Get(&userId)
 		utils.CheckErr(err)
 		if !exist {
 			ctx.Set("has_user_id", false)

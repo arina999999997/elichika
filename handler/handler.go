@@ -2,6 +2,8 @@ package handler
 
 // the only job of this package is to import all the handler package so they're actually registered
 import (
+	_ "elichika/router"
+
 	_ "elichika/handler/accessory"
 	_ "elichika/handler/asset"
 	_ "elichika/handler/billing"

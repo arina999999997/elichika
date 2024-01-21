@@ -73,13 +73,13 @@ func (session *Session) Close() {
 }
 
 func userStatusFinalizer(session *Session) {
-	affected, err := session.Db.Table("u_info").Where("user_id = ?", session.UserId).AllCols().Update(session.UserStatus)
+	affected, err := session.Db.Table("u_status").Where("user_id = ?", session.UserId).AllCols().Update(session.UserStatus)
 	utils.CheckErr(err)
 	if affected != 1 {
 		if session.SessionType != SessionTypeImportAccount {
 			panic("user doesn't exist in u_info")
 		} else {
-			genericDatabaseInsert(session, "u_info", *session.UserStatus)
+			genericDatabaseInsert(session, "u_status", *session.UserStatus)
 		}
 	}
 }
@@ -88,7 +88,7 @@ func init() {
 }
 
 func UserExist(userId int32) bool {
-	exist, err := Engine.Table("u_info").Exist(
+	exist, err := Engine.Table("u_status").Exist(
 		&generic.UserIdWrapper[client.UserStatus]{
 			UserId: int(userId),
 		})
@@ -106,7 +106,7 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 	err := s.Db.Begin()
 	utils.CheckErr(err)
 
-	exist, err := s.Db.Table("u_info").Where("user_id = ?", userId).Get(&s.UserModel.UserStatus)
+	exist, err := s.Db.Table("u_status").Where("user_id = ?", userId).Get(&s.UserModel.UserStatus)
 	utils.CheckErr(err)
 	if !exist {
 		s.Close()
