@@ -19,15 +19,15 @@ func (session *Session) GetTrainingTree(cardMasterId int32) generic.List[client.
 func (session *Session) InsertTrainingTreeCells(cardMasterId int32, cells []client.UserCardTrainingTreeCell) {
 
 	type Wrapper struct {
-		CardMasterId int32 
-		CellId      int32
-		ActivatedAt int64
+		CardMasterId int32
+		CellId       int32
+		ActivatedAt  int64
 	}
 	for _, cell := range cells {
 		genericDatabaseInsert(session, "u_card_training_tree_cell", Wrapper{
-			CardMasterId: cardMasterId, 
-			CellId: cell.CellId,
-			ActivatedAt: cell.ActivatedAt,
+			CardMasterId: cardMasterId,
+			CellId:       cell.CellId,
+			ActivatedAt:  cell.ActivatedAt,
 		})
 	}
 }

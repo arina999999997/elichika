@@ -2,6 +2,7 @@ package database
 
 import (
 	"elichika/client"
+	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/config"
 	"elichika/generic"
@@ -101,4 +102,5 @@ func init() {
 
 	AddTable("u_login", generic.UserIdWrapper[response.LoginResponse]{})
 	AddTable("u_live", generic.UserIdWrapper[client.Live]{})
+	AddTable("u_start_live_request", generic.UserIdWrapper[request.StartLiveRequest]{})
 }

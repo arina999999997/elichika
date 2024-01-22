@@ -1,10 +1,12 @@
 package login
 
 import (
+	// "elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/config"
 	"elichika/encrypt"
+	// "elichika/generic"
 	"elichika/handler/common"
 	"elichika/locale"
 	"elichika/router"
@@ -81,6 +83,16 @@ func Login(ctx *gin.Context) {
 
 	resp := session.Login()
 	resp.SessionKey = LoginSessionKey(req.Mask)
+	// { // TODO(live resume)
+	// 	exist, _, startLiveRequest := session.LoadUserLive()
+	// 	if exist {
+	// 		resp.LiveResume = generic.NewNullable(client.LiveResume{
+	// 			LiveDifficultyId: startLiveRequest.LiveDifficultyId,
+	// 			DeckId:           startLiveRequest.DeckId,
+	// 			ConsumedLp:       0, // this thing is only to show how much lp is spent
+	// 		})
+	// 	}
+	// }
 	session.Finalize()
 	common.JsonResponse(ctx, resp)
 

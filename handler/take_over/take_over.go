@@ -61,7 +61,7 @@ func CheckTakeOver(ctx *gin.Context) {
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
 	}
 	if linkedSession != nil { // user exist
-		if linkedSession.UserStatus.PassWord != req.PassWord { // incorrect password
+		if !linkedSession.CheckPassWord(req.PassWord) { // incorrect password
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
 		}
@@ -106,8 +106,8 @@ func SetTakeOver(ctx *gin.Context) {
 		userdata.CreateNewAccount(ctx, linkedUserId, req.PassWord)
 		linkedSession = userdata.GetSession(ctx, linkedUserId)
 		defer linkedSession.Close()
-	} else if linkedSession.UserStatus.PassWord != req.PassWord {
-		panic("wrong password")
+	} else if !linkedSession.CheckPassWord(req.PassWord) {
+		panic("wrong pass word")
 	}
 
 	resp := response.SetTakeOverResponse{
@@ -137,7 +137,7 @@ func UpdatePassWord(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UserStatus.PassWord = req.PassWord
+	session.SetPassWord(req.PassWord)
 	session.Finalize()
 
 	common.JsonResponse(ctx, &response.UpdatePassWordResponse{

@@ -8,6 +8,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/klab"
+	"elichika/subsystem/user_profile"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -18,7 +19,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live) {
+func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live, startReq request.StartLiveRequest) {
 	resp := response.FinishLiveResponse{
 		LiveResult: client.LiveResult{
 			LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
@@ -49,6 +50,8 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	// record this live and build the last played deck
 	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
 	userLiveDifficulty.IsNew = false
+	userLiveDifficulty.IsAutoplay = startReq.IsAutoPlay
+
 	lastPlayDeck := client.LastPlayLiveDifficultyDeck{
 		LiveDifficultyId: resp.LiveResult.LiveDifficultyMasterId,
 		Voltage:          req.LiveScore.CurrentScore,
@@ -178,10 +181,9 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	resp.LiveResult.LiveResultAchievementStatus.ClearCount = userLiveDifficulty.ClearCount
 	resp.LiveResult.LiveResultAchievementStatus.GotVoltage = req.LiveScore.CurrentScore
 	resp.LiveResult.LiveResultAchievementStatus.RemainingStamina = req.LiveScore.RemainingStamina
-	// TODO(refactor): Actually handle this, will need to store extra info in the db
-	// if live.LivePartnerCard.HasValue {
-	// 	resp.LiveResult.Partner = generic.NewNullable(session.GetOtherUser(int32(live.PartnerUserId)))
-	// }
+	if live.LivePartnerCard.HasValue {
+		resp.LiveResult.Partner = generic.NewNullable(user_profile.GetOtherUser(session, startReq.PartnerUserId))
+	}
 	session.UpdateLiveDifficulty(userLiveDifficulty)
 
 	session.UpdateLastPlayLiveDifficultyDeck(lastPlayDeck)
@@ -190,15 +192,13 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	common.JsonResponse(ctx, &resp)
 }
 
-func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live) {
+func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live, startReq request.StartLiveRequest) {
 	gamedata := session.Gamedata
 	// liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
 
 	// official server only record the Id, all other field are zero-valued
 	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
 	userLiveDifficulty.IsNew = false
-	// TODO(refactor): Get this from the request instead
-	// userLiveDifficulty.IsAutoplay = live.IsAutoplay
 
 	resp := response.FinishLiveResponse{
 		LiveResult: client.LiveResult{
@@ -311,13 +311,13 @@ func LiveFinish(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	exist, live := session.LoadUserLive()
+	exist, live, startReq := session.LoadUserLive()
 	utils.MustExist(exist)
 	switch live.LiveType {
 	case enum.LiveTypeManual:
-		handleLiveTypeManual(ctx, req, session, live)
+		handleLiveTypeManual(ctx, req, session, live, startReq)
 	case enum.LiveTypeTower:
-		handleLiveTypeTower(ctx, req, session, live)
+		handleLiveTypeTower(ctx, req, session, live, startReq)
 	default:
 		panic("not handled")
 	}

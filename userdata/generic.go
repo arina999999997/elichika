@@ -34,7 +34,6 @@ func addFinalizer(f handler) {
 	finalizers[reflect.ValueOf(f).Pointer()] = f
 }
 
-// TODO(refactor): This is kinda ugly
 func (session *Session) PopulateUserModelField(fieldName string) {
 	rModel := reflect.ValueOf(&session.UserModel)
 	for i := 0; i < rModel.Type().Elem().NumField(); i++ {
@@ -56,7 +55,6 @@ func (session *Session) PopulateUserModelField(fieldName string) {
 }
 
 func genericTableFieldPopulator(session *Session) {
-	// TODO(refactor): These can be init at the start or something
 	rModel := reflect.ValueOf(&session.UserModel)
 	for i := 0; i < rModel.Type().Elem().NumField(); i++ {
 		rFieldType := rModel.Type().Elem().Field(i)

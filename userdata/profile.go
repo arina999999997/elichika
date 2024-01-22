@@ -2,88 +2,12 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/model"
 	"elichika/utils"
-
-	"encoding/json"
 )
 
 func FetchDBProfile(userId int32, result interface{}) {
 	exist, err := Engine.Table("u_status").Where("user_id = ?", userId).Get(result)
 	utils.CheckErrMustExist(err, exist)
-}
-
-func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.PartnerCardInfo {
-
-	memberId := session.Gamedata.Card[card.CardMasterId].Member.Id
-
-	partnerCard := model.PartnerCardInfo{}
-
-	jsonByte, err := json.Marshal(card)
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(jsonByte, &partnerCard)
-	if err != nil {
-		panic(err)
-	}
-
-	// TODO(friend): This doesn't work totally correctly because the card is isn't totally attached to the user anymore
-	exist, err := Engine.Table("u_member").Where("user_id = ? AND member_master_id = ?", session.UserId, memberId).
-		Cols("love_level").Get(&partnerCard.LoveLevel)
-	utils.CheckErrMustExist(err, exist)
-
-	partnerCard.PassiveSkillLevels = []int{}
-	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, int(card.PassiveSkillALevel))
-	partnerCard.PassiveSkillLevels = append(partnerCard.PassiveSkillLevels, int(card.PassiveSkillBLevel))
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill1Id))
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill2Id))
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill3Id))
-	partnerCard.AdditionalPassiveSkillIds = append(partnerCard.AdditionalPassiveSkillIds, int(card.AdditionalPassiveSkill4Id))
-	partnerCard.MemberLovePanels = []int{} // must not be null
-
-	// filling this for a card of self freeze the game
-	// the displayed value still correct for own's card in the guest setup menu with an empty array
-	// display value in getOtherUserCard is wrong, but if we fill in for own card then it also freeze
-	// TODO: revisit after implmenting friends
-
-	// lovePanel := client.MemberLovePanel{}
-	// exist, err = Engine.Table("u_member").
-	// 	Where("user_id = ? AND member_master_id = ?", card.UserId, memberId).Get(&lovePanel)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// if !exist {
-	// 	panic("member doesn't exist")
-	// }
-	// partnerCard.MemberLovePanels = lovePanel.MemberLovePanelCellIds
-
-	return partnerCard
-}
-
-func GetOtherUserCard(otherUserId, cardMasterId int32) client.UserCard {
-	card := client.UserCard{}
-	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).
-		Get(&card)
-	utils.CheckErrMustExist(err, exist)
-	return card
-}
-
-func (session *Session) GetOtherUser(otherUserId int32) client.OtherUser {
-	otherUser := client.OtherUser{}
-	FetchDBProfile(otherUserId, &otherUser)
-	recommendCard := GetOtherUserCard(otherUserId, otherUser.RecommendCardMasterId)
-
-	otherUser.RecommendCardLevel = recommendCard.Level
-	otherUser.IsRecommendCardImageAwaken = recommendCard.IsAwakeningImage
-	otherUser.IsRecommendCardAllTrainingActivated = recommendCard.IsAllTrainingActivated
-
-	// TODO(friend): not implemented
-	// otherUser.FriendApprovedAt = new(int64)
-	// *otherUser.FriendApprovedAt = 0
-	// otherUser.RequestStatus = 3
-	// otherUser.IsRequestPending = false
-	return otherUser
 }
 
 // fetch profile of another user, from session.UserId's perspective

@@ -5,9 +5,6 @@ import (
 )
 
 type UserStatus struct {
-	// TODO(refactor): move password to another table
-	PassWord string `xorm:"'pass_word'" json:"-"`
-
 	Name                                      LocalizedText           `xorm:"'name'" json:"name"`                                         // player name
 	Nickname                                  LocalizedText           `xorm:"'nickname'" json:"nickname"`                                 // nickname in story
 	LastLoginAt                               int64                   `json:"last_login_at"`                                              // in unix second

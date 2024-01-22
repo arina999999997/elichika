@@ -37,7 +37,6 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 			tutorialEndAt = 0
 		}
 		status := client.UserStatus{
-			PassWord:                                passWord,
 			LastLoginAt:                             time.Now().Unix(),
 			Rank:                                    1,
 			RecommendCardMasterId:                   100011001, // Honoka
@@ -92,7 +91,10 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 	}
 	session := GetSession(ctx, userId)
 	defer session.Close()
-
+	{
+		// passwords
+		session.SetPassWord(passWord)
+	}
 	{ // members, initial cards
 		members := []client.UserMember{}
 		cards := []client.UserCard{}

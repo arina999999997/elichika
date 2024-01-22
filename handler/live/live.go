@@ -80,16 +80,13 @@ func LiveStart(ctx *gin.Context) {
 
 	// 保存请求包因为 /live/finish 接口的响应包里有部分字段不在该接口的请求包里
 	// live is stored in db
-	// TODO(refactor): Let's also store the request too
 	resp := response.StartLiveResponse{
 		Live: client.Live{
-			// PartnerUserId:   req.PartnerUserId,
 			LiveId:          time.Now().UnixNano(),
 			LiveType:        enum.LiveTypeManual,
 			IsPartnerFriend: true,
 			DeckId:          req.DeckId,
 			CellId:          req.CellId,
-			// IsAutoplay:      req.IsAutoPlay,
 		},
 		UserModelDiff: &session.UserModel,
 	}
@@ -124,7 +121,7 @@ func LiveStart(ctx *gin.Context) {
 		resp.Live.LivePartnerCard = generic.NewNullable(user_card.GetOtherUserCard(session, req.PartnerUserId, req.PartnerCardMasterId))
 	}
 
-	session.SaveUserLive(resp.Live)
+	session.SaveUserLive(resp.Live, req)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)
