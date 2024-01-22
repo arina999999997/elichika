@@ -25,10 +25,6 @@ type UserCard struct {
 	AdditionalPassiveSkill4Id  int32 `xorm:"'additional_passive_skill_4_id'" json:"additional_passive_skill_4_id"`
 	AcquiredAt                 int32 `json:"acquired_at"` // should be int64 but client use int32
 	IsNew                      bool  `json:"is_new"`
-	// TODO(refactor): move these fields out
-	LivePartnerCategories int `xorm:"default 0" json:"-"` // bitset, i-th bit is on if is i-th partner card
-	LiveJoinCount         int `xorm:"'live_join_count' default 0" json:"-"`
-	ActiveSkillPlayCount  int `xorm:"'active_skill_play_count' default 0" json:"-"`
 }
 
 func (uc *UserCard) Id() int64 {

@@ -5,7 +5,6 @@ import (
 	"elichika/client/response"
 	"elichika/gamedata"
 	"elichika/generic"
-	"elichika/model"
 	"elichika/utils"
 
 	"time"
@@ -34,9 +33,6 @@ type Session struct {
 	MemberLovePanels     []client.MemberLovePanel
 	UserContentDiffs     map[int32](map[int32]client.Content) // content_type then content_id
 
-	UserTrainingTreeCellDiffs []model.TrainingTreeCell
-	// for now only store delta patch, i.e. user_model_diff
-	// should be fine until we want to keep user state entirely in ram
 	SessionType int
 	UserModel   client.UserModel
 

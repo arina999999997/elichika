@@ -4,7 +4,6 @@ import (
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/enum"
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/item"
@@ -96,12 +95,9 @@ func LiveSkip(ctx *gin.Context) {
 		})
 	}
 
-	if liveDifficulty.IsCountTarget { // counted toward target and profiles
-		liveStats := session.GetUserLiveStats()
-		idx := enum.LiveDifficultyIndex[liveDifficulty.LiveDifficultyType]
-		liveStats.LivePlayCount[idx] += int(req.TicketUseCount)
-		session.UpdateUserLiveStats(liveStats)
-	}
+	// if liveDifficulty.IsCountTarget { // counted toward target and profiles
+	// 	// TODO(behavior): Check if this is counted toward card / clear usage and update that
+	// }
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)

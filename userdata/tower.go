@@ -3,7 +3,7 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/generic"
-	"elichika/model"
+	"elichika/userdata/database"
 	"elichika/utils"
 )
 
@@ -80,21 +80,21 @@ func (session *Session) UpdateUserTower(tower client.UserTower) {
 	session.UserModel.UserTowerByTowerId.Set(tower.TowerId, tower)
 }
 
-func (session *Session) GetUserTowerVoltageRankingScores(towerId int32) []model.UserTowerVoltageRankingScore {
-	scores := []model.UserTowerVoltageRankingScore{}
+func (session *Session) GetUserTowerVoltageRankingScores(towerId int32) []database.UserTowerVoltageRankingScore {
+	scores := []database.UserTowerVoltageRankingScore{}
 	err := session.Db.Table("u_tower_voltage_ranking_score").
 		Where("user_id = ? AND tower_id = ?", session.UserId, towerId).Find(&scores)
 	utils.CheckErr(err)
 	return scores
 }
 
-func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int32) model.UserTowerVoltageRankingScore {
-	score := model.UserTowerVoltageRankingScore{}
+func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int32) database.UserTowerVoltageRankingScore {
+	score := database.UserTowerVoltageRankingScore{}
 	exists, err := session.Db.Table("u_tower_voltage_ranking_score").
 		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserId, towerId, floorNo).Get(&score)
 	utils.CheckErr(err)
 	if !exists {
-		score = model.UserTowerVoltageRankingScore{
+		score = database.UserTowerVoltageRankingScore{
 			TowerId: towerId,
 			FloorNo: floorNo,
 			Voltage: 0,
@@ -103,7 +103,7 @@ func (session *Session) GetUserTowerVoltageRankingScore(towerId, floorNo int32) 
 	return score
 }
 
-func (session *Session) UpdateUserTowerVoltageRankingScore(score model.UserTowerVoltageRankingScore) {
+func (session *Session) UpdateUserTowerVoltageRankingScore(score database.UserTowerVoltageRankingScore) {
 	affected, err := session.Db.Table("u_tower_voltage_ranking_score").
 		Where("user_id = ? AND tower_id = ? AND floor_no = ?", session.UserId, score.TowerId, score.FloorNo).AllCols().
 		Update(score)

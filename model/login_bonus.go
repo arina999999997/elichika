@@ -2,7 +2,7 @@ package model
 
 import (
 	"elichika/client"
-	"elichika/generic"
+	// "elichika/generic"
 )
 
 type LoginBonus struct {
@@ -26,15 +26,4 @@ type LoginBonusRewardContent struct {
 	LoginBonusId int32
 	Day          int32
 	Content      client.Content `xorm:"extends"`
-}
-
-type UserLoginBonus struct {
-	LoginBonusId       int32 `xorm:"pk"`
-	LastReceivedReward int
-	LastReceivedAt     int64
-}
-
-func init() {
-
-	TableNameToInterface["u_login_bonus"] = generic.UserIdWrapper[UserLoginBonus]{}
 }

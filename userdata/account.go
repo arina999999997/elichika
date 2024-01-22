@@ -133,9 +133,6 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				AdditionalPassiveSkill4Id:  0,
 				AcquiredAt:                 int32(time.Now().Unix()),
 				IsNew:                      false,
-				LivePartnerCategories:      0,
-				LiveJoinCount:              0,
-				ActiveSkillPlayCount:       0,
 			})
 		}
 		session.InsertMembers(members)

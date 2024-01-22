@@ -1,9 +1,9 @@
 package main
 
-import "elichika/config"
-
 import (
+	"elichika/config"
 	_ "elichika/handler"
+	"elichika/userdata"
 
 	"elichika/router"
 
@@ -24,6 +24,7 @@ func main() {
 		cli()
 		return
 	}
+	userdata.Init()
 	runtime.GC()
 	gin.SetMode(gin.ReleaseMode)
 

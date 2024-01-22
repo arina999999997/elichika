@@ -1,11 +1,11 @@
 package live_partners
 
 import (
-	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_live"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -29,26 +29,10 @@ func FetchLivePartners(ctx *gin.Context) {
 	defer session.Close()
 
 	partnerUserIds := []int32{} // TODO(friend): Fill this with some users
-	partnerUserIds = append(partnerUserIds, int32(userId))
+	partnerUserIds = append(partnerUserIds, userId)
 
 	for _, partnerId := range partnerUserIds {
-
-		partner := client.LivePartner{}
-		userdata.FetchDBProfile(partnerId, &partner)
-
-		partner.IsFriend = true
-		partnerCards := userdata.FetchPartnerCards(partnerId) // client.UserCard
-		if len(partnerCards) == 0 {
-			continue
-		}
-		for _, card := range partnerCards {
-			for i := 1; i <= 7; i++ {
-				if (card.LivePartnerCategories & (1 << i)) != 0 {
-					partner.CardByCategory.Set(int32(i), session.GetOtherUserCard(partnerId, card.CardMasterId))
-				}
-			}
-		}
-		resp.PartnerSelectState.LivePartners.Append(partner)
+		resp.PartnerSelectState.LivePartners.Append(user_live.GetLivePartner(session, partnerId))
 	}
 	resp.PartnerSelectState.FriendCount = int32(resp.PartnerSelectState.LivePartners.Size())
 	common.JsonResponse(ctx, &resp)
@@ -60,27 +44,13 @@ func SetLivePartner(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	// set the bit on the correct card
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	newCard := session.GetUserCard(req.CardMasterId)
-	newCard.LivePartnerCategories |= (1 << req.LivePartnerCategoryId)
-	session.UpdateUserCard(newCard)
-
-	// TODO(refactor): Get rid of this bit hacking stuff
-	// remove the bit on the other cards
-	partnerCards := userdata.FetchPartnerCards(userId)
-	for _, card := range partnerCards {
-		if card.CardMasterId == req.CardMasterId {
-			continue
-		}
-		if (card.LivePartnerCategories & (1 << req.LivePartnerCategoryId)) != 0 {
-			card.LivePartnerCategories ^= (1 << req.LivePartnerCategoryId)
-			session.UpdateUserCard(card)
-		}
-	}
+	userLivePartner := session.GetUserLivePartner(req.LivePartnerCategoryId)
+	userLivePartner.CardMasterId = req.CardMasterId
+	session.UpdateUserLivePartner(userLivePartner)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.EmptyResponse{})

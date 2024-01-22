@@ -1,10 +1,5 @@
 package model
 
-import (
-	"elichika/client"
-	"elichika/generic"
-)
-
 // this is not stored, constructed from main db
 // partially loaded from u_info, then load from u_card
 type UserBasicInfo struct {
@@ -30,11 +25,6 @@ type UserBasicInfo struct {
 	IsRequestPending bool   `xorm:"-" json:"is_request_pending"`
 }
 
-type UserProfileLiveStats struct {
-	LivePlayCount  [5]int `xorm:"'live_play_count'"`
-	LiveClearCount [5]int `xorm:"'live_clear_count'"`
-}
-
 type UserProfileInfo struct {
 	BasicInfo      UserBasicInfo `xorm:"extends" json:"basic_info"`
 	TotalLovePoint int           `xorm:"-" json:"total_love_point"`
@@ -48,14 +38,4 @@ type UserProfileInfo struct {
 type LivePartnerCard struct {
 	LivePartnerCategoryMasterId int             `json:"live_partner_category_master_id"`
 	PartnerCard                 PartnerCardInfo `json:"partner_card"`
-}
-
-func init() {
-
-	type DbUser struct {
-		client.UserStatus    `xorm:"extends"`
-		UserProfileLiveStats `xorm:"extends"`
-	}
-	TableNameToInterface["u_status"] = generic.UserIdWrapper[DbUser]{}
-
 }

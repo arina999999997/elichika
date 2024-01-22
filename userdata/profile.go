@@ -13,17 +13,6 @@ func FetchDBProfile(userId int32, result interface{}) {
 	utils.CheckErrMustExist(err, exist)
 }
 
-func FetchPartnerCards(otherUserId int32) []client.UserCard {
-	partnerCards := []client.UserCard{}
-	err := Engine.Table("u_card").
-		Where("user_id = ? AND live_partner_categories != 0", otherUserId).
-		Find(&partnerCards)
-	if err != nil {
-		panic(err)
-	}
-	return partnerCards
-}
-
 func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.PartnerCardInfo {
 
 	memberId := session.Gamedata.Card[card.CardMasterId].Member.Id
@@ -72,40 +61,6 @@ func (session *Session) GetPartnerCardFromUserCard(card client.UserCard) model.P
 	return partnerCard
 }
 
-func (session *Session) GetOtherUserProfileInformation(otherUserId int32) client.ProfileInfomation {
-	// TODO(friend): Actually calculate the friend links
-	otherUserStatus := client.UserStatus{}
-	exist, err := Engine.Table("u_status").Where("user_id = ?", otherUserId).Get(&otherUserStatus)
-	utils.CheckErrMustExist(err, exist)
-	otherUserCard := session.GetOtherUserCard(otherUserId, otherUserStatus.RecommendCardMasterId)
-	otherUser := client.OtherUser{
-		UserId:                              otherUserId,
-		Name:                                otherUserStatus.Name,
-		Rank:                                otherUserStatus.Rank,
-		LastPlayedAt:                        otherUserStatus.LastLoginAt, // this might not be correct
-		RecommendCardMasterId:               otherUserStatus.RecommendCardMasterId,
-		RecommendCardLevel:                  otherUserCard.Level,
-		IsRecommendCardImageAwaken:          otherUserCard.IsAwakeningImage,
-		IsRecommendCardAllTrainingActivated: otherUserCard.IsAllTrainingActivated,
-		EmblemId:                            otherUserStatus.EmblemId,
-		// IsNew: otherUserStatus.IsNew,
-		IntroductionMessage: otherUserStatus.Message,
-		// FriendApprovedAt: otherUserStatus.FriendApprovedAt,
-		// RequestStatus: otherUserStatus.RequestStatus,
-		// IsRequestPending: otherUserStatus.IsRequestPending,
-	}
-	profileInfomation := client.ProfileInfomation{
-		BasicInfo:                 otherUser,
-		MemberGuildMemberMasterId: otherUserStatus.MemberGuildMemberMasterId,
-	}
-	err = session.Db.Table("u_member").Where("user_id = ?", otherUserId).OrderBy("member_master_id").Find(&profileInfomation.LoveMembers.Slice)
-	utils.CheckErr(err)
-	for _, member := range profileInfomation.LoveMembers.Slice {
-		profileInfomation.TotalLovePoint += member.LovePoint
-	}
-	return profileInfomation
-}
-
 func GetOtherUserCard(otherUserId, cardMasterId int32) client.UserCard {
 	card := client.UserCard{}
 	exist, err := Engine.Table("u_card").Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).
@@ -129,22 +84,6 @@ func (session *Session) GetOtherUser(otherUserId int32) client.OtherUser {
 	// otherUser.RequestStatus = 3
 	// otherUser.IsRequestPending = false
 	return otherUser
-}
-
-func (session *Session) GetOtherUserLiveStats(otherUserId int32) model.UserProfileLiveStats {
-	stats := model.UserProfileLiveStats{}
-	_, err := Engine.Table("u_status").Where("user_id = ?", otherUserId).Get(&stats)
-	utils.CheckErr(err)
-	return stats
-}
-
-func (session *Session) GetUserLiveStats() model.UserProfileLiveStats {
-	return session.GetOtherUserLiveStats(session.UserId)
-}
-
-func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
-	_, err := session.Db.Table("u_status").Where("user_id = ?", session.UserId).AllCols().Update(&stats)
-	utils.CheckErr(err)
 }
 
 // fetch profile of another user, from session.UserId's perspective

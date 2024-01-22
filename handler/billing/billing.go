@@ -1,7 +1,6 @@
 package billing
 
 import (
-	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
@@ -27,14 +26,9 @@ func BillingHistory(ctx *gin.Context) {
 	// session := userdata.GetSession(ctx, userId)
 	// defer session.Close()
 
-	resp := response.BillingHistoryResponse{
-		BillingBalanceHistoryList: []client.BillingBalanceHistory{},
-		BillingDepositHistoryList: []client.BillingDepositHistory{},
-		BillingConsumeHistoryList: []client.BillingConsumeHistory{},
-	}
 	// session.Finalize()
 
-	common.JsonResponse(ctx, resp)
+	common.JsonResponse(ctx, &response.BillingHistoryResponse{})
 }
 
 func UpdateSubscription(ctx *gin.Context) {

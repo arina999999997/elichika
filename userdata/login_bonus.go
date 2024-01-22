@@ -1,17 +1,17 @@
 package userdata
 
 import (
-	"elichika/model"
+	"elichika/userdata/database"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserLoginBonus(loginBonusId int32) model.UserLoginBonus {
-	userLoginBonus := model.UserLoginBonus{}
+func (session *Session) GetUserLoginBonus(loginBonusId int32) database.UserLoginBonus {
+	userLoginBonus := database.UserLoginBonus{}
 	exists, err := session.Db.Table("u_login_bonus").
 		Where("user_id = ? AND login_bonus_id = ?", session.UserId, loginBonusId).Get(&userLoginBonus)
 	utils.CheckErr(err)
 	if !exists {
-		userLoginBonus = model.UserLoginBonus{
+		userLoginBonus = database.UserLoginBonus{
 			LoginBonusId:       loginBonusId,
 			LastReceivedReward: -1,
 			LastReceivedAt:     0,
@@ -20,7 +20,7 @@ func (session *Session) GetUserLoginBonus(loginBonusId int32) model.UserLoginBon
 	return userLoginBonus
 }
 
-func (session *Session) UpdateUserLoginBonus(userLoginBonus model.UserLoginBonus) {
+func (session *Session) UpdateUserLoginBonus(userLoginBonus database.UserLoginBonus) {
 	affected, err := session.Db.Table("u_login_bonus").
 		Where("user_id = ? AND login_bonus_id = ?", session.UserId, userLoginBonus.LoginBonusId).
 		AllCols().Update(userLoginBonus)

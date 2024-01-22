@@ -1,6 +1,9 @@
 package request
 
-// TODO(refactor)
+import (
+	"elichika/generic"
+)
+
 type AccessoryMeltRequest struct {
-	UserAccessoryIds []int64 `json:"user_accessory_ids"`
+	UserAccessoryIds generic.Array[int64] `json:"user_accessory_ids"`
 }

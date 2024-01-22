@@ -65,7 +65,7 @@ func AccessoryMelt(ctx *gin.Context) {
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	for _, userAccessoryId := range req.UserAccessoryIds {
+	for _, userAccessoryId := range req.UserAccessoryIds.Slice {
 		accessory := session.GetUserAccessory(userAccessoryId)
 		session.AddContent(gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
 		session.DeleteUserAccessory(userAccessoryId)
@@ -103,7 +103,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 
 	// power up is processed by listing order
 	// so different order of accessory can result in different result
-	for _, powerUpAccessoryId := range req.PowerUpAccessoryIds {
+	for _, powerUpAccessoryId := range req.PowerUpAccessoryIds.Slice {
 		powerUpAccessory := session.GetUserAccessory(powerUpAccessoryId)
 		masterPowerUpAccessory := gamedata.Accessory[powerUpAccessory.AccessoryMasterId]
 
@@ -131,7 +131,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 		session.DeleteUserAccessory(powerUpAccessory.UserAccessoryId)
 	}
 
-	for _, item := range req.AccessoryLevelUpItems {
+	for _, item := range req.AccessoryLevelUpItems.Slice {
 		itemId := item.AccessoryLevelUpItemMasterId
 		// TODO: maybe make the item into a map at the start?
 		session.RemoveContent(client.Content{

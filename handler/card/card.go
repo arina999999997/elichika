@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_card"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -88,7 +89,7 @@ func GetOtherUserCard(ctx *gin.Context) {
 
 	// the name of request and response is not consistent for this one, for some reason
 	common.JsonResponse(ctx, response.FetchOtherUserCardResponse{
-		OtherUserCard: session.GetOtherUserCard(req.UserId, req.CardMasterId),
+		OtherUserCard: user_card.GetOtherUserCard(session, req.UserId, req.CardMasterId),
 	})
 }
 

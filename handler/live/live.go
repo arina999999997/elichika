@@ -10,6 +10,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_card"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -120,7 +121,7 @@ func LiveStart(ctx *gin.Context) {
 	}
 
 	if req.PartnerUserId != 0 {
-		resp.Live.LivePartnerCard = generic.NewNullable(session.GetOtherUserCard(req.PartnerUserId, req.PartnerCardMasterId))
+		resp.Live.LivePartnerCard = generic.NewNullable(user_card.GetOtherUserCard(session, req.PartnerUserId, req.PartnerCardMasterId))
 	}
 
 	session.SaveUserLive(resp.Live)

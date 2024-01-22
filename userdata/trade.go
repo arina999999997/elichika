@@ -3,11 +3,11 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/generic"
-	"elichika/model"
+	"elichika/userdata/database"
 	"elichika/utils"
 )
 
-func (session *Session) GetTradeProductUser(productId int32) int32 {
+func (session *Session) GetUserTradeProduct(productId int32) int32 {
 	result := int32(0)
 	exist, err := session.Db.Table("u_trade_product").
 		Where("user_id = ? AND product_id = ?", session.UserId, productId).
@@ -19,10 +19,10 @@ func (session *Session) GetTradeProductUser(productId int32) int32 {
 	return result
 }
 
-func (session *Session) SetTradeProductUser(productId, newTradedCount int32) {
-	record := model.TradeProductUser{
-		ProductId:   int(productId),
-		TradedCount: int(newTradedCount),
+func (session *Session) SetUserTradeProduct(productId, newTradedCount int32) {
+	record := database.UserTradeProduct{
+		ProductId:   productId,
+		TradedCount: newTradedCount,
 	}
 	exist, err := session.Db.Table("u_trade_product").
 		Where("user_id = ? AND product_id = ?", session.UserId, productId).
@@ -38,7 +38,7 @@ func (session *Session) GetTrades(tradeType int32) generic.Array[client.Trade] {
 	for _, trade_ptr := range session.Gamedata.TradesByType[tradeType] {
 		trade := *trade_ptr
 		for j, product := range trade.Products.Slice {
-			product.TradedCount = session.GetTradeProductUser(product.ProductId)
+			product.TradedCount = session.GetUserTradeProduct(product.ProductId)
 			trade.Products.Slice[j] = product
 		}
 		trades.Append(trade)
@@ -49,9 +49,9 @@ func (session *Session) GetTrades(tradeType int32) generic.Array[client.Trade] {
 // return whether the item is added to present box
 func (session *Session) ExecuteTrade(productId, tradeCount int32) bool {
 	// update count
-	tradedCount := session.GetTradeProductUser(productId)
+	tradedCount := session.GetUserTradeProduct(productId)
 	tradedCount += tradeCount
-	session.SetTradeProductUser(productId, tradedCount)
+	session.SetUserTradeProduct(productId, tradedCount)
 
 	// award items and take away source item
 	product := session.Gamedata.TradeProduct[productId]

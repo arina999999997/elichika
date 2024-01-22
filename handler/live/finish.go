@@ -103,17 +103,6 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 			userLiveDifficulty.MaxCombo = req.LiveScore.HighestComboCount
 		}
 
-		if liveDifficulty.IsCountTarget { // counted toward target and profiles and missions
-			liveStats := session.GetUserLiveStats()
-			// TODO: just use the map instead of this
-			idx := enum.LiveDifficultyIndex[liveDifficulty.LiveDifficultyType]
-			liveStats.LivePlayCount[idx]++
-			if userLiveDifficulty.ClearCount == 1 { // 1st clear
-				liveStats.LiveClearCount[idx]++
-			}
-			session.UpdateUserLiveStats(liveStats)
-		}
-
 		// award items
 		for i, mission := range liveDifficulty.Missions {
 			if (i == 0) || (int(req.LiveScore.CurrentScore) >= mission.TargetValue) {
@@ -157,10 +146,10 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 				addedLove += rewardCenterLovePoint
 			}
 
-			userCard := session.GetUserCard(liveFinishCard.CardMasterId)
-			userCard.LiveJoinCount++
-			userCard.ActiveSkillPlayCount += int(liveFinishCard.SkillTriggeredCount)
-			session.UpdateUserCard(userCard)
+			userCardPlayCountStat := session.GetUserCardPlayCountStat(liveFinishCard.CardMasterId)
+			userCardPlayCountStat.LiveJoinCount++
+			userCardPlayCountStat.ActiveSkillPlayCount += liveFinishCard.SkillTriggeredCount
+			session.UpdateUserCardPlayCountStat(userCardPlayCountStat)
 			// update member love point
 			memberMasterId := gamedata.Card[liveFinishCard.CardMasterId].Member.Id
 
