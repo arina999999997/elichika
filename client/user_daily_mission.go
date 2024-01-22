@@ -13,7 +13,3 @@ type UserDailyMission struct {
 	IsReceivedReward  bool                    `xorm:"'is_received_reward'" json:"is_received_reward"`
 	ClearedExpiredAt  generic.Nullable[int64] `xorm:"json 'cleared_expired_at'" json:"cleared_expired_at"`
 }
-
-func (udm *UserDailyMission) Id() int64 {
-	return int64(udm.MissionMId)
-}

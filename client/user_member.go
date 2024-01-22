@@ -10,7 +10,3 @@ type UserMember struct {
 	ViewStatus               int32 `json:"view_status"`
 	IsNew                    bool  `json:"is_new"`
 }
-
-func (um *UserMember) Id() int64 {
-	return int64(um.MemberMasterId)
-}

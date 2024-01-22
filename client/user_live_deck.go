@@ -26,7 +26,3 @@ type UserLiveDeck struct {
 	SuitMasterId8  generic.Nullable[int32] `xorm:"json 'suit_master_id_8'" json:"suit_master_id_8"`
 	SuitMasterId9  generic.Nullable[int32] `xorm:"json 'suit_master_id_9'" json:"suit_master_id_9"`
 }
-
-func (uld *UserLiveDeck) Id() int64 {
-	return int64(uld.UserLiveDeckId)
-}

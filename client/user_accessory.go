@@ -19,7 +19,3 @@ type UserAccessory struct {
 	IsNew              bool                    `json:"is_new"`
 	AcquiredAt         int64                   `json:"acquired_at"` // unix second
 }
-
-func (ua *UserAccessory) Id() int64 {
-	return ua.UserAccessoryId
-}

@@ -11,9 +11,6 @@ type UserEventMarathonBooster struct {
 	Amount      int32 `json:"amount"`
 }
 
-func (uemb *UserEventMarathonBooster) Id() int64 {
-	return int64(uemb.EventItemId)
-}
 func (uemb *UserEventMarathonBooster) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeEventMarathonBooster { // 27
 		panic(fmt.Sprintln("Wrong content for EventMarathonBooster: ", content))
@@ -21,10 +18,10 @@ func (uemb *UserEventMarathonBooster) FromContent(content Content) {
 	uemb.EventItemId = content.ContentId
 	uemb.Amount = content.ContentAmount
 }
-func (uemb *UserEventMarathonBooster) ToContent() Content {
+func (uemb *UserEventMarathonBooster) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeEventMarathonBooster,
-		ContentId:     uemb.EventItemId,
+		ContentId:     contentId,
 		ContentAmount: uemb.Amount,
 	}
 }

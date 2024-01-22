@@ -20,7 +20,3 @@ type UserLiveDifficulty struct {
 	IsAutoplay                    bool                    `xorm:"'is_autoplay'" json:"is_autoplay"`                                                // is using autoplay?
 	IsNew                         bool                    `xorm:"'is_new'" json:"is_new"`
 }
-
-func (uld *UserLiveDifficulty) Id() int64 {
-	return int64(uld.LiveDifficultyId)
-}

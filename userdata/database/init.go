@@ -103,4 +103,10 @@ func init() {
 	AddTable("u_login", generic.UserIdWrapper[response.LoginResponse]{})
 	AddTable("u_live", generic.UserIdWrapper[client.Live]{})
 	AddTable("u_start_live_request", generic.UserIdWrapper[request.StartLiveRequest]{})
+
+	AddTable("u_card_training_tree_cell", generic.InterfaceWithAddedKey[int](
+		client.UserCardTrainingTreeCell{},
+		[]string{"UserId", "CardMasterId"},
+		[]reflect.StructTag{`xorm:"'user_id'"`, `xorm:"'card_master_id'"`},
+	))
 }

@@ -10,7 +10,3 @@ type UserEmblem struct {
 	EmblemParam generic.Nullable[string] `xorm:"json 'emblem_param'" json:"emblem_param"`
 	AcquiredAt  int64                    `xorm:"'acquired_at'" json:"acquired_at"`
 }
-
-func (ue *UserEmblem) Id() int64 {
-	return int64(ue.EmblemMId)
-}

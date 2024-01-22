@@ -7,7 +7,3 @@ type UserEventMining struct { // Voltage ranking event
 	OpenedStoryNumber int32 `xorm:"'opened_story_number'" json:"opened_story_number"`
 	ReadStoryNumber   int32 `xorm:"'read_story_number'" json:"read_story_number"`
 }
-
-func (uem *UserEventMining) Id() int64 {
-	return int64(uem.EventMasterId)
-}

@@ -8,7 +8,3 @@ type UserSchoolIdolFestivalIdRewardMission struct {
 	IsNew                                     bool  `xorm:"'is_new'" json:"is_new"`
 	Count                                     int32 `xorm:"'count'" json:"count"`
 }
-
-func (usifirm *UserSchoolIdolFestivalIdRewardMission) Id() int64 {
-	return int64(usifirm.SchoolIdolFestivalIdRewardMissionMasterId)
-}

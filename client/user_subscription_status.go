@@ -1,6 +1,5 @@
 package client
 
-// TODO(time) the time fields are int64 but the game can't really big values
 type UserSubscriptionStatus struct {
 	SubscriptionMasterId int32  `xorm:"pk 'subscription_master_id'" json:"subscription_master_id"`
 	StartDate            int64  `xorm:"'start_date'" json:"start_date"`
@@ -12,8 +11,4 @@ type UserSubscriptionStatus struct {
 	AttachId             string `xorm:"'attach_id'" json:"attach_id"`
 	IsAutoRenew          bool   `xorm:"'is_auto_renew'" json:"is_auto_renew"`
 	IsDoneTrial          bool   `xorm:"'is_done_trial'" json:"is_done_trial"`
-}
-
-func (uss *UserSubscriptionStatus) Id() int64 {
-	return int64(uss.SubscriptionMasterId)
 }

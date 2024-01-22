@@ -26,7 +26,3 @@ type UserCard struct {
 	AcquiredAt                 int32 `json:"acquired_at"` // should be int64 but client use int32
 	IsNew                      bool  `json:"is_new"`
 }
-
-func (uc *UserCard) Id() int64 {
-	return int64(uc.CardMasterId)
-}

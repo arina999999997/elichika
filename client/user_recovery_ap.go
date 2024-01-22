@@ -11,9 +11,6 @@ type UserRecoveryAp struct {
 	Amount             int32 `json:"amount"`
 }
 
-func (ura *UserRecoveryAp) Id() int64 {
-	return int64(ura.RecoveryApMasterId)
-}
 func (ura *UserRecoveryAp) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeRecoveryAp { // 16
 		panic(fmt.Sprintln("Wrong content for RecoveryAp: ", content))
@@ -21,10 +18,10 @@ func (ura *UserRecoveryAp) FromContent(content Content) {
 	ura.RecoveryApMasterId = content.ContentId
 	ura.Amount = content.ContentAmount
 }
-func (ura *UserRecoveryAp) ToContent() Content {
+func (ura *UserRecoveryAp) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeRecoveryAp,
-		ContentId:     ura.RecoveryApMasterId,
+		ContentId:     contentId,
 		ContentAmount: ura.Amount,
 	}
 }

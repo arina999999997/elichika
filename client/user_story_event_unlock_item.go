@@ -11,9 +11,6 @@ type UserStoryEventUnlockItem struct {
 	Amount                       int32 `json:"amount"`
 }
 
-func (useui *UserStoryEventUnlockItem) Id() int64 {
-	return int64(useui.StoryEventUnlockItemMasterId)
-}
 func (useui *UserStoryEventUnlockItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeStoryEventUnlock { // 30
 		panic(fmt.Sprintln("Wrong content for StoryEventUnlockItem: ", content))
@@ -21,10 +18,10 @@ func (useui *UserStoryEventUnlockItem) FromContent(content Content) {
 	useui.StoryEventUnlockItemMasterId = content.ContentId
 	useui.Amount = content.ContentAmount
 }
-func (useui *UserStoryEventUnlockItem) ToContent() Content {
+func (useui *UserStoryEventUnlockItem) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeStoryEventUnlock,
-		ContentId:     useui.StoryEventUnlockItemMasterId,
+		ContentId:     contentId,
 		ContentAmount: useui.Amount,
 	}
 }

@@ -17,11 +17,3 @@ type UserLessonDeck struct {
 	CardMasterId8    generic.Nullable[int32] `xorm:"json 'card_master_id_8'" json:"card_master_id_8"`
 	CardMasterId9    generic.Nullable[int32] `xorm:"json 'card_master_id_9'" json:"card_master_id_9"`
 }
-
-func (uld *UserLessonDeck) Id() int64 {
-	return int64(uld.UserLessonDeckId)
-}
-
-func (uld *UserLessonDeck) SetId(id int64) {
-	uld.UserLessonDeckId = int32(id)
-}

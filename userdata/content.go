@@ -189,7 +189,6 @@ func userStatusContentHandler(session *Session, contentType, contentId, amount i
 }
 
 func genericContentByContentIdFinalizer(session *Session) {
-	// TODO: user client.Content instead of UserContent
 	rModel := reflect.ValueOf(&session.UserModel)
 	for contentType, contentDiffByContentId := range session.UserContentDiffs {
 		rDictionary := rModel.Elem().FieldByName(userModelField[contentType])

@@ -31,7 +31,3 @@ type UserLiveMvDeck struct {
 	SuitMasterId11   generic.Nullable[int32] `xorm:"json 'suit_master_id_11'" json:"suit_master_id_11"`
 	SuitMasterId12   generic.Nullable[int32] `xorm:"json 'suit_master_id_12'" json:"suit_master_id_12"`
 }
-
-func (ulmd *UserLiveMvDeck) Id() int64 {
-	return int64(ulmd.LiveMasterId)
-}

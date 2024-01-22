@@ -11,9 +11,6 @@ type UserGradeUpItem struct {
 	Amount       int32 `json:"amount"`
 }
 
-func (ugui *UserGradeUpItem) Id() int64 {
-	return int64(ugui.ItemMasterId)
-}
 func (ugui *UserGradeUpItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeGradeUpper { // 13
 		panic(fmt.Sprintln("Wrong content for GradeUpItem: ", content))
@@ -21,10 +18,10 @@ func (ugui *UserGradeUpItem) FromContent(content Content) {
 	ugui.ItemMasterId = content.ContentId
 	ugui.Amount = content.ContentAmount
 }
-func (ugui *UserGradeUpItem) ToContent() Content {
+func (ugui *UserGradeUpItem) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeGradeUpper,
-		ContentId:     ugui.ItemMasterId,
+		ContentId:     contentId,
 		ContentAmount: ugui.Amount,
 	}
 }

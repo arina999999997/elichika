@@ -12,7 +12,3 @@ type UserEventCoop struct {
 	PlayableAt        int64 `xorm:"'playable_at'" json:"playable_at"`
 	PenaltyCount      int32 `xorm:"'penalty_count'" json:"penalty_count"`
 }
-
-func (uec *UserEventCoop) Id() int64 {
-	return int64(uec.EventMasterId)
-}

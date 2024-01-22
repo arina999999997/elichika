@@ -5,7 +5,3 @@ type UserPlayList struct {
 	GroupNum       int32 `xorm:"'group_num'" json:"group_num"` // UserPlayListId % 10
 	LiveId         int32 `xorm:"'live_id'" json:"live_id"`     // UserPlayListId / 10
 }
-
-func (upl UserPlayList) Id() int64 {
-	return int64(upl.UserPlayListId)
-}

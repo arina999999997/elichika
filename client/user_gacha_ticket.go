@@ -24,13 +24,11 @@ func (ugt *UserGachaTicket) FromContent(content Content) {
 	ugt.AppleAmount = 0
 	ugt.GoogleAmount = 0
 }
-func (ugt *UserGachaTicket) Id() int64 {
-	return int64(ugt.TicketMasterId)
-}
-func (ugt *UserGachaTicket) ToContent() Content {
+
+func (ugt *UserGachaTicket) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeGachaTicket,
-		ContentId:     ugt.TicketMasterId,
+		ContentId:     contentId,
 		ContentAmount: ugt.NormalAmount + ugt.AppleAmount + ugt.GoogleAmount,
 	}
 }

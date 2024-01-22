@@ -11,9 +11,6 @@ type UserRecoveryLp struct {
 	Amount             int32 `json:"amount"`
 }
 
-func (url *UserRecoveryLp) Id() int64 {
-	return int64(url.RecoveryLpMasterId)
-}
 func (url *UserRecoveryLp) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeRecoveryLp { // 17
 		panic(fmt.Sprintln("Wrong content for RecoveryLp: ", content))
@@ -21,10 +18,10 @@ func (url *UserRecoveryLp) FromContent(content Content) {
 	url.RecoveryLpMasterId = content.ContentId
 	url.Amount = content.ContentAmount
 }
-func (url *UserRecoveryLp) ToContent() Content {
+func (url *UserRecoveryLp) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeRecoveryLp,
-		ContentId:     url.RecoveryLpMasterId,
+		ContentId:     contentId,
 		ContentAmount: url.Amount,
 	}
 }

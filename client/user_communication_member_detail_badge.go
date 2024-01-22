@@ -9,7 +9,3 @@ type UserCommunicationMemberDetailBadge struct {
 	IsCardBadge        bool  `xorm:"'is_card_badge'" json:"is_card_badge"`
 	IsMusicBadge       bool  `xorm:"'is_music_badge'" json:"is_music_badge"`
 }
-
-func (ucmdb *UserCommunicationMemberDetailBadge) Id() int64 {
-	return int64(ucmdb.MemberMasterId)
-}

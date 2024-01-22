@@ -11,9 +11,6 @@ type UserGachaPoint struct {
 	Amount        int32 `json:"amount"`
 }
 
-func (ugp *UserGachaPoint) Id() int64 {
-	return int64(ugp.PointMasterId)
-}
 func (ugp *UserGachaPoint) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeGachaPoint { // 5
 		panic(fmt.Sprintln("Wrong content for GachaPoint: ", content))
@@ -21,10 +18,10 @@ func (ugp *UserGachaPoint) FromContent(content Content) {
 	ugp.PointMasterId = content.ContentId
 	ugp.Amount = content.ContentAmount
 }
-func (ugp *UserGachaPoint) ToContent() Content {
+func (ugp *UserGachaPoint) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeGachaPoint,
-		ContentId:     ugp.PointMasterId,
+		ContentId:     contentId,
 		ContentAmount: ugp.Amount,
 	}
 }

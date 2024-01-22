@@ -11,7 +11,3 @@ type UserInfoTriggerBasic struct {
 	Description     generic.Nullable[string] `xorm:"json 'description'" json:"description"` // this is a string that can be null
 	ParamInt        generic.Nullable[int32]  `xorm:"json 'param_int'" json:"param_int"`
 }
-
-func (uitb *UserInfoTriggerBasic) Id() int64 {
-	return uitb.TriggerId
-}

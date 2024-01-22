@@ -11,9 +11,6 @@ type UserLessonEnhancingItem struct {
 	Amount          int32 `json:"amount"`
 }
 
-func (ulei *UserLessonEnhancingItem) Id() int64 {
-	return int64(ulei.EnhancingItemId)
-}
 func (ulei *UserLessonEnhancingItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeLessonEnhancingItem { // 6
 		panic(fmt.Sprintln("Wrong content for LessonEnhancingItem: ", content))
@@ -21,10 +18,10 @@ func (ulei *UserLessonEnhancingItem) FromContent(content Content) {
 	ulei.EnhancingItemId = content.ContentId
 	ulei.Amount = content.ContentAmount
 }
-func (ulei *UserLessonEnhancingItem) ToContent() Content {
+func (ulei *UserLessonEnhancingItem) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeLessonEnhancingItem,
-		ContentId:     ulei.EnhancingItemId,
+		ContentId:     contentId,
 		ContentAmount: ulei.Amount,
 	}
 }

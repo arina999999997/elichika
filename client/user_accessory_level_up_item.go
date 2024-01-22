@@ -11,9 +11,6 @@ type UserAccessoryLevelUpItem struct {
 	Amount                       int32 `json:"amount"`
 }
 
-func (ualui *UserAccessoryLevelUpItem) Id() int64 {
-	return int64(ualui.AccessoryLevelUpItemMasterId)
-}
 func (ualui *UserAccessoryLevelUpItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeAccessoryLevelUp { // 24
 		panic(fmt.Sprintln("Wrong content for AccessoryLevelUpItem: ", content))
@@ -21,10 +18,10 @@ func (ualui *UserAccessoryLevelUpItem) FromContent(content Content) {
 	ualui.AccessoryLevelUpItemMasterId = content.ContentId
 	ualui.Amount = content.ContentAmount
 }
-func (ualui *UserAccessoryLevelUpItem) ToContent() Content {
+func (ualui *UserAccessoryLevelUpItem) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeAccessoryLevelUp,
-		ContentId:     ualui.AccessoryLevelUpItemMasterId,
+		ContentId:     contentId,
 		ContentAmount: ualui.Amount,
 	}
 }

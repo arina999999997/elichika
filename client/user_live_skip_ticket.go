@@ -11,9 +11,6 @@ type UserLiveSkipTicket struct {
 	Amount         int32 `json:"amount"`
 }
 
-func (ulst *UserLiveSkipTicket) Id() int64 {
-	return int64(ulst.TicketMasterId)
-}
 func (ulst *UserLiveSkipTicket) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeLiveSkipTicket { // 28
 		panic(fmt.Sprintln("Wrong content for LiveSkipTicket: ", content))
@@ -21,10 +18,10 @@ func (ulst *UserLiveSkipTicket) FromContent(content Content) {
 	ulst.TicketMasterId = content.ContentId
 	ulst.Amount = content.ContentAmount
 }
-func (ulst *UserLiveSkipTicket) ToContent() Content {
+func (ulst *UserLiveSkipTicket) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeLiveSkipTicket,
-		ContentId:     ulst.TicketMasterId,
+		ContentId:     contentId,
 		ContentAmount: ulst.Amount,
 	}
 }

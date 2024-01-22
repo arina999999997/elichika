@@ -8,7 +8,3 @@ type UserTower struct {
 	RecoveryPointFullAt         int64 `xorm:"'recovery_point_full_at'" json:"recovery_point_full_at"`
 	RecoveryPointLastConsumedAt int64 `xorm:"'recovery_point_last_consumed_at'" json:"recovery_point_last_consumed_at"`
 }
-
-func (ut *UserTower) Id() int64 {
-	return int64(ut.TowerId)
-}

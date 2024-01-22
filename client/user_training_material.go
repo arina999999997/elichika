@@ -11,9 +11,6 @@ type UserTrainingMaterial struct {
 	Amount                   int32 `json:"amount"`
 }
 
-func (utm *UserTrainingMaterial) Id() int64 {
-	return int64(utm.TrainingMaterialMasterId)
-}
 func (utm *UserTrainingMaterial) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeTrainingMaterial { // 12
 		panic(fmt.Sprintln("Wrong content for TrainingMaterial: ", content))
@@ -21,10 +18,10 @@ func (utm *UserTrainingMaterial) FromContent(content Content) {
 	utm.TrainingMaterialMasterId = content.ContentId
 	utm.Amount = content.ContentAmount
 }
-func (utm *UserTrainingMaterial) ToContent() Content {
+func (utm *UserTrainingMaterial) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeTrainingMaterial,
-		ContentId:     utm.TrainingMaterialMasterId,
+		ContentId:     contentId,
 		ContentAmount: utm.Amount,
 	}
 }

@@ -6,7 +6,3 @@ type UserInfoTriggerCardGradeUp struct {
 	BeforeLoveLevelLimit int32 `json:"before_love_level_limit"`
 	AfterLoveLevelLimit  int32 `json:"after_love_level_limit"`
 }
-
-func (uitcgu *UserInfoTriggerCardGradeUp) Id() int64 {
-	return uitcgu.TriggerId
-}

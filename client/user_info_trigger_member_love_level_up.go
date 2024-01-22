@@ -5,7 +5,3 @@ type UserInfoTriggerMemberLoveLevelUp struct {
 	MemberMasterId  int32 `xorm:"'member_master_id'" json:"member_master_id"`
 	BeforeLoveLevel int32 `json:"before_love_level"`
 }
-
-func (uitmllu *UserInfoTriggerMemberLoveLevelUp) Id() int64 {
-	return uitmllu.TriggerId
-}

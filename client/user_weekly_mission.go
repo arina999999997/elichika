@@ -14,7 +14,3 @@ type UserWeeklyMission struct {
 	ClearedExpiredAt  generic.Nullable[int64] `xorm:"json 'cleared_expired_at'" json:"cleared_expired_at"`
 	NewExpiredAt      int64                   `xorm:"'new_expired_at'" json:"new_expired_at"`
 }
-
-func (uwm *UserWeeklyMission) Id() int64 {
-	return int64(uwm.MissionMId)
-}

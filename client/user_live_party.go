@@ -16,7 +16,3 @@ type UserLiveParty struct {
 	UserAccessoryId2 generic.Nullable[int64] `xorm:"json 'user_accessory_id_2'" json:"user_accessory_id_2"`
 	UserAccessoryId3 generic.Nullable[int64] `xorm:"json 'user_accessory_id_3'" json:"user_accessory_id_3"`
 }
-
-func (uld *UserLiveParty) Id() int64 {
-	return int64(uld.PartyId)
-}

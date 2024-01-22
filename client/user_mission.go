@@ -8,7 +8,3 @@ type UserMission struct {
 	IsReceivedReward bool  `xorm:"'is_received_reward'" json:"is_received_reward"`
 	NewExpiredAt     int64 `xorm:"'new_expired_at'" json:"new_expired_at"`
 }
-
-func (um *UserMission) Id() int64 {
-	return int64(um.MissionMId)
-}

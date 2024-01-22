@@ -11,9 +11,6 @@ type UserAccessoryRarityUpItem struct {
 	Amount                        int32 `json:"amount"`
 }
 
-func (uarui *UserAccessoryRarityUpItem) Id() int64 {
-	return int64(uarui.AccessoryRarityUpItemMasterId)
-}
 func (uarui *UserAccessoryRarityUpItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeAccessoryRarityUp { // 25
 		panic(fmt.Sprintln("Wrong content for AccessoryRarityUpItem: ", content))
@@ -21,10 +18,10 @@ func (uarui *UserAccessoryRarityUpItem) FromContent(content Content) {
 	uarui.AccessoryRarityUpItemMasterId = content.ContentId
 	uarui.Amount = content.ContentAmount
 }
-func (uarui *UserAccessoryRarityUpItem) ToContent() Content {
+func (uarui *UserAccessoryRarityUpItem) ToContent(contentId int32) Content {
 	return Content{
 		ContentType:   enum.ContentTypeAccessoryRarityUp,
-		ContentId:     uarui.AccessoryRarityUpItemMasterId,
+		ContentId:     contentId,
 		ContentAmount: uarui.Amount,
 	}
 }

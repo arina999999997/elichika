@@ -3,11 +3,10 @@ package gacha
 import (
 	"elichika/client"
 	"elichika/client/request"
-	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
-	"elichika/item"
 	"elichika/serverdata"
+	"elichika/subsystem/user_card"
 	"elichika/userdata"
 
 	"math/rand"
@@ -41,52 +40,11 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []serverdata.GachaCard)
 }
 
 func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed bool) client.AddedGachaCardResult {
-	card := session.GetUserCard(cardMasterId)
-	cardRarity := session.Gamedata.Card[cardMasterId].CardRarityType
-	member := session.GetMember(session.Gamedata.Card[cardMasterId].Member.Id)
-	resultCard := client.AddedGachaCardResult{
-		GachaLotType:         enum.GachaLotTypeNormal,
-		CardMasterId:         cardMasterId,
-		Level:                1,
-		BeforeGrade:          card.Grade,
-		AfterGrade:           card.Grade + 1,
-		BeforeLoveLevelLimit: session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit),
-	}
+	resultCard := user_card.AddUserCardByCardMasterId(session, cardMasterId)
 	// if isGuaranteed {
 	// if all 10 cards has this it can crash so let's not assign it
 	// 	resultCard.GachaLotType = enum.GachaLotTypeAssurance
 	// }
-	if resultCard.AfterGrade == 6 { // maxed out card
-		resultCard.AfterGrade = 5
-		content := item.SchoolIdolRadiance
-		// 30 20 10 for UR, SR, R
-		for i := cardRarity; i > 10; i -= 10 {
-			content.ContentAmount *= 5
-		}
-		resultCard.Content = generic.NewNullable(content)
-		session.AddContent(content)
-	} else {
-		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + cardRarity/10
-		if resultCard.AfterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
-			resultCard.AfterLoveLevelLimit = session.Gamedata.MemberLoveLevelCount
-		}
-		member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[resultCard.AfterLoveLevelLimit]
-		card.Grade++ // new grade,
-		if card.Grade == 0 {
-			// entirely new card
-			resultCard.BeforeGrade = 0
-		} else {
-			// add trigger card grade up so animation play when opening the card
-			session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{
-				CardMasterId:         card.CardMasterId,
-				BeforeLoveLevelLimit: int32(resultCard.AfterLoveLevelLimit), // this is correct
-				AfterLoveLevelLimit:  int32(resultCard.AfterLoveLevelLimit),
-			})
-		}
-		// update the card and member
-		session.UpdateUserCard(card)
-		session.UpdateMember(member)
-	}
 	return resultCard
 }
 
