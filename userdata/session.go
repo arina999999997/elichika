@@ -26,13 +26,13 @@ type Session struct {
 	Time       time.Time
 	Db         *xorm.Session
 	Ctx        *gin.Context
-	UserId     int
+	UserId     int32
 	Gamedata   *gamedata.Gamedata
 	UserStatus *client.UserStatus // link to UserModel.UserStatus
 	// TODO: change the map to index map?
 	MemberLovePanelDiffs map[int32]client.MemberLovePanel
 	MemberLovePanels     []client.MemberLovePanel
-	UserResourceDiffs    map[int32](map[int32]UserResource) // content_type then content_id
+	UserContentDiffs     map[int32](map[int32]client.Content) // content_type then content_id
 
 	UserTrainingTreeCellDiffs []model.TrainingTreeCell
 	// for now only store delta patch, i.e. user_model_diff
@@ -53,7 +53,7 @@ func (session *Session) Finalize() {
 		userStatusFinalizer(session)
 	} else {
 		if session.SessionType == SessionTypeImportAccount {
-			session.populateGenericResourceDiffFromUserModel()
+			session.populateGenericContentDiffFromUserModel()
 		}
 		for _, finalizer := range finalizers {
 			finalizer(session)
@@ -90,13 +90,13 @@ func init() {
 func UserExist(userId int32) bool {
 	exist, err := Engine.Table("u_status").Exist(
 		&generic.UserIdWrapper[client.UserStatus]{
-			UserId: int(userId),
+			UserId: userId,
 		})
 	utils.CheckErr(err)
 	return exist
 }
 
-func GetSession(ctx *gin.Context, userId int) *Session {
+func GetSession(ctx *gin.Context, userId int32) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.Ctx = ctx
@@ -113,13 +113,13 @@ func GetSession(ctx *gin.Context, userId int) *Session {
 		return nil
 	}
 	s.UserStatus = &s.UserModel.UserStatus
-	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
+	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
 
 	s.MemberLovePanelDiffs = make(map[int32]client.MemberLovePanel)
 	return &s
 }
 
-func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginResponse, userId int) *Session {
+func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginResponse, userId int32) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.SessionType = SessionTypeImportAccount
@@ -132,7 +132,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginRes
 	s.UserModel = *loginData.UserModel
 	s.UserStatus = &s.UserModel.UserStatus
 
-	s.UserResourceDiffs = make(map[int32](map[int32]UserResource))
+	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
 
 	s.MemberLovePanels = loginData.MemberLovePanels.Slice
 	genericDatabaseInsert(&s, "u_login", *loginData)

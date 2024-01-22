@@ -21,7 +21,7 @@ import (
 
 func CorePlayableEnd(ctx *gin.Context) {
 	// there's no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -38,7 +38,7 @@ func CorePlayableEnd(ctx *gin.Context) {
 
 func TimingAdjusterEnd(ctx *gin.Context) {
 	// there's no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -55,7 +55,7 @@ func TimingAdjusterEnd(ctx *gin.Context) {
 
 func PhaseEnd(ctx *gin.Context) {
 	// there's no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -78,7 +78,7 @@ func TutorialSkip(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// if tutorial is skipped, then it can send stuff to update the live deck which would have been updated during the tutorial itself
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

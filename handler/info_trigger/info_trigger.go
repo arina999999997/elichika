@@ -20,7 +20,7 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.RemoveTriggerCardGradeUp(req.TriggerId)
@@ -36,7 +36,7 @@ func TriggerRead(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.DeleteTriggerBasic(req.TriggerId)
@@ -48,7 +48,7 @@ func TriggerRead(ctx *gin.Context) {
 
 func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
 	// there is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -61,7 +61,7 @@ func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
 
 func TriggerReadMemberGuildSupportItemExpired(ctx *gin.Context) {
 	// there is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

@@ -18,7 +18,7 @@ import (
 
 func FetchMission(ctx *gin.Context) {
 	// There is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -40,7 +40,7 @@ func ClearMissionBadge(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

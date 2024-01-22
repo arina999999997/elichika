@@ -8,7 +8,7 @@ import (
 // this is not stored, constructed from main db
 // partially loaded from u_info, then load from u_card
 type UserBasicInfo struct {
-	UserId int `xorm:"pk 'user_id'" json:"user_id"`
+	UserId int32 `xorm:"pk 'user_id'" json:"user_id"`
 	Name   struct {
 		DotUnderText string `xorm:"name" json:"dot_under_text"`
 	} `xorm:"extends" json:"name"` // player name

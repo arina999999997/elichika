@@ -62,7 +62,7 @@ func genericTableFieldPopulator(session *Session) {
 		rFieldType := rModel.Type().Elem().Field(i)
 		tableName := rFieldType.Tag.Get("table")
 		keyColumn := rFieldType.Tag.Get("key")
-		if rFieldType.Name == "UserStatus" || tableName == "u_resource" {
+		if rFieldType.Name == "UserStatus" || tableName == "u_content" {
 			continue
 		} else if tableName == "" {
 			panic(rFieldType.Name)

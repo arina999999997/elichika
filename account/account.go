@@ -37,7 +37,7 @@ import (
 
 // export to string to write to file or to return to webui
 func ExportUser(ctx *gin.Context) string {
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	loginData := session.Login()
@@ -46,7 +46,7 @@ func ExportUser(ctx *gin.Context) string {
 	return string(text)
 }
 
-func ImportUser(ctx *gin.Context, loginJson string, userId int) string {
+func ImportUser(ctx *gin.Context, loginJson string, userId int32) string {
 	loginData := response.LoginResponse{}
 	loginData.UserModel = new(client.UserModel)
 	err := json.Unmarshal([]byte(loginJson), &loginData)

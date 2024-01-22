@@ -138,7 +138,7 @@ func (d Dictionary[K, V]) MarshalJSON() ([]byte, error) {
 }
 
 // Load this from a xorm session
-func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int, table, mapKey string) {
+func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int32, table, mapKey string) {
 	// TODO(refactor) cache this
 	var valueDummy V
 	rValueType := reflect.TypeOf(valueDummy)

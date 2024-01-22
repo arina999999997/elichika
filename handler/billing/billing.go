@@ -23,7 +23,7 @@ func BillingHistory(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	// userId := ctx.GetInt("user_id")
+	// userId := int32(ctx.GetInt("user_id"))
 	// session := userdata.GetSession(ctx, userId)
 	// defer session.Close()
 
@@ -39,7 +39,7 @@ func BillingHistory(ctx *gin.Context) {
 
 func UpdateSubscription(ctx *gin.Context) {
 	// there's no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

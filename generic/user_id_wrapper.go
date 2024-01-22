@@ -1,6 +1,6 @@
 package generic
 
 type UserIdWrapper[T any] struct {
-	UserId int `xorm:"pk 'user_id'"`
-	Object *T  `xorm:"extends"`
+	UserId int32 `xorm:"pk 'user_id'"`
+	Object *T    `xorm:"extends"`
 }

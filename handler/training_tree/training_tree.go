@@ -22,7 +22,7 @@ func FetchTrainingTree(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -37,7 +37,7 @@ func LevelUpCard(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -66,7 +66,7 @@ func GradeUpCard(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -85,7 +85,7 @@ func GradeUpCard(ctx *gin.Context) {
 	session.UpdateUserCard(card)
 	member.IsNew = true
 	session.UpdateMember(member)
-	session.RemoveResource(masterCard.CardGradeUpItem[card.Grade][req.ContentId])
+	session.RemoveContent(masterCard.CardGradeUpItem[card.Grade][req.ContentId])
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break
@@ -106,7 +106,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -122,7 +122,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		cell := &cellContents[cellId]
 		// consume practice items
 		for _, resource := range cell.TrainingTreeCellItemSet.Resources {
-			session.RemoveResource(resource)
+			session.RemoveContent(resource)
 		}
 
 		switch int32(cell.TrainingTreeCellType) {
@@ -176,7 +176,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 			break
 		}
 		if reward.ActivateNum > int(card.TrainingActivatedCellCount) {
-			session.AddResource(reward.Reward)
+			session.AddContent(reward.Reward)
 		}
 	}
 

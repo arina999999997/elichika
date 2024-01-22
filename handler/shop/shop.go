@@ -62,7 +62,7 @@ func FetchShopPack(ctx *gin.Context) {
 func FetchShopSnsCoin(ctx *gin.Context) {
 	// there is no request body
 	// special behaviour to add 10000 gems if someone try to buy gem
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UserModel.UserStatus.FreeSnsCoin += 10000
@@ -72,7 +72,7 @@ func FetchShopSnsCoin(ctx *gin.Context) {
 
 func FetchShopSubscription(ctx *gin.Context) {
 	// there's no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

@@ -18,7 +18,7 @@ import (
 )
 
 // return the userId if it is not given
-func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
+func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	dictionary := ctx.MustGet("dictionary").(*dictionary.Dictionary)
 	{
@@ -28,9 +28,9 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		utils.CheckErr(err)
 		isRandomId := (userId == -1)
 		if isRandomId {
-			userId = rand.Intn(1000000000)
+			userId = int32(rand.Intn(1000000000))
 		}
-		tutorialPhase := int32(99)
+		tutorialPhase := enum.TutorialPhaseTutorialEnd
 		tutorialEndAt := time.Now().Unix()
 		if *config.Conf.Tutorial {
 			tutorialPhase = enum.TutorialPhaseNameInput
@@ -83,7 +83,7 @@ func CreateNewAccount(ctx *gin.Context, userId int, passWord string) int {
 		}
 		_, err = db.Table("u_status").AllCols().Insert(wrapper)
 		if (err != nil) && (isRandomId) { // reroll once for random userId
-			userId = rand.Intn(1000000000)
+			userId = int32(rand.Intn(1000000000))
 			wrapper.UserId = userId
 			_, err = db.Table("u_status").AllCols().Insert(&status)
 		}

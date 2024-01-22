@@ -41,13 +41,15 @@ func CheckTakeOver(ctx *gin.Context) {
 	resp := response.CheckTakeOverResponse{}
 
 	var currentSession, linkedSession (*userdata.Session)
-	linkedUserId, err := strconv.Atoi(req.TakeOverId)
+	var linkedUserId int32
+	_linkedUserId, err := strconv.Atoi(req.TakeOverId)
 	if (err != nil) || (len(req.TakeOverId) > 9) {
 		resp.IsNotTakeOver = true
 		goto FINISH_RESPONSE
 	}
+	linkedUserId = int32(_linkedUserId)
 
-	currentSession = userdata.GetSession(ctx, int(req.UserId))
+	currentSession = userdata.GetSession(ctx, req.UserId)
 	defer currentSession.Close()
 	linkedSession = userdata.GetSession(ctx, linkedUserId)
 	defer linkedSession.Close()
@@ -94,8 +96,9 @@ func SetTakeOver(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	linkedUserId, err := strconv.Atoi(req.TakeOverId)
+	_linkedUserId, err := strconv.Atoi(req.TakeOverId)
 	utils.CheckErr(err)
+	linkedUserId := int32(_linkedUserId)
 	linkedSession := userdata.GetSession(ctx, linkedUserId)
 	defer linkedSession.Close()
 
@@ -130,7 +133,7 @@ func UpdatePassWord(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

@@ -25,7 +25,7 @@ func AccessoryUpdateIsLock(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -42,7 +42,7 @@ func AccessoryUpdateIsLock(ctx *gin.Context) {
 func AccessoryUpdateIsNew(ctx *gin.Context) {
 	// this has no body or response, we just need to update every new accessory as not so
 	// this can be optimised to a single sql call but we don't need to take it that far (yet)
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	accessories := session.GetAllUserAccessories()
@@ -60,14 +60,14 @@ func AccessoryMelt(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	for _, userAccessoryId := range req.UserAccessoryIds {
 		accessory := session.GetUserAccessory(userAccessoryId)
-		session.AddResource(gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
+		session.AddContent(gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
 		session.DeleteUserAccessory(userAccessoryId)
 	}
 
@@ -85,7 +85,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// limit break (grade up) is processed first, then exp is processed later
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
@@ -134,7 +134,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	for _, item := range req.AccessoryLevelUpItems {
 		itemId := item.AccessoryLevelUpItemMasterId
 		// TODO: maybe make the item into a map at the start?
-		session.RemoveResource(client.Content{
+		session.RemoveContent(client.Content{
 			ContentType:   enum.ContentTypeAccessoryLevelUp,
 			ContentId:     itemId,
 			ContentAmount: item.Amount,
@@ -198,7 +198,7 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
@@ -228,7 +228,7 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	userAccessory.AcquiredAt = session.Time.Unix()
 	session.UpdateUserAccessory(userAccessory)
 	// remove resource used
-	session.RemoveResource(masterAccessory.RarityUp.RarityUpGroup.Resource)
+	session.RemoveContent(masterAccessory.RarityUp.RarityUpGroup.Resource)
 	session.RemoveGameMoney(int32(masterAccessory.Rarity.RarityUpMoney))
 
 	// finalize and send the response
@@ -243,7 +243,7 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	liveParties := session.GetAllLivePartiesWithAccessory(req.UserAccessoryId)

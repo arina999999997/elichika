@@ -6,7 +6,7 @@ import (
 	"elichika/utils"
 )
 
-func (session *Session) GetOtherUserLiveDifficulty(otherUserId int, liveDifficultyId int32) client.UserLiveDifficulty {
+func (session *Session) GetOtherUserLiveDifficulty(otherUserId int32, liveDifficultyId int32) client.UserLiveDifficulty {
 	userLiveDifficulty := client.UserLiveDifficulty{}
 	exist, err := session.Db.Table("u_live_difficulty").
 		Where("user_id = ? AND live_difficulty_id = ?", otherUserId, liveDifficultyId).

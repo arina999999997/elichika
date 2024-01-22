@@ -21,7 +21,7 @@ func FinishStoryMain(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -34,7 +34,7 @@ func FinishStoryMain(ctx *gin.Context) {
 
 	if session.InsertUserStoryMain(req.CellId) { // newly inserted story, award some gem
 		resp.FirstClearReward.Append(item.StarGem.Amount(10))
-		session.AddResource(item.StarGem.Amount(10))
+		session.AddContent(item.StarGem.Amount(10))
 	}
 	if req.MemberId.HasValue { // has a member -> select member thingy
 		session.UpdateUserStoryMainSelected(req.CellId, req.MemberId.Value)
@@ -50,7 +50,7 @@ func SaveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.InsertUserStoryMainPartDigestMovie(req.PartId)
@@ -67,7 +67,7 @@ func FinishStoryLinkage(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

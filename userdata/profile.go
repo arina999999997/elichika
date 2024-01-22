@@ -13,7 +13,7 @@ func FetchDBProfile(userId int32, result interface{}) {
 	utils.CheckErrMustExist(err, exist)
 }
 
-func FetchPartnerCards(otherUserId int) []client.UserCard {
+func FetchPartnerCards(otherUserId int32) []client.UserCard {
 	partnerCards := []client.UserCard{}
 	err := Engine.Table("u_card").
 		Where("user_id = ? AND live_partner_categories != 0", otherUserId).
@@ -131,7 +131,7 @@ func (session *Session) GetOtherUser(otherUserId int32) client.OtherUser {
 	return otherUser
 }
 
-func (session *Session) GetOtherUserLiveStats(otherUserId int) model.UserProfileLiveStats {
+func (session *Session) GetOtherUserLiveStats(otherUserId int32) model.UserProfileLiveStats {
 	stats := model.UserProfileLiveStats{}
 	_, err := Engine.Table("u_status").Where("user_id = ?", otherUserId).Get(&stats)
 	utils.CheckErr(err)
@@ -150,7 +150,7 @@ func (session *Session) UpdateUserLiveStats(stats model.UserProfileLiveStats) {
 // fetch profile of another user, from session.UserId's perspective
 // it's possible that otherUserId == session.UserId
 
-func (session *Session) GetOtherUserSetProfile(otherUserId int) client.UserSetProfile {
+func (session *Session) GetOtherUserSetProfile(otherUserId int32) client.UserSetProfile {
 	p := client.UserSetProfile{}
 	_, err := session.Db.Table("u_set_profile").Where("user_id = ?", otherUserId).Get(&p)
 	utils.CheckErr(err)

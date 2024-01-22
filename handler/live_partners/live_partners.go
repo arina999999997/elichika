@@ -24,7 +24,7 @@ func FetchLivePartners(ctx *gin.Context) {
 	resp := response.FetchLiveParntersResponse{}
 
 	// there is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -37,7 +37,7 @@ func FetchLivePartners(ctx *gin.Context) {
 		userdata.FetchDBProfile(partnerId, &partner)
 
 		partner.IsFriend = true
-		partnerCards := userdata.FetchPartnerCards(int(partnerId)) // client.UserCard
+		partnerCards := userdata.FetchPartnerCards(partnerId) // client.UserCard
 		if len(partnerCards) == 0 {
 			continue
 		}
@@ -61,7 +61,7 @@ func SetLivePartner(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// set the bit on the correct card
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

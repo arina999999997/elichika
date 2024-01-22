@@ -46,7 +46,7 @@ func InitTables(overwrite bool) {
 		ContentId     int32 `xorm:"pk 'content_id'" json:"content_id"`
 		ContentAmount int32 `xorm:"'content_amount'" json:"content_amount"`
 	}
-	InitTable("u_resource", generic.UserIdWrapper[ContentWithPk]{}, overwrite)
+	InitTable("u_content", generic.UserIdWrapper[ContentWithPk]{}, overwrite)
 	// TODO(rename)
 	InitTable("u_live_state", generic.UserIdWrapper[client.Live]{}, true) // always nuke the live state db because we might have a new format for it
 }

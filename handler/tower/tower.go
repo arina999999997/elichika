@@ -19,7 +19,7 @@ import (
 
 func FetchTowerSelect(ctx *gin.Context) {
 	// there's no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -36,7 +36,7 @@ func FetchTowerTop(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -86,7 +86,7 @@ func ClearedTowerFloor(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -111,7 +111,7 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -122,12 +122,12 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 		session.UpdateUserTowerCardUsed(req.TowerId, cardUsedCount)
 	}
 	// remove the item
-	has := session.GetUserResourceByContent(item.PerformanceDrink).Content.ContentAmount
+	has := session.GetUserContentByContent(item.PerformanceDrink).ContentAmount
 	cardCount := int32(req.CardMasterIds.Size())
 	if has >= cardCount {
-		session.RemoveResource(item.PerformanceDrink.Amount(cardCount))
+		session.RemoveContent(item.PerformanceDrink.Amount(cardCount))
 	} else {
-		session.RemoveResource(item.PerformanceDrink.Amount(has))
+		session.RemoveContent(item.PerformanceDrink.Amount(has))
 		session.RemoveSnsCoin((cardCount - has) * int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin))
 	}
 
@@ -144,7 +144,7 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

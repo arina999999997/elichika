@@ -94,7 +94,7 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 		masterMember := session.Gamedata.Member[memberId]
 		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
 			for _, reward := range masterMember.LoveLevelRewards[loveLevel] {
-				session.AddResource(reward)
+				session.AddContent(reward)
 			}
 		}
 

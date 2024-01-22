@@ -21,7 +21,7 @@ import (
 
 func FetchMemberGuildTop(ctx *gin.Context) {
 	// There is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -44,7 +44,7 @@ func FetchMemberGuildTop(ctx *gin.Context) {
 
 func FetchMemberGuildSelect(ctx *gin.Context) {
 	// There is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -56,7 +56,7 @@ func FetchMemberGuildSelect(ctx *gin.Context) {
 
 func FetchMemberGuildRanking(ctx *gin.Context) {
 	// There is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -120,7 +120,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -150,7 +150,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 	// remove the items or update the free cheer
 
 	for i := int32(0); i < req.CheerItemAmount.Value; i++ {
-		session.AddResource(item.StarGem.Amount(100))
+		session.AddContent(item.StarGem.Amount(100))
 		resp.Rewards.Append(item.StarGem.Amount(100))
 	}
 
@@ -164,7 +164,7 @@ func JoinMemberGuild(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

@@ -59,7 +59,7 @@ func (n Nullable[T]) MarshalJSON() ([]byte, error) {
 // there might be a better way to do this but this is good enough for now
 
 // for dictionary of Nullable only, load the Nullable from a table
-func (Nullable[T]) LoadFromDb(db *xorm.Session, userId int, table, mapKey string, keyResult *[]any, result *[]Nullable[T]) {
+func (Nullable[T]) LoadFromDb(db *xorm.Session, userId int32, table, mapKey string, keyResult *[]any, result *[]Nullable[T]) {
 
 	var valueDummy T
 	rValueType := reflect.TypeOf(valueDummy)

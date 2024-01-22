@@ -64,7 +64,7 @@ func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed 
 			content.ContentAmount *= 5
 		}
 		resultCard.Content = generic.NewNullable(content)
-		session.AddResource(content)
+		session.AddContent(content)
 	} else {
 		resultCard.AfterLoveLevelLimit = resultCard.BeforeLoveLevelLimit + cardRarity/10
 		if resultCard.AfterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {

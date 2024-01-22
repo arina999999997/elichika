@@ -17,7 +17,7 @@ func ResetProgress(ctx *gin.Context) {
 	if !ctx.MustGet("has_user_id").(bool) {
 		return
 	}
-	userId := ctx.MustGet("user_id").(int)
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	if session == nil {

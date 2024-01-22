@@ -21,7 +21,7 @@ func SaveRuleDescription(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// response with user model
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

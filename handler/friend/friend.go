@@ -14,7 +14,7 @@ import (
 func FetchFriendList(ctx *gin.Context) {
 	// there's no request body
 
-	// userId := ctx.GetInt("user_id")
+	// userId := int32(ctx.GetInt("user_id"))
 	// session := userdata.GetSession(ctx, userId)
 	// defer session.Close()
 

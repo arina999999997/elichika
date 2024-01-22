@@ -9,7 +9,7 @@ func (session *Session) RemoveUserProgress(table string) {
 	count, err := session.Db.Table(table).Where("user_id = ?", session.UserId).Delete()
 	utils.CheckErr(err)
 	if table == "u_story_event_history" {
-		session.AddResource(item.MemoryKey.Amount(int32(count)))
+		session.AddContent(item.MemoryKey.Amount(int32(count)))
 	}
 }
 

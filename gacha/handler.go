@@ -24,7 +24,7 @@ func GuaranteedNewCard(ctx *gin.Context, gachaGuarantee *serverdata.GachaGuarant
 	newCards := []serverdata.GachaCard{}
 	{
 		userCards := []int32{}
-		err := session.Db.Table("u_card").Where("user_id = ?", ctx.GetInt("user_id")).Cols("card_master_id").
+		err := session.Db.Table("u_card").Where("user_id = ?", int32(ctx.GetInt("user_id"))).Cols("card_master_id").
 			Find(&userCards)
 		utils.CheckErr(err)
 		cardSet := map[int32]bool{}
@@ -40,7 +40,7 @@ func GuaranteedNewCard(ctx *gin.Context, gachaGuarantee *serverdata.GachaGuarant
 	}
 	if len(newCards) == 0 { // if empty then choose from the cards that have grade < 5
 		userCards := []int32{}
-		err := session.Db.Table("u_card").Where("user_id = ? AND grade = 5", ctx.GetInt("user_id")).Cols("card_master_id").
+		err := session.Db.Table("u_card").Where("user_id = ? AND grade = 5", int32(ctx.GetInt("user_id"))).Cols("card_master_id").
 			Find(&userCards)
 		utils.CheckErr(err)
 		cardSet := map[int32]bool{}

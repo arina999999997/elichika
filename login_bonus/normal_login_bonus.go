@@ -51,7 +51,7 @@ func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *ga
 	target.LoginBonuses.Append(naviLoginBonus)
 	for _, content := range loginBonus.LoginBonusRewards.Slice[userLoginBonus.LastReceivedReward].LoginBonusContents.Slice {
 		// TODO(present_box): This correctly has to go to the present box, but we just do it here
-		session.AddResource(content)
+		session.AddContent(content)
 	}
 	session.UpdateUserLoginBonus(userLoginBonus)
 }

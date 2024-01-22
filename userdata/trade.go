@@ -58,9 +58,9 @@ func (session *Session) ExecuteTrade(productId, tradeCount int32) bool {
 	trade := session.Gamedata.Trade[product.TradeId]
 	for _, content := range product.Contents.Slice {
 		content.ContentAmount *= int32(tradeCount)
-		session.AddResource(content)
+		session.AddContent(content)
 	}
-	session.RemoveResource(client.Content{
+	session.RemoveContent(client.Content{
 		ContentType:   trade.SourceContentType,
 		ContentId:     trade.SourceContentId,
 		ContentAmount: product.SourceAmount * tradeCount,

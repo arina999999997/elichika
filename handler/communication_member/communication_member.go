@@ -25,7 +25,7 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -48,7 +48,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -86,7 +86,7 @@ func UpdateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -123,7 +123,7 @@ func FinishUserStorySide(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -144,7 +144,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
@@ -155,7 +155,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	if session.FinishStoryMember(req.StoryMemberMasterId) {
 		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterId]
 		if storyMemberMaster.Reward != nil {
-			session.AddResource(*storyMemberMaster.Reward)
+			session.AddContent(*storyMemberMaster.Reward)
 			session.AddTriggerBasic(client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeStoryMemberReward,
 				ParamInt:        generic.NewNullable(req.StoryMemberMasterId),
@@ -183,7 +183,7 @@ func SetTheme(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -204,7 +204,7 @@ func SetFavoriteMember(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

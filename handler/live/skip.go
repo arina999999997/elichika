@@ -25,12 +25,12 @@ func LiveSkip(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	gamedata := session.Gamedata
 
-	session.RemoveResource(item.SkipTicket.Amount(req.TicketUseCount))
+	session.RemoveContent(item.SkipTicket.Amount(req.TicketUseCount))
 
 	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyMasterId
 	liveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyMasterId]

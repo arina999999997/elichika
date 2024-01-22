@@ -6,8 +6,8 @@ import (
 
 func genericDatabaseInsert[T any](session *Session, table string, item T) {
 	type UserIdWrapper struct {
-		UserId int `xorm:"pk 'user_id'"`
-		Item   *T  `xorm:"extends"`
+		UserId int32 `xorm:"pk 'user_id'"`
+		Item   *T    `xorm:"extends"`
 	}
 	_, err := session.Db.Table(table).Insert(UserIdWrapper{
 		UserId: session.UserId,
@@ -18,8 +18,8 @@ func genericDatabaseInsert[T any](session *Session, table string, item T) {
 
 func genericDatabaseExist[T any](session *Session, table string, item T) bool {
 	type UserIdWrapper struct {
-		UserId int `xorm:"pk 'user_id'"`
-		Item   *T  `xorm:"extends"`
+		UserId int32 `xorm:"pk 'user_id'"`
+		Item   *T    `xorm:"extends"`
 	}
 	exist, err := session.Db.Table(table).Exist(&UserIdWrapper{
 		UserId: session.UserId,

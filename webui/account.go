@@ -12,7 +12,7 @@ import (
 )
 
 func ImportAccount(ctx *gin.Context) {
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	{
 		session := userdata.GetSession(ctx, userId)
 		defer session.Close()
@@ -40,7 +40,7 @@ func ExportAccount(ctx *gin.Context) {
 	if !ctx.MustGet("has_user_id").(bool) {
 		return
 	}
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	{
 		session := userdata.GetSession(ctx, userId)
 		defer session.Close()

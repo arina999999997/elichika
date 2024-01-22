@@ -65,7 +65,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 
 		for _, content := range naviLoginBonus.LoginBonusRewards.Slice[0].LoginBonusContents.Slice {
 			// TODO(present_box): This correctly has to go to the present box, but we just do it here
-			session.AddResource(content)
+			session.AddContent(content)
 		}
 
 		// choose the background and the costume

@@ -9,9 +9,9 @@ Or whenever we finish gacha, we need to add the card, which will in turn level u
 This consequence list is not completed. Hopefully there's no loop in the subsystem or we might have to have one big package or split a subsystem into multiple parts.
 
 ```
-UserResource <- Live (exp/drop)
-UserResource <- Card (practice)
-UserResource <- Member (bond reward)
+UserContent <- Live (exp/drop)
+UserContent <- Card (practice)
+UserContent <- Member (bond reward)
 Member <- Live (love)
 Member <- Card (love limit)
 ```

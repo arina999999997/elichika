@@ -21,12 +21,12 @@ func UnlockStory(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
 	session.UnlockEventStory(req.EventStoryMasterId)
-	session.RemoveResource(item.MemoryKey)
+	session.RemoveContent(item.MemoryKey)
 
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
@@ -39,7 +39,7 @@ func FinishStory(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 

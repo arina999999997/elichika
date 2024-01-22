@@ -23,7 +23,7 @@ func FetchProfile(session *userdata.Session, otherUserId int32) response.UserPro
 		})
 	}
 
-	partnerCards := userdata.FetchPartnerCards(int(otherUserId))
+	partnerCards := userdata.FetchPartnerCards(otherUserId)
 	for _, card := range partnerCards {
 		partnerCard := session.GetOtherUserCard(otherUserId, card.CardMasterId)
 		for i := 1; i <= 7; i++ {
@@ -34,7 +34,7 @@ func FetchProfile(session *userdata.Session, otherUserId int32) response.UserPro
 	}
 
 	// live clear stats
-	liveStats := session.GetOtherUserLiveStats(int(otherUserId))
+	liveStats := session.GetOtherUserLiveStats(otherUserId)
 	for i, liveDifficultyType := range enum.LiveDifficultyTypes {
 		resp.PlayInfo.LivePlayCount.Set(int32(liveDifficultyType), int32(liveStats.LivePlayCount[i]))
 		resp.PlayInfo.LiveClearCount.Set(int32(liveDifficultyType), int32(liveStats.LiveClearCount[i]))
@@ -46,16 +46,16 @@ func FetchProfile(session *userdata.Session, otherUserId int32) response.UserPro
 		OrderBy("active_skill_play_count DESC").Limit(3).Find(&resp.PlayInfo.PlaySkillCardRanking.Slice)
 
 	// custom profile
-	customProfile := session.GetOtherUserSetProfile(int(otherUserId))
+	customProfile := session.GetOtherUserSetProfile(otherUserId)
 	if customProfile.VoltageLiveDifficultyId != 0 {
 		resp.PlayInfo.MaxScoreLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.VoltageLiveDifficultyId)
 		resp.PlayInfo.MaxScoreLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(int(otherUserId), customProfile.VoltageLiveDifficultyId).MaxScore
+			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.VoltageLiveDifficultyId).MaxScore
 	}
 	if customProfile.CommboLiveDifficultyId != 0 {
 		resp.PlayInfo.MaxComboLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.CommboLiveDifficultyId)
 		resp.PlayInfo.MaxComboLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(int(otherUserId), customProfile.CommboLiveDifficultyId).MaxCombo
+			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.CommboLiveDifficultyId).MaxCombo
 	}
 
 	cards := []client.UserCard{}

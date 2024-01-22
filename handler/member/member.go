@@ -24,7 +24,7 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -38,7 +38,7 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	// remove resource
 	for _, cellId := range req.MemberLovePanelCellIds.Slice {
 		for _, resource := range session.Gamedata.MemberLovePanelCell[cellId].Resources {
-			session.RemoveResource(resource)
+			session.RemoveContent(resource)
 		}
 	}
 

@@ -119,7 +119,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 			if (i == 0) || (int(req.LiveScore.CurrentScore) >= mission.TargetValue) {
 				resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsCurrentlyAchieved = true
 				if !resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsAlreadyAchieved { // new, add reward
-					session.AddResource(mission.Reward)
+					session.AddContent(mission.Reward)
 					switch i {
 					case 0:
 						userLiveDifficulty.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
@@ -290,7 +290,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
 			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewards {
-				session.AddResource(reward)
+				session.AddContent(reward)
 			}
 		}
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewardId != nil {
@@ -300,7 +300,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
 			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewards {
-				session.AddResource(reward)
+				session.AddContent(reward)
 			}
 		}
 	}
@@ -319,7 +319,7 @@ func LiveFinish(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	exist, live := session.LoadUserLive()

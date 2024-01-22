@@ -17,7 +17,7 @@ import (
 
 func FetchEmblem(ctx *gin.Context) {
 	// there is no request body
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -44,7 +44,7 @@ func ActivateEmblem(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
@@ -62,11 +62,11 @@ func FetchEmblemById(ctx *gin.Context) {
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
-	userId := ctx.GetInt("user_id")
+	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	otherUserSession := userdata.GetSession(ctx, int(req.UserId))
+	otherUserSession := userdata.GetSession(ctx, req.UserId)
 	otherUserSession.PopulateUserModelField("UserEmblemByEmblemId")
 	resp := response.FetchEmblemResponse{
 		UserModel: &session.UserModel,
