@@ -4,7 +4,7 @@ import (
 	"elichika/client"
 	"elichika/dictionary"
 	"elichika/generic"
-	"elichika/model"
+	"elichika/serverdata"
 	"elichika/utils"
 
 	"fmt"
@@ -25,7 +25,7 @@ type LoginBonus struct {
 }
 
 func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	rewardDays := []model.LoginBonusRewardDay{}
+	rewardDays := []serverdata.LoginBonusRewardDay{}
 	err := serverdata_db.Table("s_login_bonus_reward_day").Where("login_bonus_id = ?", lb.LoginBonusId).
 		OrderBy("day").Find(&rewardDays)
 	utils.CheckErr(err)

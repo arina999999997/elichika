@@ -2,22 +2,23 @@
 Check out the specific documentations on how the server work and on how to do certain things.
 
 ## Server implement progress
-Quick summary of what works and what doesn't.
+Quick summary of what works and what doesn't. If you want to see it in a more technical sense, checkout the [endpoints](https://github.com/arina999999997/elichika/blob/master/router/endpoints.md) listing.
 
-TODO: Add specific docs for specific contents if necessary.
+TODO(docs): Add specific docs for specific contents if necessary.
 
-- [ ] Start up / New account
+- [x] Start up / New account
     - [x] Account created upon trying to login, or created using the transfer system.
-    - [ ] There is no tutorial mode, but in theory it can be reconstructed.
-- [ ] Login
+    - [x] New account will trigger the openning MV and the tutorial mode. The tutorial process all work although some part can be improved.
+- [x] Login
     - [x] User can login and play.
-    - [ ] There is no login bonus.
-- [ ] Profile
+    - [x] There are login bonus types like normal login bonus, idol birthday login bonus, and new player login bonus.
+- [x] Profile
     - [x] User can customize the profile section.
-    - [ ] Birthday need to be set using the WebUI, as it is normally set during tutorial and there is no tutorial.
+    - [x] Birthday can be set during tutorial or changed using the WebUI.
 - [ ] Live show
     - [x] Fully working normal live, skip ticket, and 3DMV mode.
     - [x] Correctly award bond points.
+    - [x] You can use your own partner guests. 
     - [ ] There isn't any item drops being handled.
 - [x] Story
     - [x] Fully working, you can read all kind of stories and play story songs.
@@ -28,21 +29,23 @@ TODO: Add specific docs for specific contents if necessary.
 - [ ] Training
     - [x] Training works but always return a set of commonly used insight skills.
     - [ ] No drop from training.
-- [ ] Member bond
+- [x] Member bond
     - [x] Working member bond system.
     - [x] Fully working bond board system.
-    - [x] Bond stories are unlocked by default once you unlock the bond story feature for one member. (This might change at end of 2023 due to the database period running out).
+    - [x] Bond stories are unlocked by level once you unlock the bond story feature for one member (get to level 3 bond).
     - [x] Bond songs unlocked at spefiic levels.
 - [ ] Bond ranking
     - [x] Working but return fixed data, eventually should return actual data.
-- [x] Membership
-    - [x] Keep whatever membership user has in place.
-    - [ ] Maybe implement a way to set the month.
+- [ ] Membership (subscription)
+    - [x] Keep membership info for imported data.
+    - [x] Add default membership for new account.
+    - [ ] There is no tracking or veteran reward.
 - [x] Shop
     - [x] Working by returning fixed data, there is no intend to implement this further.
 - [x] Exchange
     - [x] Working exchanges implementation.
     - [x] Exchange data depends on the database, by default it has items that was in the global server at the EOS.
+    - [ ] Note that Some item might not be exchangable, but that's more down to the handling of those items and not the exchange itself.
 - [x] School idol / Practice
     - [x] Fully working card grade up, level up, and practice system.
 - [ ] Accessores
@@ -70,16 +73,17 @@ TODO: Add specific docs for specific contents if necessary.
     - [ ] There's no proper handling of adding a title yet.
 - [x] Datalink
     - [x] The datalink system is used as account creation / account transfer, things should work properly.
-    - [x] Password is stored in plaintext in DB because cba.
+    - [ ] Password is stored in plaintext in DB, so don't use sentitive password if you plan on sharing your database.
 - [ ] Daily theater (JP client only)
     - [x] Works by returning fixed data.
     - [ ] Eventually should contain all the stories, user should be able to choose language some how.
-    - [ ] Maybe make this feature available for WW too.
+    - [ ] Maybe make this feature available for WW to (need to hook some function or something)
 - [ ] User model
     - [x] Working user model.
     - [ ] Level up are not handled properly.
-
-<!--  TODO: mention DLP-->
+- [x] DLP
+    - [x] Working DLP that also track voltage ranking
+    - [x] User can reset DLP progress using the WebUi.
 
 ## Importing/Exporting account
 You can import account from the login json or export account to json. This help with recovering your account, moving it, or update to a new server version that has a breaking change with the old database structure.
@@ -110,9 +114,10 @@ For recovering data from network data (pcap), you can check out this [guide](htt
 
 - For now we don't care that much about those data as it's not core to the gameplay experience. 
 
+<!-- - TODO: Maybe implement spliting the database to save everything instead. -->
 ## Modifying client database
 
-This server by default provide the databases as they were at EOS, but if necessary, you can modify the databases that the game and the server use.
+This server by default provide the databases as they were at EOS, plus the relevant modification for the features (turning DLP on and so), but if necessary, you can modify the databases that the game and the server use.
 
 This can be done to achieve the following:
 

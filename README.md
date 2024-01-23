@@ -64,7 +64,7 @@ git pull && go build
 ```
 
 Note that this might introduce problems because the new server might not be compatible with old database format, so you might lose progress.
- Future versions will try to keep things compatible or have a safe way to transfer. Though, if you know what you're doing, you can still transfer things over anyway.
+Future versions will try to keep things compatible or have a safe way to transfer. Though, if you know what you're doing, you can still transfer things over anyway.
 
 ## Playing the game
 With the server running, and the client network setup correctly, simply open the game and play.
@@ -102,8 +102,8 @@ However, it's recommended to not play one account (user id) in both Japanese and
 ### Multiplayer
 The current implementation doesn't explicitly support multiplayer:
 
-- More precisely, it doesn't support 2 clients connecting at once.
-- If something happens to works, it just happen to works.
+- More precisely, it doesn't explicitly support 2 clients connecting at once.
+- If something happens to works, it works.
 - If something fails, it's the expected outcome.
 
 So you can switch accounts and things should work, but logging in with multiple clients might result in problems.

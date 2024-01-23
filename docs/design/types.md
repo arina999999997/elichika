@@ -18,6 +18,9 @@ These types are defined in the `client` package, and they must have the exact sa
     - For the time being, we will use the Nullable wrapper for pointer fields that can be `null` and mark them as pointer using the comment
   - For fields that are `Dictionary`, use the `Dictionary generic`.
   - For fields that are `enum`, an enum tag to the enum name is required. This currently doesn't do anything but we might want to do enum checking and stuff later, and it just make it easier to keep track of things.
+
+    - Note that enum sometime are stored as enum, sometime are just stored as `int32_t` in the client.
+
 - If the type is used with `json`, it must works correctly with Marshal and Unmarshal, and it no information would be lost in doing so.
 
   - Use a custom marshal / unmarshaler if necessary.
@@ -29,7 +32,7 @@ These types are defined in the `client` package, and they must have the exact sa
 - Finally, each type should be in its own file. The file name is derived from the type name, but we use snake_case for file names.
 
 ### Request / response types
-Request and response types are also client types and follow the same rules, but they should be put into the `client/request` and `client/response` package instead. This is only done to make them easier to see. Maybe we can also do something like splitig user type into `client/user`.
+Request and response types are also client types and follow the same rules, but they should be put into the `client/request` and `client/response` package instead. This is only done to make them easier to see. Maybe we can also do something like spliting user type into `client/user`.
 
 Note that even if a type is only used as a subtype of a request/response type, it should be in client instead of being in `client/request` or being annonymous.
 
@@ -41,22 +44,20 @@ Gamedata types are types used to store how the server should work, for example, 
 
 Gamedata types are defined in the package `gamedata` along with their loaders.
 
-## Userdata types 
-Userdata types are types used to store users' data (progress). These type should be made from Client types and Gamedata types. The general rule is as follow:
+## Userdata types
+Userdata types are types used to store users' data (progress). These type should be made from `client` types. The general rule is as follow:
 
-- Userdata types should have the prefix User and then the name of the relevant Client/Gamedata types.
-- Userdata types should follow the Client/Gamedata type naming.
-- Userdata types should contain the field UserId, of type `int`.
+- Userdata types should generally be an UserIdWrapper on top of the relevant User.. types of the client.
+- If no relevant client type exist, but we still need to store the infomation, then we should follow the naming of the relevant places the information is used.
 - Userdata types should not merge multiple data into the same table, even if that is possible:
   
   - For example, the table for `UserStatus` should not have any other info in it, even though we can store more info.
   - Or the, table for `UserMember` should only store the general, member info not things like how many card are owned.
-- Userdata types should not store an information multiple times:
+- Userdata types should not store derivative/aggregated infomation, unless it's based on a `client` type:
 
-  - If a variable is used in multiple context, choose a single context to store it in, or store it in an entirely separate thing.
-  - Aggregated data is allowed, but must be modified accordingly.
+  - We should calculate aggregated/derivative data from userdata and cache them instead of keeping a copy and modifying them everytime the userdata change, because it should be less work and easier that way.
 
-Userdata types are defined in the package `userdata` along with their loaders.
+Userdata types are defined in the package `userdata/database`. 
 
 ## Handling types
 Handling types are types defined and used by handlers. These types can generally be just about anything. The naming convention should apply, and the handler should keep only the relevant types to itself. If a type is used a lot, it should be placed in the common utilities package instead of copied / replicated.

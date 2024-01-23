@@ -214,8 +214,9 @@ func SetFavoriteMember(ctx *gin.Context) {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseLovePointUp
 		// award the initial SR
 		// TODO(magic_id)
-		user_card.AddUserCardByCardMasterId(session, int32(100002001+req.MemberMasterId*10000))
-		session.UserStatus.RecommendCardMasterId = req.MemberMasterId // this is for the pop up
+		intiialSr := int32(100002001 + req.MemberMasterId*10000)
+		user_card.AddUserCardByCardMasterId(session, intiialSr)
+		session.UserStatus.RecommendCardMasterId = intiialSr // this is for the pop up
 	}
 
 	session.Finalize()

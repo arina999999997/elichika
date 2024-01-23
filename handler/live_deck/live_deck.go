@@ -10,6 +10,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_live_deck"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -29,37 +30,11 @@ func SaveDeckAll(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
+
+	user_live_deck.UpdateUserLiveDeck(session, req.DeckId, req.CardWithSuit, req.SquadDict)
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseDeckEdit {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseSuitChange
-	}
-
-	userLiveDeck := session.GetUserLiveDeck(req.DeckId)
-	for position, cardMasterId := range req.CardWithSuit.Order {
-		suitMasterId := *req.CardWithSuit.GetOnly(cardMasterId)
-		if !suitMasterId.HasValue {
-			// TODO: maybe we can assign the suit of the card instead
-			suitMasterId = generic.NewNullable(gamedata.Card[cardMasterId].Member.MemberInit.SuitMasterId)
-		}
-		reflect.ValueOf(&userLiveDeck).Elem().Field(position + 2).Set(reflect.ValueOf(generic.NewNullable(cardMasterId)))
-		reflect.ValueOf(&userLiveDeck).Elem().Field(position + 2 + 9).Set(reflect.ValueOf(suitMasterId))
-	}
-	session.UpdateUserLiveDeck(userLiveDeck)
-	for partyId, liveSquad := range req.SquadDict.Map {
-		userLiveParty := client.UserLiveParty{
-			PartyId:        partyId,
-			UserLiveDeckId: req.DeckId,
-		}
-		userLiveParty.IconMasterId, userLiveParty.Name.DotUnderText = gamedata.GetLivePartyInfoByCardMasterIds(
-			liveSquad.CardMasterIds.Slice[0], liveSquad.CardMasterIds.Slice[1], liveSquad.CardMasterIds.Slice[2])
-		for position := 0; position < 3; position++ {
-			reflect.ValueOf(&userLiveParty).Elem().Field(position + 4).Set(
-				reflect.ValueOf(generic.NewNullable(liveSquad.CardMasterIds.Slice[position])))
-			reflect.ValueOf(&userLiveParty).Elem().Field(position + 4 + 3).Set(
-				reflect.ValueOf(liveSquad.UserAccessoryIds.Slice[position]))
-		}
-		session.UpdateUserLiveParty(userLiveParty)
 	}
 
 	session.Finalize()
