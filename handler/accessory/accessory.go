@@ -50,6 +50,7 @@ func AccessoryUpdateIsNew(ctx *gin.Context) {
 		accessory.IsNew = false
 		session.UpdateUserAccessory(accessory)
 	}
+
 	session.Finalize()
 	common.JsonResponse(ctx, &response.EmptyResponse{})
 }
@@ -260,8 +261,8 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 		}
 		session.UpdateUserLiveParty(liveParty)
 	}
+	
 	session.Finalize()
-
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

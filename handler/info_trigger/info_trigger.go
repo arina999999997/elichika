@@ -24,7 +24,8 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.RemoveTriggerCardGradeUp(req.TriggerId)
-
+	
+	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -41,6 +42,7 @@ func TriggerRead(ctx *gin.Context) {
 	defer session.Close()
 	session.DeleteTriggerBasic(req.TriggerId)
 
+	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -54,6 +56,7 @@ func TriggerReadMemberLoveLevelUp(ctx *gin.Context) {
 
 	session.ReadAllMemberLoveLevelUpTriggers()
 
+	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
@@ -67,6 +70,7 @@ func TriggerReadMemberGuildSupportItemExpired(ctx *gin.Context) {
 
 	session.ReadMemberGuildSupportItemExpired()
 
+	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

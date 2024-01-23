@@ -42,8 +42,8 @@ func UpdateSubscription(ctx *gin.Context) {
 	subscriptionStatus.ExpireDate = 1<<31 - 1 // preserve the subscription for now
 	subscriptionStatus.PlatformExpireDate = subscriptionStatus.ExpireDate
 	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
+	
 	session.Finalize()
-
 	common.JsonResponse(ctx, &response.UpdateSubscriptionResponse{
 		UserModel: &session.UserModel,
 	})

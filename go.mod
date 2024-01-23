@@ -1,6 +1,6 @@
 module elichika
 
-go 1.20
+go 1.21
 
 require (
 	github.com/arina999999997/gohwdecrypt v1.0.1

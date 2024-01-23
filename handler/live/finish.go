@@ -20,19 +20,21 @@ import (
 )
 
 func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live, startReq request.StartLiveRequest) {
+	gamedata := session.Gamedata
+	liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
+
 	resp := response.FinishLiveResponse{
 		LiveResult: client.LiveResult{
 			LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
 			LiveDeckId:             session.UserStatus.LatestLiveDeckId,
 			Voltage:                req.LiveScore.CurrentScore,
 			BeforeUserExp:          session.UserStatus.Exp,
+			GainUserExp:  liveDifficulty.RewardUserExp,
 			LiveFinishStatus:       req.LiveFinishStatus,
 		},
 		UserModelDiff: &session.UserModel,
 	}
 
-	gamedata := session.Gamedata
-	liveDifficulty := gamedata.LiveDifficulty[resp.LiveResult.LiveDifficultyMasterId]
 	isCenter := map[int32]bool{}
 
 	for _, memberMapping := range liveDifficulty.Live.LiveMemberMapping {
@@ -123,7 +125,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 				}
 			}
 		}
-		resp.LiveResult.GainUserExp = int32(liveDifficulty.RewardUserExp)
+		session.UserStatus.Exp += resp.LiveResult.GainUserExp
 	}
 
 	resp.LiveResult.LastBestVoltage = userLiveDifficulty.MaxScore

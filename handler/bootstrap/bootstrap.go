@@ -68,6 +68,7 @@ func FetchBootstrap(ctx *gin.Context) {
 	}
 	status := session.GetSubsriptionStatus(13001)
 	session.UserModel.UserSubscriptionStatusById.Set(status.SubscriptionMasterId, status)
+	
 	session.Finalize()
 	common.JsonResponse(ctx, resp)
 }

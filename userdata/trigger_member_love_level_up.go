@@ -3,6 +3,8 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/utils"
+
+	"fmt"
 )
 
 func (session *Session) RemoveTriggerMemberLoveLevelUp(triggerId int64) {
@@ -19,12 +21,15 @@ func (session *Session) AddTriggerMemberLoveLevelUp(trigger client.UserInfoTrigg
 
 func triggerMemberLoveLevelUpFinalizer(session *Session) {
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Map {
+		fmt.Println(triggerId, trigger)
 		if trigger != nil {
 			genericDatabaseInsert(session, "u_info_trigger_member_love_level_up", *trigger)
 		} else {
-			_, err := session.Db.Table("u_info_trigger_member_love_level_up").
+			deleted, err := session.Db.Table("u_info_trigger_member_love_level_up").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
 				Delete(&client.UserInfoTriggerMemberLoveLevelUp{})
+				
+			fmt.Println(deleted, err)
 			utils.CheckErr(err)
 		}
 	}
