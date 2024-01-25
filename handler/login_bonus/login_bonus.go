@@ -6,8 +6,8 @@ import (
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/handler/common"
-	"elichika/login_bonus"
 	"elichika/router"
+	"elichika/subsystem/login_bonus"
 	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"

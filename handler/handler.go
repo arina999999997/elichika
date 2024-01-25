@@ -51,6 +51,8 @@ import (
 	_ "elichika/handler/training_tree"
 	_ "elichika/handler/tutorial"
 	_ "elichika/handler/unlock_scene"
+	_ "elichika/handler/user"
 	_ "elichika/handler/user_account_deletion"
 	_ "elichika/handler/user_profile"
+	_ "elichika/handler/voltage_ranking"
 )

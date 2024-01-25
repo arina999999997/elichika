@@ -8,6 +8,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/klab"
+	"elichika/subsystem/user_status"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -58,7 +59,7 @@ func LiveSkip(ctx *gin.Context) {
 	for i := int32(1); i <= req.TicketUseCount; i++ {
 		resp.SkipLiveResult.Drops.Append(client.LiveResultContentPack{})
 	}
-	session.UserStatus.Exp += resp.SkipLiveResult.GainUserExp
+	user_status.AddUserExp(session, resp.SkipLiveResult.GainUserExp)
 
 	deck := session.GetUserLiveDeck(req.DeckId)
 	cardMasterIds := []int32{}

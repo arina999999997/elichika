@@ -1,8 +1,6 @@
 package client
 
-// is same as VoltageRankingUser
-
-type TowerRankingUser struct {
+type VoltageRankingUser struct {
 	UserId                 int32         `json:"user_id"`
 	UserName               LocalizedText `json:"user_name"`
 	UserRank               int32         `json:"user_rank"`

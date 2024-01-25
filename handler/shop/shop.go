@@ -66,7 +66,7 @@ func FetchShopSnsCoin(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.UserModel.UserStatus.FreeSnsCoin += 10000
-	
+
 	session.Finalize()
 	common.JsonResponse(ctx, &response.FetchShopSnsCoinResponse{})
 }

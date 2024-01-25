@@ -66,11 +66,11 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 			LoginDays:                                 1221,
 			NaviTapRecoverAt:                          1688137200,
 			LessonResumeStatus:                        1,
-			AccessoryBoxAdditional:                    400,
-			TermsOfUseVersion:                         2,
-			BootstrapSifidCheckAt:                     1692471111782,
-			GdprVersion:                               4,
-			MemberGuildLastUpdatedAt:                  1659485328,
+			// AccessoryBoxAdditional:                    400,
+			TermsOfUseVersion:        2,
+			BootstrapSifidCheckAt:    1692471111782,
+			GdprVersion:              4,
+			MemberGuildLastUpdatedAt: 1659485328,
 		}
 		status.Name.DotUnderText = "Newcomer"
 		status.Nickname.DotUnderText = "Newcomer"
@@ -207,7 +207,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 	{ // lesson deck
 
 		lessonDecks := []client.UserLessonDeck{}
-		
+
 		cid := [10]generic.Nullable[int32]{}
 		// this order isn't actually correct to the official server
 		for j := 1; j <= 9; j++ {
@@ -221,15 +221,15 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				lessonDecks = append(lessonDecks, client.UserLessonDeck{
 					UserLessonDeckId: int32(i),
 					Name:             fmt.Sprintf(dictionary.Resolve("k.m_sorter_deck_lesson")+" %d", i),
-					CardMasterId1: cid[1],
-					CardMasterId2: cid[2],
-					CardMasterId3: cid[3],
-					CardMasterId4: cid[4],
-					CardMasterId5: cid[5],
-					CardMasterId6: cid[6],
-					CardMasterId7: cid[7],
-					CardMasterId8: cid[8],
-					CardMasterId9: cid[9],
+					CardMasterId1:    cid[1],
+					CardMasterId2:    cid[2],
+					CardMasterId3:    cid[3],
+					CardMasterId4:    cid[4],
+					CardMasterId5:    cid[5],
+					CardMasterId6:    cid[6],
+					CardMasterId7:    cid[7],
+					CardMasterId8:    cid[8],
+					CardMasterId9:    cid[9],
 				})
 			} else {
 				lessonDecks = append(lessonDecks, client.UserLessonDeck{

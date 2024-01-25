@@ -24,7 +24,7 @@ func TriggerReadCardGradeUp(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	session.RemoveTriggerCardGradeUp(req.TriggerId)
-	
+
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,

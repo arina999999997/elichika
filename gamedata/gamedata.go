@@ -119,6 +119,9 @@ type Gamedata struct {
 	TradeProduct map[int32]*client.TradeProduct
 
 	LoginBonus map[int32]*LoginBonus
+
+	UserRank    map[int32]*UserRank
+	UserRankMax int32
 }
 
 func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {

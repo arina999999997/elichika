@@ -261,7 +261,7 @@ func AccessoryAllUnequip(ctx *gin.Context) {
 		}
 		session.UpdateUserLiveParty(liveParty)
 	}
-	
+
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,

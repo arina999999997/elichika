@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 )
 
+// TODO(multiplayer): This only work for single player
 func (session *Session) GetTowerRankingUser() client.TowerRankingUser {
 	card := session.GetUserCard(session.UserStatus.RecommendCardMasterId)
 	return client.TowerRankingUser{

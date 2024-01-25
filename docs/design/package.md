@@ -34,8 +34,6 @@ These are the packages with functionaly outside of the common request handling s
 
 ## Subsystem layers
 - elichika/userdata: This is a mix of subsystem and database, the code should be split more cleanly. 
-- elichika/gacha: Implement the gacha subsystem.
-- elichika/login_bonus: Implement the login bonus subsystem.
 - elichika/subsystem/*: Implement the relevant subsystems.
 
     - Maybe the naming can be a bit better.

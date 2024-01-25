@@ -220,10 +220,10 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /tutorial/timingAdjusterEnd
 - [x] /tutorial/tutorialSkip
 - [x] /unlockScene/saveUnlockedScene
-- [ ] /user/addAccessoryBoxLimit
+- [x] /user/addAccessoryBoxLimit
 - [ ] /user/recoverAp
-- [ ] /user/recoverLp
-- [ ] /user/recoverLpSubscription
+- [x] /user/recoverLp
+- [x] /user/recoverLpSubscription
 - [x] /userAccountDeletion/checkUserAccountDeleted
 - [ ] /userAccountDeletion/deleteUserAccount
 - [ ] /userProfile/fetchDeck
@@ -233,5 +233,5 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /userProfile/setProfileBirthday
 - [x] /userProfile/setRecommendCard
 - [x] /userProfile/setScoreLive
-- [ ] /voltageRanking/getVoltageRanking
+- [x] /voltageRanking/getVoltageRanking
 - [ ] /voltageRanking/getVoltageRankingDeck

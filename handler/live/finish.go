@@ -9,6 +9,7 @@ import (
 	"elichika/handler/common"
 	"elichika/klab"
 	"elichika/subsystem/user_profile"
+	"elichika/subsystem/user_status"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -29,7 +30,6 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 			LiveDeckId:             session.UserStatus.LatestLiveDeckId,
 			Voltage:                req.LiveScore.CurrentScore,
 			BeforeUserExp:          session.UserStatus.Exp,
-			GainUserExp:  liveDifficulty.RewardUserExp,
 			LiveFinishStatus:       req.LiveFinishStatus,
 		},
 		UserModelDiff: &session.UserModel,
@@ -125,7 +125,8 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 				}
 			}
 		}
-		session.UserStatus.Exp += resp.LiveResult.GainUserExp
+		resp.LiveResult.GainUserExp = liveDifficulty.RewardUserExp
+		user_status.AddUserExp(session, resp.LiveResult.GainUserExp)
 	}
 
 	resp.LiveResult.LastBestVoltage = userLiveDifficulty.MaxScore
@@ -313,8 +314,10 @@ func LiveFinish(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
+
 	exist, live, startReq := session.LoadUserLive()
 	utils.MustExist(exist)
+
 	switch live.LiveType {
 	case enum.LiveTypeManual:
 		handleLiveTypeManual(ctx, req, session, live, startReq)

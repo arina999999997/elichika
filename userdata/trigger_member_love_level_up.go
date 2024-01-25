@@ -28,7 +28,7 @@ func triggerMemberLoveLevelUpFinalizer(session *Session) {
 			deleted, err := session.Db.Table("u_info_trigger_member_love_level_up").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
 				Delete(&client.UserInfoTriggerMemberLoveLevelUp{})
-				
+
 			fmt.Println(deleted, err)
 			utils.CheckErr(err)
 		}
