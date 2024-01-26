@@ -1,12 +1,12 @@
 package voltage_ranking
 
 import (
+	"elichika/client"
 	"elichika/client/response"
 	"elichika/subsystem/cache"
 	"elichika/subsystem/user_profile"
 	"elichika/userdata"
 	"elichika/utils"
-	"elichika/client"
 )
 
 var (
@@ -20,8 +20,7 @@ func GetVoltageRankingResponse(session *userdata.Session, liveDifficultyId int32
 	if cacher.ExpireAt > session.Time.Unix() {
 		return cacher.Value
 	}
-	// TODO(hardcoded): Maybe make these setting tunable
-	cacher.ExpireAt = session.Time.Unix() + 60 // 1 minute of cache
+	cacher.ExpireAt = session.Time.Unix() + VoltageRankingCache
 	cacher.Value = getVoltageRankingResponseNoCache(session, liveDifficultyId)
 	return cacher.Value
 }
@@ -30,18 +29,18 @@ func getVoltageRankingResponseNoCache(session *userdata.Session, liveDifficultyI
 	resp := response.GetVoltageRankingResponse{}
 
 	type userIdScore struct {
-		UserId int32 
-		MaxScore int32
+		UserId       int32
+		VoltagePoint int32
 	}
 	records := []userIdScore{}
-	err := session.Db.Table("u_live_difficulty").Where("live_difficulty_id = ?", liveDifficultyId).
-		OrderBy("max_score DESC").Limit(100).Find(&records)
+	err := session.Db.Table("u_voltage_ranking").Where("live_difficulty_id = ?", liveDifficultyId).
+		OrderBy("voltage_point DESC").Limit(VoltageRankingLimit).Find(&records)
 	utils.CheckErr(err)
 
 	for i, record := range records {
 		resp.VoltageRankingCells.Append(client.VoltageRankingCell{
 			Order:              int32(i + 1),
-			VoltagePoint:       record.MaxScore,
+			VoltagePoint:       record.VoltagePoint,
 			VoltageRankingUser: user_profile.GetVoltageRankingUser(session, record.UserId),
 		})
 	}

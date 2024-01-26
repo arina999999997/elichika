@@ -8,8 +8,10 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/klab"
+	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
+	"elichika/subsystem/voltage_ranking"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -103,6 +105,57 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		userLiveDifficulty.ClearCount++
 		if userLiveDifficulty.MaxScore < req.LiveScore.CurrentScore {
 			userLiveDifficulty.MaxScore = req.LiveScore.CurrentScore
+			// update voltage ranking
+			userVoltageRanking := voltage_ranking.UserVoltageRanking{
+				UserId:           session.UserId,
+				LiveDifficultyId: userLiveDifficulty.LiveDifficultyId,
+				VoltagePoint:     req.LiveScore.CurrentScore,
+				DeckDetail: client.OtherUserDeckDetail{
+					Deck: client.OtherUserDeck{
+						Name: userLiveDeck.Name,
+					},
+				},
+			}
+
+			for _, liveParty := range liveParties {
+				otherUserParty := client.OtherUserParty{
+					Id: liveParty.PartyId,
+				}
+				otherUserParty.CardIds.Append(liveParty.CardMasterId1.Value)
+				otherUserParty.CardIds.Append(liveParty.CardMasterId2.Value)
+				otherUserParty.CardIds.Append(liveParty.CardMasterId3.Value)
+				if liveParty.UserAccessoryId1.HasValue {
+					otherUserParty.Accessories.Append(session.GetUserAccessory(liveParty.UserAccessoryId1.Value).ToOtherUserAccessory())
+				}
+				if liveParty.UserAccessoryId2.HasValue {
+					otherUserParty.Accessories.Append(session.GetUserAccessory(liveParty.UserAccessoryId2.Value).ToOtherUserAccessory())
+				}
+				if liveParty.UserAccessoryId3.HasValue {
+					otherUserParty.Accessories.Append(session.GetUserAccessory(liveParty.UserAccessoryId3.Value).ToOtherUserAccessory())
+				}
+				userVoltageRanking.DeckDetail.Deck.Parties.Append(otherUserParty)
+			}
+			for i := 1; i <= 9; i++ {
+				cardMasterId := reflect.ValueOf(userLiveDeck).Field(1 + i).Interface().(generic.Nullable[int32]).Value
+				suitMasterId := reflect.ValueOf(userLiveDeck).Field(1 + i + 9).Interface().(generic.Nullable[int32]).Value
+				memberId := gamedata.Card[cardMasterId].Member.Id
+				if !userVoltageRanking.DeckDetail.MemberLoveLevels.Has(memberId) {
+					userVoltageRanking.DeckDetail.MemberLoveLevels.Set(memberId, session.GetMember(memberId).LoveLevel)
+				}
+				// no idea why the necessary stuff is like this, bad client code maybe
+				otherUserCard := user_card.GetOtherUserCard(session, session.UserId, cardMasterId)
+				for j := otherUserCard.AdditionalPassiveSkillIds.Size(); j < 9; j++ {
+					otherUserCard.AdditionalPassiveSkillIds.Append(0) // this is the official server behaviour
+				}
+				otherUserCard.LoveLevel = *userVoltageRanking.DeckDetail.MemberLoveLevels.GetOnly(memberId)
+
+				userVoltageRanking.DeckDetail.Deck.Cards.Append(otherUserCard)
+				userVoltageRanking.DeckDetail.Deck.CardIds.Append(cardMasterId)
+				userVoltageRanking.DeckDetail.Deck.SuitMasterIds.Append(suitMasterId)
+			}
+
+			voltage_ranking.SetVoltageRanking(session, userVoltageRanking)
+
 		}
 		if userLiveDifficulty.MaxCombo < req.LiveScore.HighestComboCount {
 			userLiveDifficulty.MaxCombo = req.LiveScore.HighestComboCount

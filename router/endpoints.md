@@ -234,4 +234,4 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /userProfile/setRecommendCard
 - [x] /userProfile/setScoreLive
 - [x] /voltageRanking/getVoltageRanking
-- [ ] /voltageRanking/getVoltageRankingDeck
+- [x] /voltageRanking/getVoltageRankingDeck
