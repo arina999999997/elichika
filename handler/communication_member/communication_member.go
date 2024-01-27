@@ -9,12 +9,12 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/time"
 	"elichika/subsystem/user_card"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -33,13 +33,7 @@ func FetchCommunicationMemberDetail(ctx *gin.Context) {
 	resp := response.FetchCommunicationMemberDetailResponse{}
 	resp.MemberLovePanels.Append(session.GetMemberLovePanel(req.MemberId))
 
-	year, month, day := session.Time.Date()
-	tomorrow := time.Date(year, month, day+1, 0, 0, 0, 0, session.Time.Location()).Unix()
-	resp.WeekdayState.Weekday = int32(session.Time.Weekday())
-	if resp.WeekdayState.Weekday == 0 {
-		resp.WeekdayState.Weekday = 7
-	}
-	resp.WeekdayState.NextWeekdayAt = tomorrow
+	resp.WeekdayState = time.GetWeekdayState(session)
 	common.JsonResponse(ctx, resp)
 }
 

@@ -6,7 +6,6 @@ import (
 	"elichika/client/response"
 	"elichika/config"
 	"elichika/enum"
-	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
@@ -21,48 +20,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func FetchLiveMusicSelect(ctx *gin.Context) {
-	// ther is no request body
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	now := time.Now()
-	year, month, day := now.Year(), now.Month(), now.Day()
-	tomorrow := time.Date(year, month, day+1, 0, 0, 0, 0, now.Location()).Unix()
-
-	weekday := int32(now.Weekday())
-	if weekday == 0 {
-		weekday = 7
-	}
-	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
-
-	resp := response.FetchLiveMusicSelectResponse{
-		WeekdayState: client.WeekdayState{
-			Weekday:       weekday,
-			NextWeekdayAt: tomorrow,
-		},
-		UserModelDiff: &session.UserModel,
-	}
-	for _, liveDaily := range gamedata.LiveDaily {
-		if liveDaily.Weekday != weekday {
-			continue
-		}
-		resp.LiveDailyList.Append(client.LiveDaily{
-			LiveDailyMasterId:      liveDaily.Id,
-			LiveMasterId:           liveDaily.LiveId,
-			EndAt:                  tomorrow,
-			RemainingPlayCount:     5, // this is not kept track of
-			RemainingRecoveryCount: generic.NewNullable(int32(10)),
-		})
-	}
-
-	session.Finalize()
-	common.JsonResponse(ctx, &resp)
-}
-
-func LiveStart(ctx *gin.Context) {
+func start(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.StartLiveRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -128,10 +86,5 @@ func LiveStart(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/fetchLiveMusicSelect", FetchLiveMusicSelect)
-	router.AddHandler("/live/start", LiveStart)
-	router.AddHandler("/live/finish", LiveFinish)
-	router.AddHandler("/live/skip", LiveSkip)
-	router.AddHandler("/live/updatePlayList", LiveUpdatePlayList)
-	router.AddHandler("/live/finishTutorial", LiveFinish) // this works
+	router.AddHandler("/live/start", start)
 }

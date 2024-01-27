@@ -13,15 +13,15 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /accessory/updateIsLock
 - [x] /accessory/updateIsNew
 - [x] /asset/getPackUrl
-- [ ] /billing/applePurchase
+- [ ] (not necessary) /billing/applePurchase 
 - [x] /billing/fetchBillingHistory
-- [ ] /billing/googlePurchase
-- [ ] /billing/prePurchase
-- [ ] /billing/purchaseSubscriptionTrial
-- [ ] /billing/restoreAppleSubscription
-- [ ] /billing/restoreGoogleSubscription
-- [ ] /billing/saveOperationLog
-- [ ] /billing/saveUserBirth
+- [ ] (not necessary) /billing/googlePurchase
+- [ ] (not necessary) /billing/prePurchase
+- [ ] (not necessary) /billing/purchaseSubscriptionTrial
+- [ ] (not necessary) /billing/restoreAppleSubscription
+- [ ] (not necessary) /billing/restoreGoogleSubscription
+- [ ] (not necessary) /billing/saveOperationLog
+- [ ] (not necessary) /billing/saveUserBirth
 - [x] /billing/updateSubscription
 - [x] /bootstrap/fetchBootstrap
 - [x] /bootstrap/getClearedPlatformAchievement
@@ -29,7 +29,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /card/changeIsAwakeningImage
 - [x] /card/getOtherUserCard
 - [x] /card/updateCardNewFlag
-- [ ] /caution/read
+- [ ] (not necessary) /caution/read
 - [ ] /challenge/fetchBeginner
 - [ ] /challenge/receiveRewardBeginner
 - [x] /communicationMember/fetchCommunicationMemberDetail
@@ -37,15 +37,15 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /communicationMember/finishUserStorySide
 - [x] /communicationMember/setFavoriteMember
 - [x] /communicationMember/setTheme
-- [ ] /communicationMember/updateUserCardNewFlag
+- [ ] (not necessary) /communicationMember/updateUserCardNewFlag
 - [x] /communicationMember/updateUserCommunicationMemberDetailBadge       
-- [ ] /communicationMember/updateUserCustomBackgroundNewFlag
+- [ ] (not necessary) /communicationMember/updateUserCustomBackgroundNewFlag
 - [x] /communicationMember/updateUserLiveDifficultyNewFlag
-- [ ] /communicationMember/updateUserStoryMemberNewFlag
-- [ ] /communicationMember/updateUserStorySideNewFlag
-- [ ] /communicationMember/updateUserSuitNewFlag
-- [ ] /communicationMember/updateUserThemeNewFlag
-- [ ] /communicationMember/updateUserVoiceNewFlag
+- [ ] (not necessary) /communicationMember/updateUserStoryMemberNewFlag
+- [ ] (not necessary) /communicationMember/updateUserStorySideNewFlag
+- [ ] (not necessary) /communicationMember/updateUserSuitNewFlag
+- [ ] (not necessary) /communicationMember/updateUserThemeNewFlag
+- [ ] (not necessary) /communicationMember/updateUserVoiceNewFlag
 - [ ] /coop/login
 - [ ] /coopLive/create
 - [ ] /coopLive/createRoom
@@ -60,19 +60,19 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /dailyTheater/setLike
 - [x] /dailyTheaterArchive/fetchDailyTheaterArchive
 - [x] /dataLink/fetchDataLinks
-- [ ] /dataLink/fetchGameServiceData
-- [ ] /dataLink/fetchGameServiceDataBeforeLogin
-- [ ] /dataLink/fetchSchoolIdolFestivalIdDataAfterLogin
-- [ ] /dataLink/fetchSchoolIdolFestivalIdDataBeforeLogin
-- [ ] /dataLink/linkGameService
-- [ ] /dataLink/linkOnStartUpGameService
-- [ ] /dataLink/linkSchoolIdolFestivalId
-- [ ] /dataLink/migrateGameService
-- [ ] /dataLink/migrateGameServiceBeforeLogin
-- [ ] /dataLink/migrateSchoolIdolFestivalId
-- [ ] /dataLink/migrateSchoolIdolFestivalIdBeforeLogin
-- [ ] /dataLink/unlinkGameService
-- [ ] /dataLink/unlinkSchoolIdolFestivalId
+- [ ] (not necessary) /dataLink/fetchGameServiceData
+- [ ] (not necessary) /dataLink/fetchGameServiceDataBeforeLogin
+- [ ] (not necessary) /dataLink/fetchSchoolIdolFestivalIdDataAfterLogin
+- [ ] (not necessary) /dataLink/fetchSchoolIdolFestivalIdDataBeforeLogin
+- [ ] (not necessary) /dataLink/linkGameService
+- [ ] (not necessary) /dataLink/linkOnStartUpGameService
+- [ ] (not necessary) /dataLink/linkSchoolIdolFestivalId
+- [ ] (not necessary) /dataLink/migrateGameService
+- [ ] (not necessary) /dataLink/migrateGameServiceBeforeLogin
+- [ ] (not necessary) /dataLink/migrateSchoolIdolFestivalId
+- [ ] (not necessary) /dataLink/migrateSchoolIdolFestivalIdBeforeLogin
+- [ ] (not necessary) /dataLink/unlinkGameService
+- [ ] (not necessary) /dataLink/unlinkSchoolIdolFestivalId
 - [x] /emblem/activateEmblem
 - [x] /emblem/fetchEmblem
 - [x] /emblem/fetchEmblemById
@@ -121,27 +121,27 @@ Also note that some endpoints won't need to be handled at all either because the
 - [ ] /itemDetail/fetchItemDetailRelateLiveList
 - [x] /lesson/changeDeckNameLessonDeck
 - [x] /lesson/executeLesson
-- [ ] /lesson/resetDeck
+- [ ] (not necessary) /lesson/resetDeck
 - [x] /lesson/resultLesson
 - [x] /lesson/saveDeck
 - [x] /lesson/skillEditResult
 - [x] /live/fetchLiveMusicSelect
 - [x] /live/finish
-- [ ] /live/finishTutorial
+- [x] /live/finishTutorial
 - [ ] /live/recoverDailyLiveMusicPlayable
-- [ ] /live/resume
+- [x] /live/resume
 - [x] /live/skip
 - [x] /live/start
-- [ ] /live/surrender
+- [x] /live/surrender
 - [x] /live/updatePlayList
 - [x] /liveDeck/changeDeckNameLiveDeck
-- [ ] /liveDeck/changeNameLiveParty
+- [ ] (not necessary) /liveDeck/changeNameLiveParty
 - [x] /liveDeck/fetchLiveDeckSelect
-- [ ] /liveDeck/resetDeck
+- [ ] (not necessary) /liveDeck/resetDeck
 - [x] /liveDeck/saveDeck
 - [x] /liveDeck/saveDeckAll
-- [ ] /liveDeck/saveOverwriteDeck
-- [ ] /liveDeck/saveSquad
+- [ ] (not necessary) /liveDeck/saveOverwriteDeck
+- [ ] (not necessary) /liveDeck/saveSquad
 - [x] /liveDeck/saveSuit
 - [x] /liveMv/saveDeck
 - [x] /liveMv/start
@@ -151,7 +151,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /login/startup
 - [x] /loginBonus/readLoginBonus
 - [x] /loveRanking/fetch
-- [ ] /member/fetchMemberLovePanel
+- [ ] (not necessary) /member/fetchMemberLovePanel
 - [x] /member/openMemberLovePanel
 - [x] /memberGuild/cheerMemberGuild
 - [x] /memberGuild/fetchMemberGuildRanking
@@ -172,8 +172,8 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /present/fetch
 - [ ] /present/receive
 - [x] /referenceBook/saveReferenceBook
-- [ ] /refundInformation/fetchRefundInformation
-- [ ] /reviewRequest/finishReviewRequestProcessFlow
+- [ ] (not necessary) /refundInformation/fetchRefundInformation
+- [ ] (not necessary) /reviewRequest/finishReviewRequestProcessFlow
 - [ ] /room/
 - [ ] /rooms
 - [ ] /rooms/filter
@@ -182,10 +182,10 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /ruleDescription/saveRuleDescription
 - [x] /sceneTips/saveSceneTipsType
 - [ ] /schoolIdolFestivalIdReward/fetch
-- [ ] /shop/exchangeShopEventExchange
-- [ ] /shop/exchangeShopItemExchange
-- [ ] /shop/fetchShopEventExchange
-- [ ] /shop/fetchShopItemExchange
+- [ ] (not necessary?) /shop/exchangeShopEventExchange
+- [ ] (not necessary) /shop/exchangeShopItemExchange
+- [ ] (not necessary?) /shop/fetchShopEventExchange
+- [ ] (not necessary) /shop/fetchShopItemExchange
 - [x] /shop/fetchShopPack
 - [x] /shop/fetchShopSnsCoin
 - [x] /shop/fetchShopSubscription
@@ -196,7 +196,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [ ] /steadyRanking/selectDifficulty
 - [x] /still/fetch
 - [x] /subscription/fetchSubscriptionPass
-- [ ] /subscription/readContinueReward
+- [ ] (not necessary) /subscription/readContinueReward
 - [x] /takeOver/checkTakeOver
 - [x] /takeOver/setTakeOver
 - [x] /takeOver/updatePassWord
@@ -216,7 +216,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /trainingTree/levelUpCard
 - [x] /tutorial/corePlayableEnd
 - [x] /tutorial/phaseEnd
-- [ ] /tutorial/playableTutorialSkip
+- [ ] (not necessary) /tutorial/playableTutorialSkip
 - [x] /tutorial/timingAdjusterEnd
 - [x] /tutorial/tutorialSkip
 - [x] /unlockScene/saveUnlockedScene
@@ -226,7 +226,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /user/recoverLpSubscription
 - [x] /userAccountDeletion/checkUserAccountDeleted
 - [ ] /userAccountDeletion/deleteUserAccount
-- [ ] /userProfile/fetchDeck
+- [ ] (not necessary?) /userProfile/fetchDeck
 - [x] /userProfile/fetchProfile
 - [x] /userProfile/setCommboLive
 - [x] /userProfile/setProfile

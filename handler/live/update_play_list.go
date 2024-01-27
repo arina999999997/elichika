@@ -5,6 +5,7 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
+	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func LiveUpdatePlayList(ctx *gin.Context) {
+func updatePlayList(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UpdatePlayListRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -39,4 +40,8 @@ func LiveUpdatePlayList(ctx *gin.Context) {
 		IsSuccess:     true,
 		UserModelDiff: &session.UserModel,
 	})
+}
+
+func init() {
+	router.AddHandler("/live/updatePlayList", updatePlayList)
 }

@@ -1,12 +1,13 @@
 package login
 
 import (
-	// "elichika/client"
+	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/config"
 	"elichika/encrypt"
-	// "elichika/generic"
+	"elichika/enum"
+	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/locale"
 	"elichika/router"
@@ -83,16 +84,22 @@ func Login(ctx *gin.Context) {
 
 	resp := session.Login()
 	resp.SessionKey = LoginSessionKey(req.Mask)
-	// { // TODO(live resume)
-	// 	exist, _, startLiveRequest := session.LoadUserLive()
-	// 	if exist {
-	// 		resp.LiveResume = generic.NewNullable(client.LiveResume{
-	// 			LiveDifficultyId: startLiveRequest.LiveDifficultyId,
-	// 			DeckId:           startLiveRequest.DeckId,
-	// 			ConsumedLp:       0, // this thing is only to show how much lp is spent
-	// 		})
-	// 	}
-	// }
+	{
+		exist, _, startLiveRequest := session.LoadUserLive()
+		if exist {
+			liveDifficulty := session.Gamedata.LiveDifficulty[startLiveRequest.LiveDifficultyId]
+			if (liveDifficulty.UnlockPattern != enum.LiveUnlockPatternCoopOnly) &&
+				(liveDifficulty.UnlockPattern != enum.LiveUnlockPatternTowerOnly) {
+				resp.LiveResume = generic.NewNullable(client.LiveResume{
+					LiveDifficultyId: startLiveRequest.LiveDifficultyId,
+					DeckId:           startLiveRequest.DeckId,
+					ConsumedLp:       liveDifficulty.ConsumedLP, // this thing is only to show how much lp is spent
+				})
+			} else { // just cancel this as it's not a relevant live (event and such)
+				session.ClearUserLive()
+			}
+		}
+	}
 	session.Finalize()
 	common.JsonResponse(ctx, resp)
 

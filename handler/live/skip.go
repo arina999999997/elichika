@@ -8,6 +8,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/klab"
+	"elichika/router"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
 	"elichika/utils"
@@ -19,7 +20,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func LiveSkip(ctx *gin.Context) {
+func skip(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SkipLiveRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -102,4 +103,8 @@ func LiveSkip(ctx *gin.Context) {
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)
+}
+
+func init() {
+	router.AddHandler("/live/skip", skip)
 }

@@ -8,6 +8,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/klab"
+	"elichika/router"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
@@ -356,7 +357,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 	common.JsonResponse(ctx, &resp)
 }
 
-func LiveFinish(ctx *gin.Context) {
+func finish(ctx *gin.Context) {
 	// this is pretty different for different type of live
 	// for simplicity we just read the request and call different handlers, even though we might be able to save some extra work
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -370,6 +371,8 @@ func LiveFinish(ctx *gin.Context) {
 
 	exist, live, startReq := session.LoadUserLive()
 	utils.MustExist(exist)
+	session.ClearUserLive()
+	// TODO(lp): Remove LP here if we want that
 
 	switch live.LiveType {
 	case enum.LiveTypeManual:
@@ -379,4 +382,9 @@ func LiveFinish(ctx *gin.Context) {
 	default:
 		panic("not handled")
 	}
+}
+
+func init() {
+	router.AddHandler("/live/finish", finish)
+	router.AddHandler("/live/finishTutorial", finish) // not necessary?
 }
