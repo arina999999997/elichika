@@ -35,11 +35,11 @@ func storySideFinalizer(session *Session) {
 			session.UserId, userStorySide.StorySideMasterId).AllCols().Update(userStorySide)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
-			genericDatabaseInsert(session, "u_story_side", *userStorySide)
+			GenericDatabaseInsert(session, "u_story_side", *userStorySide)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(storySideFinalizer)
+	AddContentFinalizer(storySideFinalizer)
 }

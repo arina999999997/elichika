@@ -1,13 +1,15 @@
-package userdata
+package user_trade
 
 import (
 	"elichika/client"
 	"elichika/generic"
+	"elichika/subsystem/user_content"
+	"elichika/userdata"
 	"elichika/userdata/database"
 	"elichika/utils"
 )
 
-func (session *Session) GetUserTradeProduct(productId int32) int32 {
+func GetUserTradeProduct(session *userdata.Session, productId int32) int32 {
 	result := int32(0)
 	exist, err := session.Db.Table("u_trade_product").
 		Where("user_id = ? AND product_id = ?", session.UserId, productId).
@@ -19,7 +21,7 @@ func (session *Session) GetUserTradeProduct(productId int32) int32 {
 	return result
 }
 
-func (session *Session) SetUserTradeProduct(productId, newTradedCount int32) {
+func SetUserTradeProduct(session *userdata.Session, productId, newTradedCount int32) {
 	record := database.UserTradeProduct{
 		ProductId:   productId,
 		TradedCount: newTradedCount,
@@ -29,16 +31,16 @@ func (session *Session) SetUserTradeProduct(productId, newTradedCount int32) {
 		Update(record)
 	utils.CheckErr(err)
 	if exist == 0 {
-		genericDatabaseInsert(session, "u_trade_product", record)
+		userdata.GenericDatabaseInsert(session, "u_trade_product", record)
 	}
 }
 
-func (session *Session) GetTrades(tradeType int32) generic.Array[client.Trade] {
+func GetTrades(session *userdata.Session, tradeType int32) generic.Array[client.Trade] {
 	trades := generic.Array[client.Trade]{}
 	for _, trade_ptr := range session.Gamedata.TradesByType[tradeType] {
 		trade := *trade_ptr
 		for j, product := range trade.Products.Slice {
-			product.TradedCount = session.GetUserTradeProduct(product.ProductId)
+			product.TradedCount = GetUserTradeProduct(session, product.ProductId)
 			trade.Products.Slice[j] = product
 		}
 		trades.Append(trade)
@@ -47,20 +49,20 @@ func (session *Session) GetTrades(tradeType int32) generic.Array[client.Trade] {
 }
 
 // return whether the item is added to present box
-func (session *Session) ExecuteTrade(productId, tradeCount int32) bool {
+func ExecuteTrade(session *userdata.Session, productId, tradeCount int32) bool {
 	// update count
-	tradedCount := session.GetUserTradeProduct(productId)
+	tradedCount := GetUserTradeProduct(session, productId)
 	tradedCount += tradeCount
-	session.SetUserTradeProduct(productId, tradedCount)
+	SetUserTradeProduct(session, productId, tradedCount)
 
 	// award items and take away source item
 	product := session.Gamedata.TradeProduct[productId]
 	trade := session.Gamedata.Trade[product.TradeId]
 	for _, content := range product.Contents.Slice {
 		content.ContentAmount *= int32(tradeCount)
-		session.AddContent(content)
+		user_content.AddContent(session, content)
 	}
-	session.RemoveContent(client.Content{
+	user_content.RemoveContent(session, client.Content{
 		ContentType:   trade.SourceContentType,
 		ContentId:     trade.SourceContentId,
 		ContentAmount: product.SourceAmount * tradeCount,

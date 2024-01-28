@@ -53,7 +53,6 @@ func start(ctx *gin.Context) {
 
 	if req.LiveTowerStatus.HasValue {
 		// is tower live, fetch this tower
-		// TODO: fetch from database instead
 		userTower := session.GetUserTower(req.LiveTowerStatus.Value.TowerId)
 		reqTower := &req.LiveTowerStatus.Value
 		if userTower.ReadFloor != reqTower.FloorNo {

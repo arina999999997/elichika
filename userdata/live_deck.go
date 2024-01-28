@@ -30,7 +30,7 @@ func liveDeckFinalizer(session *Session) {
 			Update(*deck)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_live_deck", *deck)
+			GenericDatabaseInsert(session, "u_live_deck", *deck)
 		}
 	}
 }
@@ -42,5 +42,5 @@ func (session *Session) InsertLiveDecks(decks []client.UserLiveDeck) {
 }
 
 func init() {
-	addFinalizer(liveDeckFinalizer)
+	AddContentFinalizer(liveDeckFinalizer)
 }

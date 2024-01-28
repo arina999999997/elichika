@@ -8,6 +8,8 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -38,14 +40,14 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 	// remove resource
 	for _, cellId := range req.MemberLovePanelCellIds.Slice {
 		for _, resource := range session.Gamedata.MemberLovePanelCell[cellId].Resources {
-			session.RemoveContent(resource)
+			user_content.RemoveContent(session, resource)
 		}
 	}
 
 	// if is full panel, then we have to send a basic info trigger to actually open up the next panel
 	unlockCount := panel.MemberLovePanelCellIds.Size()
 	if unlockCount%5 == 0 {
-		member := session.GetMember(panel.MemberId)
+		member := user_member.GetMember(session, panel.MemberId)
 		masterLovePanel := session.Gamedata.MemberLovePanel[req.MemberLovePanelId]
 		if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
 			session.AddTriggerBasic(client.UserInfoTriggerBasic{

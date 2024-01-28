@@ -8,6 +8,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -59,9 +60,9 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 	for pos, viewStatus := range req.ViewStatusByPos.Map {
 		memberId := req.MemberMasterIdByPos.GetOnly(pos)
 		if *memberId == enum.MemberMasterIdRina {
-			RinaChan := session.GetMember(enum.MemberMasterIdRina)
+			RinaChan := user_member.GetMember(session, enum.MemberMasterIdRina)
 			RinaChan.ViewStatus = *viewStatus
-			session.UpdateMember(RinaChan)
+			user_member.UpdateMember(session, RinaChan)
 		}
 	}
 

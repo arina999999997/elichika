@@ -5,6 +5,7 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 
 	"time"
@@ -51,7 +52,7 @@ func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *ga
 	target.LoginBonuses.Append(naviLoginBonus)
 	for _, content := range loginBonus.LoginBonusRewards.Slice[userLoginBonus.LastReceivedReward].LoginBonusContents.Slice {
 		// TODO(present_box): This correctly has to go to the present box, but we just do it here
-		session.AddContent(content)
+		user_content.AddContent(session, content)
 	}
 	session.UpdateUserLoginBonus(userLoginBonus)
 }

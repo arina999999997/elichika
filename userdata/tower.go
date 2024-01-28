@@ -33,7 +33,7 @@ func (session *Session) UpdateUserTowerCardUsed(towerId int32, card client.Tower
 			Card    client.TowerCardUsedCount `xorm:"extends"`
 			TowerId int32                     `xorm:"pk 'tower_id'"`
 		}
-		genericDatabaseInsert(session, "u_tower_card_used_count", Wrapper{
+		GenericDatabaseInsert(session, "u_tower_card_used_count", Wrapper{
 			Card:    card,
 			TowerId: towerId,
 		})
@@ -109,7 +109,7 @@ func (session *Session) UpdateUserTowerVoltageRankingScore(score database.UserTo
 		Update(score)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_tower_voltage_ranking_score", score)
+		GenericDatabaseInsert(session, "u_tower_voltage_ranking_score", score)
 	}
 }
 
@@ -133,11 +133,11 @@ func towerFinalizer(session *Session) {
 			AllCols().Update(*userTower)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_tower", *userTower)
+			GenericDatabaseInsert(session, "u_tower", *userTower)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(towerFinalizer)
+	AddContentFinalizer(towerFinalizer)
 }

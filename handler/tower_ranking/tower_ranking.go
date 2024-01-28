@@ -27,7 +27,7 @@ func FetchTowerRanking(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	// // TODO(multiplayer ranking): return actual data for this
+	// TODO(multiplayer ranking): return actual data for this
 	resp := response.FetchTowerRankingResponse{}
 	resp.TopRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
 	resp.MyRankingCells.Append(session.GetTowerRankingCell(req.TowerId))

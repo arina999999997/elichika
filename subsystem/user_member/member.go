@@ -1,15 +1,17 @@
-package userdata
+package user_member
 
 import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/subsystem/user_content"
+	"elichika/userdata"
 	"elichika/utils"
 
 	"fmt"
 )
 
-func (session *Session) GetMember(memberMasterId int32) client.UserMember {
+func GetMember(session *userdata.Session, memberMasterId int32) client.UserMember {
 	ptr, exist := session.UserModel.UserMemberByMemberId.Get(memberMasterId)
 	if exist {
 		return *ptr
@@ -25,28 +27,17 @@ func (session *Session) GetMember(memberMasterId int32) client.UserMember {
 	return member
 }
 
-func (session *Session) UpdateMember(member client.UserMember) {
+func UpdateMember(session *userdata.Session, member client.UserMember) {
 	session.UserModel.UserMemberByMemberId.Set(member.MemberMasterId, member)
 }
 
-func (session *Session) InsertMembers(members []client.UserMember) {
+func InsertMembers(session *userdata.Session, members []client.UserMember) {
 	for _, member := range members {
-		session.UpdateMember(member)
+		UpdateMember(session, member)
 	}
 }
 
-func memberFinalizer(session *Session) {
-	for _, member := range session.UserModel.UserMemberByMemberId.Map {
-		affected, err := session.Db.Table("u_member").
-			Where("user_id = ? AND member_master_id = ?", session.UserId, member.MemberMasterId).AllCols().Update(*member)
-		utils.CheckErr(err)
-		if affected == 0 {
-			genericDatabaseInsert(session, "u_member", *member)
-		}
-	}
-}
-
-func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int32) client.UserCommunicationMemberDetailBadge {
+func GetUserCommunicationMemberDetailBadge(session *userdata.Session, memberMasterId int32) client.UserCommunicationMemberDetailBadge {
 	ptr, exist := session.UserModel.UserCommunicationMemberDetailBadgeById.Get(memberMasterId)
 	if exist {
 		return *ptr
@@ -62,11 +53,11 @@ func (session *Session) GetUserCommunicationMemberDetailBadge(memberMasterId int
 	return badge
 }
 
-func (session *Session) UpdateUserCommunicationMemberDetailBadge(badge client.UserCommunicationMemberDetailBadge) {
+func UpdateUserCommunicationMemberDetailBadge(session *userdata.Session, badge client.UserCommunicationMemberDetailBadge) {
 	session.UserModel.UserCommunicationMemberDetailBadgeById.Set(badge.MemberMasterId, badge)
 }
 
-func communicationMemberDetailBadgeFinalizer(session *Session) {
+func communicationMemberDetailBadgeFinalizer(session *userdata.Session) {
 	// TODO: this is only handled on the read side, new items won't change the badge
 	for _, detailBadge := range session.UserModel.UserCommunicationMemberDetailBadgeById.Map {
 		affected, err := session.Db.Table("u_communication_member_detail_badge").
@@ -74,14 +65,14 @@ func communicationMemberDetailBadgeFinalizer(session *Session) {
 			AllCols().Update(*detailBadge)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_communication_member_detail_badge", *detailBadge)
+			userdata.GenericDatabaseInsert(session, "u_communication_member_detail_badge", *detailBadge)
 		}
 	}
 }
 
 // add love point and return the love point added (in case maxed out)
-func (session *Session) AddLovePoint(memberId, point int32) int32 {
-	member := session.GetMember(memberId)
+func AddLovePoint(session *userdata.Session, memberId, point int32) int32 {
+	member := GetMember(session, memberId)
 	if point > member.LovePointLimit-member.LovePoint {
 		point = member.LovePointLimit - member.LovePoint
 	}
@@ -94,7 +85,7 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 		masterMember := session.Gamedata.Member[memberId]
 		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
 			for _, reward := range masterMember.LoveLevelRewards[loveLevel] {
-				session.AddContent(reward)
+				user_content.AddContent(session, reward)
 			}
 		}
 
@@ -119,11 +110,6 @@ func (session *Session) AddLovePoint(memberId, point int32) int32 {
 			BeforeLoveLevel: member.LoveLevel - 1})
 
 	}
-	session.UpdateMember(member)
+	UpdateMember(session, member)
 	return point
-}
-
-func init() {
-	addFinalizer(memberFinalizer)
-	addFinalizer(communicationMemberDetailBadgeFinalizer)
 }

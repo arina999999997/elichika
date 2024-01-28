@@ -13,10 +13,10 @@ func (session *Session) UnlockEventStory(eventStoryMasterId int32) {
 
 func eventStoryFinalizer(session *Session) {
 	for _, userStoryEventHistory := range session.UserModel.UserStoryEventHistoryById.Map {
-		genericDatabaseInsert(session, "u_story_event_history", *userStoryEventHistory)
+		GenericDatabaseInsert(session, "u_story_event_history", *userStoryEventHistory)
 	}
 }
 
 func init() {
-	addFinalizer(eventStoryFinalizer)
+	AddContentFinalizer(eventStoryFinalizer)
 }

@@ -6,7 +6,11 @@ import (
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/handler/common"
+	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -47,10 +51,10 @@ func LevelUpCard(ctx *gin.Context) {
 
 	cardLevel := session.Gamedata.CardLevel[session.Gamedata.Card[req.CardMasterId].CardRarityType]
 	card := session.GetUserCard(req.CardMasterId)
-	session.RemoveGameMoney(int32(
-		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.GameMoneyPrefixSum[card.Level]))
-	session.RemoveCardExp(int32(
-		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel] - cardLevel.ExpPrefixSum[card.Level]))
+	user_content.RemoveContent(session, item.Gold.Amount(int32(
+		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel]-cardLevel.GameMoneyPrefixSum[card.Level])))
+	user_content.RemoveContent(session, item.EXP.Amount(int32(
+		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel]-cardLevel.ExpPrefixSum[card.Level])))
 	card.Level += req.AdditionalLevel
 	session.UpdateUserCard(card)
 
@@ -72,7 +76,7 @@ func GradeUpCard(ctx *gin.Context) {
 
 	masterCard := session.Gamedata.Card[req.CardMasterId]
 	card := session.GetUserCard(req.CardMasterId)
-	member := session.GetMember(*masterCard.MemberMasterId)
+	member := user_member.GetMember(session, *masterCard.MemberMasterId)
 
 	card.Grade++
 	currentLoveLevel := session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
@@ -84,8 +88,8 @@ func GradeUpCard(ctx *gin.Context) {
 	member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[currentLoveLevel]
 	session.UpdateUserCard(card)
 	member.IsNew = true
-	session.UpdateMember(member)
-	session.RemoveContent(masterCard.CardGradeUpItem[card.Grade][req.ContentId])
+	user_member.UpdateMember(session, member)
+	user_content.RemoveContent(session, masterCard.CardGradeUpItem[card.Grade][req.ContentId])
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break
@@ -122,7 +126,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		cell := &cellContents[cellId]
 		// consume practice items
 		for _, resource := range cell.TrainingTreeCellItemSet.Resources {
-			session.RemoveContent(resource)
+			user_content.RemoveContent(session, resource)
 		}
 
 		switch int32(cell.TrainingTreeCellType) {
@@ -160,7 +164,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 			}
 		case enum.TrainingTreeCellTypeSuit:
 			// alternative suit is awarded based on amount of tile instead
-			session.InsertUserSuit(trainingTree.SuitMIds[cell.TrainingContentNo])
+			user_suit.InsertUserSuit(session, trainingTree.SuitMIds[cell.TrainingContentNo])
 		case enum.TrainingTreeCellTypeCardActiveSkillOriginIncrease: // skill
 			card.ActiveSkillLevel++
 		case enum.TrainingTreeCellTypeCardPassiveSkillAdditionalExpansionSlot: // insight
@@ -176,7 +180,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 			break
 		}
 		if reward.ActivateNum > int(card.TrainingActivatedCellCount) {
-			session.AddContent(reward.Reward)
+			user_content.AddContent(session, reward.Reward)
 		}
 	}
 
@@ -184,8 +188,8 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 
 	if card.TrainingActivatedCellCount+1 == int32(len(cellContents)) {
 		card.IsAllTrainingActivated = true
-		member := session.GetMember(*masterCard.MemberMasterId)
-		session.UpdateMember(member)
+		member := user_member.GetMember(session, *masterCard.MemberMasterId)
+		user_member.UpdateMember(session, member)
 	}
 
 	session.UpdateUserCard(card)

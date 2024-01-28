@@ -46,7 +46,7 @@ func cardFinalizer(session *Session) {
 			Where("user_id = ? AND card_master_id = ?", session.UserId, card.CardMasterId).AllCols().Update(*card)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_card", *card)
+			GenericDatabaseInsert(session, "u_card", *card)
 		}
 	}
 }
@@ -59,5 +59,5 @@ func (session *Session) InsertCards(cards []client.UserCard) {
 }
 
 func init() {
-	addFinalizer(cardFinalizer)
+	AddContentFinalizer(cardFinalizer)
 }

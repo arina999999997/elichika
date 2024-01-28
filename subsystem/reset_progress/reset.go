@@ -1,19 +1,21 @@
-package userdata
+package reset_progress
 
 import (
 	"elichika/item"
+	"elichika/subsystem/user_content"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-func (session *Session) RemoveUserProgress(table string) {
+func RemoveUserProgress(session *userdata.Session, table string) {
 	count, err := session.Db.Table(table).Where("user_id = ?", session.UserId).Delete()
 	utils.CheckErr(err)
 	if table == "u_story_event_history" {
-		session.AddContent(item.MemoryKey.Amount(int32(count)))
+		user_content.AddContent(session, item.MemoryKey.Amount(int32(count)))
 	}
 }
 
-func (session *Session) MarkIsNew(table string, isNew bool) {
+func MarkIsNew(session *userdata.Session, table string, isNew bool) {
 	_, err := session.Db.Table(table).Where("user_id = ?", session.UserId).Update(map[string]interface{}{"is_new": isNew})
 	utils.CheckErr(err)
 

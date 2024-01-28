@@ -1,9 +1,8 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
-	// "elichika/model"
 	"elichika/client"
+	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"

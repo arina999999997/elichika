@@ -10,7 +10,7 @@ func missionFinalizer(session *Session) {
 			session.UserId, userMission.MissionMId).AllCols().Update(*userMission)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_mission", *userMission)
+			GenericDatabaseInsert(session, "u_mission", *userMission)
 		}
 	}
 	for _, userDailyMission := range session.UserModel.UserDailyMissionByMissionId.Map {
@@ -18,7 +18,7 @@ func missionFinalizer(session *Session) {
 			session.UserId, userDailyMission.MissionMId).AllCols().Update(*userDailyMission)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_daily_mission", *userDailyMission)
+			GenericDatabaseInsert(session, "u_daily_mission", *userDailyMission)
 		}
 	}
 	for _, userWeeklyMission := range session.UserModel.UserWeeklyMissionByMissionId.Map {
@@ -26,11 +26,11 @@ func missionFinalizer(session *Session) {
 			session.UserId, userWeeklyMission.MissionMId).AllCols().Update(*userWeeklyMission)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_weekly_mission", *userWeeklyMission)
+			GenericDatabaseInsert(session, "u_weekly_mission", *userWeeklyMission)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(missionFinalizer)
+	AddContentFinalizer(missionFinalizer)
 }

@@ -40,7 +40,7 @@ func finalizeMemberLovePanelDiffs(session *Session) {
 				session.MemberLovePanels[i].MemberId).AllCols().Update(session.MemberLovePanels[i])
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_member_love_panel", session.MemberLovePanels[i])
+			GenericDatabaseInsert(session, "u_member_love_panel", session.MemberLovePanels[i])
 		}
 	}
 }
@@ -52,7 +52,7 @@ func memberLovePanelPopulator(session *Session) {
 }
 
 func init() {
-	addPopulator(memberLovePanelPopulator)
+	AddContentPopulator(memberLovePanelPopulator)
 	// TODO: separate the database so we can use this finalizer instead of calling it manually
-	// addFinalizer(finalizeMemberLovePanelDiffs)
+	// AddContentFinalizer(finalizeMemberLovePanelDiffs)
 }

@@ -8,6 +8,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -150,7 +151,7 @@ func CheerMemberGuild(ctx *gin.Context) {
 	// remove the items or update the free cheer
 
 	for i := int32(0); i < req.CheerItemAmount.Value; i++ {
-		session.AddContent(item.StarGem.Amount(100))
+		user_content.AddContent(session, item.StarGem.Amount(100))
 		resp.Rewards.Append(item.StarGem.Amount(100))
 	}
 

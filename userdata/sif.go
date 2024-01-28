@@ -12,11 +12,11 @@ func schoolIdolFestivalIdRewardMissionFinalizer(session *Session) {
 			AllCols().Update(*userSchoolIdolFestivalIdRewardMissionFinalizer)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_school_idol_festival_id_reward_mission", *userSchoolIdolFestivalIdRewardMissionFinalizer)
+			GenericDatabaseInsert(session, "u_school_idol_festival_id_reward_mission", *userSchoolIdolFestivalIdRewardMissionFinalizer)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(schoolIdolFestivalIdRewardMissionFinalizer)
+	AddContentFinalizer(schoolIdolFestivalIdRewardMissionFinalizer)
 }

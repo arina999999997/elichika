@@ -29,10 +29,10 @@ func voiceFinalizer(session *Session) {
 			session.UserId, userVoice.NaviVoiceMasterId).AllCols().Update(*userVoice)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_voice", *userVoice)
+			GenericDatabaseInsert(session, "u_voice", *userVoice)
 		}
 	}
 }
 func init() {
-	addFinalizer(voiceFinalizer)
+	AddContentFinalizer(voiceFinalizer)
 }

@@ -23,7 +23,7 @@ func triggerMemberLoveLevelUpFinalizer(session *Session) {
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Map {
 		fmt.Println(triggerId, trigger)
 		if trigger != nil {
-			genericDatabaseInsert(session, "u_info_trigger_member_love_level_up", *trigger)
+			GenericDatabaseInsert(session, "u_info_trigger_member_love_level_up", *trigger)
 		} else {
 			deleted, err := session.Db.Table("u_info_trigger_member_love_level_up").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
@@ -44,5 +44,5 @@ func (session *Session) ReadAllMemberLoveLevelUpTriggers() {
 }
 
 func init() {
-	addFinalizer(triggerMemberLoveLevelUpFinalizer)
+	AddContentFinalizer(triggerMemberLoveLevelUpFinalizer)
 }

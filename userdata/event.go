@@ -10,7 +10,7 @@ func userEventFinalizer(session *Session) {
 			session.UserId, userEvent.EventMasterId).AllCols().Update(*userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_event_marathon", *userEvent)
+			GenericDatabaseInsert(session, "u_event_marathon", *userEvent)
 		}
 	}
 	for _, userEvent := range session.UserModel.UserEventMiningByEventMasterId.Map {
@@ -18,7 +18,7 @@ func userEventFinalizer(session *Session) {
 			session.UserId, userEvent.EventMasterId).AllCols().Update(*userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_event_mining", *userEvent)
+			GenericDatabaseInsert(session, "u_event_mining", *userEvent)
 		}
 	}
 	for _, userEvent := range session.UserModel.UserEventCoopByEventMasterId.Map {
@@ -26,10 +26,10 @@ func userEventFinalizer(session *Session) {
 			session.UserId, userEvent.EventMasterId).AllCols().Update(*userEvent)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_event_coop", *userEvent)
+			GenericDatabaseInsert(session, "u_event_coop", *userEvent)
 		}
 	}
 }
 func init() {
-	addFinalizer(userEventFinalizer)
+	AddContentFinalizer(userEventFinalizer)
 }

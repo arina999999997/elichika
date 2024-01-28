@@ -12,11 +12,11 @@ func steadyVoltageRankingFinalizer(session *Session) {
 			AllCols().Update(*userSteadyvoltageRanking)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_steady_voltage_ranking", *userSteadyvoltageRanking)
+			GenericDatabaseInsert(session, "u_steady_voltage_ranking", *userSteadyvoltageRanking)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(steadyVoltageRankingFinalizer)
+	AddContentFinalizer(steadyVoltageRankingFinalizer)
 }

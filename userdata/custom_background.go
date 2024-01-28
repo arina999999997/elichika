@@ -10,10 +10,10 @@ func customBackgroundFinalizer(session *Session) {
 			session.UserId, userCustomBackground.CustomBackgroundMasterId).AllCols().Update(userCustomBackground)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_custom_background", *userCustomBackground)
+			GenericDatabaseInsert(session, "u_custom_background", *userCustomBackground)
 		}
 	}
 }
 func init() {
-	addFinalizer(customBackgroundFinalizer)
+	AddContentFinalizer(customBackgroundFinalizer)
 }

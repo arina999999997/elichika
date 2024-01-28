@@ -35,11 +35,11 @@ func subscriptionStatusFinalizer(session *Session) {
 			AllCols().Update(*userSubscriptionStatus)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_subscription_status", *userSubscriptionStatus)
+			GenericDatabaseInsert(session, "u_subscription_status", *userSubscriptionStatus)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(subscriptionStatusFinalizer)
+	AddContentFinalizer(subscriptionStatusFinalizer)
 }

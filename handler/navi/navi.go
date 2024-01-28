@@ -7,6 +7,7 @@ import (
 	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -46,7 +47,7 @@ func TapLovePoint(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.AddLovePoint(req.MemberMasterId, *config.Conf.TapBondGain)
+	user_member.AddLovePoint(session, req.MemberMasterId, *config.Conf.TapBondGain)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseLovePointUp {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingLevelUp
 	}

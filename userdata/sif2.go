@@ -12,11 +12,11 @@ func sif2DataLinkFinalizer(session *Session) {
 			AllCols().Update(*userSif2DataLink)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_sif_2_data_link", *userSif2DataLink)
+			GenericDatabaseInsert(session, "u_sif_2_data_link", *userSif2DataLink)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(sif2DataLinkFinalizer)
+	AddContentFinalizer(sif2DataLinkFinalizer)
 }

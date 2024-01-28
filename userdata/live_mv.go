@@ -10,7 +10,7 @@ func liveMvFinalizer(session *Session) {
 			session.UserId, userLiveMv.LiveMasterId).AllCols().Update(*userLiveMv)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_live_mv_deck", *userLiveMv)
+			GenericDatabaseInsert(session, "u_live_mv_deck", *userLiveMv)
 		}
 	}
 	for _, userLiveMvCustom := range session.UserModel.UserLiveMvDeckCustomById.Map {
@@ -18,10 +18,10 @@ func liveMvFinalizer(session *Session) {
 			session.UserId, userLiveMvCustom.LiveMasterId).AllCols().Update(*userLiveMvCustom)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_live_mv_deck_custom", *userLiveMvCustom)
+			GenericDatabaseInsert(session, "u_live_mv_deck_custom", *userLiveMvCustom)
 		}
 	}
 }
 func init() {
-	addFinalizer(liveMvFinalizer)
+	AddContentFinalizer(liveMvFinalizer)
 }

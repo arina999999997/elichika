@@ -50,7 +50,7 @@ func livePartyFinalizer(session *Session) {
 			Update(*party)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_live_party", *party)
+			GenericDatabaseInsert(session, "u_live_party", *party)
 		}
 	}
 }
@@ -71,5 +71,5 @@ func (session *Session) InsertLiveParties(parties []client.UserLiveParty) {
 }
 
 func init() {
-	addFinalizer(livePartyFinalizer)
+	AddContentFinalizer(livePartyFinalizer)
 }

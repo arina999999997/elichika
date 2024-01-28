@@ -5,13 +5,13 @@ import (
 )
 
 func IncreaseMemberLoveLevelLimit(session *userdata.Session, memberMasterId, increasedLoveLevel int32) (int32, int32) {
-	member := session.GetMember(memberMasterId)
+	member := GetMember(session, memberMasterId)
 	beforeLoveLevelLimit := session.Gamedata.LoveLevelFromLovePoint(member.LovePointLimit)
 	afterLoveLevelLimit := beforeLoveLevelLimit + increasedLoveLevel
 	if afterLoveLevelLimit > session.Gamedata.MemberLoveLevelCount {
 		afterLoveLevelLimit = session.Gamedata.MemberLoveLevelCount
 	}
 	member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[afterLoveLevelLimit]
-	session.UpdateMember(member)
+	UpdateMember(session, member)
 	return beforeLoveLevelLimit, afterLoveLevelLimit
 }

@@ -20,12 +20,12 @@ func userPlayListFinalizer(session *Session) {
 				Delete(userPlayList)
 			utils.CheckErr(err)
 		} else {
-			genericDatabaseInsert(session, "u_play_list", *userPlayList)
+			GenericDatabaseInsert(session, "u_play_list", *userPlayList)
 		}
 
 	}
 }
 
 func init() {
-	addFinalizer(userPlayListFinalizer)
+	AddContentFinalizer(userPlayListFinalizer)
 }

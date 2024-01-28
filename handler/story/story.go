@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -34,7 +35,7 @@ func FinishStoryMain(ctx *gin.Context) {
 
 	if session.InsertUserStoryMain(req.CellId) { // newly inserted story, award some gem
 		resp.FirstClearReward.Append(item.StarGem.Amount(10))
-		session.AddContent(item.StarGem.Amount(10))
+		user_content.AddContent(session, item.StarGem.Amount(10))
 	}
 	if req.MemberId.HasValue { // has a member -> select member thingy
 		session.UpdateUserStoryMainSelected(req.CellId, req.MemberId.Value)

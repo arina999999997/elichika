@@ -30,11 +30,11 @@ func ruleDescriptionFinalizer(session *Session) {
 				RuleDescriptionId:   ruleDescriptionId,
 				UserRuleDescription: *userRuleDescription,
 			}
-			genericDatabaseInsert(session, "u_rule_description", temp)
+			GenericDatabaseInsert(session, "u_rule_description", temp)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(ruleDescriptionFinalizer)
+	AddContentFinalizer(ruleDescriptionFinalizer)
 }

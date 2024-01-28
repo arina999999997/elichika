@@ -11,6 +11,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_live_deck"
+	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -79,9 +80,9 @@ func SaveSuit(ctx *gin.Context) {
 
 	// Rina-chan board toggle
 	if session.Gamedata.Suit[req.SuitMasterId].Member.Id == enum.MemberMasterIdRina {
-		RinaChan := session.GetMember(enum.MemberMasterIdRina)
+		RinaChan := user_member.GetMember(session, enum.MemberMasterIdRina)
 		RinaChan.ViewStatus = req.ViewStatus
-		session.UpdateMember(RinaChan)
+		user_member.UpdateMember(session, RinaChan)
 	}
 
 	session.Finalize()

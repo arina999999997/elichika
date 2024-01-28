@@ -31,7 +31,7 @@ func (session *Session) SetUserSetProfile(userSetProfile client.UserSetProfile) 
 	utils.CheckErr(err)
 	if affected == 0 {
 		// need to insert
-		genericDatabaseInsert(session, "u_set_profile", userSetProfile)
+		GenericDatabaseInsert(session, "u_set_profile", userSetProfile)
 	}
 }
 
@@ -41,11 +41,11 @@ func userSetProfileFinalizer(session *Session) {
 			session.UserId).AllCols().Update(*userSetProfile)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_set_profile", *userSetProfile)
+			GenericDatabaseInsert(session, "u_set_profile", *userSetProfile)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(userSetProfileFinalizer)
+	AddContentFinalizer(userSetProfileFinalizer)
 }

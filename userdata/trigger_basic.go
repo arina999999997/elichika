@@ -20,7 +20,7 @@ func (session *Session) AddTriggerBasic(trigger client.UserInfoTriggerBasic) {
 func triggerBasicFinalizer(session *Session) {
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerBasicByTriggerId.Map {
 		if trigger != nil { // add
-			genericDatabaseInsert(session, "u_info_trigger_basic", *trigger)
+			GenericDatabaseInsert(session, "u_info_trigger_basic", *trigger)
 		} else { // delete
 			_, err := session.Db.Table("u_info_trigger_basic").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
@@ -31,5 +31,5 @@ func triggerBasicFinalizer(session *Session) {
 }
 
 func init() {
-	addFinalizer(triggerBasicFinalizer)
+	AddContentFinalizer(triggerBasicFinalizer)
 }

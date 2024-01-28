@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/item"
+	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_member"
 	"elichika/userdata"
 )
@@ -13,7 +14,7 @@ import (
 // if that card is already maxed.
 // Note that this assume the card is added, so it's not used for present box and for gacha retry
 // the maxed limit break reward is also added directly to the user, the return value is only to help client display them
-func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) client.AddedGachaCardResult {
+func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) client.AddedCardResult {
 	card := session.GetUserCard(cardMasterId)
 	masterCard := session.Gamedata.Card[cardMasterId]
 	card.Grade++
@@ -26,10 +27,9 @@ func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) cl
 		case enum.CardRarityTypeURare:
 			reward = reward.Amount(25)
 		}
-		session.AddContent(reward)
+		user_content.AddContent(session, reward)
 		// not sure if this is the correct official server behavior or not, but it seems to work correctly
-		return client.AddedGachaCardResult{
-			GachaLotType: enum.GachaLotTypeNormal,
+		return client.AddedCardResult{
 			CardMasterId: cardMasterId,
 			Level:        1,
 			BeforeGrade:  enum.CardMaxGrade,
@@ -52,8 +52,7 @@ func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) cl
 			beforeGrade = card.Grade - 1
 		}
 		session.UpdateUserCard(card)
-		return client.AddedGachaCardResult{
-			GachaLotType:         enum.GachaLotTypeNormal,
+		return client.AddedCardResult{
 			CardMasterId:         cardMasterId,
 			Level:                1,
 			BeforeGrade:          beforeGrade,

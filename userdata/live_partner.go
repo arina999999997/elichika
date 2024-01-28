@@ -29,6 +29,6 @@ func (session *Session) UpdateUserLivePartner(userLivePartner database.UserLiveP
 		AllCols().Update(&userLivePartner)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_live_partner", userLivePartner)
+		GenericDatabaseInsert(session, "u_live_partner", userLivePartner)
 	}
 }

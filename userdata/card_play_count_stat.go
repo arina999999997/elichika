@@ -23,6 +23,6 @@ func (session *Session) UpdateUserCardPlayCountStat(userCardPlayCountStat databa
 		Where("user_id = ? AND card_master_id = ?", session.UserId, userCardPlayCountStat.CardMasterId).AllCols().Update(&userCardPlayCountStat)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_card_play_count_stat", userCardPlayCountStat)
+		GenericDatabaseInsert(session, "u_card_play_count_stat", userCardPlayCountStat)
 	}
 }

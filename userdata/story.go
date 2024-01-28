@@ -34,7 +34,7 @@ func (session *Session) InsertUserStoryMain(storyMainMasterId int32) bool {
 func storyMainFinalizer(session *Session) {
 	for _, userStoryMain := range session.UserModel.UserStoryMainByStoryMainId.Map {
 		if !genericDatabaseExist(session, "u_story_main", *userStoryMain) {
-			genericDatabaseInsert(session, "u_story_main", *userStoryMain)
+			GenericDatabaseInsert(session, "u_story_main", *userStoryMain)
 		}
 	}
 }
@@ -54,7 +54,7 @@ func storyMainSelectedFinalizer(session *Session) {
 			AllCols().Update(*userStoryMainSelected)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_story_main_selected", *userStoryMainSelected)
+			GenericDatabaseInsert(session, "u_story_main_selected", *userStoryMainSelected)
 		}
 	}
 }
@@ -68,7 +68,7 @@ func (session *Session) InsertUserStoryMainPartDigestMovie(partId int32) {
 func storyMainPartDigestMovieFinalizer(session *Session) {
 	for _, userStoryMainPartDigestMovie := range session.UserModel.UserStoryMainPartDigestMovieById.Map {
 		if !genericDatabaseExist(session, "u_story_main_part_digest_movie", *userStoryMainPartDigestMovie) {
-			genericDatabaseInsert(session, "u_story_main_part_digest_movie", *userStoryMainPartDigestMovie)
+			GenericDatabaseInsert(session, "u_story_main_part_digest_movie", *userStoryMainPartDigestMovie)
 		}
 	}
 }
@@ -85,14 +85,14 @@ func (session *Session) InsertUserStoryLinkage(storyLinkageCellMasterId int32) {
 func storyLinkageFinalizer(session *Session) {
 	for _, userStoryLinkage := range session.UserModel.UserStoryLinkageById.Map {
 		if !genericDatabaseExist(session, "u_story_linkage", *userStoryLinkage) {
-			genericDatabaseInsert(session, "u_story_linkage", *userStoryLinkage)
+			GenericDatabaseInsert(session, "u_story_linkage", *userStoryLinkage)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(storyMainFinalizer)
-	addFinalizer(storyMainSelectedFinalizer)
-	addFinalizer(storyMainPartDigestMovieFinalizer)
-	addFinalizer(storyLinkageFinalizer)
+	AddContentFinalizer(storyMainFinalizer)
+	AddContentFinalizer(storyMainSelectedFinalizer)
+	AddContentFinalizer(storyMainPartDigestMovieFinalizer)
+	AddContentFinalizer(storyLinkageFinalizer)
 }

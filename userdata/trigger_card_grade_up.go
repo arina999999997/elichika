@@ -55,7 +55,7 @@ func triggerCardGradeUpFinalizer(session *Session) {
 			// if the 2 numbers are equal the level up isn't shown when we open the card.
 			dbTrigger := *trigger
 			dbTrigger.BeforeLoveLevelLimit = dbTrigger.AfterLoveLevelLimit
-			genericDatabaseInsert(session, "u_info_trigger_card_grade_up", dbTrigger)
+			GenericDatabaseInsert(session, "u_info_trigger_card_grade_up", dbTrigger)
 		} else {
 			// remove from db
 			_, err := session.Db.Table("u_info_trigger_card_grade_up").
@@ -67,5 +67,5 @@ func triggerCardGradeUpFinalizer(session *Session) {
 }
 
 func init() {
-	addFinalizer(triggerCardGradeUpFinalizer)
+	AddContentFinalizer(triggerCardGradeUpFinalizer)
 }

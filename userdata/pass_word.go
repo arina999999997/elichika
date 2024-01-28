@@ -12,7 +12,7 @@ func (session *Session) SetPassWord(passWord string) {
 		})
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_pass_word", database.UserPassWord{
+		GenericDatabaseInsert(session, "u_pass_word", database.UserPassWord{
 			PassWord: passWord,
 		})
 	}

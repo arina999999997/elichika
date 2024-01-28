@@ -20,7 +20,7 @@ func (session *Session) GetLoginResponse() response.LoginResponse {
 			FromEea:                 false,
 		}
 		login.ReproInfo.GroupNo = 1
-		genericDatabaseInsert(session, "u_login", login)
+		GenericDatabaseInsert(session, "u_login", login)
 	}
 	return login
 }
@@ -29,7 +29,7 @@ func (session *Session) UpdateLoginData(login response.LoginResponse) {
 	affected, err := session.Db.Table("u_login").Where("user_id = ?", session.UserId).AllCols().Update(&login)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_login", login)
+		GenericDatabaseInsert(session, "u_login", login)
 	}
 }
 

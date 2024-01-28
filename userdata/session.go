@@ -32,6 +32,7 @@ type Session struct {
 	MemberLovePanelDiffs map[int32]client.MemberLovePanel
 	MemberLovePanels     []client.MemberLovePanel
 	UserContentDiffs     map[int32](map[int32]client.Content) // content_type then content_id
+	UnreceivedContent    []client.Content
 
 	SessionType int
 	UserModel   client.UserModel
@@ -75,12 +76,12 @@ func userStatusFinalizer(session *Session) {
 		if session.SessionType != SessionTypeImportAccount {
 			panic("user doesn't exist in u_info")
 		} else {
-			genericDatabaseInsert(session, "u_status", *session.UserStatus)
+			GenericDatabaseInsert(session, "u_status", *session.UserStatus)
 		}
 	}
 }
 func init() {
-	addFinalizer(userStatusFinalizer)
+	AddContentFinalizer(userStatusFinalizer)
 }
 
 func UserExist(userId int32) bool {
@@ -131,7 +132,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginRes
 	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
 
 	s.MemberLovePanels = loginData.MemberLovePanels.Slice
-	genericDatabaseInsert(&s, "u_login", *loginData)
+	GenericDatabaseInsert(&s, "u_login", *loginData)
 	utils.CheckErr(err)
 	return &s
 }

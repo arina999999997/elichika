@@ -1,4 +1,4 @@
-package userdata
+package user_account
 
 import (
 	"elichika/client"
@@ -7,9 +7,11 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_suit"
+	"elichika/userdata"
 	"elichika/utils"
 
-	// "encoding/json"
 	"fmt"
 	"math/rand"
 	"time"
@@ -22,7 +24,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	dictionary := ctx.MustGet("dictionary").(*dictionary.Dictionary)
 	{
-		db := Engine.NewSession()
+		db := userdata.Engine.NewSession()
 		defer db.Close()
 		err := db.Begin()
 		utils.CheckErr(err)
@@ -89,7 +91,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 		utils.CheckErr(err)
 		db.Commit()
 	}
-	session := GetSession(ctx, userId)
+	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 	{
 		// passwords
@@ -137,7 +139,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				IsNew:                      false,
 			})
 		}
-		session.InsertMembers(members)
+		user_member.InsertMembers(session, members)
 		session.InsertCards(cards)
 	}
 	{ // all the costumes that can't be obtained from maxing cards
@@ -151,7 +153,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				})
 			}
 		}
-		session.InsertUserSuits(suits)
+		user_suit.InsertUserSuits(session, suits)
 	}
 	{ // show formation
 		liveDecks := []client.UserLiveDeck{}

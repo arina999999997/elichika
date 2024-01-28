@@ -46,7 +46,7 @@ func liveDifficultyFinalizer(session *Session) {
 			AllCols().Update(*userLiveDifficulty)
 		utils.CheckErr(err)
 		if updated == 0 {
-			genericDatabaseInsert(session, "u_live_difficulty", *userLiveDifficulty)
+			GenericDatabaseInsert(session, "u_live_difficulty", *userLiveDifficulty)
 		}
 	}
 
@@ -71,10 +71,10 @@ func (session *Session) UpdateLastPlayLiveDifficultyDeck(deck client.LastPlayLiv
 		AllCols().Update(&deck)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_last_play_live_difficulty_deck", deck)
+		GenericDatabaseInsert(session, "u_last_play_live_difficulty_deck", deck)
 	}
 }
 
 func init() {
-	addFinalizer(liveDifficultyFinalizer)
+	AddContentFinalizer(liveDifficultyFinalizer)
 }

@@ -8,7 +8,9 @@ import (
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler/common"
+	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -68,7 +70,7 @@ func AccessoryMelt(ctx *gin.Context) {
 
 	for _, userAccessoryId := range req.UserAccessoryIds.Slice {
 		accessory := session.GetUserAccessory(userAccessoryId)
-		session.AddContent(gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
+		user_content.AddContent(session, gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
 		session.DeleteUserAccessory(userAccessoryId)
 	}
 
@@ -134,8 +136,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 
 	for _, item := range req.AccessoryLevelUpItems.Slice {
 		itemId := item.AccessoryLevelUpItemMasterId
-		// TODO: maybe make the item into a map at the start?
-		session.RemoveContent(client.Content{
+		user_content.RemoveContent(session, client.Content{
 			ContentType:   enum.ContentTypeAccessoryLevelUp,
 			ContentId:     itemId,
 			ContentAmount: item.Amount,
@@ -187,7 +188,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 		resp.DoPowerUp.DoSkillProcessed = true
 	}
 	session.UpdateUserAccessory(userAccessory)
-	session.RemoveGameMoney(int32(moneyUsed))
+	user_content.RemoveContent(session, item.Gold.Amount(moneyUsed))
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)
@@ -229,8 +230,8 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	userAccessory.AcquiredAt = session.Time.Unix()
 	session.UpdateUserAccessory(userAccessory)
 	// remove resource used
-	session.RemoveContent(masterAccessory.RarityUp.RarityUpGroup.Resource)
-	session.RemoveGameMoney(int32(masterAccessory.Rarity.RarityUpMoney))
+	user_content.RemoveContent(session, masterAccessory.RarityUp.RarityUpGroup.Resource)
+	user_content.RemoveContent(session, item.Gold.Amount(masterAccessory.Rarity.RarityUpMoney))
 
 	// finalize and send the response
 

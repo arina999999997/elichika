@@ -21,11 +21,11 @@ func reviewRequestProcessFlowFinalizer(session *Session) {
 				ReviewRequestId:              id,
 				UserReviewRequestProcessFlow: *userReview,
 			}
-			genericDatabaseInsert(session, "u_review_request_process_flow", temp)
+			GenericDatabaseInsert(session, "u_review_request_process_flow", temp)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(reviewRequestProcessFlowFinalizer)
+	AddContentFinalizer(reviewRequestProcessFlowFinalizer)
 }

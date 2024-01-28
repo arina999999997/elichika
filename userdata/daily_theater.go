@@ -12,11 +12,11 @@ func dailyTheaterFinalizer(session *Session) {
 			AllCols().Update(userDailyTheater)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_daily_theater", *userDailyTheater)
+			GenericDatabaseInsert(session, "u_daily_theater", *userDailyTheater)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(dailyTheaterFinalizer)
+	AddContentFinalizer(dailyTheaterFinalizer)
 }

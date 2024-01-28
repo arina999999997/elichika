@@ -2,6 +2,7 @@ package main
 
 import (
 	"elichika/config"
+	_ "elichika/subsystem"
 	_ "elichika/handler"
 	"elichika/userdata"
 

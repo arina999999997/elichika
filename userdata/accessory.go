@@ -54,7 +54,7 @@ func accessoryFinalizer(session *Session) {
 				AllCols().Update(*accessory)
 			utils.CheckErr(err)
 			if affected == 0 {
-				genericDatabaseInsert(session, "u_accessory", *accessory)
+				GenericDatabaseInsert(session, "u_accessory", *accessory)
 			}
 		} else {
 			affected, err := session.Db.Table("u_accessory").
@@ -70,5 +70,5 @@ func accessoryFinalizer(session *Session) {
 }
 
 func init() {
-	addFinalizer(accessoryFinalizer)
+	AddContentFinalizer(accessoryFinalizer)
 }

@@ -10,10 +10,10 @@ func emblemFinalizer(session *Session) {
 			session.UserId, userEmblem.EmblemMId).AllCols().Update(userEmblem)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_emblem", *userEmblem)
+			GenericDatabaseInsert(session, "u_emblem", *userEmblem)
 		}
 	}
 }
 func init() {
-	addFinalizer(emblemFinalizer)
+	AddContentFinalizer(emblemFinalizer)
 }

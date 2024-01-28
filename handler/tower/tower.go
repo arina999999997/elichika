@@ -8,6 +8,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -121,14 +122,15 @@ func RecoveryTowerCardUsed(ctx *gin.Context) {
 		cardUsedCount.RecoveredCount++
 		session.UpdateUserTowerCardUsed(req.TowerId, cardUsedCount)
 	}
-	// remove the item
-	has := session.GetUserContentByContent(item.PerformanceDrink).ContentAmount
+	// remove the item, this has to be done manually because it involve going back to gems
+
+	has := user_content.GetUserContentByContent(session, item.PerformanceDrink).ContentAmount
 	cardCount := int32(req.CardMasterIds.Size())
 	if has >= cardCount {
-		session.RemoveContent(item.PerformanceDrink.Amount(cardCount))
+		user_content.RemoveContent(session, item.PerformanceDrink.Amount(cardCount))
 	} else {
-		session.RemoveContent(item.PerformanceDrink.Amount(has))
-		session.RemoveSnsCoin((cardCount - has) * int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin))
+		user_content.RemoveContent(session, item.PerformanceDrink.Amount(has))
+		user_content.RemoveContent(session, item.StarGem.Amount((cardCount-has)*int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin)))
 	}
 
 	session.Finalize()

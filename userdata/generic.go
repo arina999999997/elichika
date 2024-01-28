@@ -18,7 +18,7 @@ var (
 	finalizers map[uintptr]handler
 )
 
-func addPopulator(p handler) {
+func AddContentPopulator(p handler) {
 	if populators == nil {
 		populators = make(map[uintptr]handler)
 		finalizers = make(map[uintptr]handler)
@@ -26,7 +26,7 @@ func addPopulator(p handler) {
 	populators[reflect.ValueOf(p).Pointer()] = p
 }
 
-func addFinalizer(f handler) {
+func AddContentFinalizer(f handler) {
 	if finalizers == nil {
 		populators = make(map[uintptr]handler)
 		finalizers = make(map[uintptr]handler)
@@ -77,5 +77,5 @@ func genericTableFieldPopulator(session *Session) {
 }
 
 func init() {
-	addPopulator(genericTableFieldPopulator)
+	AddContentPopulator(genericTableFieldPopulator)
 }

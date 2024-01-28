@@ -24,7 +24,7 @@ func (session *Session) InsertTrainingTreeCells(cardMasterId int32, cells []clie
 		ActivatedAt  int64
 	}
 	for _, cell := range cells {
-		genericDatabaseInsert(session, "u_card_training_tree_cell", Wrapper{
+		GenericDatabaseInsert(session, "u_card_training_tree_cell", Wrapper{
 			CardMasterId: cardMasterId,
 			CellId:       cell.CellId,
 			ActivatedAt:  cell.ActivatedAt,

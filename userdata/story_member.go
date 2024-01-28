@@ -25,7 +25,7 @@ func memberStoryFinalizer(session *Session) {
 			session.UserId, userStoryMember.StoryMemberMasterId).AllCols().Update(*userStoryMember)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_story_member", *userStoryMember)
+			GenericDatabaseInsert(session, "u_story_member", *userStoryMember)
 		}
 	}
 }
@@ -54,5 +54,5 @@ func (session *Session) FinishStoryMember(storyMemberMasterId int32) bool {
 }
 
 func init() {
-	addFinalizer(memberStoryFinalizer)
+	AddContentFinalizer(memberStoryFinalizer)
 }

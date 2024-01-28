@@ -32,7 +32,7 @@ func lessonDeckFinalizer(session *Session) {
 			Update(*deck)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_lesson_deck", *deck)
+			GenericDatabaseInsert(session, "u_lesson_deck", *deck)
 		}
 	}
 }
@@ -44,5 +44,5 @@ func (session *Session) InsertLessonDecks(decks []client.UserLessonDeck) {
 }
 
 func init() {
-	addFinalizer(lessonDeckFinalizer)
+	AddContentFinalizer(lessonDeckFinalizer)
 }

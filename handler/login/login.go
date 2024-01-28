@@ -11,6 +11,7 @@ import (
 	"elichika/handler/common"
 	"elichika/locale"
 	"elichika/router"
+	"elichika/subsystem/user_account"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -55,7 +56,7 @@ func Startup(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	resp := response.StartupResponse{}
-	resp.UserId = int32(userdata.CreateNewAccount(ctx, -1, ""))
+	resp.UserId = int32(user_account.CreateNewAccount(ctx, -1, ""))
 	resp.AuthorizationKey = StartupAuthorizationKey(req.Mask)
 	// note that this use a different key than the common one
 	startupBody, _ := json.Marshal(resp)
@@ -75,7 +76,7 @@ func Login(ctx *gin.Context) {
 	defer session.Close()
 
 	if session == nil {
-		userdata.CreateNewAccount(ctx, userId, "")
+		user_account.CreateNewAccount(ctx, userId, "")
 		session = userdata.GetSession(ctx, userId)
 		defer session.Close()
 	}

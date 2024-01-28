@@ -12,11 +12,11 @@ func gpsPresentReceivedFinalizer(session *Session) {
 			AllCols().Update(*userGpsPresentReceived)
 		utils.CheckErr(err)
 		if affected == 0 {
-			genericDatabaseInsert(session, "u_gps_present_received", *userGpsPresentReceived)
+			GenericDatabaseInsert(session, "u_gps_present_received", *userGpsPresentReceived)
 		}
 	}
 }
 
 func init() {
-	addFinalizer(gpsPresentReceivedFinalizer)
+	AddContentFinalizer(gpsPresentReceivedFinalizer)
 }

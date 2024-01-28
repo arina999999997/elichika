@@ -9,6 +9,8 @@ import (
 	"elichika/item"
 	"elichika/klab"
 	"elichika/router"
+	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
 	"elichika/utils"
@@ -31,7 +33,7 @@ func skip(ctx *gin.Context) {
 	defer session.Close()
 	gamedata := session.Gamedata
 
-	session.RemoveContent(item.SkipTicket.Amount(req.TicketUseCount))
+	user_content.RemoveContent(session, item.SkipTicket.Amount(req.TicketUseCount))
 
 	session.UserStatus.LastLiveDifficultyId = req.LiveDifficultyMasterId
 	liveDifficulty := gamedata.LiveDifficulty[req.LiveDifficultyMasterId]
@@ -91,7 +93,7 @@ func skip(ctx *gin.Context) {
 		if memberRepresentativeCard[memberMasterId] != cardMasterId {
 			continue
 		}
-		addedLove := session.AddLovePoint(memberMasterId, memberLoveGained[memberMasterId])
+		addedLove := user_member.AddLovePoint(session, memberMasterId, memberLoveGained[memberMasterId])
 		resp.SkipLiveResult.MemberLoveStatuses.Set(cardMasterId, client.LiveResultMemberLoveStatus{
 			RewardLovePoint: addedLove,
 		})

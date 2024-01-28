@@ -8,7 +8,7 @@ import (
 func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Map {
 		if trigger != nil { // add
-			genericDatabaseInsert(session, "u_info_trigger_member_guild_support_item_expired", *trigger)
+			GenericDatabaseInsert(session, "u_info_trigger_member_guild_support_item_expired", *trigger)
 		} else { // delete
 			_, err := session.Db.Table("u_info_trigger_member_guild_support_item_expired").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
@@ -33,5 +33,5 @@ func (session *Session) ReadMemberGuildSupportItemExpired() {
 // This could be done by keeping a full user model in ram too.
 
 func init() {
-	addFinalizer(triggerMemberGuildSupportItemExpiredFinalizer)
+	AddContentFinalizer(triggerMemberGuildSupportItemExpiredFinalizer)
 }

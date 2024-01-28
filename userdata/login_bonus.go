@@ -26,6 +26,6 @@ func (session *Session) UpdateUserLoginBonus(userLoginBonus database.UserLoginBo
 		AllCols().Update(userLoginBonus)
 	utils.CheckErr(err)
 	if affected == 0 {
-		genericDatabaseInsert(session, "u_login_bonus", userLoginBonus)
+		GenericDatabaseInsert(session, "u_login_bonus", userLoginBonus)
 	}
 }

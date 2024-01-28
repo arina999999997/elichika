@@ -11,6 +11,8 @@ import (
 	"elichika/router"
 	"elichika/subsystem/time"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -47,7 +49,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	detailBadge := session.GetUserCommunicationMemberDetailBadge(req.MemberMasterId)
+	detailBadge := user_member.GetUserCommunicationMemberDetailBadge(session, req.MemberMasterId)
 	switch req.CommunicationMemberDetailBadgeType {
 	case enum.CommunicationMemberDetailBadgeTypeStoryMember:
 		detailBadge.IsStoryMemberBadge = false
@@ -64,7 +66,7 @@ func UpdateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	default:
 		panic("unknown type")
 	}
-	session.UpdateUserCommunicationMemberDetailBadge(detailBadge)
+	user_member.UpdateUserCommunicationMemberDetailBadge(session, detailBadge)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
@@ -150,7 +152,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	if session.FinishStoryMember(req.StoryMemberMasterId) {
 		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterId]
 		if storyMemberMaster.Reward != nil {
-			session.AddContent(*storyMemberMaster.Reward)
+			user_content.AddContent(session, *storyMemberMaster.Reward)
 			session.AddTriggerBasic(client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeStoryMemberReward,
 				ParamInt:        generic.NewNullable(req.StoryMemberMasterId),
@@ -182,10 +184,10 @@ func SetTheme(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	member := session.GetMember(req.MemberMasterId)
+	member := user_member.GetMember(session, req.MemberMasterId)
 	member.SuitMasterId = req.SuitMasterId
 	member.CustomBackgroundMasterId = req.CustomBackgroundMasterId
-	session.UpdateMember(member)
+	user_member.UpdateMember(session, member)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

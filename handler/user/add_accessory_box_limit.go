@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
 	"elichika/utils"
@@ -29,7 +30,7 @@ func addAccessoryBoxLimit(ctx *gin.Context) {
 	req.Count *= 10 // count is the amount of time it is performed, not the amount of slot / gem used
 
 	user_status.AddUserAccessoryLimit(session, req.Count)
-	session.RemoveContent(item.StarGem.Amount(req.Count))
+	user_content.RemoveContent(session, item.StarGem.Amount(req.Count))
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

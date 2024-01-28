@@ -4,7 +4,7 @@ import (
 	"elichika/utils"
 )
 
-func genericDatabaseInsert[T any](session *Session, table string, item T) {
+func GenericDatabaseInsert[T any](session *Session, table string, item T) {
 	type UserIdWrapper struct {
 		UserId int32 `xorm:"pk 'user_id'"`
 		Item   *T    `xorm:"extends"`

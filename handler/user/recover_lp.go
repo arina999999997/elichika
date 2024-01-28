@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
 	"elichika/utils"
@@ -31,13 +32,13 @@ func recoverLp(ctx *gin.Context) {
 	switch req.ContentId {
 	case item.ShowCandy50.ContentId:
 		user_status.AddUserLp(session, req.Count.Value*50)
-		session.RemoveContent(item.ShowCandy50.Amount(req.Count.Value))
+		user_content.RemoveContent(session, item.ShowCandy50.Amount(req.Count.Value))
 	case item.ShowCandy100.ContentId:
 		user_status.AddUserLp(session, req.Count.Value*100)
-		session.RemoveContent(item.ShowCandy100.Amount(req.Count.Value))
+		user_content.RemoveContent(session, item.ShowCandy100.Amount(req.Count.Value))
 	case item.StarGem.ContentId:
 		user_status.AddUserLp(session, req.Count.Value*100)
-		session.RemoveContent(item.StarGem.Amount(req.Count.Value * 10))
+		user_content.RemoveContent(session, item.StarGem.Amount(req.Count.Value*10))
 	}
 
 	session.Finalize()

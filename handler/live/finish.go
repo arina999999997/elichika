@@ -10,6 +10,8 @@ import (
 	"elichika/klab"
 	"elichika/router"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
 	"elichika/subsystem/voltage_ranking"
@@ -27,6 +29,10 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	gamedata := session.Gamedata
 	liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
 
+	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
+	userLiveDifficulty.IsNew = false
+	userLiveDifficulty.IsAutoplay = startReq.IsAutoPlay
+
 	resp := response.FinishLiveResponse{
 		LiveResult: client.LiveResult{
 			LiveDifficultyMasterId: session.UserStatus.LastLiveDifficultyId,
@@ -34,6 +40,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 			Voltage:                req.LiveScore.CurrentScore,
 			BeforeUserExp:          session.UserStatus.Exp,
 			LiveFinishStatus:       req.LiveFinishStatus,
+			LastBestVoltage:        userLiveDifficulty.MaxScore,
 		},
 		UserModelDiff: &session.UserModel,
 	}
@@ -52,11 +59,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		rewardCenterLovePoint = klab.CenterBondGainBasedOnBondGain(liveDifficulty.RewardBaseLovePoint) / int32(len(isCenter))
 	}
 
-	// record this live and build the last played deck
-	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
-	userLiveDifficulty.IsNew = false
-	userLiveDifficulty.IsAutoplay = startReq.IsAutoPlay
-
+	// build the last played deck
 	lastPlayDeck := client.LastPlayLiveDifficultyDeck{
 		LiveDifficultyId: resp.LiveResult.LiveDifficultyMasterId,
 		Voltage:          req.LiveScore.CurrentScore,
@@ -141,7 +144,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 				suitMasterId := reflect.ValueOf(userLiveDeck).Field(1 + i + 9).Interface().(generic.Nullable[int32]).Value
 				memberId := gamedata.Card[cardMasterId].Member.Id
 				if !userVoltageRanking.DeckDetail.MemberLoveLevels.Has(memberId) {
-					userVoltageRanking.DeckDetail.MemberLoveLevels.Set(memberId, session.GetMember(memberId).LoveLevel)
+					userVoltageRanking.DeckDetail.MemberLoveLevels.Set(memberId, user_member.GetMember(session, memberId).LoveLevel)
 				}
 				// no idea why the necessary stuff is like this, bad client code maybe
 				otherUserCard := user_card.GetOtherUserCard(session, session.UserId, cardMasterId)
@@ -167,7 +170,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 			if (i == 0) || (int(req.LiveScore.CurrentScore) >= mission.TargetValue) {
 				resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsCurrentlyAchieved = true
 				if !resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsAlreadyAchieved { // new, add reward
-					session.AddContent(mission.Reward)
+					user_content.AddContent(session, mission.Reward)
 					switch i {
 					case 0:
 						userLiveDifficulty.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
@@ -182,8 +185,6 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		resp.LiveResult.GainUserExp = liveDifficulty.RewardUserExp
 		user_status.AddUserExp(session, resp.LiveResult.GainUserExp)
 	}
-
-	resp.LiveResult.LastBestVoltage = userLiveDifficulty.MaxScore
 
 	memberRepresentativeCard := make(map[int32]int32)
 	memberLoveGained := make(map[int32]int32)
@@ -229,7 +230,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		if memberRepresentativeCard[memberMasterId] != i {
 			continue
 		}
-		addedLove := session.AddLovePoint(memberMasterId, memberLoveGained[memberMasterId])
+		addedLove := user_member.AddLovePoint(session, memberMasterId, memberLoveGained[memberMasterId])
 		resp.LiveResult.MemberLoveStatuses.Set(liveFinishCard.CardMasterId, client.LiveResultMemberLoveStatus{
 			RewardLovePoint: addedLove,
 		})
@@ -336,7 +337,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
 			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewards {
-				session.AddContent(reward)
+				user_content.AddContent(session, reward)
 			}
 		}
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewardId != nil {
@@ -346,7 +347,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
 			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewards {
-				session.AddContent(reward)
+				user_content.AddContent(session, reward)
 			}
 		}
 	}

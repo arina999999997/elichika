@@ -3,6 +3,7 @@ package gacha
 import (
 	"elichika/client"
 	"elichika/client/request"
+	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/serverdata"
@@ -40,12 +41,24 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []serverdata.GachaCard)
 }
 
 func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed bool) client.AddedGachaCardResult {
-	resultCard := user_card.AddUserCardByCardMasterId(session, cardMasterId)
+	addedCardResult := user_card.AddUserCardByCardMasterId(session, cardMasterId)
+	addedGachaCardResult := client.AddedGachaCardResult{
+		GachaLotType:         enum.GachaLotTypeNormal,
+		CardMasterId:         addedCardResult.CardMasterId,
+		Level:                addedCardResult.Level,
+		BeforeGrade:          addedCardResult.BeforeGrade,
+		AfterGrade:           addedCardResult.AfterGrade,
+		Content:              addedCardResult.Content,
+		LimitExceeded:        addedCardResult.LimitExceeded,
+		BeforeLoveLevelLimit: addedCardResult.BeforeLoveLevelLimit,
+		AfterLoveLevelLimit:  addedCardResult.AfterLoveLevelLimit,
+	}
+
 	// if isGuaranteed {
 	// if all 10 cards has this it can crash so let's not assign it
-	// 	resultCard.GachaLotType = enum.GachaLotTypeAssurance
+	// addedGachaCardResult.GachaLotType = GachaLotTypeAssurance
 	// }
-	return resultCard
+	return addedGachaCardResult
 }
 
 func HandleGacha(ctx *gin.Context, req request.DrawGachaRequest) (client.Gacha, generic.List[client.AddedGachaCardResult]) {

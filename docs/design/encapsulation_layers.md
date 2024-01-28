@@ -80,5 +80,5 @@ It should read the request and use the subsystem layer to do things, then genera
     - The subsystem should then handler clearing a live, returning what the network handler need and handle the conseqeuence if necessary.
     - The network handler finalize the whole process and send the response back.
 
-Currently the code base can contain handling code in the network layer, but that should not be the case. When developing new features, we should move old handling code or write new handling code in the subsystem instead of the handling layer. 
+Currently the code base can contain handling code in the network layer, but that should not be the case. When developing new features, we should move old handling code or write new handling code in the subsystem instead of the handling layer. Unless a functionality is used in multiple place, it's probably fine to just leave them be until there is a need to move them or until we want to further improve the code.
 

@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_trade"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -25,7 +26,7 @@ func FetchTrade(ctx *gin.Context) {
 	defer session.Close()
 
 	common.JsonResponse(ctx, response.FetchTradeResponse{
-		Trades: session.GetTrades(req.TradeType),
+		Trades: user_trade.GetTrades(session, req.TradeType),
 	})
 }
 
@@ -40,11 +41,11 @@ func ExecuteTrade(ctx *gin.Context) {
 	defer session.Close()
 
 	// this only decide whether there's a text saying that things were sent to present box
-	sentToPresentBox := session.ExecuteTrade(req.ProductId, req.TradeCount)
+	sentToPresentBox := user_trade.ExecuteTrade(session, req.ProductId, req.TradeCount)
 	session.Finalize()
 
 	common.JsonResponse(ctx, response.ExecuteTradeResponse{
-		Trades:           session.GetTrades(session.Gamedata.Trade[session.Gamedata.TradeProduct[req.ProductId].TradeId].TradeType),
+		Trades:           user_trade.GetTrades(session, session.Gamedata.Trade[session.Gamedata.TradeProduct[req.ProductId].TradeId].TradeType),
 		IsSendPresentBox: sentToPresentBox,
 		UserModelDiff:    &session.UserModel,
 	})
@@ -62,13 +63,13 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 
 	sentToPresentBox := false
 	for _, trade := range req.TradeOrders.Slice {
-		if session.ExecuteTrade(trade.ProductId, trade.TradeCount) {
+		if user_trade.ExecuteTrade(session, trade.ProductId, trade.TradeCount) {
 			sentToPresentBox = true
 		}
 	}
 	session.Finalize()
 	common.JsonResponse(ctx, response.ExecuteTradeResponse{
-		Trades:           session.GetTrades(session.Gamedata.Trade[session.Gamedata.TradeProduct[req.TradeOrders.Slice[0].ProductId].TradeId].TradeType),
+		Trades:           user_trade.GetTrades(session, session.Gamedata.Trade[session.Gamedata.TradeProduct[req.TradeOrders.Slice[0].ProductId].TradeId].TradeType),
 		IsSendPresentBox: sentToPresentBox,
 		UserModelDiff:    &session.UserModel,
 	})

@@ -27,7 +27,7 @@ func unlockSceneFinalizer(session *Session) {
 			session.UserId, userUnlockScene.UnlockSceneType).Update(*userUnlockScene)
 		utils.CheckErr(err)
 		if affected == 0 { // need to insert
-			genericDatabaseInsert(session, "u_unlock_scenes", *userUnlockScene)
+			GenericDatabaseInsert(session, "u_unlock_scenes", *userUnlockScene)
 		}
 	}
 }
@@ -41,11 +41,11 @@ func (session *Session) SaveSceneTips(sceneTipsType int32) {
 
 func sceneTipsFinalizer(session *Session) {
 	for _, userSceneTips := range session.UserModel.UserSceneTipsByEnum.Map {
-		genericDatabaseInsert(session, "u_scene_tips", *userSceneTips)
+		GenericDatabaseInsert(session, "u_scene_tips", *userSceneTips)
 	}
 }
 
 func init() {
-	addFinalizer(unlockSceneFinalizer)
-	addFinalizer(sceneTipsFinalizer)
+	AddContentFinalizer(unlockSceneFinalizer)
+	AddContentFinalizer(sceneTipsFinalizer)
 }
