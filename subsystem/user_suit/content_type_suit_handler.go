@@ -7,9 +7,10 @@ import (
 	"elichika/userdata"
 )
 
-func contentTypeSuitHandler(session *userdata.Session, content client.Content) (bool, any) {
+func contentTypeSuitHandler(session *userdata.Session, content *client.Content) any {
 	InsertUserSuit(session, content.ContentId)
-	return true, nil
+	content.ContentAmount = 0
+	return nil
 }
 
 func init() {

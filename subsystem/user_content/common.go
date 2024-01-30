@@ -10,13 +10,14 @@ import (
 	"reflect"
 )
 
+// handler take a pointer to the content and set the remaining amount to the amount of unreceived stuff
 var (
-	contentHandlerByContentType = map[int32]func(*userdata.Session, client.Content) (bool, any){}
+	contentHandlerByContentType = map[int32]func(*userdata.Session, *client.Content) any{}
 
 	userModelField = map[int32]string{}
 )
 
-func AddContentHandler(contentType int32, handler func(*userdata.Session, client.Content) (bool, any)) {
+func AddContentHandler(contentType int32, handler func(*userdata.Session, *client.Content) any) {
 	_, exist := contentHandlerByContentType[contentType]
 	if exist {
 		panic("handler for content type already existed")

@@ -47,8 +47,8 @@ func (tf *TowerFloor) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 type Tower struct {
 	// from m_tower
-	TowerId int32 `xorm:"pk 'tower_id'"`
-	// Title DictionaryString `xorm:"'title'"`
+	TowerId int32                `xorm:"pk 'tower_id'"`
+	Title   client.LocalizedText `xorm:"'title'"`
 	// ThumbnailAssetPath string `xorm:"'thumbnail_asset_path'"`
 	// DisplayOrder int `xorm:"'display_order'"`
 	TowerCompositionId   int          `xorm:"'tower_composition_id'"`
@@ -71,6 +71,7 @@ func (t *Tower) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.
 	utils.CheckErr(err)
 	t.FloorCount = int32(len(t.Floor))
 	t.Floor = append([]TowerFloor{TowerFloor{}}, t.Floor...)
+	t.Title.DotUnderText = dictionary.Resolve(t.Title.DotUnderText)
 	for i := range t.Floor {
 		t.Floor[i].populate(gamedata, masterdata_db, serverdata_db, dictionary)
 		t.IsVoltageRanked = t.IsVoltageRanked || (t.Floor[i].TowerCellType == enum.TowerCellTypeBonusLive)

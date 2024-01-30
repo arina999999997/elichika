@@ -170,7 +170,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [ ] /notice/fetchNoticeList
 - [ ] /notice/saveUserSuperNotice
 - [x] /present/fetch
-- [ ] /present/receive
+- [x] /present/receive
 - [x] /referenceBook/saveReferenceBook
 - [ ] (not necessary) /refundInformation/fetchRefundInformation
 - [ ] (not necessary) /reviewRequest/finishReviewRequestProcessFlow

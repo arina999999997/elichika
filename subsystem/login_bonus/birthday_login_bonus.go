@@ -6,9 +6,10 @@ import (
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/item"
-	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -20,6 +21,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 	year, month, day := session.Time.Date()
 	mmdd := int32(month)*100 + int32(day)
 	list, exists := session.Gamedata.MemberByBirthday[mmdd]
+	fmt.Println(mmdd, list, exists)
 	if !exists { // no one with this birthday
 		return
 	}
@@ -65,8 +67,15 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		}
 
 		for _, content := range naviLoginBonus.LoginBonusRewards.Slice[0].LoginBonusContents.Slice {
-			// TODO(present_box): This correctly has to go to the present box, but we just do it here
-			user_content.AddContent(session, content)
+			user_present.AddPresent(session, client.PresentItem{
+				Content:          content,
+				PresentRouteType: enum.PresentRouteTypeLoginBonus,
+				PresentRouteId:   generic.NewNullable(int32(1000003)),
+				// TODO(localization): This is not localized to the correct language, also we don't even know if this is the correct string
+				ParamServer: generic.NewNullable(client.LocalizedText{
+					DotUnderText: fmt.Sprint(member.Name, " Birthday Login Bonus"),
+				}),
+			})
 		}
 
 		// choose the background and the costume

@@ -36,10 +36,10 @@ func FetchBootstrap(ctx *gin.Context) {
 		FetchBootstrapNewBadgeResponse: client.BootstrapNewBadge{
 			DailyTheaterTodayId: generic.NewNullable(int32(1001243)),
 		},
-		FetchBootstrapNoticeResponse: client.BootstrapNotice{
-			FetchedAt:           1688014785,
-			ReviewSuperNoticeAt: 2019600000,
-		},
+		// FetchBootstrapNoticeResponse: client.BootstrapNotice{
+		// 	FetchedAt:           1688014785,
+		// 	ReviewSuperNoticeAt: 2019600000,
+		// },
 		ChallengeBeginnerCompletedIds: generic.List[int32]{
 			Slice: []int32{1, 2, 3, 4, 5, 6},
 		},

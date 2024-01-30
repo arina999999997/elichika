@@ -13,8 +13,7 @@ func (session *Session) RemoveTriggerMemberLoveLevelUp(triggerId int64) {
 
 func (session *Session) AddTriggerMemberLoveLevelUp(trigger client.UserInfoTriggerMemberLoveLevelUp) {
 	if trigger.TriggerId == 0 {
-		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
-		session.UniqueCount++
+		trigger.TriggerId = session.NextUniqueId()
 	}
 	session.UserModel.UserInfoTriggerMemberLoveLevelUpByTriggerId.Set(trigger.TriggerId, trigger)
 }

@@ -9,9 +9,11 @@ import (
 	"elichika/handler/common"
 	"elichika/klab"
 	"elichika/router"
+	"elichika/subsystem/user_accessory"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
 	"elichika/subsystem/voltage_ranking"
@@ -19,6 +21,7 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
+	"fmt"
 	"reflect"
 
 	"github.com/gin-gonic/gin"
@@ -129,13 +132,13 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 				otherUserParty.CardIds.Append(liveParty.CardMasterId2.Value)
 				otherUserParty.CardIds.Append(liveParty.CardMasterId3.Value)
 				if liveParty.UserAccessoryId1.HasValue {
-					otherUserParty.Accessories.Append(session.GetUserAccessory(liveParty.UserAccessoryId1.Value).ToOtherUserAccessory())
+					otherUserParty.Accessories.Append(user_accessory.GetUserAccessory(session, liveParty.UserAccessoryId1.Value).ToOtherUserAccessory())
 				}
 				if liveParty.UserAccessoryId2.HasValue {
-					otherUserParty.Accessories.Append(session.GetUserAccessory(liveParty.UserAccessoryId2.Value).ToOtherUserAccessory())
+					otherUserParty.Accessories.Append(user_accessory.GetUserAccessory(session, liveParty.UserAccessoryId2.Value).ToOtherUserAccessory())
 				}
 				if liveParty.UserAccessoryId3.HasValue {
-					otherUserParty.Accessories.Append(session.GetUserAccessory(liveParty.UserAccessoryId3.Value).ToOtherUserAccessory())
+					otherUserParty.Accessories.Append(user_accessory.GetUserAccessory(session, liveParty.UserAccessoryId3.Value).ToOtherUserAccessory())
 				}
 				userVoltageRanking.DeckDetail.Deck.Parties.Append(otherUserParty)
 			}
@@ -329,7 +332,6 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 		}
 	}
 	if awardFirstClearReward {
-		// TODO(present box): Reward are actually added to present box in official server, we just add them directly here
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewardId != nil {
 			session.AddTriggerBasic(
 				client.UserInfoTriggerBasic{
@@ -337,7 +339,13 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
 			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewards {
-				user_content.AddContent(session, reward)
+				user_present.AddPresentWithDuration(session, client.PresentItem{
+					Content:          reward,
+					PresentRouteType: enum.PresentRouteTypeTowerClearReward,
+					PresentRouteId:   generic.NewNullable(tower.TowerId),
+					ParamServer:      generic.NewNullable(tower.Title),
+					ParamClient:      generic.NewNullable(fmt.Sprint(live.TowerLive.Value.FloorNo)),
+				}, user_present.Duration30Days)
 			}
 		}
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewardId != nil {
@@ -347,7 +355,13 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
 				})
 			for _, reward := range tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewards {
-				user_content.AddContent(session, reward)
+				user_present.AddPresentWithDuration(session, client.PresentItem{
+					Content:          reward,
+					PresentRouteType: enum.PresentRouteTypeTowerProgressReward,
+					PresentRouteId:   generic.NewNullable(tower.TowerId),
+					ParamServer:      generic.NewNullable(tower.Title),
+					ParamClient:      generic.NewNullable(fmt.Sprint(live.TowerLive.Value.FloorNo)),
+				}, user_present.Duration30Days)
 			}
 		}
 	}

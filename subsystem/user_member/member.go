@@ -4,7 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
-	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -85,7 +85,12 @@ func AddLovePoint(session *userdata.Session, memberId, point int32) int32 {
 		masterMember := session.Gamedata.Member[memberId]
 		for loveLevel := oldLoveLevel + 1; loveLevel <= member.LoveLevel; loveLevel++ {
 			for _, reward := range masterMember.LoveLevelRewards[loveLevel] {
-				user_content.AddContent(session, reward)
+				user_present.AddPresent(session, client.PresentItem{
+					Content:          reward,
+					PresentRouteType: enum.PresentRouteTypeLoveLevelUp,
+					PresentRouteId:   generic.NewNullable(masterMember.LoveLevelRewardIds[loveLevel]),
+					ParamClient:      generic.NewNullable(fmt.Sprint(member.MemberMasterId)),
+				})
 			}
 		}
 

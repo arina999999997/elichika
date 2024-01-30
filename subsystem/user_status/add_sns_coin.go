@@ -8,8 +8,9 @@ import (
 )
 
 // TODO(sns_coin): Handle paid(?)
-func addSnsCoin(session *userdata.Session, content client.Content) (bool, any) {
-	return user_content.OverflowCheckedAdd(&session.UserStatus.FreeSnsCoin, content.ContentAmount), nil
+func addSnsCoin(session *userdata.Session, content *client.Content) any {
+	user_content.OverflowCheckedAdd(&session.UserStatus.FreeSnsCoin, &content.ContentAmount)
+	return nil
 }
 
 func init() {

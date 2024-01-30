@@ -7,9 +7,10 @@ import (
 	"elichika/userdata"
 )
 
-func contentTypeVoiceHandler(session *userdata.Session, content client.Content) (bool, any) {
+func contentTypeVoiceHandler(session *userdata.Session, content *client.Content) any {
 	session.UpdateVoice(content.ContentId, false)
-	return true, nil
+	content.ContentAmount = 0
+	return nil
 }
 
 func init() {

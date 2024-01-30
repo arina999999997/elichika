@@ -7,8 +7,9 @@ import (
 	"elichika/userdata"
 )
 
-func addGameMoney(session *userdata.Session, content client.Content) (bool, any) {
-	return user_content.OverflowCheckedAdd(&session.UserStatus.GameMoney, content.ContentAmount), nil
+func addGameMoney(session *userdata.Session, content *client.Content) any {
+	user_content.OverflowCheckedAdd(&session.UserStatus.GameMoney, &content.ContentAmount)
+	return nil
 }
 
 func init() {

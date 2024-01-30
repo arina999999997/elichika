@@ -10,19 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO(now): Implement presents
 func fetch(ctx *gin.Context) {
 	// there is no request body
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-
+	// TODO(database): Have a common function to sync present state maybe
 	resp := response.FetchPresentResponse{
-		PresentItems: user_present.FetchPresentItems(session),
+		PresentItems:        user_present.FetchPresentItems(session),
+		PresentHistoryItems: user_present.FetchPresentHistoryItems(session),
 	}
-	resp.PresentCount = int32(resp.PresentItems.Size())
 
 	session.Finalize() // this is because the fetch request can cause server to delete expired item
+	resp.PresentCount = user_present.FetchPresentCount(session)
 	common.JsonResponse(ctx, &resp)
 }
 

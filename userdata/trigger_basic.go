@@ -11,8 +11,7 @@ func (session *Session) DeleteTriggerBasic(triggerId int64) {
 
 func (session *Session) AddTriggerBasic(trigger client.UserInfoTriggerBasic) {
 	if trigger.TriggerId == 0 {
-		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
-		session.UniqueCount++
+		trigger.TriggerId = session.NextUniqueId()
 	}
 	session.UserModel.UserInfoTriggerBasicByTriggerId.Set(trigger.TriggerId, trigger)
 }

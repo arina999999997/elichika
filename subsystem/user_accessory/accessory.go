@@ -1,12 +1,13 @@
-package userdata
+package user_accessory
 
 import (
 	"elichika/client"
 	"elichika/generic"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-func (session *Session) GetAllUserAccessories() []client.UserAccessory {
+func GetAllUserAccessories(session *userdata.Session) []client.UserAccessory {
 	accessories := []client.UserAccessory{}
 	err := session.Db.Table("u_accessory").Where("user_id = ?", session.UserId).
 		Find(&accessories)
@@ -14,7 +15,7 @@ func (session *Session) GetAllUserAccessories() []client.UserAccessory {
 	return accessories
 }
 
-func (session *Session) GetUserAccessory(userAccessoryId int64) client.UserAccessory {
+func GetUserAccessory(session *userdata.Session, userAccessoryId int64) client.UserAccessory {
 	ptr, exist := session.UserModel.UserAccessoryByUserAccessoryId.Get(userAccessoryId)
 	if exist {
 		return *ptr
@@ -38,15 +39,15 @@ func (session *Session) GetUserAccessory(userAccessoryId int64) client.UserAcces
 	return accessory
 }
 
-func (session *Session) UpdateUserAccessory(accessory client.UserAccessory) {
+func UpdateUserAccessory(session *userdata.Session, accessory client.UserAccessory) {
 	session.UserModel.UserAccessoryByUserAccessoryId.Set(accessory.UserAccessoryId, accessory)
 }
 
-func (session *Session) DeleteUserAccessory(userAccessoryId int64) {
+func DeleteUserAccessory(session *userdata.Session, userAccessoryId int64) {
 	session.UserModel.UserAccessoryByUserAccessoryId.SetNull(userAccessoryId)
 }
 
-func accessoryFinalizer(session *Session) {
+func accessoryFinalizer(session *userdata.Session) {
 	for accessoryId, accessory := range session.UserModel.UserAccessoryByUserAccessoryId.Map {
 		if accessory != nil {
 			affected, err := session.Db.Table("u_accessory").
@@ -54,7 +55,7 @@ func accessoryFinalizer(session *Session) {
 				AllCols().Update(*accessory)
 			utils.CheckErr(err)
 			if affected == 0 {
-				GenericDatabaseInsert(session, "u_accessory", *accessory)
+				userdata.GenericDatabaseInsert(session, "u_accessory", *accessory)
 			}
 		} else {
 			affected, err := session.Db.Table("u_accessory").
@@ -70,5 +71,5 @@ func accessoryFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(accessoryFinalizer)
+	userdata.AddContentFinalizer(accessoryFinalizer)
 }

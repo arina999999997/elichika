@@ -4,8 +4,11 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/subsystem/user_content"
+	"elichika/generic"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
+
+	"fmt"
 )
 
 func beginnerLoginBonusHandler(_ string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *client.BootstrapLoginBonus) {
@@ -35,8 +38,16 @@ func beginnerLoginBonusHandler(_ string, session *userdata.Session, loginBonus *
 	}
 	target.LoginBonuses.Append(naviLoginBonus)
 	for _, content := range loginBonus.LoginBonusRewards.Slice[userLoginBonus.LastReceivedReward].LoginBonusContents.Slice {
-		// TODO(present_box): This correctly has to go to the present box, but we just do it here
-		user_content.AddContent(session, content)
+		user_present.AddPresent(session, client.PresentItem{
+			Content:          content,
+			PresentRouteType: enum.PresentRouteTypeLoginBonus,
+			PresentRouteId:   generic.NewNullable(int32(1000001)),
+			// TODO(localization): This is not localized to the correct language, also we don't even know if this is the correct string
+			ParamServer: generic.NewNullable(client.LocalizedText{
+				DotUnderText: "Beginner Login Bonus",
+			}),
+			ParamClient: generic.NewNullable(fmt.Sprint(userLoginBonus.LastReceivedReward + 1)),
+		})
 	}
 	session.UpdateUserLoginBonus(userLoginBonus)
 }

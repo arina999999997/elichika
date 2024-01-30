@@ -2,8 +2,8 @@ package main
 
 import (
 	"elichika/config"
-	_ "elichika/subsystem"
 	_ "elichika/handler"
+	_ "elichika/subsystem"
 	"elichika/userdata"
 
 	"elichika/router"

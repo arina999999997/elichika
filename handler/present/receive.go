@@ -15,7 +15,6 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// TODO(now): Implement presents
 func receive(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ReceivePresentRequest{}
@@ -34,7 +33,10 @@ func receive(ctx *gin.Context) {
 		user_present.Receive(session, id, &resp)
 	}
 
-	session.Finalize() // this is because the fetch request can cause server to delete expired item
+	session.Finalize()
+	resp.PresentItems = user_present.FetchPresentItems(session)
+	resp.PresentHistoryItems = user_present.FetchPresentHistoryItems(session)
+	resp.PresentCount = user_present.FetchPresentCount(session)
 	common.JsonResponse(ctx, &resp)
 }
 

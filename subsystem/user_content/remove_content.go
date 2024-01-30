@@ -5,8 +5,7 @@ import (
 	"elichika/userdata"
 )
 
-func RemoveContent(session *userdata.Session, content client.Content) (bool, any) {
+func RemoveContent(session *userdata.Session, content client.Content) any {
 	content.ContentAmount = -content.ContentAmount
-	added, result := AddContent(session, content)
-	return added, result
+	return AddContent(session, content)
 }

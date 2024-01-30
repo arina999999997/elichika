@@ -11,8 +11,8 @@ import (
 	"elichika/router"
 	"elichika/subsystem/time"
 	"elichika/subsystem/user_card"
-	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -152,7 +152,11 @@ func FinishUserStoryMember(ctx *gin.Context) {
 	if session.FinishStoryMember(req.StoryMemberMasterId) {
 		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterId]
 		if storyMemberMaster.Reward != nil {
-			user_content.AddContent(session, *storyMemberMaster.Reward)
+			user_present.AddPresent(session, client.PresentItem{
+				Content:          *storyMemberMaster.Reward,
+				PresentRouteType: enum.PresentRouteTypeStoryMember,
+				PresentRouteId:   generic.NewNullable(req.StoryMemberMasterId),
+			})
 			session.AddTriggerBasic(client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeStoryMemberReward,
 				ParamInt:        generic.NewNullable(req.StoryMemberMasterId),

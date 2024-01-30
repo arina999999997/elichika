@@ -3,7 +3,6 @@ package user_trade
 import (
 	"elichika/client"
 	"elichika/generic"
-	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/userdata/database"
 	"elichika/utils"
@@ -46,26 +45,4 @@ func GetTrades(session *userdata.Session, tradeType int32) generic.Array[client.
 		trades.Append(trade)
 	}
 	return trades
-}
-
-// return whether the item is added to present box
-func ExecuteTrade(session *userdata.Session, productId, tradeCount int32) bool {
-	// update count
-	tradedCount := GetUserTradeProduct(session, productId)
-	tradedCount += tradeCount
-	SetUserTradeProduct(session, productId, tradedCount)
-
-	// award items and take away source item
-	product := session.Gamedata.TradeProduct[productId]
-	trade := session.Gamedata.Trade[product.TradeId]
-	for _, content := range product.Contents.Slice {
-		content.ContentAmount *= int32(tradeCount)
-		user_content.AddContent(session, content)
-	}
-	user_content.RemoveContent(session, client.Content{
-		ContentType:   trade.SourceContentType,
-		ContentId:     trade.SourceContentId,
-		ContentAmount: product.SourceAmount * tradeCount,
-	})
-	return true
 }

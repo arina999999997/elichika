@@ -4,11 +4,12 @@ import (
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
+	"elichika/enum"
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
-	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -140,9 +141,8 @@ func CheerMemberGuild(ctx *gin.Context) {
 			})
 	}
 
-	// for now award 10 stargems, but we do have the drop table available
+	// for now award 100 stargems, but we do have the drop table available
 	// it's not clear whether the chance are the same though
-	// also the items are actually given to the reward box instead
 	if !req.CheerItemAmount.HasValue {
 		req.CheerItemAmount.Value = 1
 		// mark the free chance as used
@@ -151,7 +151,11 @@ func CheerMemberGuild(ctx *gin.Context) {
 	// remove the items or update the free cheer
 
 	for i := int32(0); i < req.CheerItemAmount.Value; i++ {
-		user_content.AddContent(session, item.StarGem.Amount(100))
+		user_present.AddPresent(session, client.PresentItem{
+			Content:          item.StarGem.Amount(100),
+			PresentRouteType: enum.PresentRouteTypeMemberGuildSupportReward,
+			PresentRouteId:   session.UserStatus.MemberGuildMemberMasterId, // this doesn't seems to be doing anything but the official server kept it
+		})
 		resp.Rewards.Append(item.StarGem.Amount(100))
 	}
 

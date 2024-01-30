@@ -5,12 +5,9 @@ import (
 	"elichika/userdata"
 )
 
-func genericContentHandler(session *userdata.Session, addedContent client.Content) (bool, any) {
+func genericContentHandler(session *userdata.Session, addedContent *client.Content) any {
 	currentContent := GetUserContent(session, addedContent.ContentType, addedContent.ContentId)
-	if OverflowCheckedAdd(&currentContent.ContentAmount, addedContent.ContentAmount) {
-		UpdateUserContent(session, currentContent)
-		return true, nil
-	} else {
-		return false, nil
-	}
+	OverflowCheckedAdd(&currentContent.ContentAmount, &addedContent.ContentAmount)
+	UpdateUserContent(session, currentContent)
+	return nil
 }

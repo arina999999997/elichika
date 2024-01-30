@@ -11,7 +11,7 @@ import (
 
 func Receive(session *userdata.Session, presentId int32, resp *response.ReceivePresentResponse) {
 	present := client.PresentItem{}
-	exist, err := session.Db.Table("u_present").Where("user_id = ? AND id = ?", session.UserId, presentId).
+	exist, err := session.Db.Table("u_present_item").Where("user_id = ? AND id = ?", session.UserId, presentId).
 		Get(&present)
 	// LimitExceededItems is for
 	utils.CheckErrMustExist(err, exist)
@@ -21,21 +21,50 @@ func Receive(session *userdata.Session, presentId int32, resp *response.ReceiveP
 	// if (present.ExpiredAt.HasValue && (present.ExpiredAt.Value <= session.Time.Unix())) {
 	// 	panic("has expired item")
 	// }
-	received, result := user_content.AddContent(session, present.Content)
-	if !received {
-		resp.LimitExceededItems.Append(present)
-	} else {
-		// received, we need to add this item to the history and set relevant things
-		// TODO(now): insert to deleted table
-		_, err = session.Db.Table("u_present").Where("user_id = ? AND id = ?", session.UserId, presentId).
+	result := user_content.AddContent(session, present.Content)
+	if len(session.UnreceivedContent) == 0 {
+		// completely received, we just need to delete this thing
+		_, err := session.Db.Table("u_present_item").Where("user_id = ? AND id = ?", session.UserId, presentId).
 			Delete(&client.PresentItem{})
 		utils.CheckErr(err)
 
+		userdata.GenericDatabaseInsert(session, "u_present_history_item", client.PresentHistoryItem{
+			Content:          present.Content,
+			PresentRouteType: present.PresentRouteType,
+			PresentRouteId:   present.PresentRouteId,
+			ParamServer:      present.ParamServer,
+			ParamClient:      present.ParamClient,
+			HistoryCreatedAt: session.Time.Unix(),
+		})
 		resp.ReceivedPresentItems.Append(present.Content)
-
 		// if it's a card then we need to set this
 		if present.Content.ContentType == enum.ContentTypeCard {
 			resp.CardGradeUpResult.Append(result.(client.AddedCardResult))
 		}
+	} else {
+		// partially received
+		remaining := session.UnreceivedContent[0]
+		session.UnreceivedContent = []client.Content{}
+		present.Content.ContentAmount -= remaining.ContentAmount
+		if present.Content.ContentAmount > 0 { // did receive something
+			// we need to update the history database
+			userdata.GenericDatabaseInsert(session, "u_present_history_item", client.PresentHistoryItem{
+				Content:          present.Content,
+				PresentRouteType: present.PresentRouteType,
+				PresentRouteId:   present.PresentRouteId,
+				ParamServer:      present.ParamServer,
+				ParamClient:      present.ParamClient,
+				HistoryCreatedAt: session.Time.Unix(),
+			})
+			resp.ReceivedPresentItems.Append(present.Content)
+
+			// and the existing database
+			present.Content.ContentAmount = remaining.ContentAmount
+			_, err := session.Db.Table("u_present_item").Where("user_id = ? AND id = ?", session.UserId, presentId).
+				Update(&present)
+			utils.CheckErr(err)
+		}
+		present.Content.ContentAmount = remaining.ContentAmount
+		resp.LimitExceededItems.Append(present)
 	}
 }

@@ -42,6 +42,7 @@ func ExecuteTrade(ctx *gin.Context) {
 
 	// this only decide whether there's a text saying that things were sent to present box
 	sentToPresentBox := user_trade.ExecuteTrade(session, req.ProductId, req.TradeCount)
+	sentToPresentBox = sentToPresentBox || (len(session.UnreceivedContent) > 0)
 	session.Finalize()
 
 	common.JsonResponse(ctx, response.ExecuteTradeResponse{
@@ -67,6 +68,7 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 			sentToPresentBox = true
 		}
 	}
+	sentToPresentBox = sentToPresentBox || (len(session.UnreceivedContent) > 0)
 	session.Finalize()
 	common.JsonResponse(ctx, response.ExecuteTradeResponse{
 		Trades:           user_trade.GetTrades(session, session.Gamedata.Trade[session.Gamedata.TradeProduct[req.TradeOrders.Slice[0].ProductId].TradeId].TradeType),

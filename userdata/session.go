@@ -17,9 +17,11 @@ import (
 // so 1 session per request
 // A session fetch the data needs to be modified, and sometime modify the data if the code is shared between handlers.
 // session can use ctx to get things like user id / master db, but it should not make any network operation
-const SessionTypeGameplay = 0
-const SessionTypeLogin = 1
-const SessionTypeImportAccount = 2
+const (
+	SessionTypeGameplay      = 0
+	SessionTypeLogin         = 1
+	SessionTypeImportAccount = 2
+)
 
 type Session struct {
 	Time       time.Time
@@ -32,12 +34,19 @@ type Session struct {
 	MemberLovePanelDiffs map[int32]client.MemberLovePanel
 	MemberLovePanels     []client.MemberLovePanel
 	UserContentDiffs     map[int32](map[int32]client.Content) // content_type then content_id
-	UnreceivedContent    []client.Content
+
+	UnreceivedContent []client.Content
 
 	SessionType int
 	UserModel   client.UserModel
 
 	UniqueCount int64
+}
+
+func (session *Session) NextUniqueId() int64 {
+	result := session.Time.UnixNano() + session.UniqueCount
+	session.UniqueCount++
+	return result
 }
 
 // Push update into the db and create the diff
@@ -49,9 +58,6 @@ func (session *Session) Finalize() {
 		// if login then we only need to update a thing
 		userStatusFinalizer(session)
 	} else {
-		if session.SessionType == SessionTypeImportAccount {
-			session.populateGenericContentDiffFromUserModel()
-		}
 		for _, finalizer := range finalizers {
 			finalizer(session)
 		}

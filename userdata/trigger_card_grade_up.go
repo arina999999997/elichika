@@ -14,8 +14,7 @@ func (session *Session) RemoveTriggerCardGradeUp(triggerId int64) {
 // Getting a new trigger also destroy old trigger, and we might have to update it
 func (session *Session) AddTriggerCardGradeUp(trigger client.UserInfoTriggerCardGradeUp) {
 	if trigger.TriggerId == 0 {
-		trigger.TriggerId = session.Time.UnixNano() + session.UniqueCount
-		session.UniqueCount++
+		trigger.TriggerId = session.NextUniqueId()
 	}
 	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Set(trigger.TriggerId, trigger)
 }

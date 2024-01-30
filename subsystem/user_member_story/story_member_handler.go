@@ -7,9 +7,10 @@ import (
 	"elichika/userdata"
 )
 
-func storyMemberHandler(session *userdata.Session, content client.Content) (bool, any) {
+func storyMemberHandler(session *userdata.Session, content *client.Content) any {
 	session.InsertMemberStory(content.ContentId)
-	return true, nil
+	content.ContentAmount = 0
+	return nil
 }
 
 func init() {

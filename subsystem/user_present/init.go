@@ -13,6 +13,7 @@ type UserPresentStat struct {
 }
 
 func init() {
-	database.AddTable("u_present", generic.UserIdWrapper[client.PresentItem]{})
+	database.AddTable("u_present_item", generic.UserIdWrapper[client.PresentItem]{})
+	database.AddTable("u_present_history_item", generic.NonPkUserIdWrapper[client.PresentHistoryItem]{})
 	database.AddTable("u_present_stat", UserPresentStat{})
 }

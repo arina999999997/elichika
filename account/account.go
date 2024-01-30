@@ -3,6 +3,7 @@ package account
 import (
 	"elichika/client"
 	"elichika/client/response"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -67,6 +68,10 @@ func ImportUser(ctx *gin.Context, loginJson string, userId int32) string {
 	}
 	// update term of use and stuff
 
+	// actually populate the tracking field so we can import items
+	if session.SessionType == userdata.SessionTypeImportAccount {
+		user_content.PopulateGenericContentDiffFromUserModel(session)
+	}
 	session.Finalize()
 
 	return "OK"

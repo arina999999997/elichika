@@ -62,6 +62,21 @@ func PhaseEnd(ctx *gin.Context) {
 	}
 	session.UserStatus.TutorialPhase = enum.TutorialPhaseTutorialEnd
 	session.UserStatus.TutorialEndAt = session.Time.Unix()
+	{ // unlock systems
+		session.UnlockScene(enum.UnlockSceneTypeLesson, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeFreeLive, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeAccessory, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeStoryMember, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeEvent, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeReferenceBookSelect, enum.UnlockSceneStatusOpen)
+	}
+	{
+		// mark lesson as finished
+		session.InsertReferenceBook(1001)
+		session.InsertReferenceBook(1002)
+		session.InsertReferenceBook(1003)
+		session.InsertReferenceBook(1004)
+	}
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
@@ -86,6 +101,22 @@ func TutorialSkip(ctx *gin.Context) {
 	}
 
 	user_live_deck.UpdateUserLiveDeck(session, 1, req.CardWithSuitDict, req.SquadDict)
+
+	{ // unlock systems
+		session.UnlockScene(enum.UnlockSceneTypeLesson, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeFreeLive, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeAccessory, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeStoryMember, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeEvent, enum.UnlockSceneStatusOpen)
+		session.UnlockScene(enum.UnlockSceneTypeReferenceBookSelect, enum.UnlockSceneStatusOpen)
+	}
+	{
+		// mark lesson as finished
+		session.InsertReferenceBook(1001)
+		session.InsertReferenceBook(1002)
+		session.InsertReferenceBook(1003)
+		session.InsertReferenceBook(1004)
+	}
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{

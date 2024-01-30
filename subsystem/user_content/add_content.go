@@ -13,22 +13,18 @@ import (
 	"fmt"
 )
 
-func AddContent(session *userdata.Session, content client.Content) (bool, any) {
+func AddContent(session *userdata.Session, content client.Content) any {
 	if content.ContentAmount == 0 { // caller should gracefully accept this
-		return true, nil
+		return nil
 	}
 	handler, exist := contentHandlerByContentType[content.ContentType]
 	if !exist {
 		fmt.Println("TODO: Add handler for content type ", content.ContentType)
-		return true, nil
+		return nil
 	}
-	added, result := handler(session, content)
-	if added {
-		return true, result
-	} else if content.ContentAmount < 0 {
-		panic(fmt.Sprint("user doesn't have enough content for removal: ", content))
-	} else {
+	result := handler(session, &content)
+	if content.ContentAmount > 0 { // if not fully received then we need to track it
 		session.UnreceivedContent = append(session.UnreceivedContent, content)
-		return false, nil
 	}
+	return result
 }

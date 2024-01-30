@@ -10,6 +10,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_accessory"
 	"elichika/subsystem/user_content"
 	"elichika/userdata"
 	"elichika/utils"
@@ -31,9 +32,9 @@ func AccessoryUpdateIsLock(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	accessory := session.GetUserAccessory(req.UserAccessoryId)
+	accessory := user_accessory.GetUserAccessory(session, req.UserAccessoryId)
 	accessory.IsLock = req.IsLock
-	session.UpdateUserAccessory(accessory)
+	user_accessory.UpdateUserAccessory(session, accessory)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
@@ -47,10 +48,10 @@ func AccessoryUpdateIsNew(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	accessories := session.GetAllUserAccessories()
+	accessories := user_accessory.GetAllUserAccessories(session)
 	for _, accessory := range accessories {
 		accessory.IsNew = false
-		session.UpdateUserAccessory(accessory)
+		user_accessory.UpdateUserAccessory(session, accessory)
 	}
 
 	session.Finalize()
@@ -69,9 +70,9 @@ func AccessoryMelt(ctx *gin.Context) {
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	for _, userAccessoryId := range req.UserAccessoryIds.Slice {
-		accessory := session.GetUserAccessory(userAccessoryId)
+		accessory := user_accessory.GetUserAccessory(session, userAccessoryId)
 		user_content.AddContent(session, gamedata.Accessory[accessory.AccessoryMasterId].MeltGroup[accessory.Grade].Reward)
-		session.DeleteUserAccessory(userAccessoryId)
+		user_accessory.DeleteUserAccessory(session, userAccessoryId)
 	}
 
 	session.Finalize()
@@ -93,7 +94,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	userAccessory := session.GetUserAccessory(req.UserAccessoryId)
+	userAccessory := user_accessory.GetUserAccessory(session, req.UserAccessoryId)
 	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterId]
 
 	resp := response.AccessoryPowerUpResponse{
@@ -107,7 +108,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 	// power up is processed by listing order
 	// so different order of accessory can result in different result
 	for _, powerUpAccessoryId := range req.PowerUpAccessoryIds.Slice {
-		powerUpAccessory := session.GetUserAccessory(powerUpAccessoryId)
+		powerUpAccessory := user_accessory.GetUserAccessory(session, powerUpAccessoryId)
 		masterPowerUpAccessory := gamedata.Accessory[powerUpAccessory.AccessoryMasterId]
 
 		if (userAccessory.Grade < 5) && (powerUpAccessory.AccessoryMasterId == userAccessory.AccessoryMasterId) {
@@ -131,7 +132,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 			moneyUsed += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].GameMoney
 			skillPlusPercent += masterPowerUpAccessory.Rarity.SkillLevelUpPlusPercent[powerUpAccessory.PassiveSkill1Level.Value]
 		}
-		session.DeleteUserAccessory(powerUpAccessory.UserAccessoryId)
+		user_accessory.DeleteUserAccessory(session, powerUpAccessory.UserAccessoryId)
 	}
 
 	for _, item := range req.AccessoryLevelUpItems.Slice {
@@ -187,7 +188,7 @@ func AccessoryPowerUp(ctx *gin.Context) {
 		}
 		resp.DoPowerUp.DoSkillProcessed = true
 	}
-	session.UpdateUserAccessory(userAccessory)
+	user_accessory.UpdateUserAccessory(session, userAccessory)
 	user_content.RemoveContent(session, item.Gold.Amount(moneyUsed))
 
 	session.Finalize()
@@ -205,7 +206,7 @@ func AccessoryRarityUp(ctx *gin.Context) {
 	defer session.Close()
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
-	userAccessory := session.GetUserAccessory(req.UserAccessoryId)
+	userAccessory := user_accessory.GetUserAccessory(session, req.UserAccessoryId)
 	masterAccessory := gamedata.Accessory[userAccessory.AccessoryMasterId]
 	masterAfterAccessory := masterAccessory.RarityUp.AfterAccessory
 
@@ -228,7 +229,7 @@ func AccessoryRarityUp(ctx *gin.Context) {
 		userAccessory.PassiveSkill2Id = generic.NewNullable(*masterAfterAccessory.Grade[0].PassiveSkill2MasterId)
 	}
 	userAccessory.AcquiredAt = session.Time.Unix()
-	session.UpdateUserAccessory(userAccessory)
+	user_accessory.UpdateUserAccessory(session, userAccessory)
 	// remove resource used
 	user_content.RemoveContent(session, masterAccessory.RarityUp.RarityUpGroup.Resource)
 	user_content.RemoveContent(session, item.Gold.Amount(masterAccessory.Rarity.RarityUpMoney))

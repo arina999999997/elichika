@@ -24,7 +24,7 @@ type Member struct {
 	// BackgroundBottomRightColor int `xorm:"'background_bottom_right_color'"`
 
 	// names and info are strings to dictionary_k
-	// Name string `xorm:"'name'"`
+	Name string `xorm:"'name'"`
 	// NameHiragana string `xorm:"'name_hiragana'"`
 	// NameRomaji string `xorm:"'name_romaji'"`
 	// Height string
@@ -54,7 +54,8 @@ type Member struct {
 	// StandingThumbnailBackgroundBottomColor int
 
 	// from m_member_love_level_reward
-	LoveLevelRewards []([]client.Content) `xorm:"-"` // 2 indexed for love level
+	LoveLevelRewardIds []int32              `xorm:"-"` // 2 indexed for love level
+	LoveLevelRewards   []([]client.Content) `xorm:"-"` // 2 indexed for love level
 
 	// from m_member_unit_detail
 	// Unit int // subgroup
@@ -80,16 +81,19 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 	{
 		type LoveLevelReward struct {
+			Id        int32          `xorm:"pk 'id'"`
 			LoveLevel int            `xorm:"'love_level'"`
 			Content   client.Content `xorm:"extends"`
 		}
 		rewards := []LoveLevelReward{}
-		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).Find(&rewards)
+		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).OrderBy("love_level").Find(&rewards)
 		utils.CheckErr(err)
 		for i := int32(0); i <= gamedata.MemberLoveLevelCount; i++ {
 			member.LoveLevelRewards = append(member.LoveLevelRewards, []client.Content{})
+			member.LoveLevelRewardIds = append(member.LoveLevelRewardIds, 0)
 		}
 		for _, reward := range rewards {
+			member.LoveLevelRewardIds[reward.LoveLevel] = reward.Id
 			member.LoveLevelRewards[reward.LoveLevel] = append(member.LoveLevelRewards[reward.LoveLevel], reward.Content)
 		}
 	}
@@ -99,7 +103,7 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 		utils.CheckErrMustExist(err, exist)
 	}
 
-	// member.Name = dictionary.Resolve(member.Name)
+	member.Name = dictionary.Resolve(member.Name)
 	// member.NameHiragana = dictionary.Resolve(member.NameHiragana)
 	// member.NameRomaji = dictionary.Resolve(member.NameRomaji)
 	// fmt.Println(member.Id, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",

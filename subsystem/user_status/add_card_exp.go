@@ -7,8 +7,9 @@ import (
 	"elichika/userdata"
 )
 
-func addCardExp(session *userdata.Session, content client.Content) (bool, any) {
-	return user_content.OverflowCheckedAdd(&session.UserStatus.CardExp, content.ContentAmount), nil
+func addCardExp(session *userdata.Session, content *client.Content) any {
+	user_content.OverflowCheckedAdd(&session.UserStatus.CardExp, &content.ContentAmount)
+	return nil
 }
 
 func init() {

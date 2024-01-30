@@ -5,9 +5,11 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
-	"elichika/subsystem/user_content"
+	"elichika/generic"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 
+	"fmt"
 	"time"
 )
 
@@ -51,8 +53,16 @@ func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *ga
 	}
 	target.LoginBonuses.Append(naviLoginBonus)
 	for _, content := range loginBonus.LoginBonusRewards.Slice[userLoginBonus.LastReceivedReward].LoginBonusContents.Slice {
-		// TODO(present_box): This correctly has to go to the present box, but we just do it here
-		user_content.AddContent(session, content)
+		user_present.AddPresent(session, client.PresentItem{
+			Content:          content,
+			PresentRouteType: enum.PresentRouteTypeLoginBonus,
+			PresentRouteId:   generic.NewNullable(int32(1000002)), // this doesn't really matter much even though it's sent
+			// TODO(localization): This is not localized to the correct language
+			ParamServer: generic.NewNullable(client.LocalizedText{
+				DotUnderText: "Daily Login Bonus",
+			}),
+			ParamClient: generic.NewNullable(fmt.Sprint(userLoginBonus.LastReceivedReward + 1)),
+		})
 	}
 	session.UpdateUserLoginBonus(userLoginBonus)
 }

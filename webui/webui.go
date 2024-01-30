@@ -1,9 +1,12 @@
 package webui
 
 import (
+	"elichika/client"
+	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/locale"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -115,31 +118,23 @@ func Accessory(ctx *gin.Context) {
 		return
 	}
 	amount, _ := strconv.Atoi(form.Value["accessory_amount"][0])
-	index := time.Now().UnixNano()
 	total := 0
 	for _, accessoryMasterId := range accessoryIds {
-		masterAccessory, exist := gamedata.Accessory[accessoryMasterId]
+		_, exist := gamedata.Accessory[accessoryMasterId]
 		if !exist {
 			ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Error: invalid accessory id ", accessoryMasterId))
 			return
 		}
-		for i := 1; i <= amount; i++ {
-			total++
-			accessory := session.GetUserAccessory(index + int64(total))
-			accessory.AccessoryMasterId = masterAccessory.Id
-			accessory.Level = 1
-			accessory.Exp = 0
-			accessory.Grade = 0
-			accessory.Attribute = masterAccessory.Attribute
-			if masterAccessory.Grade[0].PassiveSkill1MasterId != nil {
-				accessory.PassiveSkill1Id = generic.NewNullable(*masterAccessory.Grade[0].PassiveSkill1MasterId)
-			}
-			if masterAccessory.Grade[0].PassiveSkill2MasterId != nil {
-				accessory.PassiveSkill2Id = generic.NewNullable(*masterAccessory.Grade[0].PassiveSkill2MasterId)
-			}
-			session.UpdateUserAccessory(accessory)
-		}
+		total += amount
+		user_present.AddPresent(session, client.PresentItem{
+			Content: client.Content{
+				ContentType:   enum.ContentTypeAccessory,
+				ContentId:     accessoryMasterId,
+				ContentAmount: int32(amount),
+			},
+			PresentRouteType: enum.PresentRouteTypeAdminPresent,
+		})
 	}
 	session.Finalize()
-	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Success: Added ", total, " accessories"))
+	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprint("Success: Added ", total, " accessories to the present box"))
 }
