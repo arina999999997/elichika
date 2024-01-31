@@ -79,6 +79,7 @@ func GetClearedPlatformAchievement(ctx *gin.Context) {
 
 func init() {
 
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/bootstrap/fetchBootstrap", FetchBootstrap)
 	router.AddHandler("/bootstrap/getClearedPlatformAchievement", GetClearedPlatformAchievement)
 

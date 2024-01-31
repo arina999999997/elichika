@@ -57,6 +57,7 @@ func FinishStory(ctx *gin.Context) {
 func init() {
 
 	// /storyEventHistory/ all done
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/storyEventHistory/unlockStory", UnlockStory)
 	router.AddHandler("/storyEventHistory/finishStory", FinishStory)
 

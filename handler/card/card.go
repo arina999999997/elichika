@@ -94,6 +94,7 @@ func GetOtherUserCard(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/card/changeFavorite", ChangeFavorite)
 	router.AddHandler("/card/changeIsAwakeningImage", ChangeIsAwakeningImage)
 	router.AddHandler("/card/getOtherUserCard", GetOtherUserCard)

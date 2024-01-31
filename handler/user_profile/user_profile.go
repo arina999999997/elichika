@@ -126,6 +126,7 @@ func SetScoreOrComboLive(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/userProfile/fetchProfile", FetchProfile)
 	router.AddHandler("/userProfile/setCommboLive", SetScoreOrComboLive)
 	router.AddHandler("/userProfile/setProfile", SetProfile)

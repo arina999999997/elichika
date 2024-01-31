@@ -400,6 +400,7 @@ func finish(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/live/finish", finish)
 	router.AddHandler("/live/finishTutorial", finish) // not necessary?
 }

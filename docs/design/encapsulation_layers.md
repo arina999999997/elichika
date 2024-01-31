@@ -63,7 +63,7 @@ The subsystem (name subjected to change) layer handle the subsystems of the game
 
 For example, handling profile, gacha or handling missions.
 
-All the logic for handling things should be in this layer.
+All the logic for handling things should be in this layer. This make it so we can reuse functionality without having to also execute the network logic, allowing us to mock client request, for example. 
 
 See [subsystem docs](../../subsystem/subsystem.md) for more information. 
 

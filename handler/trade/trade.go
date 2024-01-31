@@ -78,6 +78,7 @@ func ExecuteMultiTrade(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/trade/fetchTrade", FetchTrade)
 	router.AddHandler("/trade/executeTrade", ExecuteTrade)
 	router.AddHandler("/trade/executeMultiTrade", ExecuteMultiTrade)

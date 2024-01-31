@@ -82,6 +82,7 @@ func FetchEmblemById(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/emblem/activateEmblem", ActivateEmblem)
 	router.AddHandler("/emblem/fetchEmblem", FetchEmblem)
 	router.AddHandler("/emblem/fetchEmblemById", FetchEmblemById)

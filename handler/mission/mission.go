@@ -50,6 +50,7 @@ func ClearMissionBadge(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/mission/clearMissionBadge", ClearMissionBadge)
 	router.AddHandler("/mission/fetchMission", FetchMission)
 }

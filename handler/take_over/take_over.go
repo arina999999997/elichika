@@ -147,6 +147,7 @@ func UpdatePassWord(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/takeOver/checkTakeOver", CheckTakeOver)
 	router.AddHandler("/takeOver/setTakeOver", SetTakeOver)
 	router.AddHandler("/takeOver/updatePassWord", UpdatePassWord)

@@ -80,6 +80,7 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 
 func init() {
 
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/liveMv/saveDeck", LiveMvSaveDeck)
 	router.AddHandler("/liveMv/start", LiveMvStart)
 }

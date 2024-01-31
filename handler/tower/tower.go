@@ -165,6 +165,7 @@ func RecoveryTowerCardUsedAll(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/tower/clearedTowerFloor", ClearedTowerFloor) // dlp story
 	router.AddHandler("/tower/fetchTowerSelect", FetchTowerSelect)
 	router.AddHandler("/tower/fetchTowerTop", FetchTowerTop)

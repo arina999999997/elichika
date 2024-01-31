@@ -113,6 +113,7 @@ func Login(ctx *gin.Context) {
 
 func init() {
 
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/login/login", Login)
 	router.AddHandler("/login/startup", Startup)
 }

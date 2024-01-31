@@ -75,6 +75,7 @@ func DailyTheaterSetLike(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/dailyTheater/fetchDailyTheater", FetchDailyTheater)
 	router.AddHandler("/dailyTheater/setLike", DailyTheaterSetLike)
 }

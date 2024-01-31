@@ -50,6 +50,7 @@ func UpdateSubscription(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/billing/fetchBillingHistory", BillingHistory)
 	router.AddHandler("/billing/updateSubscription", UpdateSubscription)
 

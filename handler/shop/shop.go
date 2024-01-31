@@ -102,6 +102,7 @@ func FetchShopSubscription(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/shop/fetchShopPack", FetchShopPack)
 	router.AddHandler("/shop/fetchShopSnsCoin", FetchShopSnsCoin)
 	router.AddHandler("/shop/fetchShopSubscription", FetchShopSubscription)

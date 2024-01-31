@@ -213,6 +213,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 }
 
 func init() {
+	// TODO(refactor): move to individual files. 
 	router.AddHandler("/trainingTree/fetchTrainingTree", FetchTrainingTree)
 	router.AddHandler("/trainingTree/levelUpCard", LevelUpCard)
 	router.AddHandler("/trainingTree/gradeUpCard", GradeUpCard)
