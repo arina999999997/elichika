@@ -41,5 +41,5 @@ func subscriptionStatusFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(subscriptionStatusFinalizer)
+	AddFinalizer(subscriptionStatusFinalizer)
 }

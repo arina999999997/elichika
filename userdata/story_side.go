@@ -41,5 +41,5 @@ func storySideFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(storySideFinalizer)
+	AddFinalizer(storySideFinalizer)
 }

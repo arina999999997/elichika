@@ -47,5 +47,5 @@ func userSetProfileFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(userSetProfileFinalizer)
+	AddFinalizer(userSetProfileFinalizer)
 }

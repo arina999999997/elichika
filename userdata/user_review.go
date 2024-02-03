@@ -27,5 +27,5 @@ func reviewRequestProcessFlowFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(reviewRequestProcessFlowFinalizer)
+	AddFinalizer(reviewRequestProcessFlowFinalizer)
 }

@@ -1,25 +1,26 @@
-package userdata
+package user_info_trigger
 
 import (
 	"elichika/client"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-func (session *Session) RemoveTriggerCardGradeUp(triggerId int64) {
+func RemoveTriggerCardGradeUp(session *userdata.Session, triggerId int64) {
 	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.SetNull(triggerId)
 }
 
 // card grade up trigger is responsible for showing the pop-up animation when openning a card after getting a new copy
 // or right after performing a limit break using items
 // Getting a new trigger also destroy old trigger, and we might have to update it
-func (session *Session) AddTriggerCardGradeUp(trigger client.UserInfoTriggerCardGradeUp) {
+func AddTriggerCardGradeUp(session *userdata.Session, trigger client.UserInfoTriggerCardGradeUp) {
 	if trigger.TriggerId == 0 {
 		trigger.TriggerId = session.NextUniqueId()
 	}
 	session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Set(trigger.TriggerId, trigger)
 }
 
-func triggerCardGradeUpFinalizer(session *Session) {
+func triggerCardGradeUpFinalizer(session *userdata.Session) {
 	// keep only the latest one for each card
 	keep := map[int32]int64{}
 	for _, trigger := range session.UserModel.UserInfoTriggerCardGradeUpByTriggerId.Map {
@@ -42,7 +43,7 @@ func triggerCardGradeUpFinalizer(session *Session) {
 				Where("user_id = ? AND card_master_id = ?", session.UserId, trigger.CardMasterId).Get(&existingTrigger)
 			utils.CheckErr(err)
 			if exist {
-				session.RemoveTriggerCardGradeUp(existingTrigger.TriggerId)
+				RemoveTriggerCardGradeUp(session, existingTrigger.TriggerId)
 			}
 		}
 	}
@@ -54,7 +55,7 @@ func triggerCardGradeUpFinalizer(session *Session) {
 			// if the 2 numbers are equal the level up isn't shown when we open the card.
 			dbTrigger := *trigger
 			dbTrigger.BeforeLoveLevelLimit = dbTrigger.AfterLoveLevelLimit
-			GenericDatabaseInsert(session, "u_info_trigger_card_grade_up", dbTrigger)
+			userdata.GenericDatabaseInsert(session, "u_info_trigger_card_grade_up", dbTrigger)
 		} else {
 			// remove from db
 			_, err := session.Db.Table("u_info_trigger_card_grade_up").
@@ -66,5 +67,5 @@ func triggerCardGradeUpFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(triggerCardGradeUpFinalizer)
+	userdata.AddFinalizer(triggerCardGradeUpFinalizer)
 }

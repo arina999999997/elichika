@@ -18,5 +18,5 @@ func userSuitFinalizer(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddContentFinalizer(userSuitFinalizer)
+	userdata.AddFinalizer(userSuitFinalizer)
 }

@@ -24,5 +24,5 @@ func unreceivedPresentFinalizer(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddContentFinalizer(unreceivedPresentFinalizer)
+	userdata.AddFinalizer(unreceivedPresentFinalizer)
 }

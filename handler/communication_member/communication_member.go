@@ -11,6 +11,7 @@ import (
 	"elichika/router"
 	"elichika/subsystem/time"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_present"
 	"elichika/userdata"
@@ -157,7 +158,7 @@ func FinishUserStoryMember(ctx *gin.Context) {
 				PresentRouteType: enum.PresentRouteTypeStoryMember,
 				PresentRouteId:   generic.NewNullable(req.StoryMemberMasterId),
 			})
-			session.AddTriggerBasic(client.UserInfoTriggerBasic{
+			user_info_trigger.AddTriggerBasic(session, client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeStoryMemberReward,
 				ParamInt:        generic.NewNullable(req.StoryMemberMasterId),
 			})

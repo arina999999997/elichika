@@ -42,5 +42,5 @@ func (session *Session) InsertLiveDecks(decks []client.UserLiveDeck) {
 }
 
 func init() {
-	AddContentFinalizer(liveDeckFinalizer)
+	AddFinalizer(liveDeckFinalizer)
 }

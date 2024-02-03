@@ -18,5 +18,5 @@ func steadyVoltageRankingFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(steadyVoltageRankingFinalizer)
+	AddFinalizer(steadyVoltageRankingFinalizer)
 }

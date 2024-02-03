@@ -18,5 +18,5 @@ func schoolIdolFestivalIdRewardMissionFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(schoolIdolFestivalIdRewardMissionFinalizer)
+	AddFinalizer(schoolIdolFestivalIdRewardMissionFinalizer)
 }

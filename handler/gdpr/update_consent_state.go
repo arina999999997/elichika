@@ -15,7 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func UpdateConsentState(ctx *gin.Context) {
+func updateConsentState(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UpdateGdprConsentStateRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -49,5 +49,5 @@ func UpdateConsentState(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/gdpr/updateConsentState", UpdateConsentState)
+	router.AddHandler("/gdpr/updateConsentState", updateConsentState)
 }

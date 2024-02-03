@@ -18,5 +18,5 @@ func eventStoryFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(eventStoryFinalizer)
+	AddFinalizer(eventStoryFinalizer)
 }

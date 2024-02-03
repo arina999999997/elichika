@@ -31,5 +31,5 @@ func userEventFinalizer(session *Session) {
 	}
 }
 func init() {
-	AddContentFinalizer(userEventFinalizer)
+	AddFinalizer(userEventFinalizer)
 }

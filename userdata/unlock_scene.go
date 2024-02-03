@@ -46,6 +46,6 @@ func sceneTipsFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(unlockSceneFinalizer)
-	AddContentFinalizer(sceneTipsFinalizer)
+	AddFinalizer(unlockSceneFinalizer)
+	AddFinalizer(sceneTipsFinalizer)
 }

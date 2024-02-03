@@ -9,7 +9,7 @@ import (
 )
 
 // TODO(push_notification): Support this once we figure push notifications out
-func UpdatePushNotificationSettings(ctx *gin.Context) {
+func updatePushNotificationSettings(ctx *gin.Context) {
 	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	// req := request.PushNotificationSettingsRequest{}
 	// err := json.Unmarshal([]byte(reqBody), &req)
@@ -19,6 +19,5 @@ func UpdatePushNotificationSettings(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/gameSettings/updatePushNotificationSettings", UpdatePushNotificationSettings)
-
+	router.AddHandler("/gameSettings/updatePushNotificationSettings", updatePushNotificationSettings)
 }

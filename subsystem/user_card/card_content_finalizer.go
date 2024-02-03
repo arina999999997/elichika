@@ -5,7 +5,6 @@ import (
 	"elichika/utils"
 )
 
-
 func cardContentFinalizer(session *userdata.Session) {
 	for _, card := range session.UserModel.UserCardByCardId.Map {
 		affected, err := session.Db.Table("u_card").
@@ -18,5 +17,5 @@ func cardContentFinalizer(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddContentFinalizer(cardContentFinalizer)
+	userdata.AddFinalizer(cardContentFinalizer)
 }

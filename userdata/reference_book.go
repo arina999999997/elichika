@@ -18,5 +18,5 @@ func referenceBookFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(referenceBookFinalizer)
+	AddFinalizer(referenceBookFinalizer)
 }

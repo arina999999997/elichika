@@ -32,5 +32,5 @@ func missionFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(missionFinalizer)
+	AddFinalizer(missionFinalizer)
 }

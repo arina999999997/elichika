@@ -23,5 +23,5 @@ func liveMvFinalizer(session *Session) {
 	}
 }
 func init() {
-	AddContentFinalizer(liveMvFinalizer)
+	AddFinalizer(liveMvFinalizer)
 }

@@ -9,6 +9,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
@@ -50,7 +51,7 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 		member := user_member.GetMember(session, panel.MemberId)
 		masterLovePanel := session.Gamedata.MemberLovePanel[req.MemberLovePanelId]
 		if (masterLovePanel.NextPanel != nil) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) {
-			session.AddTriggerBasic(client.UserInfoTriggerBasic{
+			user_info_trigger.AddTriggerBasic(session, client.UserInfoTriggerBasic{
 				InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
 				ParamInt:        generic.NewNullable(masterLovePanel.NextPanel.Id)})
 		}

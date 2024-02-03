@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_present"
 	"elichika/userdata"
 	"elichika/utils"
@@ -104,12 +105,12 @@ func AddLovePoint(session *userdata.Session, memberId, point int32) int32 {
 			if (masterLovePanel.NextPanel != nil) &&
 				(masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel > oldLoveLevel) {
 				nextPanel := masterLovePanel.NextPanel
-				session.AddTriggerBasic(client.UserInfoTriggerBasic{
+				user_info_trigger.AddTriggerBasic(session, client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
 					ParamInt:        generic.NewNullable(nextPanel.Id)})
 			}
 		}
-		session.AddTriggerMemberLoveLevelUp(client.UserInfoTriggerMemberLoveLevelUp{
+		user_info_trigger.AddTriggerMemberLoveLevelUp(session, client.UserInfoTriggerMemberLoveLevelUp{
 			MemberMasterId:  memberId,
 			BeforeLoveLevel: member.LoveLevel - 1})
 

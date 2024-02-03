@@ -18,5 +18,5 @@ func gpsPresentReceivedFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(gpsPresentReceivedFinalizer)
+	AddFinalizer(gpsPresentReceivedFinalizer)
 }

@@ -76,5 +76,5 @@ func (session *Session) UpdateLastPlayLiveDifficultyDeck(deck client.LastPlayLiv
 }
 
 func init() {
-	AddContentFinalizer(liveDifficultyFinalizer)
+	AddFinalizer(liveDifficultyFinalizer)
 }

@@ -87,7 +87,7 @@ func userStatusFinalizer(session *Session) {
 	}
 }
 func init() {
-	AddContentFinalizer(userStatusFinalizer)
+	AddFinalizer(userStatusFinalizer)
 }
 
 func UserExist(userId int32) bool {

@@ -18,5 +18,5 @@ func sif2DataLinkFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(sif2DataLinkFinalizer)
+	AddFinalizer(sif2DataLinkFinalizer)
 }

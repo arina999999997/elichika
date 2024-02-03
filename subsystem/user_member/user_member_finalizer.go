@@ -17,6 +17,6 @@ func userMemberFinalizer(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddContentFinalizer(userMemberFinalizer)
-	userdata.AddContentFinalizer(communicationMemberDetailBadgeFinalizer)
+	userdata.AddFinalizer(userMemberFinalizer)
+	userdata.AddFinalizer(communicationMemberDetailBadgeFinalizer)
 }

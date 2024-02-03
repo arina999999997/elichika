@@ -36,5 +36,5 @@ func ruleDescriptionFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(ruleDescriptionFinalizer)
+	AddFinalizer(ruleDescriptionFinalizer)
 }

@@ -27,5 +27,5 @@ func userPlayListFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(userPlayListFinalizer)
+	AddFinalizer(userPlayListFinalizer)
 }

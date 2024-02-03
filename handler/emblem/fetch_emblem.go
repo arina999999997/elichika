@@ -33,7 +33,6 @@ func fetchEmblem(ctx *gin.Context) {
 	common.JsonResponse(ctx, &resp)
 }
 
-
 func init() {
 	router.AddHandler("/emblem/fetchEmblem", fetchEmblem)
 }

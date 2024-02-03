@@ -1,4 +1,4 @@
-package gacha
+package user_gacha
 
 import (
 	"elichika/client"

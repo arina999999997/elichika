@@ -71,5 +71,5 @@ func accessoryFinalizer(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddContentFinalizer(accessoryFinalizer)
+	userdata.AddFinalizer(accessoryFinalizer)
 }

@@ -44,5 +44,5 @@ func (session *Session) InsertLessonDecks(decks []client.UserLessonDeck) {
 }
 
 func init() {
-	AddContentFinalizer(lessonDeckFinalizer)
+	AddFinalizer(lessonDeckFinalizer)
 }

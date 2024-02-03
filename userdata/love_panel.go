@@ -54,5 +54,5 @@ func memberLovePanelPopulator(session *Session) {
 func init() {
 	AddContentPopulator(memberLovePanelPopulator)
 	// TODO: separate the database so we can use this finalizer instead of calling it manually
-	// AddContentFinalizer(finalizeMemberLovePanelDiffs)
+	// AddFinalizer(finalizeMemberLovePanelDiffs)
 }

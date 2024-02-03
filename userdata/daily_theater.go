@@ -18,5 +18,5 @@ func dailyTheaterFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(dailyTheaterFinalizer)
+	AddFinalizer(dailyTheaterFinalizer)
 }

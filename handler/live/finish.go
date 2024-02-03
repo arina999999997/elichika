@@ -12,6 +12,7 @@ import (
 	"elichika/subsystem/user_accessory"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
@@ -333,7 +334,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 	}
 	if awardFirstClearReward {
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerClearRewardId != nil {
-			session.AddTriggerBasic(
+			user_info_trigger.AddTriggerBasic(session,
 				client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopClearRewardReceived,
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),
@@ -349,7 +350,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 			}
 		}
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerProgressRewardId != nil {
-			session.AddTriggerBasic(
+			user_info_trigger.AddTriggerBasic(session,
 				client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeTowerTopProgressRewardReceived,
 					ParamInt:        generic.NewNullable(live.TowerLive.Value.TowerId),

@@ -5,6 +5,8 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/userdata"
+
+	"elichika/subsystem/user_info_trigger"
 )
 
 func AddUserExp(session *userdata.Session, exp int32) {
@@ -26,6 +28,6 @@ func AddUserExp(session *userdata.Session, exp int32) {
 		}
 	}
 	if isRankedUp {
-		session.AddTriggerBasic(trigger)
+		user_info_trigger.AddTriggerBasic(session, trigger)
 	}
 }

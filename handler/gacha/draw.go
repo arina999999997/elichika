@@ -6,7 +6,7 @@ import (
 	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/gacha"
+	"elichika/subsystem/user_gacha"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -16,19 +16,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func FetchGachaMenu(ctx *gin.Context) {
-	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	common.JsonResponse(ctx, &response.FetchGachaMenuResponse{
-		GachaList:     session.GetGachaList(),
-		UserModelDiff: &session.UserModel,
-	})
-}
-
-func GachaDraw(ctx *gin.Context) {
+func draw(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.DrawGachaRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -43,7 +31,7 @@ func GachaDraw(ctx *gin.Context) {
 	}
 
 	ctx.Set("session", session)
-	gacha, resultCards := gacha.HandleGacha(ctx, req)
+	gacha, resultCards := user_gacha.HandleGacha(ctx, req)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.DrawGachaResponse{
@@ -54,7 +42,5 @@ func GachaDraw(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files.
-	router.AddHandler("/gacha/fetchGachaMenu", FetchGachaMenu)
-	router.AddHandler("/gacha/draw", GachaDraw)
+	router.AddHandler("/gacha/draw", draw)
 }

@@ -6,6 +6,7 @@ import (
 	"elichika/generic"
 	"elichika/item"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_member"
 	"elichika/userdata"
 )
@@ -44,7 +45,7 @@ func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) cl
 		beforeGrade := int32(0)
 		if card.Grade > 0 { // is a limit break
 			// add trigger card grade up so animation play when opening the card
-			session.AddTriggerCardGradeUp(client.UserInfoTriggerCardGradeUp{
+			user_info_trigger.AddTriggerCardGradeUp(session, client.UserInfoTriggerCardGradeUp{
 				CardMasterId:         card.CardMasterId,
 				BeforeLoveLevelLimit: afterLoveLevelLimit, // this is correct
 				AfterLoveLevelLimit:  afterLoveLevelLimit,

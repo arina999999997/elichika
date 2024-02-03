@@ -15,5 +15,5 @@ func customBackgroundFinalizer(session *Session) {
 	}
 }
 func init() {
-	AddContentFinalizer(customBackgroundFinalizer)
+	AddFinalizer(customBackgroundFinalizer)
 }

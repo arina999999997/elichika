@@ -139,5 +139,5 @@ func towerFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(towerFinalizer)
+	AddFinalizer(towerFinalizer)
 }

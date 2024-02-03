@@ -54,5 +54,5 @@ func (session *Session) FinishStoryMember(storyMemberMasterId int32) bool {
 }
 
 func init() {
-	AddContentFinalizer(memberStoryFinalizer)
+	AddFinalizer(memberStoryFinalizer)
 }

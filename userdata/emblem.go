@@ -15,5 +15,5 @@ func emblemFinalizer(session *Session) {
 	}
 }
 func init() {
-	AddContentFinalizer(emblemFinalizer)
+	AddFinalizer(emblemFinalizer)
 }

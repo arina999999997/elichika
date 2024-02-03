@@ -26,7 +26,7 @@ func AddContentPopulator(p handler) {
 	populators[reflect.ValueOf(p).Pointer()] = p
 }
 
-func AddContentFinalizer(f handler) {
+func AddFinalizer(f handler) {
 	if finalizers == nil {
 		populators = make(map[uintptr]handler)
 		finalizers = make(map[uintptr]handler)

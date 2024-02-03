@@ -1,25 +1,26 @@
-package userdata
+package user_info_trigger
 
 import (
 	"elichika/client"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-func (session *Session) DeleteTriggerBasic(triggerId int64) {
+func DeleteTriggerBasic(session *userdata.Session, triggerId int64) {
 	session.UserModel.UserInfoTriggerBasicByTriggerId.SetNull(triggerId)
 }
 
-func (session *Session) AddTriggerBasic(trigger client.UserInfoTriggerBasic) {
+func AddTriggerBasic(session *userdata.Session, trigger client.UserInfoTriggerBasic) {
 	if trigger.TriggerId == 0 {
 		trigger.TriggerId = session.NextUniqueId()
 	}
 	session.UserModel.UserInfoTriggerBasicByTriggerId.Set(trigger.TriggerId, trigger)
 }
 
-func triggerBasicFinalizer(session *Session) {
+func triggerBasicFinalizer(session *userdata.Session) {
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerBasicByTriggerId.Map {
 		if trigger != nil { // add
-			GenericDatabaseInsert(session, "u_info_trigger_basic", *trigger)
+			userdata.GenericDatabaseInsert(session, "u_info_trigger_basic", *trigger)
 		} else { // delete
 			_, err := session.Db.Table("u_info_trigger_basic").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
@@ -30,5 +31,5 @@ func triggerBasicFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(triggerBasicFinalizer)
+	userdata.AddFinalizer(triggerBasicFinalizer)
 }

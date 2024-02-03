@@ -149,6 +149,6 @@ func genericContentByContentIdPopulator(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddContentFinalizer(genericContentByContentIdFinalizer)
+	userdata.AddFinalizer(genericContentByContentIdFinalizer)
 	userdata.AddContentPopulator(genericContentByContentIdPopulator)
 }

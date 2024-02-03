@@ -71,5 +71,5 @@ func (session *Session) InsertLiveParties(parties []client.UserLiveParty) {
 }
 
 func init() {
-	AddContentFinalizer(livePartyFinalizer)
+	AddFinalizer(livePartyFinalizer)
 }

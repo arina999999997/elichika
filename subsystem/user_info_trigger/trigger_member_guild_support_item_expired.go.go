@@ -1,14 +1,15 @@
-package userdata
+package user_info_trigger
 
 import (
 	"elichika/client"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
+func triggerMemberGuildSupportItemExpiredFinalizer(session *userdata.Session) {
 	for triggerId, trigger := range session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.Map {
 		if trigger != nil { // add
-			GenericDatabaseInsert(session, "u_info_trigger_member_guild_support_item_expired", *trigger)
+			userdata.GenericDatabaseInsert(session, "u_info_trigger_member_guild_support_item_expired", *trigger)
 		} else { // delete
 			_, err := session.Db.Table("u_info_trigger_member_guild_support_item_expired").
 				Where("user_id = ? AND trigger_id = ?", session.UserId, triggerId).
@@ -18,7 +19,7 @@ func triggerMemberGuildSupportItemExpiredFinalizer(session *Session) {
 	}
 }
 
-func (session *Session) ReadMemberGuildSupportItemExpired() {
+func ReadMemberGuildSupportItemExpired(session *userdata.Session) {
 	session.UserModel.UserInfoTriggerMemberGuildSupportItemExpiredByTriggerId.
 		LoadFromDb(session.Db, session.UserId, "u_info_trigger_member_guild_support_item_expired", "trigger_id")
 
@@ -33,5 +34,5 @@ func (session *Session) ReadMemberGuildSupportItemExpired() {
 // This could be done by keeping a full user model in ram too.
 
 func init() {
-	AddContentFinalizer(triggerMemberGuildSupportItemExpiredFinalizer)
+	userdata.AddFinalizer(triggerMemberGuildSupportItemExpiredFinalizer)
 }

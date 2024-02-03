@@ -91,8 +91,8 @@ func storyLinkageFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(storyMainFinalizer)
-	AddContentFinalizer(storyMainSelectedFinalizer)
-	AddContentFinalizer(storyMainPartDigestMovieFinalizer)
-	AddContentFinalizer(storyLinkageFinalizer)
+	AddFinalizer(storyMainFinalizer)
+	AddFinalizer(storyMainSelectedFinalizer)
+	AddFinalizer(storyMainPartDigestMovieFinalizer)
+	AddFinalizer(storyLinkageFinalizer)
 }

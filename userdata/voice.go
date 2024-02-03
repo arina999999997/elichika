@@ -34,5 +34,5 @@ func voiceFinalizer(session *Session) {
 	}
 }
 func init() {
-	AddContentFinalizer(voiceFinalizer)
+	AddFinalizer(voiceFinalizer)
 }

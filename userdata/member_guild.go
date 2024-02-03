@@ -24,5 +24,5 @@ func memberGuildFinalizer(session *Session) {
 }
 
 func init() {
-	AddContentFinalizer(memberGuildFinalizer)
+	AddFinalizer(memberGuildFinalizer)
 }
