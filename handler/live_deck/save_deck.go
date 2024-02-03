@@ -1,17 +1,13 @@
 package live_deck
 
 import (
-	// "bytes"
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_live_deck"
-	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -22,77 +18,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func SaveDeckAll(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveLiveDeckAllRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	user_live_deck.UpdateUserLiveDeck(session, req.DeckId, req.CardWithSuit, req.SquadDict)
-
-	if session.UserStatus.TutorialPhase == enum.TutorialPhaseDeckEdit {
-		session.UserStatus.TutorialPhase = enum.TutorialPhaseSuitChange
-	}
-
-	session.Finalize()
-	common.JsonResponse(ctx, response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
-}
-
-func FetchLiveDeckSelect(ctx *gin.Context) {
-	// return last deck for this song
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.FetchLiveDeckSelectRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	common.JsonResponse(ctx, response.FetchLiveDeckSelectResponse{
-		LastPlayLiveDifficultyDeck: session.GetLastPlayLiveDifficultyDeck(req.LiveDifficultyId),
-	})
-}
-
-func SaveSuit(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveLiveDeckMemberSuitRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	if session.UserStatus.TutorialPhase == enum.TutorialPhaseSuitChange {
-		session.UserStatus.TutorialPhase = enum.TutorialPhaseGacha
-	}
-
-	userLiveDeck := session.GetUserLiveDeck(req.DeckId)
-	reflect.ValueOf(&userLiveDeck).Elem().Field(int(1 + req.CardIndex + 9)).Set(reflect.ValueOf(generic.NewNullable(req.SuitMasterId)))
-	session.UpdateUserLiveDeck(userLiveDeck)
-
-	// Rina-chan board toggle
-	if session.Gamedata.Suit[req.SuitMasterId].Member.Id == enum.MemberMasterIdRina {
-		RinaChan := user_member.GetMember(session, enum.MemberMasterIdRina)
-		RinaChan.ViewStatus = req.ViewStatus
-		user_member.UpdateMember(session, RinaChan)
-	}
-
-	session.Finalize()
-	common.JsonResponse(ctx, response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
-}
-
-func SaveDeck(ctx *gin.Context) {
-
+func saveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveLiveDeckCardsRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -163,31 +89,6 @@ func SaveDeck(ctx *gin.Context) {
 	})
 }
 
-func ChangeDeckNameLiveDeck(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.ChangeNameLiveDeckRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	liveDeck := session.GetUserLiveDeck(req.DeckId)
-	liveDeck.Name.DotUnderText = req.DeckName
-	session.UpdateUserLiveDeck(liveDeck)
-
-	session.Finalize()
-	common.JsonResponse(ctx, response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
-}
-
 func init() {
-	// TODO(refactor): move to individual files.
-	router.AddHandler("/liveDeck/changeDeckNameLiveDeck", ChangeDeckNameLiveDeck)
-	router.AddHandler("/liveDeck/fetchLiveDeckSelect", FetchLiveDeckSelect)
-	router.AddHandler("/liveDeck/saveDeck", SaveDeck)
-	router.AddHandler("/liveDeck/saveDeckAll", SaveDeckAll)
-	router.AddHandler("/liveDeck/saveSuit", SaveSuit)
+	router.AddHandler("/liveDeck/saveDeck", saveDeck)
 }

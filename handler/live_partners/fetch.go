@@ -1,21 +1,16 @@
 package live_partners
 
 import (
-	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_live"
 	"elichika/userdata"
-	"elichika/utils"
-
-	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
-func FetchLivePartners(ctx *gin.Context) {
+func fetch(ctx *gin.Context) {
 	// a set of partners player (i.e. friends and others), then fetch the card for them
 	// this set include the current user, so we can use our own cards.
 	// currently only have current user
@@ -38,26 +33,6 @@ func FetchLivePartners(ctx *gin.Context) {
 	common.JsonResponse(ctx, &resp)
 }
 
-func SetLivePartner(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SetLivePartnerCardRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	userLivePartner := session.GetUserLivePartner(req.LivePartnerCategoryId)
-	userLivePartner.CardMasterId = req.CardMasterId
-	session.UpdateUserLivePartner(userLivePartner)
-
-	session.Finalize()
-	common.JsonResponse(ctx, response.EmptyResponse{})
-}
-
 func init() {
-	// TODO(refactor): move to individual files.
-	router.AddHandler("/livePartners/fetch", FetchLivePartners)
-	router.AddHandler("/livePartners/setLivePartner", SetLivePartner)
+	router.AddHandler("/livePartners/fetch", fetch)
 }

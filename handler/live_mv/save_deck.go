@@ -19,25 +19,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func LiveMvStart(ctx *gin.Context) {
-	// we don't really need the request
-	// maybe it's once needed or it's only used for gathering data
-	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	// req := request.StartLiveMvRequest{}
-	// err := json.Unmarshal([]byte(reqBody), &req)
-	// utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	common.JsonResponse(ctx, &response.StartLiveMvResponse{
-		UniqId:        session.Time.UnixNano(),
-		UserModelDiff: &session.UserModel,
-	})
-}
-
-func LiveMvSaveDeck(ctx *gin.Context) {
+func saveDeck(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.SaveLiveMvDeckRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -79,8 +61,5 @@ func LiveMvSaveDeck(ctx *gin.Context) {
 }
 
 func init() {
-
-	// TODO(refactor): move to individual files.
-	router.AddHandler("/liveMv/saveDeck", LiveMvSaveDeck)
-	router.AddHandler("/liveMv/start", LiveMvStart)
+	router.AddHandler("/liveMv/saveDeck", saveDeck)
 }
