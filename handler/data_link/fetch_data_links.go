@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FetchDataLinks(ctx *gin.Context) {
+func fetchDataLinks(ctx *gin.Context) {
 	// there's no request body
 	common.JsonResponse(ctx, client.LinkedInfo{
 		IsTakeOverIdLinked: true,
@@ -16,5 +16,5 @@ func FetchDataLinks(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/dataLink/fetchDataLinks", FetchDataLinks)
+	router.AddHandler("/dataLink/fetchDataLinks", fetchDataLinks)
 }

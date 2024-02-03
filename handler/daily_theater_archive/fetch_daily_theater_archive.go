@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FetchDailyTheaterArchive(ctx *gin.Context) {
+func fetchDailyTheaterArchive(ctx *gin.Context) {
 	// this is used to publish new daily theater without having to update the database
 	// client have the old items in m_daily_theater_archive_client and m_daily_theater_archive_member_client
 	// client's missing 20230629 and 20230630
@@ -39,5 +39,5 @@ func FetchDailyTheaterArchive(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/dailyTheaterArchive/fetchDailyTheaterArchive", FetchDailyTheaterArchive)
+	router.AddHandler("/dailyTheaterArchive/fetchDailyTheaterArchive", fetchDailyTheaterArchive)
 }

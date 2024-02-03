@@ -8,6 +8,7 @@ import (
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
+	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_suit"
@@ -50,13 +51,13 @@ func LevelUpCard(ctx *gin.Context) {
 	}
 
 	cardLevel := session.Gamedata.CardLevel[session.Gamedata.Card[req.CardMasterId].CardRarityType]
-	card := session.GetUserCard(req.CardMasterId)
+	card := user_card.GetUserCard(session, req.CardMasterId)
 	user_content.RemoveContent(session, item.Gold.Amount(int32(
 		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel]-cardLevel.GameMoneyPrefixSum[card.Level])))
 	user_content.RemoveContent(session, item.EXP.Amount(int32(
 		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel]-cardLevel.ExpPrefixSum[card.Level])))
 	card.Level += req.AdditionalLevel
-	session.UpdateUserCard(card)
+	user_card.UpdateUserCard(session, card)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.LevelUpCardResponse{
@@ -75,7 +76,7 @@ func GradeUpCard(ctx *gin.Context) {
 	defer session.Close()
 
 	masterCard := session.Gamedata.Card[req.CardMasterId]
-	card := session.GetUserCard(req.CardMasterId)
+	card := user_card.GetUserCard(session, req.CardMasterId)
 	member := user_member.GetMember(session, *masterCard.MemberMasterId)
 
 	card.Grade++
@@ -86,7 +87,7 @@ func GradeUpCard(ctx *gin.Context) {
 		currentLoveLevel = session.Gamedata.MemberLoveLevelCount
 	}
 	member.LovePointLimit = session.Gamedata.MemberLoveLevelLovePoint[currentLoveLevel]
-	session.UpdateUserCard(card)
+	user_card.UpdateUserCard(session, card)
 	member.IsNew = true
 	user_member.UpdateMember(session, member)
 	user_content.RemoveContent(session, masterCard.CardGradeUpItem[card.Grade][req.ContentId])
@@ -118,7 +119,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseDeckEdit
 	}
 
-	card := session.GetUserCard(req.CardMasterId)
+	card := user_card.GetUserCard(session, req.CardMasterId)
 	masterCard := session.Gamedata.Card[req.CardMasterId]
 	trainingTree := masterCard.TrainingTree
 	cellContents := trainingTree.TrainingTreeMapping.TrainingTreeCellContents
@@ -194,7 +195,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 		user_member.UpdateMember(session, member)
 	}
 
-	session.UpdateUserCard(card)
+	user_card.UpdateUserCard(session, card)
 
 	// set "user_card_training_tree_cell_list" to the cell unlocked and insert the cell to db
 	unlockedCells := []client.UserCardTrainingTreeCell{}

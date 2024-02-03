@@ -7,6 +7,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_card"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -120,7 +121,7 @@ func SkillEditResult(ctx *gin.Context) {
 	defer session.Close()
 
 	for cardMasterId, selectedSkills := range req.SelectedSkillIds.Map {
-		card := session.GetUserCard(cardMasterId)
+		card := user_card.GetUserCard(session, cardMasterId)
 		for i, skillId := range selectedSkills.Slice {
 			switch i {
 			case 0:
@@ -133,7 +134,7 @@ func SkillEditResult(ctx *gin.Context) {
 				card.AdditionalPassiveSkill4Id = skillId
 			}
 		}
-		session.UpdateUserCard(card) // this is always updated even if no skill change happen
+		user_card.UpdateUserCard(session, card) // this is always updated even if no skill change happen
 	}
 
 	session.Finalize()

@@ -11,7 +11,7 @@ import (
 )
 
 // TODO(friend): Implement friend system
-func FetchFriendList(ctx *gin.Context) {
+func fetchFriendList(ctx *gin.Context) {
 	// there's no request body
 
 	// userId := int32(ctx.GetInt("user_id"))
@@ -24,5 +24,5 @@ func FetchFriendList(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/friend/fetchFriendList", FetchFriendList)
+	router.AddHandler("/friend/fetchFriendList", fetchFriendList)
 }

@@ -17,7 +17,7 @@ import (
 )
 
 // TODO(daily_theater): Actually implement this system
-func FetchDailyTheater(ctx *gin.Context) {
+func fetchDailyTheater(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchDailyTheaterRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -51,31 +51,6 @@ func FetchDailyTheater(ctx *gin.Context) {
 	})
 }
 
-func DailyTheaterSetLike(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.DailyTheaterSetLikeRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	session.UserModel.UserDailyTheaterByDailyTheaterId.Set(
-		req.DailyTheaterId,
-		client.UserDailyTheater{
-			DailyTheaterId: req.DailyTheaterId,
-			IsLiked:        req.IsLike,
-		})
-
-	session.Finalize()
-	common.JsonResponse(ctx, response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
-}
-
 func init() {
-	// TODO(refactor): move to individual files.
-	router.AddHandler("/dailyTheater/fetchDailyTheater", FetchDailyTheater)
-	router.AddHandler("/dailyTheater/setLike", DailyTheaterSetLike)
+	router.AddHandler("/dailyTheater/fetchDailyTheater", fetchDailyTheater)
 }

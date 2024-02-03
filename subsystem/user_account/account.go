@@ -7,6 +7,7 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
@@ -140,7 +141,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 			})
 		}
 		user_member.InsertMembers(session, members)
-		session.InsertCards(cards)
+		user_card.InsertCards(session, cards)
 	}
 	{ // all the costumes that can't be obtained from maxing cards
 		suits := []client.UserSuit{}

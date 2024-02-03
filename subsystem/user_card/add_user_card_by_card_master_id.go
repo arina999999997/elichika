@@ -15,7 +15,7 @@ import (
 // Note that this assume the card is added, so it's not used for present box and for gacha retry
 // the maxed limit break reward is also added directly to the user, the return value is only to help client display them
 func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) client.AddedCardResult {
-	card := session.GetUserCard(cardMasterId)
+	card := GetUserCard(session, cardMasterId)
 	masterCard := session.Gamedata.Card[cardMasterId]
 	card.Grade++
 	if card.Grade > enum.CardMaxGrade {
@@ -51,7 +51,7 @@ func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) cl
 			})
 			beforeGrade = card.Grade - 1
 		}
-		session.UpdateUserCard(card)
+		UpdateUserCard(session, card)
 		return client.AddedCardResult{
 			CardMasterId:         cardMasterId,
 			Level:                1,
