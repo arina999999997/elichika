@@ -57,7 +57,7 @@ func SetLivePartner(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/livePartners/fetch", FetchLivePartners)
 	router.AddHandler("/livePartners/setLivePartner", SetLivePartner)
 }

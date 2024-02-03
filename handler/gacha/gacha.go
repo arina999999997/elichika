@@ -54,7 +54,7 @@ func GachaDraw(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/gacha/fetchGachaMenu", FetchGachaMenu)
 	router.AddHandler("/gacha/draw", GachaDraw)
 }

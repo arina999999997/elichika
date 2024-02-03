@@ -12,10 +12,10 @@ import (
 	"math/rand"
 )
 
-func LevelUpAccessory(session *userdata.Session, userAccessoryId int64, 
-	powerUpAccessoryIds generic.Array[int64], 
+func LevelUpAccessory(session *userdata.Session, userAccessoryId int64,
+	powerUpAccessoryIds generic.Array[int64],
 	accessoryLevelUpItems generic.Array[client.AccessoryLevelUpItem]) response.AccessoryPowerUpResponse {
-		
+
 	userAccessory := GetUserAccessory(session, userAccessoryId)
 	masterAccessory := session.Gamedata.Accessory[userAccessory.AccessoryMasterId]
 

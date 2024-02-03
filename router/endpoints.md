@@ -166,7 +166,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /navi/tapLovePoint
 - [ ] /noop/noop
 - [x] /notice/fetchNotice
-- [ ] /notice/fetchNoticeDetail
+- [ ] /notice/fetchNoticeDetail TODO(notice, gacha): this can also be triggered from gacha
 - [ ] /notice/fetchNoticeList
 - [ ] /notice/saveUserSuperNotice
 - [x] /present/fetch

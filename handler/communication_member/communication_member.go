@@ -226,7 +226,7 @@ func SetFavoriteMember(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/communicationMember/fetchCommunicationMemberDetail", FetchCommunicationMemberDetail)
 	router.AddHandler("/communicationMember/finishUserStoryMember", FinishUserStoryMember)
 	router.AddHandler("/communicationMember/finishUserStorySide", FinishUserStorySide)

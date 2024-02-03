@@ -5,9 +5,9 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_accessory"
 	"elichika/userdata"
 	"elichika/utils"
-	"elichika/subsystem/user_accessory"
 
 	"encoding/json"
 

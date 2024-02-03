@@ -1,11 +1,10 @@
-package accessory
+package bootstrap
 
 import (
 	"elichika/client/request"
-	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_accessory"
+	"elichika/subsystem/user_bootstrap"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -15,9 +14,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func melt(ctx *gin.Context) {
+func fetchBootstrap(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.AccessoryMeltRequest{}
+	req := request.FetchBootstrapRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -25,16 +24,12 @@ func melt(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	for _, userAccessoryId := range req.UserAccessoryIds.Slice {
-		user_accessory.MeltAccessory(session, userAccessoryId)
-	}
+	resp := user_bootstrap.FetchBootstrap(session, req)
 
 	session.Finalize()
-	common.JsonResponse(ctx, &response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
+	common.JsonResponse(ctx, resp)
 }
 
 func init() {
-	router.AddHandler("/accessory/melt", melt)
+	router.AddHandler("/bootstrap/fetchBootstrap", fetchBootstrap)
 }

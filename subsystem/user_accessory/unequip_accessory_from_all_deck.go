@@ -1,9 +1,11 @@
 package user_accessory
+
 import (
 	"elichika/userdata"
 )
+
 func UnequipAccessoryFromAllDeck(session *userdata.Session, userAccessoryId int64) {
-	
+
 	liveParties := session.GetAllLivePartiesWithAccessory(userAccessoryId)
 	for _, liveParty := range liveParties {
 		if (liveParty.UserAccessoryId1.HasValue) && (liveParty.UserAccessoryId1.Value == userAccessoryId) {

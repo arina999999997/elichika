@@ -104,7 +104,6 @@ func AddLovePoint(session *userdata.Session, memberId, point int32) int32 {
 			if (masterLovePanel.NextPanel != nil) &&
 				(masterLovePanel.NextPanel.LoveLevelMasterLoveLevel <= member.LoveLevel) && (masterLovePanel.NextPanel.LoveLevelMasterLoveLevel > oldLoveLevel) {
 				nextPanel := masterLovePanel.NextPanel
-				fmt.Println(nextPanel.Id)
 				session.AddTriggerBasic(client.UserInfoTriggerBasic{
 					InfoTriggerType: enum.InfoTriggerTypeMemberLovePanelNew,
 					ParamInt:        generic.NewNullable(nextPanel.Id)})

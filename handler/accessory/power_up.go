@@ -25,7 +25,7 @@ func powerUp(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	resp:= user_accessory.LevelUpAccessory(session, req.UserAccessoryId, req.PowerUpAccessoryIds, req.AccessoryLevelUpItems)
+	resp := user_accessory.LevelUpAccessory(session, req.UserAccessoryId, req.PowerUpAccessoryIds, req.AccessoryLevelUpItems)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)

@@ -7,7 +7,6 @@ import (
 )
 
 func GetOtherUserCard(session *userdata.Session, otherUserId, cardMasterId int32) client.OtherUserCard {
-
 	userCard := client.UserCard{}
 	exist, err := session.Db.Table("u_card").
 		Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).Get(&userCard)

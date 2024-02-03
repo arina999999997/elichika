@@ -183,7 +183,7 @@ func JoinMemberGuild(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/memberGuild/cheerMemberGuild", CheerMemberGuild)
 	router.AddHandler("/memberGuild/fetchMemberGuildRanking", FetchMemberGuildRanking)
 	router.AddHandler("/memberGuild/fetchMemberGuildRankingYear", FetchMemberGuildRanking)

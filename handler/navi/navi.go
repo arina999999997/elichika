@@ -59,7 +59,7 @@ func TapLovePoint(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/navi/saveUserNaviVoice", SaveUserNaviVoice)
 	router.AddHandler("/navi/tapLovePoint", TapLovePoint)
 }

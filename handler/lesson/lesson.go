@@ -185,7 +185,7 @@ func ChangeDeckNameLessonDeck(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/lesson/executeLesson", ExecuteLesson)
 	router.AddHandler("/lesson/resultLesson", ResultLesson)
 	router.AddHandler("/lesson/saveDeck", SaveDeckLesson)

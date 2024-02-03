@@ -22,7 +22,7 @@ func latestLoginBonusTime(timePoint time.Time) time.Time {
 	}
 	return res
 }
-func NextLoginBonusTime(timePoint time.Time) time.Time {
+func nextLoginBonusTime(timePoint time.Time) time.Time {
 	return latestLoginBonusTime(timePoint).AddDate(0, 0, 1)
 }
 

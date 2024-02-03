@@ -77,7 +77,7 @@ func TriggerReadMemberGuildSupportItemExpired(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/infoTrigger/read", TriggerRead)
 	router.AddHandler("/infoTrigger/readCardGradeUp", TriggerReadCardGradeUp)
 	router.AddHandler("/infoTrigger/readMemberLoveLevelUp", TriggerReadMemberLoveLevelUp)

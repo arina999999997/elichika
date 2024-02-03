@@ -92,7 +92,7 @@ func FinishStoryLinkage(ctx *gin.Context) {
 
 func init() {
 	// /story/ all done
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/story/finishStoryLinkage", FinishStoryLinkage)
 	router.AddHandler("/story/finishUserStoryMain", FinishStoryMain)
 	router.AddHandler("/story/saveBrowseStoryMainDigestMovie", SaveBrowseStoryMainDigestMovie)

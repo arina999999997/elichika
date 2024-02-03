@@ -184,7 +184,7 @@ func ChangeDeckNameLiveDeck(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/liveDeck/changeDeckNameLiveDeck", ChangeDeckNameLiveDeck)
 	router.AddHandler("/liveDeck/fetchLiveDeckSelect", FetchLiveDeckSelect)
 	router.AddHandler("/liveDeck/saveDeck", SaveDeck)

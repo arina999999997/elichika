@@ -1,7 +1,8 @@
 package user_accessory
+
 import (
-	"elichika/userdata"
 	"elichika/subsystem/user_content"
+	"elichika/userdata"
 )
 
 func MeltAccessory(session *userdata.Session, userAccessoryId int64) {

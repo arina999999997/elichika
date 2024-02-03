@@ -39,11 +39,10 @@ import (
 
 type HandlerType = func(string, *userdata.Session, *gamedata.LoginBonus, *client.BootstrapLoginBonus)
 
-var Handler map[string]HandlerType
+var handler = map[string]HandlerType{}
 
 func init() {
-	Handler = make(map[string]HandlerType)
-	Handler["beginner_login_bonus"] = beginnerLoginBonusHandler
-	Handler["normal_login_bonus"] = normalLoginBonusHandler
-	Handler["birthday_login_bonus"] = birthdayLoginBonusHandler
+	handler["beginner_login_bonus"] = beginnerLoginBonusHandler
+	handler["normal_login_bonus"] = normalLoginBonusHandler
+	handler["birthday_login_bonus"] = birthdayLoginBonusHandler
 }

@@ -125,7 +125,7 @@ func TutorialSkip(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/tutorial/corePlayableEnd", CorePlayableEnd)
 	router.AddHandler("/tutorial/phaseEnd", PhaseEnd)
 	router.AddHandler("/tutorial/tutorialSkip", TutorialSkip)

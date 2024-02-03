@@ -124,9 +124,11 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 	cellContents := trainingTree.TrainingTreeMapping.TrainingTreeCellContents
 	for _, cellId := range req.CellMasterIds.Slice {
 		cell := &cellContents[cellId]
-		// consume practice items
-		for _, resource := range cell.TrainingTreeCellItemSet.Resources {
-			user_content.RemoveContent(session, resource)
+		// consume practice items only if this is not tutorial
+		if session.UserStatus.TutorialPhase == enum.TutorialPhaseTutorialEnd {
+			for _, resource := range cell.TrainingTreeCellItemSet.Resources {
+				user_content.RemoveContent(session, resource)
+			}
 		}
 
 		switch int32(cell.TrainingTreeCellType) {
@@ -213,7 +215,7 @@ func ActivateTrainingTreeCell(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files. 
+	// TODO(refactor): move to individual files.
 	router.AddHandler("/trainingTree/fetchTrainingTree", FetchTrainingTree)
 	router.AddHandler("/trainingTree/levelUpCard", LevelUpCard)
 	router.AddHandler("/trainingTree/gradeUpCard", GradeUpCard)
