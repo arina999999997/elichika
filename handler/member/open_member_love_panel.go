@@ -21,7 +21,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func OpenMemberLovePanel(ctx *gin.Context) {
+func openMemberLovePanel(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.OpenMemberLovePanelRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -68,5 +68,5 @@ func OpenMemberLovePanel(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/member/openMemberLovePanel", OpenMemberLovePanel)
+	router.AddHandler("/member/openMemberLovePanel", openMemberLovePanel)
 }

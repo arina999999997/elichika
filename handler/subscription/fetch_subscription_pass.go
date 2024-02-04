@@ -15,7 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func FetchSubscriptionPass(ctx *gin.Context) {
+func fetchSubscriptionPass(ctx *gin.Context) {
 	// TODO(subscription): everytime someone click on this, give them 1 month of reward because why not
 	// reward is cyclic, after the last month it come back to normal
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -40,5 +40,5 @@ func FetchSubscriptionPass(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/subscription/fetchSubscriptionPass", FetchSubscriptionPass)
+	router.AddHandler("/subscription/fetchSubscriptionPass", fetchSubscriptionPass)
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ReadLoginBonus(ctx *gin.Context) {
+func readLoginBonus(ctx *gin.Context) {
 	// this doesn't need to do anything, at least with this way of handling things
 	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	// req := request.ReadLoginBonusRequest{}
@@ -18,5 +18,5 @@ func ReadLoginBonus(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/loginBonus/readLoginBonus", ReadLoginBonus)
+	router.AddHandler("/loginBonus/readLoginBonus", readLoginBonus)
 }

@@ -17,7 +17,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func FetchTowerRanking(ctx *gin.Context) {
+func fetchTowerRanking(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchTowerRankingRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -52,5 +52,5 @@ func FetchTowerRanking(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/towerRanking/fetchTowerRanking", FetchTowerRanking)
+	router.AddHandler("/towerRanking/fetchTowerRanking", fetchTowerRanking)
 }

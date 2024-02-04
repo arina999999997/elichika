@@ -1,10 +1,10 @@
-package terms
+package user_profile
 
 import (
 	"elichika/client/request"
-	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_profile"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -14,9 +14,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Agreement(ctx *gin.Context) {
+func fetchProfile(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.TermsAgreementRequest{}
+	req := request.UserProfileRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -24,14 +24,9 @@ func Agreement(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UserStatus.TermsOfUseVersion = req.TermsVersion
-	session.Finalize()
-
-	common.JsonResponse(ctx, &response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
+	common.JsonResponse(ctx, user_profile.GetOtherUserProfileResponse(session, req.UserId))
 }
 
 func init() {
-	router.AddHandler("/terms/agreement", Agreement)
+	router.AddHandler("/userProfile/fetchProfile", fetchProfile)
 }

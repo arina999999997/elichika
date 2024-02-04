@@ -16,7 +16,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func LoveRankingFetch(ctx *gin.Context) {
+func fetch(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchLoveRankingRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -38,5 +38,5 @@ func LoveRankingFetch(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/loveRanking/fetch", LoveRankingFetch)
+	router.AddHandler("/loveRanking/fetch", fetch)
 }

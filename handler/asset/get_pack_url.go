@@ -15,7 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func GetPackUrl(ctx *gin.Context) {
+func getPackUrl(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.GetPackUrlRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -36,5 +36,5 @@ func GetPackUrl(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/asset/getPackUrl", GetPackUrl)
+	router.AddHandler("/asset/getPackUrl", getPackUrl)
 }

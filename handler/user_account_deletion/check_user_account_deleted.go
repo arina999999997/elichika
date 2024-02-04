@@ -14,7 +14,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func CheckUserAccountDeleted(ctx *gin.Context) {
+func checkUserAccountDeleted(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UserAccountDeletionRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -30,5 +30,5 @@ func CheckUserAccountDeleted(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userAccountDeletion/checkUserAccountDeleted", CheckUserAccountDeleted)
+	router.AddHandler("/userAccountDeletion/checkUserAccountDeleted", checkUserAccountDeleted)
 }

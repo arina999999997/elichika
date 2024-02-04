@@ -1,9 +1,8 @@
-package unlock_scene
+package scene_tips
 
 import (
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/userdata"
@@ -15,9 +14,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func SaveUnlockedScene(ctx *gin.Context) {
+func saveSceneTipsType(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveUnlockedSceneRequest1{}
+	req := request.SaveSceneTipsRequest1{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -25,9 +24,7 @@ func SaveUnlockedScene(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	for _, sceneType := range req.UnlockSceneTypes.Slice {
-		session.UnlockScene(sceneType, enum.UnlockSceneStatusOpened)
-	}
+	session.SaveSceneTips(req.SceneTipsType)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
@@ -36,5 +33,5 @@ func SaveUnlockedScene(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/unlockScene/saveUnlockedScene", SaveUnlockedScene)
+	router.AddHandler("/sceneTips/saveSceneTipsType", saveSceneTipsType)
 }
