@@ -1,8 +1,8 @@
 package user_emblem
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func emblemFinalizer(session *userdata.Session) {

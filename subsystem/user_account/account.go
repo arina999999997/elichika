@@ -8,6 +8,7 @@ import (
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_lesson_deck"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
@@ -241,7 +242,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				})
 			}
 		}
-		session.InsertLessonDecks(lessonDecks)
+		user_lesson_deck.InsertLessonDecks(session, lessonDecks)
 	}
 	session.Finalize()
 

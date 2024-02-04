@@ -1,8 +1,8 @@
 package user_custom_background
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func customBackgroundFinalizer(session *userdata.Session) {

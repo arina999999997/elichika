@@ -1,8 +1,8 @@
 package user_custom_background
 
 import (
-	"elichika/userdata"
 	"elichika/client"
+	"elichika/userdata"
 )
 
 func UpdateUserCustomBackground(session *userdata.Session, userCustomBackground client.UserCustomBackground) {

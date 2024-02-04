@@ -5,10 +5,9 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_lesson_deck"
 	"elichika/userdata"
 	"elichika/utils"
-
-	"reflect"
 
 	"encoding/json"
 
@@ -26,11 +25,7 @@ func saveDeck(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	userLessonDeck := session.GetUserLessonDeck(req.DeckId)
-	for position, cardMasterId := range req.CardMasterIds.Map {
-		reflect.ValueOf(&userLessonDeck).Elem().Field(int(position) + 1).Set(reflect.ValueOf(*cardMasterId))
-	}
-	session.UpdateLessonDeck(userLessonDeck)
+	user_lesson_deck.SaveUserLessonDeck(session, req)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

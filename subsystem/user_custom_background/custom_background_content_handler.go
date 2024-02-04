@@ -16,10 +16,10 @@ func customBackgroundContentHandler(session *userdata.Session, content *client.C
 	if !exists {
 		userdata.GenericDatabaseInsert(session, "u_custom_background", client.UserCustomBackground{
 			CustomBackgroundMasterId: content.ContentId,
-			IsNew: true,
+			IsNew:                    true,
 		})
 	}
-	return nil 
+	return nil
 }
 
 func init() {

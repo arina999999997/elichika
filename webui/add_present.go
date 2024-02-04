@@ -1,6 +1,5 @@
 package webui
 
-
 import (
 	"elichika/client"
 	"elichika/enum"
@@ -48,15 +47,15 @@ func AddPresent(ctx *gin.Context) {
 	contentType, _ := strconv.ParseInt(contentTypeString, 16, 64)
 	contentId, _ := strconv.Atoi(contentIdString)
 	contentAmount, _ := strconv.Atoi(contentAmountString)
-	
+
 	user_present.AddPresent(session, client.PresentItem{
 		PresentRouteType: enum.PresentRouteTypeAdminPresent,
 		Content: client.Content{
-			ContentType: int32(contentType),
-			ContentId: int32(contentId),
+			ContentType:   int32(contentType),
+			ContentId:     int32(contentId),
 			ContentAmount: int32(contentAmount),
 		}})
-	
+
 	session.Finalize()
 	ctx.Redirect(http.StatusFound, commonPrefix+fmt.Sprintf("Success: Added item (%d %d %d) for user %d", contentType, contentId, contentAmount, userId))
 }

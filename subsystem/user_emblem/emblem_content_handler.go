@@ -7,6 +7,7 @@ import (
 	"elichika/userdata"
 	"elichika/utils"
 )
+
 // TODO(emblem): This doesn't set the params, and maybe there should be a function that manually add with params
 // But the params doesn't seems to do anything
 func emblemContentHandler(session *userdata.Session, content *client.Content) any {
@@ -16,12 +17,12 @@ func emblemContentHandler(session *userdata.Session, content *client.Content) an
 	utils.CheckErr(err)
 	if !exists {
 		userdata.GenericDatabaseInsert(session, "u_emblem", client.UserEmblem{
-			EmblemMId: content.ContentId,
-			IsNew: true,
+			EmblemMId:  content.ContentId,
+			IsNew:      true,
 			AcquiredAt: session.Time.Unix(),
 		})
 	}
-	return nil 
+	return nil
 }
 
 func init() {

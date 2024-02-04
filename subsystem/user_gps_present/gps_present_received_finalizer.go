@@ -1,11 +1,11 @@
-package userdata
+package user_gps_present
 
 import (
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-// TODO(refactor): Move into subsystem
-func gpsPresentReceivedFinalizer(session *Session) {
+func gpsPresentReceivedFinalizer(session *userdata.Session) {
 	for _, userGpsPresentReceived := range session.UserModel.UserGpsPresentReceivedById.Map {
 		affected, err := session.Db.Table("u_gps_present_received").
 			Where("user_id = ? AND campaign_id = ?",
@@ -13,11 +13,11 @@ func gpsPresentReceivedFinalizer(session *Session) {
 			AllCols().Update(*userGpsPresentReceived)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_gps_present_received", *userGpsPresentReceived)
+			userdata.GenericDatabaseInsert(session, "u_gps_present_received", *userGpsPresentReceived)
 		}
 	}
 }
 
 func init() {
-	AddFinalizer(gpsPresentReceivedFinalizer)
+	userdata.AddFinalizer(gpsPresentReceivedFinalizer)
 }

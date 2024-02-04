@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_lesson_deck"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,9 +25,7 @@ func changeDeckNameLessonDeck(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	lessonDeck := session.GetUserLessonDeck(req.DeckId)
-	lessonDeck.Name = req.DeckName
-	session.UpdateLessonDeck(lessonDeck)
+	user_lesson_deck.SetLessonDeckName(session, req.DeckId, req.DeckName)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

@@ -1,9 +1,9 @@
 package user_custom_background
 
 import (
-	"elichika/utils"
-	"elichika/userdata"
 	"elichika/client"
+	"elichika/userdata"
+	"elichika/utils"
 )
 
 func GetUserCustomBackground(session *userdata.Session, customBackgroundMasterId int32) client.UserCustomBackground {
@@ -15,7 +15,7 @@ func GetUserCustomBackground(session *userdata.Session, customBackgroundMasterId
 	if !exist {
 		userCustomBackground = client.UserCustomBackground{
 			CustomBackgroundMasterId: customBackgroundMasterId,
-			IsNew: true,
+			IsNew:                    true,
 		}
 	}
 	return userCustomBackground

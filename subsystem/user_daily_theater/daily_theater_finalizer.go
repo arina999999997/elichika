@@ -1,8 +1,8 @@
 package user_daily_theater
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func dailyTheaterFinalizer(session *userdata.Session) {
