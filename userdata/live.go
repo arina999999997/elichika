@@ -6,6 +6,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) SaveUserLive(live client.Live, req request.StartLiveRequest) {
 	// delete whatever is there
 	_, err := session.Db.Table("u_live").Where("user_id = ?", session.UserId).Delete(&client.Live{})

@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func missionFinalizer(session *Session) {
 	for _, userMission := range session.UserModel.UserMissionByMissionId.Map {
 		affected, err := session.Db.Table("u_mission").Where("user_id = ? AND mission_m_id = ?",

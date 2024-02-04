@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func gpsPresentReceivedFinalizer(session *Session) {
 	for _, userGpsPresentReceived := range session.UserModel.UserGpsPresentReceivedById.Map {
 		affected, err := session.Db.Table("u_gps_present_received").

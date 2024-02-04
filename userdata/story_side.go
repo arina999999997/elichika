@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) InsertStorySide(storySideMasterId int32) {
 	userStorySide := client.UserStorySide{
 		StorySideMasterId: storySideMasterId,

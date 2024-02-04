@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserLessonDeck(userLessonDeckId int32) client.UserLessonDeck {
 	ptr, exist := session.UserModel.UserLessonDeckById.Get(userLessonDeckId)
 	if exist {

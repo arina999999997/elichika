@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) InsertReferenceBook(referenceBookId int32) {
 	session.UserModel.UserReferenceBookById.Set(referenceBookId, client.UserReferenceBook{
 		ReferenceBookId: referenceBookId,

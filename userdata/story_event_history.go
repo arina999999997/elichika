@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) UnlockEventStory(eventStoryMasterId int32) {
 	userStoryEventHistory := client.UserStoryEventHistory{
 		StoryEventId: eventStoryMasterId,

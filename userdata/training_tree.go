@@ -6,6 +6,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 // return the training tree for a card
 func (session *Session) GetTrainingTree(cardMasterId int32) generic.List[client.UserCardTrainingTreeCell] {
 	cells := generic.List[client.UserCardTrainingTreeCell]{}

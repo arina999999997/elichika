@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func dailyTheaterFinalizer(session *Session) {
 	for _, userDailyTheater := range session.UserModel.UserDailyTheaterByDailyTheaterId.Map {
 		affected, err := session.Db.Table("u_daily_theater").

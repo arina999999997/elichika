@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) UpdateVoice(naviVoiceMasterId int32, isNew bool) {
 	userVoice := client.UserVoice{}
 	exist, err := session.Db.Table("u_voice").Where("user_id = ? AND navi_voice_master_id = ?",

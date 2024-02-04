@@ -7,6 +7,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) client.TowerCardUsedCount {
 	cardUsed := client.TowerCardUsedCount{}
 	exist, err := session.Db.Table("u_tower_card_used_count").

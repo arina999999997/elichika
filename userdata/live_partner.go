@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserLivePartner(livePartnerCategoryId int32) database.UserLivePartner {
 	userLivePartner := database.UserLivePartner{}
 	exist, err := session.Db.Table("u_live_partner").

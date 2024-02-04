@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func userEventFinalizer(session *Session) {
 	for _, userEvent := range session.UserModel.UserEventMarathonByEventMasterId.Map {
 		affected, err := session.Db.Table("u_event_marathon").Where("user_id = ? AND event_master_id = ?",

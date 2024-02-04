@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 // unlock_scene and scene_tips
 // unlock_scene unlock the scene, so 1 is for training and so on
 // when unlocked, some tips are shown, then scene_tips is used to not show it again

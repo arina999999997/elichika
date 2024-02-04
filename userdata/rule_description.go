@@ -6,6 +6,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) UpdateUserRuleDescription(ruleDescriptionId int32) {
 	// rule description is used for popup windows that tell you the rule of things
 	// only encountered in /referenceBook for now

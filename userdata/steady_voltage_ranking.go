@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func steadyVoltageRankingFinalizer(session *Session) {
 	for _, userSteadyvoltageRanking := range session.UserModel.UserSteadyVoltageRankingById.Map {
 		affected, err := session.Db.Table("u_steady_voltage_ranking").

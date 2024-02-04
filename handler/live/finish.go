@@ -211,10 +211,10 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 				addedLove += rewardCenterLovePoint
 			}
 
-			userCardPlayCountStat := session.GetUserCardPlayCountStat(liveFinishCard.CardMasterId)
+			userCardPlayCountStat := user_card.GetUserCardPlayCountStat(session, liveFinishCard.CardMasterId)
 			userCardPlayCountStat.LiveJoinCount++
 			userCardPlayCountStat.ActiveSkillPlayCount += liveFinishCard.SkillTriggeredCount
-			session.UpdateUserCardPlayCountStat(userCardPlayCountStat)
+			user_card.UpdateUserCardPlayCountStat(session, userCardPlayCountStat)
 			// update member love point
 			memberMasterId := gamedata.Card[liveFinishCard.CardMasterId].Member.Id
 

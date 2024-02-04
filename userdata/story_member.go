@@ -6,6 +6,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) InsertMemberStory(storyMemberMasterId int32) {
 	// this is correct, but it is obsolete since the client unlock all the bond episode when
 	// unlock scene type 4 is set

@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserLiveParty(partyId int) client.UserLiveParty {
 	liveParty := client.UserLiveParty{}
 	exist, err := session.Db.Table("u_live_party").

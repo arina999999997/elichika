@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func reviewRequestProcessFlowFinalizer(session *Session) {
 	for id, userReview := range session.UserModel.UserReviewRequestProcessFlowById.Map {
 		affected, err := session.Db.Table("u_review_request_process_flow").

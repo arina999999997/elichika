@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserLiveDeck(userLiveDeckId int32) client.UserLiveDeck {
 	liveDeck := client.UserLiveDeck{}
 	exist, err := session.Db.Table("u_live_deck").

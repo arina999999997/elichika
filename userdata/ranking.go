@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 )
 
+// TODO(refactor): Move into subsystem
 // TODO(multiplayer): This only work for single player
 func (session *Session) GetTowerRankingUser() client.TowerRankingUser {
 	// TODO(refactor): These are disabled until they are moved, to avoid circular import

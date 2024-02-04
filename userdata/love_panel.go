@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetOtherUserMemberLovePanel(userId, memberId int32) client.MemberLovePanel {
 	result := client.MemberLovePanel{}
 	exist, err := session.Db.Table("u_member_love_panel").

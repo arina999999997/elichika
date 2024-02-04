@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) AddUserPlayList(userPlayList client.UserPlayList) {
 	session.UserModel.UserPlayListById.Set(userPlayList.UserPlayListId, userPlayList)
 }

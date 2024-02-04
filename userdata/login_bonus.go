@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserLoginBonus(loginBonusId int32) database.UserLoginBonus {
 	userLoginBonus := database.UserLoginBonus{}
 	exists, err := session.Db.Table("u_login_bonus").

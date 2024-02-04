@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func memberGuildFinalizer(session *Session) {
 	for _, userMemberGuild := range session.UserModel.UserMemberGuildById.Map {
 		affected, err := session.Db.Table("u_member_guild").Where("user_id = ? AND member_guild_id = ?",

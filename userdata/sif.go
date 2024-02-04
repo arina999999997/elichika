@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func schoolIdolFestivalIdRewardMissionFinalizer(session *Session) {
 	for _, userSchoolIdolFestivalIdRewardMissionFinalizer := range session.UserModel.UserSchoolIdolFestivalIdRewardMissionById.Map {
 		affected, err := session.Db.Table("u_school_idol_festival_id_reward_mission").

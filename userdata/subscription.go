@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetSubsriptionStatus(subscriptionMasterId int32) client.UserSubscriptionStatus {
 	status := client.UserSubscriptionStatus{}
 	exists, err := session.Db.Table("u_subscription_status").

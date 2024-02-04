@@ -4,6 +4,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func liveMvFinalizer(session *Session) {
 	for _, userLiveMv := range session.UserModel.UserLiveMvDeckById.Map {
 		affected, err := session.Db.Table("u_live_mv_deck").Where("user_id = ? AND live_master_id = ?",

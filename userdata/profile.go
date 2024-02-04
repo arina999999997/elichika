@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func FetchDBProfile(userId int32, result interface{}) {
 	exist, err := Engine.Table("u_status").Where("user_id = ?", userId).Get(result)
 	utils.CheckErrMustExist(err, exist)

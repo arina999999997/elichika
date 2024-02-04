@@ -6,6 +6,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) GetOtherUserLiveDifficulty(otherUserId int32, liveDifficultyId int32) client.UserLiveDifficulty {
 	userLiveDifficulty := client.UserLiveDifficulty{}
 	exist, err := session.Db.Table("u_live_difficulty").

@@ -5,6 +5,7 @@ import (
 	"elichika/utils"
 )
 
+// TODO(refactor): Move into subsystem
 func (session *Session) SetPassWord(passWord string) {
 	affected, err := session.Db.Table("u_pass_word").Where("user_id = ?", session.UserId).AllCols().Update(
 		database.UserPassWord{
