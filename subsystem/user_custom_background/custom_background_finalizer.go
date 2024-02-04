@@ -1,20 +1,21 @@
-package userdata
+package user_custom_background
 
 import (
 	"elichika/utils"
+	"elichika/userdata"
 )
 
-// TODO(refactor): Move into subsystem
-func customBackgroundFinalizer(session *Session) {
+func customBackgroundFinalizer(session *userdata.Session) {
 	for _, userCustomBackground := range session.UserModel.UserCustomBackgroundById.Map {
 		affected, err := session.Db.Table("u_custom_background").Where("user_id = ? AND custom_background_master_id = ?",
 			session.UserId, userCustomBackground.CustomBackgroundMasterId).AllCols().Update(userCustomBackground)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_custom_background", *userCustomBackground)
+			userdata.GenericDatabaseInsert(session, "u_custom_background", *userCustomBackground)
 		}
 	}
 }
+
 func init() {
-	AddFinalizer(customBackgroundFinalizer)
+	userdata.AddFinalizer(customBackgroundFinalizer)
 }

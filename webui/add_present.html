@@ -1,0 +1,81 @@
+<div>
+    <text style="font-size:50px;">
+        Add item to present box based on content type, content id, and content amount. Note that there is no check that the content is correct, use at your own risk. (if you accidentally added something that doesn't exist, you can delete the specific present in the database to fix it)
+    </text>
+</div>
+<br>
+<form action="/webui" method="POST" enctype="multipart/form-data">
+
+    <div class="flex-container" style="display: flex; flex-wrap: nowrap; justify-content: space-between;">
+        <text style="font-size:50px;flex-grow:1;">
+            Enter user (player) Id:
+        </text>
+        <input type="number" id="user_id" name="user_id" min="0" max="999999999"
+            style="font-size:50px;height:10%;flex-grow:1;">
+    </div>
+
+    <div>
+        <text style="font-size:20px;">
+            User id is required for all action, if left empty, the user who logged in most recently will be used.
+        </text>
+    </div>
+    <br> <br>
+
+    <div class="flex-container" style="display: flex; flex-wrap: wrap; ">
+        <text style="font-size:50px;">
+            Content Type:
+        </text>
+        <select name="content_type" id="content_type">
+            <option value="01"> SnsCoin (0x00000001) </option>
+            <option value="03"> Card (0x00000003) </option>
+            <option value="04"> CardExp (0x00000004) </option>
+            <option value="05"> GachaPoint (0x00000005) </option>
+            <option value="06"> LessonEnhancingItem (0x00000006) </option>
+            <option value="07"> Suit (0x00000007) </option>
+            <option value="08"> Voice (0x00000008) </option>
+            <option value="09"> GachaTicket (0x00000009) </option>
+            <option value="0a"> GameMoney (0x0000000a) </option>
+            <option value="0c"> TrainingMaterial (0x0000000c) </option>
+            <option value="0d"> GradeUpper (0x0000000d) </option>
+            <option value="0e"> GiftBox (0x0000000e) </option>
+            <option value="0f"> Emblem (0x0000000f) </option>
+            <option value="10"> RecoveryAp (0x00000010) </option>
+            <option value="11"> RecoveryLp (0x00000011) </option>
+            <option value="13"> StorySide (0x00000013) </option>
+            <option value="14"> StoryMember (0x00000014) </option>
+            <option value="15"> ExchangeEventPoint (0x00000015) </option>
+            <option value="17"> Accessory (0x00000017) </option>
+            <option value="18"> AccessoryLevelUp (0x00000018) </option>
+            <option value="19"> AccessoryRarityUp (0x00000019) </option>
+            <option value="1a"> CustomBackground (0x0000001a) </option>
+            <option value="1b"> EventMarathonBooster (0x0000001b) </option>
+            <option value="1c"> LiveSkipTicket (0x0000001c) </option>
+            <option value="1d"> EventMiningBooster (0x0000001d) </option>
+            <option value="1e"> StoryEventUnlock (0x0000001e) </option>
+            <option value="1f"> RecoveryTowerCardUsedCount (0x0000001f) </option>
+            <option value="20"> SubscriptionCoin (0x00000020) </option>
+            <option value="21"> MemberGuildSupport (0x00000021) </option>
+        </select>
+    </div>
+    <div class="flex-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+        <text style="font-size:50px;">
+            Content Id:
+        </text>
+        <input type="number" id="content_id" name="content_id" min="0" max="2147483647" style="font-size:50px;height:10%;flex-grow:1;">
+
+    </div>
+    <div class="flex-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+        <text style="font-size:50px;">
+            Content Amount:
+        </text>
+        <input type="number" id="content_amount" name="content_amount" min="0" max="2147483647" style="font-size:50px;height:10%;flex-grow:1;">
+    </div>
+    <br>
+
+
+    <button type="submit" formaction="add_present" style="font-size:50px;">
+        Add present
+    </button>
+
+    <br><br><br>
+</form>

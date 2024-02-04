@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_custom_background"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -29,6 +30,7 @@ func setTheme(ctx *gin.Context) {
 	member.SuitMasterId = req.SuitMasterId
 	member.CustomBackgroundMasterId = req.CustomBackgroundMasterId
 	user_member.UpdateMember(session, member)
+	user_custom_background.ReadCustomBackground(session, req.CustomBackgroundMasterId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

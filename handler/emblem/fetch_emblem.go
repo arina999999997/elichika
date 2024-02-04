@@ -28,6 +28,9 @@ func fetchEmblem(ctx *gin.Context) {
 			EmblemMasterId: emblem.EmblemMId,
 			IsNew:          emblem.IsNew,
 		})
+		if emblem.IsNew {
+			emblem.IsNew = false
+		}
 	}
 
 	common.JsonResponse(ctx, &resp)

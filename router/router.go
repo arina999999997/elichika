@@ -49,5 +49,6 @@ func Router(r *gin.Engine) {
 		webapi.POST("/reset_story_linkage", webui.ResetProgress)
 		webapi.POST("/reset_story_event", webui.ResetProgress)
 		webapi.POST("/reset_dlp", webui.ResetProgress)
+		webapi.POST("/add_present", webui.AddPresent)
 	}
 }
