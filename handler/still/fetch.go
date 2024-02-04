@@ -8,12 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FetchStill(ctx *gin.Context) {
+func fetch(ctx *gin.Context) {
 	// there is no request body
 
 	common.JsonResponse(ctx, &response.FetchStillResponse{})
 }
 
 func init() {
-	router.AddHandler("/still/fetch", FetchStill)
+	router.AddHandler("/still/fetch", fetch)
 }

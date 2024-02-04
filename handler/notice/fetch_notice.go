@@ -10,7 +10,7 @@ import (
 )
 
 // TODO(notice): This is not implemented although it could be cool to use it to put guide or stuff
-func FetchNotice(ctx *gin.Context) {
+func fetchNotice(ctx *gin.Context) {
 	// there is no request body
 
 	resp := response.FetchNoticeResponse{
@@ -25,5 +25,5 @@ func FetchNotice(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/notice/fetchNotice", FetchNotice)
+	router.AddHandler("/notice/fetchNotice", fetchNotice)
 }

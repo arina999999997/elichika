@@ -17,27 +17,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func SaveUserNaviVoice(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveUserNaviVoiceRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
-	utils.CheckErr(err)
-
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	for _, naviVoiceMasterId := range req.NaviVoiceMasterIds.Slice {
-		session.UpdateVoice(naviVoiceMasterId, false)
-	}
-
-	session.Finalize()
-	common.JsonResponse(ctx, response.UserModelResponse{
-		UserModel: &session.UserModel,
-	})
-}
-
-func TapLovePoint(ctx *gin.Context) {
+func tapLovePoint(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.TapLovePointRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -59,7 +39,5 @@ func TapLovePoint(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(refactor): move to individual files.
-	router.AddHandler("/navi/saveUserNaviVoice", SaveUserNaviVoice)
-	router.AddHandler("/navi/tapLovePoint", TapLovePoint)
+	router.AddHandler("/navi/tapLovePoint", tapLovePoint)
 }

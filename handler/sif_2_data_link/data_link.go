@@ -13,7 +13,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Sif2DataLink(ctx *gin.Context) {
+func dataLink(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.Sif2DataLinkRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -29,5 +29,5 @@ func Sif2DataLink(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/sif2DataLink/dataLink", Sif2DataLink)
+	router.AddHandler("/sif2DataLink/dataLink", dataLink)
 }

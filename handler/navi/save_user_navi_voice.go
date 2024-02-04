@@ -1,4 +1,4 @@
-package reference_book
+package navi
 
 import (
 	"elichika/client/request"
@@ -14,9 +14,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func SaveReferenceBook(ctx *gin.Context) {
+func saveUserNaviVoice(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
-	req := request.SaveReferenceBookRequest{}
+	req := request.SaveUserNaviVoiceRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
 
@@ -24,7 +24,9 @@ func SaveReferenceBook(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.InsertReferenceBook(req.ReferenceBookId)
+	for _, naviVoiceMasterId := range req.NaviVoiceMasterIds.Slice {
+		session.UpdateVoice(naviVoiceMasterId, false)
+	}
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
@@ -33,5 +35,5 @@ func SaveReferenceBook(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/referenceBook/saveReferenceBook", SaveReferenceBook)
+	router.AddHandler("/navi/saveUserNaviVoice", saveUserNaviVoice)
 }
