@@ -12,7 +12,7 @@ import (
 
 type StoryMember struct {
 	// from m_story_member
-	Id int `xorm:"pk 'id'"`
+	Id int32 `xorm:"pk 'id'"`
 	// MemberMasterId int `xorm:"member_master_id"`
 	// StoryNo int
 	// LoveLevel int
@@ -21,7 +21,7 @@ type StoryMember struct {
 	// ScenarioScriptAssetPath string
 	// CardImageAssetPath string
 	// DisplayOrder int
-	UnlockLiveId *int `xorm:"'unlock_live_id'"`
+	UnlockLiveId *int32 `xorm:"'unlock_live_id'"`
 
 	// from m_story_member_rewards
 	Reward *client.Content `xorm:"-"`

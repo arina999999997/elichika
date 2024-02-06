@@ -18,6 +18,7 @@ import (
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
+	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/voltage_ranking"
 	"elichika/userdata"
 	"elichika/utils"
@@ -34,7 +35,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	gamedata := session.Gamedata
 	liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
 
-	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
+	userLiveDifficulty := user_live_difficulty.GetUserLiveDifficulty(session, session.UserStatus.LastLiveDifficultyId)
 	userLiveDifficulty.IsNew = false
 	userLiveDifficulty.IsAutoplay = startReq.IsAutoPlay
 
@@ -247,9 +248,9 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	if live.LivePartnerCard.HasValue {
 		resp.LiveResult.Partner = generic.NewNullable(user_profile.GetOtherUser(session, startReq.PartnerUserId))
 	}
-	session.UpdateLiveDifficulty(userLiveDifficulty)
-
-	session.UpdateLastPlayLiveDifficultyDeck(lastPlayDeck)
+	
+	user_live_difficulty.UpdateLiveDifficulty(session, userLiveDifficulty)
+	user_live_difficulty.UpdateLastPlayLiveDifficultyDeck(session, lastPlayDeck)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)
@@ -260,7 +261,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 	// liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
 
 	// official server only record the Id, all other field are zero-valued
-	userLiveDifficulty := session.GetUserLiveDifficulty(session.UserStatus.LastLiveDifficultyId)
+	userLiveDifficulty := user_live_difficulty.GetUserLiveDifficulty(session, session.UserStatus.LastLiveDifficultyId)
 	userLiveDifficulty.IsNew = false
 
 	resp := response.FinishLiveResponse{
@@ -368,7 +369,7 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 		}
 	}
 
-	session.UpdateLiveDifficulty(userLiveDifficulty)
+	user_live_difficulty.UpdateLiveDifficulty(session, userLiveDifficulty)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)

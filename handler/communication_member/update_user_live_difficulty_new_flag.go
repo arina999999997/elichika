@@ -8,6 +8,8 @@ import (
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/subsystem/user_live_difficulty"
+
 
 	"encoding/json"
 
@@ -28,7 +30,7 @@ func updateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	liveDifficultyRecords := session.GetAllLiveDifficulties()
+	liveDifficultyRecords := user_live_difficulty.GetAllLiveDifficulties(session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 
 	for _, liveDifficultyRecord := range liveDifficultyRecords {
@@ -45,7 +47,7 @@ func updateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 		_, exist := liveDifficultyMaster.Live.LiveMemberMapping[req.MemberMasterId]
 		if exist {
 			liveDifficultyRecord.IsNew = false
-			session.UpdateLiveDifficulty(liveDifficultyRecord)
+			user_live_difficulty.UpdateLiveDifficulty(session, liveDifficultyRecord)
 		}
 	}
 

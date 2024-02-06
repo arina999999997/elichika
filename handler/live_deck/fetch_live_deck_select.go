@@ -7,6 +7,7 @@ import (
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/subsystem/user_live_difficulty"
 
 	"encoding/json"
 
@@ -26,7 +27,7 @@ func fetchLiveDeckSelect(ctx *gin.Context) {
 	defer session.Close()
 
 	common.JsonResponse(ctx, response.FetchLiveDeckSelectResponse{
-		LastPlayLiveDifficultyDeck: session.GetLastPlayLiveDifficultyDeck(req.LiveDifficultyId),
+		LastPlayLiveDifficultyDeck: user_live_difficulty.GetLastPlayLiveDifficultyDeck(session, req.LiveDifficultyId),
 	})
 }
 

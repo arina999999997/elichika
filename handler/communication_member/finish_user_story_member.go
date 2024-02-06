@@ -11,6 +11,7 @@ import (
 	"elichika/router"
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_present"
+	"elichika/subsystem/user_live_difficulty"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -48,12 +49,7 @@ func finishUserStoryMember(ctx *gin.Context) {
 			})
 		}
 		if storyMemberMaster.UnlockLiveId != nil {
-			masterLive := gamedata.Live[int32(*storyMemberMaster.UnlockLiveId)]
-			// insert empty record for relevant items
-			for _, masterLiveDifficulty := range masterLive.LiveDifficulties {
-				userLiveDifficulty := session.GetUserLiveDifficulty(masterLiveDifficulty.LiveDifficultyId)
-				session.UpdateLiveDifficulty(userLiveDifficulty)
-			}
+			user_live_difficulty.UnlockLive(session, *storyMemberMaster.UnlockLiveId)
 		}
 	}
 

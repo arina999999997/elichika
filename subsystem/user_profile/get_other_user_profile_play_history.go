@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_live_difficulty"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -63,12 +64,12 @@ func GetOtherUserProfilePlayHistory(session *userdata.Session, otherUserId int32
 	if customProfile.VoltageLiveDifficultyId != 0 {
 		res.MaxScoreLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.VoltageLiveDifficultyId)
 		res.MaxScoreLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.VoltageLiveDifficultyId).MaxScore
+			user_live_difficulty.GetOtherUserLiveDifficulty(session, otherUserId, customProfile.VoltageLiveDifficultyId).MaxScore
 	}
 	if customProfile.CommboLiveDifficultyId != 0 {
 		res.MaxComboLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.CommboLiveDifficultyId)
 		res.MaxComboLiveDifficulty.Score =
-			session.GetOtherUserLiveDifficulty(otherUserId, customProfile.CommboLiveDifficultyId).MaxCombo
+			user_live_difficulty.GetOtherUserLiveDifficulty(session, otherUserId, customProfile.CommboLiveDifficultyId).MaxCombo
 	}
 	return res
 }
