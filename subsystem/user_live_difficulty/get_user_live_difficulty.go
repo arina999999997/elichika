@@ -1,8 +1,8 @@
 package user_live_difficulty
 
 import (
-	"elichika/userdata"
 	"elichika/client"
+	"elichika/userdata"
 )
 
 func GetUserLiveDifficulty(session *userdata.Session, liveDifficultyId int32) client.UserLiveDifficulty {

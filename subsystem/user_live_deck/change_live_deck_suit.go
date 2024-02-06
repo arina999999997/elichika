@@ -1,10 +1,10 @@
 package user_live_deck
 
 import (
-	"elichika/generic"
-	"elichika/userdata"
 	"elichika/enum"
+	"elichika/generic"
 	"elichika/subsystem/user_member"
+	"elichika/userdata"
 
 	"reflect"
 )

@@ -10,8 +10,8 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_info_trigger"
-	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_live_difficulty"
+	"elichika/subsystem/user_present"
 	"elichika/userdata"
 	"elichika/utils"
 

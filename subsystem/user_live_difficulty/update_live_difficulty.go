@@ -5,6 +5,6 @@ import (
 	"elichika/userdata"
 )
 
-func UpdateLiveDifficulty(session*userdata.Session, userLiveDifficulty client.UserLiveDifficulty) {
+func UpdateLiveDifficulty(session *userdata.Session, userLiveDifficulty client.UserLiveDifficulty) {
 	session.UserModel.UserLiveDifficultyByDifficultyId.Set(userLiveDifficulty.LiveDifficultyId, userLiveDifficulty)
 }

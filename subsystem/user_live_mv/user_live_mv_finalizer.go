@@ -1,17 +1,17 @@
-package userdata
+package user_live_mv
 
 import (
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-// TODO(refactor): Move into subsystem
-func liveMvFinalizer(session *Session) {
+func userLiveMvFinalizer(session *userdata.Session) {
 	for _, userLiveMv := range session.UserModel.UserLiveMvDeckById.Map {
 		affected, err := session.Db.Table("u_live_mv_deck").Where("user_id = ? AND live_master_id = ?",
 			session.UserId, userLiveMv.LiveMasterId).AllCols().Update(*userLiveMv)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_live_mv_deck", *userLiveMv)
+			userdata.GenericDatabaseInsert(session, "u_live_mv_deck", *userLiveMv)
 		}
 	}
 	for _, userLiveMvCustom := range session.UserModel.UserLiveMvDeckCustomById.Map {
@@ -19,10 +19,10 @@ func liveMvFinalizer(session *Session) {
 			session.UserId, userLiveMvCustom.LiveMasterId).AllCols().Update(*userLiveMvCustom)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_live_mv_deck_custom", *userLiveMvCustom)
+			userdata.GenericDatabaseInsert(session, "u_live_mv_deck_custom", *userLiveMvCustom)
 		}
 	}
 }
 func init() {
-	AddFinalizer(liveMvFinalizer)
+	userdata.AddFinalizer(userLiveMvFinalizer)
 }

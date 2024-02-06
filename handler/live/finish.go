@@ -14,11 +14,11 @@ import (
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_live_deck"
+	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
-	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/voltage_ranking"
 	"elichika/userdata"
 	"elichika/utils"
@@ -248,7 +248,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	if live.LivePartnerCard.HasValue {
 		resp.LiveResult.Partner = generic.NewNullable(user_profile.GetOtherUser(session, startReq.PartnerUserId))
 	}
-	
+
 	user_live_difficulty.UpdateLiveDifficulty(session, userLiveDifficulty)
 	user_live_difficulty.UpdateLastPlayLiveDifficultyDeck(session, lastPlayDeck)
 

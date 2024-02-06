@@ -4,11 +4,11 @@ import (
 	"elichika/generic"
 )
 
-type UserLivePartner struct {
+type UserLivePartnerCard struct {
 	LivePartnerCategoryId int32 `xorm:"pk"`
 	CardMasterId          int32
 }
 
 func init() {
-	AddTable("u_live_partner", generic.UserIdWrapper[UserLivePartner]{})
+	AddTable("u_live_partner_card", generic.UserIdWrapper[UserLivePartnerCard]{})
 }

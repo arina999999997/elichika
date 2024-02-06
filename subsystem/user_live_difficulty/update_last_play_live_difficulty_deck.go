@@ -6,7 +6,7 @@ import (
 	"elichika/utils"
 )
 
-func UpdateLastPlayLiveDifficultyDeck(session*userdata.Session, deck client.LastPlayLiveDifficultyDeck) {
+func UpdateLastPlayLiveDifficultyDeck(session *userdata.Session, deck client.LastPlayLiveDifficultyDeck) {
 	affected, err := session.Db.Table("u_last_play_live_difficulty_deck").Where("user_id = ? and live_difficulty_id = ?", session.UserId, deck.LiveDifficultyId).
 		AllCols().Update(&deck)
 	utils.CheckErr(err)

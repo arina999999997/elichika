@@ -7,7 +7,7 @@ import (
 	"elichika/utils"
 )
 
-func GetLastPlayLiveDifficultyDeck(session*userdata.Session, liveDifficultyId int32) generic.Nullable[client.LastPlayLiveDifficultyDeck] {
+func GetLastPlayLiveDifficultyDeck(session *userdata.Session, liveDifficultyId int32) generic.Nullable[client.LastPlayLiveDifficultyDeck] {
 	lastPlayDeck := client.LastPlayLiveDifficultyDeck{}
 
 	exist, err := session.Db.Table("u_last_play_live_difficulty_deck").

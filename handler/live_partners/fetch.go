@@ -4,7 +4,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_live"
+	"elichika/subsystem/user_live_partner"
 	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +27,7 @@ func fetch(ctx *gin.Context) {
 	partnerUserIds = append(partnerUserIds, userId)
 
 	for _, partnerId := range partnerUserIds {
-		resp.PartnerSelectState.LivePartners.Append(user_live.GetLivePartner(session, partnerId))
+		resp.PartnerSelectState.LivePartners.Append(user_live_partner.GetOtherUserLivePartner(session, partnerId))
 	}
 	resp.PartnerSelectState.FriendCount = int32(resp.PartnerSelectState.LivePartners.Size())
 	common.JsonResponse(ctx, &resp)
