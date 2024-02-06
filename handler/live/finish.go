@@ -13,6 +13,7 @@ import (
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_info_trigger"
+	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
@@ -71,7 +72,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		RecordedAt:       session.Time.Unix(),
 	}
 
-	userLiveDeck := session.GetUserLiveDeck(session.UserStatus.LatestLiveDeckId)
+	userLiveDeck := user_live_deck.GetUserLiveDeck(session, session.UserStatus.LatestLiveDeckId)
 	for position := 1; position <= 9; position++ {
 		cardMasterId := reflect.ValueOf(userLiveDeck).Field(1 + position).Interface().(generic.Nullable[int32]).Value
 		suitMasterId := reflect.ValueOf(userLiveDeck).Field(1 + position + 9).Interface().(generic.Nullable[int32]).Value
@@ -228,7 +229,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	}
 	// it's normal to show +0 on the bond screen if the person is already maxed
 	// this is checked against (video) recording
-	for _, i := range req.LiveScore.CardStatDict.Order {
+	for _, i := range req.LiveScore.CardStatDict.OrderedKey {
 		liveFinishCard := req.LiveScore.CardStatDict.Map[i]
 		memberMasterId := gamedata.Card[liveFinishCard.CardMasterId].Member.Id
 		if memberRepresentativeCard[memberMasterId] != i {

@@ -32,7 +32,7 @@ func tutorialSkip(ctx *gin.Context) {
 		session.UserStatus.TutorialEndAt = session.Time.Unix()
 	}
 
-	user_live_deck.UpdateUserLiveDeck(session, 1, req.CardWithSuitDict, req.SquadDict)
+	user_live_deck.SaveUserLiveDeck(session, 1, req.CardWithSuitDict, req.SquadDict)
 
 	{ // unlock systems
 		session.UnlockScene(enum.UnlockSceneTypeLesson, enum.UnlockSceneStatusOpen)

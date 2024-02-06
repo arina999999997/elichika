@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_live_deck"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,9 +25,7 @@ func changeDeckNameLiveDeck(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	liveDeck := session.GetUserLiveDeck(req.DeckId)
-	liveDeck.Name.DotUnderText = req.DeckName
-	session.UpdateUserLiveDeck(liveDeck)
+	user_live_deck.SetLiveDeckName(session, req.DeckId, req.DeckName)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

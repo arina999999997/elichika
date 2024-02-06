@@ -9,6 +9,7 @@ import (
 	"elichika/generic"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_lesson_deck"
+	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
@@ -205,7 +206,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				}
 			}
 		}
-		session.InsertLiveDecks(liveDecks)
+		user_live_deck.InsertLiveDecks(session, liveDecks)
 		session.InsertLiveParties(liveParties)
 	}
 	{ // lesson deck

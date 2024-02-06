@@ -10,6 +10,7 @@ import (
 	"elichika/klab"
 	"elichika/router"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
@@ -64,7 +65,7 @@ func skip(ctx *gin.Context) {
 	}
 	user_status.AddUserExp(session, resp.SkipLiveResult.GainUserExp)
 
-	deck := session.GetUserLiveDeck(req.DeckId)
+	deck := user_live_deck.GetUserLiveDeck(session, req.DeckId)
 	cardMasterIds := []int32{}
 	for i := 1; i <= 9; i++ {
 		cardMasterIds = append(cardMasterIds, reflect.ValueOf(deck).Field(1+i).Interface().(generic.Nullable[int32]).Value)

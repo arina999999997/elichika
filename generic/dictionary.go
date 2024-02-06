@@ -38,20 +38,20 @@ import (
 )
 
 type Dictionary[K int32 | int64, V any] struct {
-	Map   map[K]*V
-	Order []K
+	Map        map[K]*V
+	OrderedKey []K
 }
 
 func (d *Dictionary[K, V]) Copy() Dictionary[K, V] {
 	res := Dictionary[K, V]{}
-	for _, key := range d.Order {
+	for _, key := range d.OrderedKey {
 		res.Set(key, *d.Map[key])
 	}
 	return res
 }
 
 func (d *Dictionary[K, V]) Size() int {
-	return len(d.Order)
+	return len(d.OrderedKey)
 }
 
 func (d *Dictionary[K, V]) Get(key K) (*V, bool) {
@@ -64,7 +64,7 @@ func (d *Dictionary[K, V]) Set(key K, value V) {
 		d.Map = make(map[K]*V)
 	}
 	if !d.Has(key) {
-		d.Order = append(d.Order, key)
+		d.OrderedKey = append(d.OrderedKey, key)
 	}
 	d.Map[key] = new(V)
 	*d.Map[key] = value
@@ -75,7 +75,7 @@ func (d *Dictionary[K, V]) SetNull(key K) {
 		d.Map = make(map[K]*V)
 	}
 	if !d.Has(key) {
-		d.Order = append(d.Order, key)
+		d.OrderedKey = append(d.OrderedKey, key)
 	}
 	d.Map[key] = nil
 }
@@ -86,8 +86,8 @@ func (d *Dictionary[K, V]) Has(key K) bool {
 }
 
 func (d *Dictionary[K, V]) Sort() {
-	sort.Slice(d.Order, func(i, j int) bool {
-		return d.Order[i] < d.Order[j]
+	sort.Slice(d.OrderedKey, func(i, j int) bool {
+		return d.OrderedKey[i] < d.OrderedKey[j]
 	})
 }
 
@@ -129,7 +129,7 @@ func (d *Dictionary[K, V]) UnmarshalJSON(data []byte) error {
 
 func (d Dictionary[K, V]) MarshalJSON() ([]byte, error) {
 	arr := []any{}
-	for _, key := range d.Order { // because the map is insert only, this is guaranteed to exist
+	for _, key := range d.OrderedKey { // because the map is insert only, this is guaranteed to exist
 		arr = append(arr, key)
 		arr = append(arr, d.Map[key])
 	}

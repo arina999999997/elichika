@@ -52,7 +52,7 @@ func (ls *LiveStage) IsSame(other *LiveStage) bool {
 		return false
 	}
 	if ls.StageGimmickDict.Size() > 0 {
-		for _, key := range ls.StageGimmickDict.Order {
+		for _, key := range ls.StageGimmickDict.OrderedKey {
 			thisArray := ls.StageGimmickDict.GetOnly(key)
 			otherArray, exist := other.StageGimmickDict.Get(key)
 			if !exist {

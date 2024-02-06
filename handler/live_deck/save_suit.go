@@ -3,16 +3,13 @@ package live_deck
 import (
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/enum"
-	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_live_deck"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -28,20 +25,7 @@ func saveSuit(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	if session.UserStatus.TutorialPhase == enum.TutorialPhaseSuitChange {
-		session.UserStatus.TutorialPhase = enum.TutorialPhaseGacha
-	}
-
-	userLiveDeck := session.GetUserLiveDeck(req.DeckId)
-	reflect.ValueOf(&userLiveDeck).Elem().Field(int(1 + req.CardIndex + 9)).Set(reflect.ValueOf(generic.NewNullable(req.SuitMasterId)))
-	session.UpdateUserLiveDeck(userLiveDeck)
-
-	// Rina-chan board toggle
-	if session.Gamedata.Suit[req.SuitMasterId].Member.Id == enum.MemberMasterIdRina {
-		RinaChan := user_member.GetMember(session, enum.MemberMasterIdRina)
-		RinaChan.ViewStatus = req.ViewStatus
-		user_member.UpdateMember(session, RinaChan)
-	}
+	user_live_deck.ChangeLiveDeckSuit(session, req.DeckId, req.CardIndex, req.SuitMasterId, req.ViewStatus)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

@@ -3,7 +3,6 @@ package live_deck
 import (
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_live_deck"
@@ -26,11 +25,7 @@ func saveDeckAll(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	user_live_deck.UpdateUserLiveDeck(session, req.DeckId, req.CardWithSuit, req.SquadDict)
-
-	if session.UserStatus.TutorialPhase == enum.TutorialPhaseDeckEdit {
-		session.UserStatus.TutorialPhase = enum.TutorialPhaseSuitChange
-	}
+	user_live_deck.SaveUserLiveDeck(session, req.DeckId, req.CardWithSuit, req.SquadDict)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
