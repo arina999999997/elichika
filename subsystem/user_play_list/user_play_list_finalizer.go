@@ -1,8 +1,8 @@
 package user_play_list
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func userPlayListFinalizer(session *userdata.Session) {

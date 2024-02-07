@@ -94,7 +94,7 @@ func skip(ctx *gin.Context) {
 		if memberRepresentativeCard[memberMasterId] != cardMasterId {
 			continue
 		}
-		addedLove := user_member.AddLovePoint(session, memberMasterId, memberLoveGained[memberMasterId])
+		addedLove := user_member.AddMemberLovePoint(session, memberMasterId, memberLoveGained[memberMasterId])
 		resp.SkipLiveResult.MemberLoveStatuses.Set(cardMasterId, client.LiveResultMemberLoveStatus{
 			RewardLovePoint: addedLove,
 		})

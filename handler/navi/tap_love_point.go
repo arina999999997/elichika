@@ -27,7 +27,7 @@ func tapLovePoint(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	user_member.AddLovePoint(session, req.MemberMasterId, *config.Conf.TapBondGain)
+	user_member.AddMemberLovePoint(session, req.MemberMasterId, *config.Conf.TapBondGain)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseLovePointUp {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingLevelUp
 	}

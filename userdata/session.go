@@ -61,7 +61,6 @@ func (session *Session) Finalize() {
 		for _, finalizer := range finalizers {
 			finalizer(session)
 		}
-		finalizeMemberLovePanelDiffs(session)
 	}
 	err = session.Db.Commit()
 	utils.CheckErr(err)

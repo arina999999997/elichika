@@ -6,10 +6,10 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/banner"
-	"elichika/subsystem/user_login_bonus"
 	"elichika/subsystem/pickup_info"
 	"elichika/subsystem/user_beginner_challenge"
 	"elichika/subsystem/user_expired_item"
+	"elichika/subsystem/user_login_bonus"
 	"elichika/subsystem/user_new_badge"
 	"elichika/userdata"
 )

@@ -3,7 +3,6 @@ package subsystem
 import (
 	_ "elichika/subsystem/banner"
 	_ "elichika/subsystem/cache"
-	_ "elichika/subsystem/user_login_bonus"
 	_ "elichika/subsystem/pickup_info"
 	_ "elichika/subsystem/reset_progress"
 	_ "elichika/subsystem/time"
@@ -26,6 +25,7 @@ import (
 	_ "elichika/subsystem/user_live_deck"
 	_ "elichika/subsystem/user_live_mv"
 	_ "elichika/subsystem/user_live_partner"
+	_ "elichika/subsystem/user_login_bonus"
 	_ "elichika/subsystem/user_member"
 	_ "elichika/subsystem/user_member_story"
 	_ "elichika/subsystem/user_new_badge"

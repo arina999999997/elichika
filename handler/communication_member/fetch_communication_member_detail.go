@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/time"
+	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,7 +27,7 @@ func fetchCommunicationMemberDetail(ctx *gin.Context) {
 	defer session.Close()
 
 	resp := response.FetchCommunicationMemberDetailResponse{}
-	resp.MemberLovePanels.Append(session.GetMemberLovePanel(req.MemberId))
+	resp.MemberLovePanels.Append(user_member.GetMemberLovePanel(session, req.MemberId))
 
 	resp.WeekdayState = time.GetWeekdayState(session)
 	common.JsonResponse(ctx, resp)

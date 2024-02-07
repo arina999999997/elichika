@@ -238,7 +238,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		if memberRepresentativeCard[memberMasterId] != i {
 			continue
 		}
-		addedLove := user_member.AddLovePoint(session, memberMasterId, memberLoveGained[memberMasterId])
+		addedLove := user_member.AddMemberLovePoint(session, memberMasterId, memberLoveGained[memberMasterId])
 		resp.LiveResult.MemberLoveStatuses.Set(liveFinishCard.CardMasterId, client.LiveResultMemberLoveStatus{
 			RewardLovePoint: addedLove,
 		})
