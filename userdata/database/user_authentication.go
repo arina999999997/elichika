@@ -4,9 +4,8 @@ import (
 	"elichika/generic"
 )
 
-// TODO(password): use bcrypt or something
 type UserPassWord struct {
-	PassWord string
+	Hash []byte
 }
 
 func init() {

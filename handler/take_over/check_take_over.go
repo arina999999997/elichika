@@ -7,6 +7,7 @@ import (
 	"elichika/handler/login"
 	"elichika/locale"
 	"elichika/router"
+	"elichika/subsystem/user_pass_word"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -59,7 +60,7 @@ func checkTakeOver(ctx *gin.Context) {
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
 	}
 	if linkedSession != nil { // user exist
-		if !linkedSession.CheckPassWord(req.PassWord) { // incorrect password
+		if !user_pass_word.CheckPassWord(linkedSession, req.PassWord) { // incorrect password
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
 		}

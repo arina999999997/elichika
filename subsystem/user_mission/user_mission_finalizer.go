@@ -1,17 +1,17 @@
-package userdata
+package user_mission
 
 import (
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-// TODO(refactor): Move into subsystem
-func missionFinalizer(session *Session) {
+func userMissionFinalizer(session *userdata.Session) {
 	for _, userMission := range session.UserModel.UserMissionByMissionId.Map {
 		affected, err := session.Db.Table("u_mission").Where("user_id = ? AND mission_m_id = ?",
 			session.UserId, userMission.MissionMId).AllCols().Update(*userMission)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_mission", *userMission)
+			userdata.GenericDatabaseInsert(session, "u_mission", *userMission)
 		}
 	}
 	for _, userDailyMission := range session.UserModel.UserDailyMissionByMissionId.Map {
@@ -19,7 +19,7 @@ func missionFinalizer(session *Session) {
 			session.UserId, userDailyMission.MissionMId).AllCols().Update(*userDailyMission)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_daily_mission", *userDailyMission)
+			userdata.GenericDatabaseInsert(session, "u_daily_mission", *userDailyMission)
 		}
 	}
 	for _, userWeeklyMission := range session.UserModel.UserWeeklyMissionByMissionId.Map {
@@ -27,11 +27,11 @@ func missionFinalizer(session *Session) {
 			session.UserId, userWeeklyMission.MissionMId).AllCols().Update(*userWeeklyMission)
 		utils.CheckErr(err)
 		if affected == 0 {
-			GenericDatabaseInsert(session, "u_weekly_mission", *userWeeklyMission)
+			userdata.GenericDatabaseInsert(session, "u_weekly_mission", *userWeeklyMission)
 		}
 	}
 }
 
 func init() {
-	AddFinalizer(missionFinalizer)
+	userdata.AddFinalizer(userMissionFinalizer)
 }

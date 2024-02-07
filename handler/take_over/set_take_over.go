@@ -9,6 +9,7 @@ import (
 	"elichika/locale"
 	"elichika/router"
 	"elichika/subsystem/user_account"
+	"elichika/subsystem/user_pass_word"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -36,7 +37,7 @@ func setTakeOver(ctx *gin.Context) {
 		user_account.CreateNewAccount(ctx, linkedUserId, req.PassWord)
 		linkedSession = userdata.GetSession(ctx, linkedUserId)
 		defer linkedSession.Close()
-	} else if !linkedSession.CheckPassWord(req.PassWord) {
+	} else if !user_pass_word.CheckPassWord(linkedSession, req.PassWord) {
 		panic("wrong pass word")
 	}
 

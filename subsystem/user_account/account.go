@@ -12,6 +12,7 @@ import (
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_pass_word"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 	"elichika/utils"
@@ -100,7 +101,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 	defer session.Close()
 	{
 		// passwords
-		session.SetPassWord(passWord)
+		user_pass_word.SetPassWord(session, passWord)
 	}
 	{ // members, initial cards
 		members := []client.UserMember{}
