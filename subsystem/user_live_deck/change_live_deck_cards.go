@@ -3,6 +3,7 @@ package user_live_deck
 import (
 	"elichika/client"
 	"elichika/generic"
+	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 
@@ -47,7 +48,7 @@ func ChangeLiveDeckCards(session *userdata.Session, deckId int32, cardMasterIds 
 
 	parties := map[int32]client.UserLiveParty{}
 	for replaced, _ := range replacingCard {
-		party := session.GetUserLivePartyWithDeckAndCardId(deckId, replaced)
+		party := user_live_party.GetUserLivePartyWithDeckAndCardId(session, deckId, replaced)
 		parties[party.PartyId] = party
 	}
 
@@ -62,6 +63,6 @@ func ChangeLiveDeckCards(session *userdata.Session, deckId int32, cardMasterIds 
 
 		party.IconMasterId, party.Name.DotUnderText = session.Gamedata.GetLivePartyInfoByCardMasterIds(
 			party.CardMasterId1.Value, party.CardMasterId2.Value, party.CardMasterId3.Value)
-		session.UpdateUserLiveParty(party)
+		user_live_party.UpdateUserLiveParty(session, party)
 	}
 }

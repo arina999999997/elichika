@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 
@@ -47,7 +48,7 @@ func SaveUserLiveDeck(session *userdata.Session, deckId int32,
 			reflect.ValueOf(&userLiveParty).Elem().Field(position + 4 + 3).Set(
 				reflect.ValueOf(liveSquad.UserAccessoryIds.Slice[position]))
 		}
-		session.UpdateUserLiveParty(userLiveParty)
+		user_live_party.UpdateUserLiveParty(session, userLiveParty)
 	}
 
 }

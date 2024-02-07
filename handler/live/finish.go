@@ -15,6 +15,7 @@ import (
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_live_difficulty"
+	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
@@ -79,7 +80,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 		suitMasterId := reflect.ValueOf(userLiveDeck).Field(1 + position + 9).Interface().(generic.Nullable[int32]).Value
 		lastPlayDeck.CardWithSuitDict.Set(cardMasterId, suitMasterId)
 	}
-	liveParties := session.GetUserLivePartiesWithDeckId(session.UserStatus.LatestLiveDeckId)
+	liveParties := user_live_party.GetUserLivePartiesWithDeckId(session, session.UserStatus.LatestLiveDeckId)
 	for _, liveParty := range liveParties {
 		liveSquad := client.LiveSquad{}
 		liveSquad.CardMasterIds.Append(liveParty.CardMasterId1.Value)

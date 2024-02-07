@@ -5,7 +5,7 @@ import (
 	"elichika/userdata"
 )
 
-func InsertLiveDecks(session *userdata.Session, decks []client.UserLiveDeck) {
+func InsertUserLiveDecks(session *userdata.Session, decks []client.UserLiveDeck) {
 	for _, deck := range decks {
 		UpdateUserLiveDeck(session, deck)
 	}

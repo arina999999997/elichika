@@ -10,6 +10,7 @@ import (
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_lesson_deck"
 	"elichika/subsystem/user_live_deck"
+	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
@@ -24,6 +25,7 @@ import (
 
 // return the userId if it is not given
 func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
+	// TODO(new_account): Initialise from a table instead.
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	dictionary := ctx.MustGet("dictionary").(*dictionary.Dictionary)
 	{
@@ -206,8 +208,8 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 				}
 			}
 		}
-		user_live_deck.InsertLiveDecks(session, liveDecks)
-		session.InsertLiveParties(liveParties)
+		user_live_deck.InsertUserLiveDecks(session, liveDecks)
+		user_live_party.InsertUserLiveParties(session, liveParties)
 	}
 	{ // lesson deck
 

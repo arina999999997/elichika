@@ -5,7 +5,7 @@ import (
 	"elichika/utils"
 )
 
-func liveDeckFinalizer(session *userdata.Session) {
+func userLiveDeckFinalizer(session *userdata.Session) {
 	for _, deck := range session.UserModel.UserLiveDeckById.Map {
 		affected, err := session.Db.Table("u_live_deck").
 			Where("user_id = ? AND user_live_deck_id = ?", session.UserId, deck.UserLiveDeckId).AllCols().
@@ -18,5 +18,5 @@ func liveDeckFinalizer(session *userdata.Session) {
 }
 
 func init() {
-	userdata.AddFinalizer(liveDeckFinalizer)
+	userdata.AddFinalizer(userLiveDeckFinalizer)
 }
