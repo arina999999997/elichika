@@ -1,13 +1,13 @@
 package live
 
 import (
-	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/subsystem/user_play_list"
 
 	"encoding/json"
 
@@ -25,15 +25,7 @@ func updatePlayList(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	if req.IsSet {
-		session.AddUserPlayList(client.UserPlayList{
-			UserPlayListId: req.GroupNum + req.LiveMasterId*10,
-			GroupNum:       req.GroupNum,
-			LiveId:         req.LiveMasterId,
-		})
-	} else {
-		session.DeleteUserPlayList(req.GroupNum + req.LiveMasterId*10)
-	}
+	user_play_list.UpdateUserPlayList(session, req.GroupNum, req.LiveMasterId, req.IsSet)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UpdatePlayListResponse{

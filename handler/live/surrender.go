@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_status"
+	"elichika/subsystem/user_live"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -19,9 +20,9 @@ func surrender(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	exist, _, startReq := session.LoadUserLive()
+	exist, _, startReq := user_live.LoadUserLive(session)
 	utils.MustExist(exist)
-	session.ClearUserLive()
+	user_live.ClearUserLive(session)
 	// remove only half the LP
 	lpCost := session.Gamedata.LiveDifficulty[startReq.LiveDifficultyId].ConsumedLP / 2
 	user_status.AddUserLp(session, -lpCost)

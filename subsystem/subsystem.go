@@ -3,7 +3,7 @@ package subsystem
 import (
 	_ "elichika/subsystem/banner"
 	_ "elichika/subsystem/cache"
-	_ "elichika/subsystem/login_bonus"
+	_ "elichika/subsystem/user_login_bonus"
 	_ "elichika/subsystem/pickup_info"
 	_ "elichika/subsystem/reset_progress"
 	_ "elichika/subsystem/time"

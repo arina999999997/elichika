@@ -5,6 +5,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/time"
+	"elichika/subsystem/user_live"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -18,7 +19,7 @@ func resume(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	exist, live, startReq := session.LoadUserLive()
+	exist, live, startReq := user_live.LoadUserLive(session)
 	utils.MustExist(exist)
 
 	common.JsonResponse(ctx, &response.ResumeLiveResponse{

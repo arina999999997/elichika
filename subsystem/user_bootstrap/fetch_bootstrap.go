@@ -6,7 +6,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/banner"
-	"elichika/subsystem/login_bonus"
+	"elichika/subsystem/user_login_bonus"
 	"elichika/subsystem/pickup_info"
 	"elichika/subsystem/user_beginner_challenge"
 	"elichika/subsystem/user_expired_item"
@@ -36,7 +36,7 @@ func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest
 			// TODO(gacha): Implement gacha point
 			continue
 		case enum.BootstrapFetchTypeLoginBonus:
-			resp.FetchBootstrapLoginBonusResponse = generic.NewNullable(login_bonus.GetBootstrapLoginBonus(session))
+			resp.FetchBootstrapLoginBonusResponse = generic.NewNullable(user_login_bonus.GetBootstrapLoginBonus(session))
 		case enum.BootstrapFetchTypeNotice:
 			// TODO(notice): Implement notice
 			continue

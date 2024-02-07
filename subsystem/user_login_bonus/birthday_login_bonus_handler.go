@@ -1,4 +1,4 @@
-package login_bonus
+package user_login_bonus
 
 import (
 	"elichika/client"
@@ -25,7 +25,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 	if !exists { // no one with this birthday
 		return
 	}
-	userLoginBonus := session.GetUserLoginBonus(loginBonus.LoginBonusId)
+	userLoginBonus := getUserLoginBonus(session, loginBonus.LoginBonusId)
 	lastUnlocked := time.Date(year, month, day, 0, 0, 0, 0, session.Time.Location())
 	if userLoginBonus.LastReceivedAt >= lastUnlocked.Unix() { // already got it
 		return
@@ -94,5 +94,5 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 		naviLoginBonus.BackgroundId = memberLoginBonusBirthday.Id
 		target.BirthdayLoginBonuses.Append(naviLoginBonus)
 	}
-	session.UpdateUserLoginBonus(userLoginBonus)
+	updateUserLoginBonus(session, userLoginBonus)
 }

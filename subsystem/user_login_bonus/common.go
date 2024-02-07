@@ -27,7 +27,7 @@
 // - this can interpreted as the server fill-in the present box data first, and then add present for the login bonus on top of that
 // - although it can also be interpreted as the server only award item once read is called.
 
-package login_bonus
+package user_login_bonus
 
 import (
 	"elichika/client"

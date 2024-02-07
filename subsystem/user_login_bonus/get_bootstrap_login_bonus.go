@@ -1,4 +1,4 @@
-package login_bonus
+package user_login_bonus
 
 import (
 	"elichika/client"

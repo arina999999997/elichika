@@ -21,7 +21,7 @@ func tutorialSkip(ctx *gin.Context) {
 	req := request.SkipTutorialRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-
+	// TODO(tutorial): Replicate the steps we would go through instead of just skipping.
 	// if tutorial is skipped, then it can send stuff to update the live deck which would have been updated during the tutorial itself
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)

@@ -10,6 +10,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_live"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -78,7 +79,7 @@ func start(ctx *gin.Context) {
 		resp.Live.LivePartnerCard = generic.NewNullable(user_card.GetOtherUserCard(session, req.PartnerUserId, req.PartnerCardMasterId))
 	}
 
-	session.SaveUserLive(resp.Live, req)
+	user_live.SaveUserLive(session, resp.Live, req)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)

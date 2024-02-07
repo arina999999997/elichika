@@ -13,6 +13,7 @@ import (
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_info_trigger"
+	"elichika/subsystem/user_live"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/user_live_party"
@@ -388,9 +389,9 @@ func finish(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	exist, live, startReq := session.LoadUserLive()
+	exist, live, startReq := user_live.LoadUserLive(session)
 	utils.MustExist(exist)
-	session.ClearUserLive()
+	user_live.ClearUserLive(session)
 	// TODO(lp): Remove LP here if we want that
 
 	switch live.LiveType {

@@ -9,6 +9,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_account"
+	"elichika/subsystem/user_live"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -40,7 +41,7 @@ func login(ctx *gin.Context) {
 	resp := session.Login()
 	resp.SessionKey = LoginSessionKey(req.Mask)
 	{
-		exist, _, startLiveRequest := session.LoadUserLive()
+		exist, _, startLiveRequest := user_live.LoadUserLive(session)
 		if exist {
 			liveDifficulty := session.Gamedata.LiveDifficulty[startLiveRequest.LiveDifficultyId]
 			if (liveDifficulty.UnlockPattern != enum.LiveUnlockPatternCoopOnly) &&
@@ -51,7 +52,7 @@ func login(ctx *gin.Context) {
 					ConsumedLp:       liveDifficulty.ConsumedLP, // this thing is only to show how much lp is spent
 				})
 			} else { // just cancel this as it's not a relevant live (event and such)
-				session.ClearUserLive()
+				user_live.ClearUserLive(session)
 			}
 		}
 	}
