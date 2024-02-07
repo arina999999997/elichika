@@ -8,7 +8,9 @@ import (
 
 func GetOtherUser(session *userdata.Session, otherUserId int32) client.OtherUser {
 	otherUserStatus := client.UserStatus{}
-	userdata.FetchDBProfile(otherUserId, &otherUserStatus)
+	exist, err := session.Db.Table("u_status").Where("user_id = ?", otherUserId).Get(&otherUserStatus)
+	utils.CheckErrMustExist(err, exist)
+
 	otherUser := client.OtherUser{
 		UserId:                otherUserId,
 		Name:                  otherUserStatus.Name,
@@ -23,7 +25,7 @@ func GetOtherUser(session *userdata.Session, otherUserId int32) client.OtherUser
 		// IsRequestPending: otherUserStatus.IsRequestPending,
 	}
 	recommendCard := client.UserCard{}
-	exist, err := session.Db.Table("u_card").
+	exist, err = session.Db.Table("u_card").
 		Where("user_id = ? AND card_master_id = ?", otherUserId, otherUser.RecommendCardMasterId).Get(&recommendCard)
 	utils.CheckErr(err)
 	if !exist {

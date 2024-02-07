@@ -8,6 +8,24 @@ import (
 )
 
 // TODO(refactor): Move into subsystem
+// TODO(multiplayer): This only work for single player
+func (session *Session) GetTowerRankingUser() client.TowerRankingUser {
+	// TODO(refactor): These are disabled until they are moved, to avoid circular import
+	return client.TowerRankingUser{}
+	// card := user_card.GetUserCard(session, (session, session.UserStatus.RecommendCardMasterId)
+	// return client.TowerRankingUser{
+	// 	UserId:                 int32(session.UserId),
+	// 	UserName:               session.UserStatus.Name,
+	// 	UserRank:               session.UserStatus.Rank,
+	// 	CardMasterId:           card.CardMasterId,
+	// 	Level:                  card.Level,
+	// 	IsAwakening:            card.IsAwakening,
+	// 	IsAllTrainingActivated: card.IsAllTrainingActivated,
+	// 	EmblemMasterId:         session.UserStatus.EmblemId,
+	// }
+}
+
+// TODO(refactor): Move into subsystem
 func (session *Session) GetUserTowerCardUsed(towerId, cardMasterId int32) client.TowerCardUsedCount {
 	cardUsed := client.TowerCardUsedCount{}
 	exist, err := session.Db.Table("u_tower_card_used_count").

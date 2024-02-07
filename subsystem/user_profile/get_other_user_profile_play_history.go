@@ -60,7 +60,7 @@ func GetOtherUserProfilePlayHistory(session *userdata.Session, otherUserId int32
 	}
 
 	// custom profile
-	customProfile := session.GetOtherUserSetProfile(otherUserId)
+	customProfile := GetOtherUserSetProfile(session, otherUserId)
 	if customProfile.VoltageLiveDifficultyId != 0 {
 		res.MaxScoreLiveDifficulty.LiveDifficultyMasterId = generic.NewNullable(customProfile.VoltageLiveDifficultyId)
 		res.MaxScoreLiveDifficulty.Score =

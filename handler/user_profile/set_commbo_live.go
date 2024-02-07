@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_profile"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,9 +25,7 @@ func setCommboLive(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	setProfile := session.GetUserSetProfile()
-	setProfile.CommboLiveDifficultyId = req.LiveDifficultyMasterId
-	session.SetUserSetProfile(setProfile)
+	user_profile.SetCommboLive(session, req.LiveDifficultyMasterId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.SetLiveResponse{
