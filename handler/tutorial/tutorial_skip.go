@@ -7,6 +7,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_live_deck"
+	"elichika/subsystem/user_reference_book"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -44,10 +45,10 @@ func tutorialSkip(ctx *gin.Context) {
 	}
 	{
 		// mark lesson as finished
-		session.InsertReferenceBook(1001)
-		session.InsertReferenceBook(1002)
-		session.InsertReferenceBook(1003)
-		session.InsertReferenceBook(1004)
+		user_reference_book.InsertUserReferenceBook(session, 1001)
+		user_reference_book.InsertUserReferenceBook(session, 1002)
+		user_reference_book.InsertUserReferenceBook(session, 1003)
+		user_reference_book.InsertUserReferenceBook(session, 1004)
 	}
 
 	session.Finalize()

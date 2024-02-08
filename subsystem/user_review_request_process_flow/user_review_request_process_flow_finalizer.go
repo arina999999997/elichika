@@ -1,12 +1,12 @@
-package userdata
+package user_review_request_process_flow
 
 import (
 	"elichika/client"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-// TODO(refactor): Move into subsystem
-func reviewRequestProcessFlowFinalizer(session *Session) {
+func userReviewRequestProcessFlowFinalizer(session *userdata.Session) {
 	for id, userReview := range session.UserModel.UserReviewRequestProcessFlowById.Map {
 		affected, err := session.Db.Table("u_review_request_process_flow").
 			Where("user_id = ? AND review_request_id = ?",
@@ -22,11 +22,11 @@ func reviewRequestProcessFlowFinalizer(session *Session) {
 				ReviewRequestId:              id,
 				UserReviewRequestProcessFlow: *userReview,
 			}
-			GenericDatabaseInsert(session, "u_review_request_process_flow", temp)
+			userdata.GenericDatabaseInsert(session, "u_review_request_process_flow", temp)
 		}
 	}
 }
 
 func init() {
-	AddFinalizer(reviewRequestProcessFlowFinalizer)
+	userdata.AddFinalizer(userReviewRequestProcessFlowFinalizer)
 }

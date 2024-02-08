@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_reference_book"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,7 +25,7 @@ func saveReferenceBook(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.InsertReferenceBook(req.ReferenceBookId)
+	user_reference_book.InsertUserReferenceBook(session, req.ReferenceBookId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

@@ -1,21 +1,12 @@
-package userdata
+package user_rule_description
 
 import (
 	"elichika/client"
-	"elichika/enum"
+	"elichika/userdata"
 	"elichika/utils"
 )
 
-// TODO(refactor): Move into subsystem
-func (session *Session) UpdateUserRuleDescription(ruleDescriptionId int32) {
-	// rule description is used for popup windows that tell you the rule of things
-	// only encountered in /referenceBook for now
-	session.UserModel.UserRuleDescriptionById.Set(ruleDescriptionId, client.UserRuleDescription{
-		DisplayStatus: enum.RuleDescriptionDisplayStatusDisplay,
-	})
-}
-
-func ruleDescriptionFinalizer(session *Session) {
+func userRuleDescriptionFinalizer(session *userdata.Session) {
 	for ruleDescriptionId, userRuleDescription := range session.UserModel.UserRuleDescriptionById.Map {
 		affected, err := session.Db.Table("u_rule_description").Where("user_id = ? AND rule_description_id = ?",
 			session.UserId, ruleDescriptionId).AllCols().
@@ -31,11 +22,11 @@ func ruleDescriptionFinalizer(session *Session) {
 				RuleDescriptionId:   ruleDescriptionId,
 				UserRuleDescription: *userRuleDescription,
 			}
-			GenericDatabaseInsert(session, "u_rule_description", temp)
+			userdata.GenericDatabaseInsert(session, "u_rule_description", temp)
 		}
 	}
 }
 
 func init() {
-	AddFinalizer(ruleDescriptionFinalizer)
+	userdata.AddFinalizer(userRuleDescriptionFinalizer)
 }

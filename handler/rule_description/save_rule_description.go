@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_rule_description"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,7 +27,7 @@ func saveRuleDescription(ctx *gin.Context) {
 	defer session.Close()
 
 	for _, ruleDescriptionId := range req.RuleDescriptionMasterIds.Slice {
-		session.UpdateUserRuleDescription(ruleDescriptionId)
+		user_rule_description.UpdateUserRuleDescription(session, ruleDescriptionId)
 	}
 
 	session.Finalize()
