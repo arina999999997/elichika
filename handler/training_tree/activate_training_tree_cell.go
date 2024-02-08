@@ -10,6 +10,7 @@ import (
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_story_side"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 	"elichika/utils"
@@ -71,14 +72,14 @@ func activateTrainingTreeCell(ctx *gin.Context) {
 			if !exist {
 				panic("story doesn't exist")
 			}
-			session.InsertStorySide(storySideId)
+			user_story_side.InsertStorySide(session, storySideId)
 		case enum.TrainingTreeCellTypeAwakening:
 			// idolize
 			card.IsAwakening = true
 			card.IsAwakeningImage = true
 			storySideId, exist := trainingTree.TrainingTreeCardStorySides[int(enum.TrainingContentTypeAwakening)]
 			if exist {
-				session.InsertStorySide(storySideId)
+				user_story_side.InsertStorySide(session, storySideId)
 			}
 		case enum.TrainingTreeCellTypeSuit:
 			// alternative suit is awarded based on amount of tile instead

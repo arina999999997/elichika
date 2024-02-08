@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_story_linkage"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -27,7 +28,7 @@ func finishStoryLinkage(ctx *gin.Context) {
 	if req.IsAutoMode.HasValue {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
 	}
-	session.InsertUserStoryLinkage(req.CellId)
+	user_story_linkage.InsertUserStoryLinkage(session, req.CellId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.AddStoryLinkageResponse{

@@ -12,6 +12,7 @@ import (
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/user_present"
+	"elichika/subsystem/user_story_member"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -35,7 +36,7 @@ func finishUserStoryMember(ctx *gin.Context) {
 	if req.IsAutoMode.HasValue {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
 	}
-	if session.FinishStoryMember(req.StoryMemberMasterId) {
+	if user_story_member.FinishStoryMember(session, req.StoryMemberMasterId) {
 		storyMemberMaster := gamedata.StoryMember[req.StoryMemberMasterId]
 		if storyMemberMaster.Reward != nil {
 			user_present.AddPresent(session, client.PresentItem{

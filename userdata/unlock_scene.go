@@ -16,7 +16,7 @@ func (session *Session) UnlockScene(unlockSceneType, status int32) {
 	// status = 1 is the initial unlock process, it will show an animation
 	// status = 2 is actually unlocked
 	userUnlockScene := client.UserUnlockScene{
-		UnlockSceneType: unlockSceneType, // not sure what this is
+		UnlockSceneType: unlockSceneType,
 		Status:          status,
 	}
 	session.UserModel.UserUnlockScenesByEnum.Set(unlockSceneType, userUnlockScene)

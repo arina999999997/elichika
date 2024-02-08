@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_story_side"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -27,7 +28,7 @@ func finishUserStorySide(ctx *gin.Context) {
 	if req.IsAutoMode.HasValue {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
 	}
-	session.FinishStorySide(req.StorySideMasterId)
+	user_story_side.FinishStorySide(session, req.StorySideMasterId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

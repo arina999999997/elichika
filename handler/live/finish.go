@@ -21,6 +21,7 @@ import (
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
+	"elichika/subsystem/user_story_main"
 	"elichika/subsystem/user_tower"
 	"elichika/subsystem/voltage_ranking"
 	"elichika/userdata"
@@ -34,6 +35,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+// TODO(refactor): Move these logics into subsystem
 func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, session *userdata.Session, live client.Live, startReq request.StartLiveRequest) {
 	gamedata := session.Gamedata
 	liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
@@ -111,7 +113,7 @@ func handleLiveTypeManual(ctx *gin.Context, req request.FinishLiveRequest, sessi
 	if lastPlayDeck.IsCleared {
 		// add story if it is a story mode
 		if live.CellId.HasValue {
-			session.InsertUserStoryMain(live.CellId.Value)
+			user_story_main.InsertUserStoryMain(session, live.CellId.Value)
 		}
 
 		// update clear record

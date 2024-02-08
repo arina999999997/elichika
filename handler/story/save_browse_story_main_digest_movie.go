@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_story_main"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -23,7 +24,7 @@ func saveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	session.InsertUserStoryMainPartDigestMovie(req.PartId)
+	user_story_main.InsertUserStoryMainPartDigestMovie(session, req.PartId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{

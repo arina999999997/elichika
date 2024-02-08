@@ -10,6 +10,7 @@ import (
 	"elichika/item"
 	"elichika/router"
 	"elichika/subsystem/user_present"
+	"elichika/subsystem/user_story_main"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -36,7 +37,7 @@ func finishUserStoryMain(ctx *gin.Context) {
 		UserModelDiff: &session.UserModel,
 	}
 
-	if session.InsertUserStoryMain(req.CellId) { // newly inserted story, award some gem
+	if user_story_main.InsertUserStoryMain(session, req.CellId) { // newly inserted story, award some gem
 		resp.FirstClearReward.Append(item.StarGem.Amount(10))
 		user_present.AddPresent(session, client.PresentItem{
 			Content:          item.StarGem.Amount(10),
@@ -45,7 +46,7 @@ func finishUserStoryMain(ctx *gin.Context) {
 		})
 	}
 	if req.MemberId.HasValue { // has a member -> select member thingy
-		session.UpdateUserStoryMainSelected(req.CellId, req.MemberId.Value)
+		user_story_main.UpdateUserStoryMainSelected(session, req.CellId, req.MemberId.Value)
 	}
 
 	session.Finalize()

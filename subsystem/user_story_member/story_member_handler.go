@@ -1,4 +1,4 @@
-package user_member_story
+package user_story_member
 
 import (
 	"elichika/client"
@@ -8,7 +8,7 @@ import (
 )
 
 func storyMemberHandler(session *userdata.Session, content *client.Content) any {
-	session.InsertMemberStory(content.ContentId)
+	InsertMemberStory(session, content.ContentId)
 	content.ContentAmount = 0
 	return nil
 }

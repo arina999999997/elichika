@@ -7,6 +7,7 @@ import (
 	"elichika/item"
 	"elichika/router"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_story_event_history"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,7 +27,7 @@ func unlockStory(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UnlockEventStory(req.EventStoryMasterId)
+	user_story_event_history.UnlockEventStory(session, req.EventStoryMasterId)
 	user_content.RemoveContent(session, item.MemoryKey)
 
 	common.JsonResponse(ctx, response.UserModelResponse{

@@ -16,7 +16,7 @@ func GenericDatabaseInsert[T any](session *Session, table string, item T) {
 	utils.CheckErr(err)
 }
 
-func genericDatabaseExist[T any](session *Session, table string, item T) bool {
+func GenericDatabaseExist[T any](session *Session, table string, item T) bool {
 	type UserIdWrapper struct {
 		UserId int32 `xorm:"pk 'user_id'"`
 		Item   *T    `xorm:"extends"`
