@@ -7,6 +7,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_tower"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -27,12 +28,12 @@ func fetchTowerTop(ctx *gin.Context) {
 	defer session.Close()
 
 	resp := response.FetchTowerTopResponse{
-		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
+		TowerCardUsedCountRows: user_tower.GetUserTowerCardUsedList(session, req.TowerId),
 		UserModelDiff:          &session.UserModel,
 		// other fields are for DLP with voltage ranking
 	}
 
-	userTower := session.GetUserTower(req.TowerId)
+	userTower := user_tower.GetUserTower(session, req.TowerId)
 	tower := session.Gamedata.Tower[req.TowerId]
 	if userTower.ClearedFloor == userTower.ReadFloor {
 		tower := session.Gamedata.Tower[req.TowerId]
@@ -47,7 +48,7 @@ func fetchTowerTop(ctx *gin.Context) {
 			}
 		}
 	}
-	session.UpdateUserTower(userTower)
+	user_tower.UpdateUserTower(session, userTower)
 
 	// if tower with voltage ranking, then we have to prepare that
 	if tower.IsVoltageRanked {
@@ -56,7 +57,7 @@ func fetchTowerTop(ctx *gin.Context) {
 		resp.EachBonusLiveVoltage.Slice = make([]int32, tower.FloorCount)
 		resp.Order = generic.NewNullable(int32(1))
 		// fetch the score
-		scores := session.GetUserTowerVoltageRankingScores(req.TowerId)
+		scores := user_tower.GetUserTowerVoltageRankingScores(session, req.TowerId)
 		for _, score := range scores {
 			resp.EachBonusLiveVoltage.Slice[score.FloorNo-1] = score.Voltage
 		}

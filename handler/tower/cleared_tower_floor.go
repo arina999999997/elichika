@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_tower"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,10 +25,10 @@ func clearedTowerFloor(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	userTower := session.GetUserTower(req.TowerId)
+	userTower := user_tower.GetUserTower(session, req.TowerId)
 	if userTower.ClearedFloor < req.FloorNo {
 		userTower.ClearedFloor = req.FloorNo
-		session.UpdateUserTower(userTower)
+		user_tower.UpdateUserTower(session, userTower)
 	}
 	if req.IsAutoMode.HasValue {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value

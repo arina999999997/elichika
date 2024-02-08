@@ -8,6 +8,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_tower"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -27,11 +28,11 @@ func fetchTowerRanking(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	// TODO(multiplayer ranking): return actual data for this
+	// TODO(ranking): return actual data for this
 	resp := response.FetchTowerRankingResponse{}
-	resp.TopRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
-	resp.MyRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
-	resp.FriendRankingCells.Append(session.GetTowerRankingCell(req.TowerId))
+	resp.TopRankingCells.Append(user_tower.GetTowerRankingCell(session, req.TowerId))
+	resp.MyRankingCells.Append(user_tower.GetTowerRankingCell(session, req.TowerId))
+	resp.FriendRankingCells.Append(user_tower.GetTowerRankingCell(session, req.TowerId))
 	resp.RankingBorderInfo.Append(client.TowerRankingBorderInfo{
 		RankingBorderVoltage: 0,
 		RankingBorderMasterRow: client.TowerRankingBorderMasterRow{

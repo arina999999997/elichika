@@ -7,6 +7,7 @@ import (
 	"elichika/item"
 	"elichika/router"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_tower"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -27,10 +28,10 @@ func recoveryTowerCardUsed(ctx *gin.Context) {
 	defer session.Close()
 
 	for _, cardMasterId := range req.CardMasterIds.Slice {
-		cardUsedCount := session.GetUserTowerCardUsed(req.TowerId, cardMasterId)
+		cardUsedCount := user_tower.GetUserTowerCardUsed(session, req.TowerId, cardMasterId)
 		cardUsedCount.UsedCount--
 		cardUsedCount.RecoveredCount++
-		session.UpdateUserTowerCardUsed(req.TowerId, cardUsedCount)
+		user_tower.UpdateUserTowerCardUsed(session, req.TowerId, cardUsedCount)
 	}
 	// remove the item, this has to be done manually because it involve going back to gems
 
@@ -45,7 +46,7 @@ func recoveryTowerCardUsed(ctx *gin.Context) {
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.RecoveryTowerCardUsedResponse{
-		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
+		TowerCardUsedCountRows: user_tower.GetUserTowerCardUsedList(session, req.TowerId),
 		UserModelDiff:          &session.UserModel,
 	})
 }

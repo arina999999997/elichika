@@ -40,6 +40,7 @@ import (
 	_ "elichika/subsystem/user_profile"
 	_ "elichika/subsystem/user_status"
 	_ "elichika/subsystem/user_suit"
+	_ "elichika/subsystem/user_tower"
 	_ "elichika/subsystem/user_trade"
 	_ "elichika/subsystem/user_voice"
 	_ "elichika/subsystem/voltage_ranking"

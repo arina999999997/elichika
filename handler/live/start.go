@@ -11,6 +11,7 @@ import (
 	"elichika/router"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_live"
+	"elichika/subsystem/user_tower"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -54,11 +55,11 @@ func start(ctx *gin.Context) {
 
 	if req.LiveTowerStatus.HasValue {
 		// is tower live, fetch this tower
-		userTower := session.GetUserTower(req.LiveTowerStatus.Value.TowerId)
+		userTower := user_tower.GetUserTower(session, req.LiveTowerStatus.Value.TowerId)
 		reqTower := &req.LiveTowerStatus.Value
 		if userTower.ReadFloor != reqTower.FloorNo {
 			userTower.ReadFloor = reqTower.FloorNo
-			session.UpdateUserTower(userTower)
+			user_tower.UpdateUserTower(session, userTower)
 		}
 		resp.Live.TowerLive = generic.NewNullable(client.TowerLive{
 			TowerId:       reqTower.TowerId,

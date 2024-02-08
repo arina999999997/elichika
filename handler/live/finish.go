@@ -21,6 +21,7 @@ import (
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
+	"elichika/subsystem/user_tower"
 	"elichika/subsystem/voltage_ranking"
 	"elichika/userdata"
 	"elichika/utils"
@@ -298,19 +299,19 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 	tower := gamedata.Tower[live.TowerLive.Value.TowerId]
 	// manually quiting out shouldn't count as a clear
 	if req.LiveFinishStatus == enum.LiveFinishStatusSucceeded || req.LiveFinishStatus == enum.LiveFinishStatusFailure {
-		userTower := session.GetUserTower(live.TowerLive.Value.TowerId)
+		userTower := user_tower.GetUserTower(session, live.TowerLive.Value.TowerId)
 		if tower.Floor[live.TowerLive.Value.FloorNo].TowerCellType == enum.TowerCellTypeBonusLive {
 			// bonus live is only accepted when it's fully cleared
 			if req.LiveFinishStatus == enum.LiveFinishStatusSucceeded {
 				// update the max score, while we can reuse user_live_difficulty, they seems to have zero values for the official server
 				// so it's better to just use something else
 				// that will also help with displaying the ranking
-				currentScore := session.GetUserTowerVoltageRankingScore(live.TowerLive.Value.TowerId, live.TowerLive.Value.FloorNo)
+				currentScore := user_tower.GetUserTowerVoltageRankingScore(session, live.TowerLive.Value.TowerId, live.TowerLive.Value.FloorNo)
 				if (req.LiveScore.CurrentScore >= req.LiveScore.TargetScore) && (currentScore.Voltage < req.LiveScore.CurrentScore) {
 					increasePlayCount = true
 					awardFirstClearReward = currentScore.Voltage == 0
 					currentScore.Voltage = req.LiveScore.CurrentScore
-					session.UpdateUserTowerVoltageRankingScore(currentScore)
+					user_tower.UpdateUserTowerVoltageRankingScore(session, currentScore)
 				}
 			}
 		} else if req.LiveScore.CurrentScore >= req.LiveScore.TargetScore { // first clear
@@ -322,17 +323,17 @@ func handleLiveTypeTower(ctx *gin.Context, req request.FinishLiveRequest, sessio
 			increasePlayCount = true
 			userTower.Voltage = int32(req.LiveScore.CurrentScore)
 		}
-		session.UpdateUserTower(userTower)
+		user_tower.UpdateUserTower(session, userTower)
 	}
 
 	if increasePlayCount {
 		// update card used stuff
 		for i := range req.LiveScore.CardStatDict.Map {
 			liveFinishCard := req.LiveScore.CardStatDict.Map[i]
-			cardUsedCount := session.GetUserTowerCardUsed(live.TowerLive.Value.TowerId, liveFinishCard.CardMasterId)
+			cardUsedCount := user_tower.GetUserTowerCardUsed(session, live.TowerLive.Value.TowerId, liveFinishCard.CardMasterId)
 			cardUsedCount.UsedCount++
 			cardUsedCount.LastUsedAt = session.Time.Unix()
-			session.UpdateUserTowerCardUsed(tower.TowerId, cardUsedCount)
+			user_tower.UpdateUserTowerCardUsed(session, tower.TowerId, cardUsedCount)
 			resp.LiveResult.LiveResultTower.Value.TowerCardUsedCounts.Append(cardUsedCount)
 		}
 	}

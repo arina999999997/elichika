@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_tower"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -25,13 +26,13 @@ func recoveryTowerCardUsedAll(ctx *gin.Context) {
 	defer session.Close()
 
 	resp := response.RecoveryTowerCardUsedResponse{
-		TowerCardUsedCountRows: session.GetUserTowerCardUsedList(req.TowerId),
+		TowerCardUsedCountRows: user_tower.GetUserTowerCardUsedList(session, req.TowerId),
 		UserModelDiff:          &session.UserModel,
 	}
 	for i := range resp.TowerCardUsedCountRows.Slice {
 		resp.TowerCardUsedCountRows.Slice[i].UsedCount = 0
 		resp.TowerCardUsedCountRows.Slice[i].RecoveredCount = 0
-		session.UpdateUserTowerCardUsed(req.TowerId, resp.TowerCardUsedCountRows.Slice[i])
+		user_tower.UpdateUserTowerCardUsed(session, req.TowerId, resp.TowerCardUsedCountRows.Slice[i])
 	}
 
 	session.Finalize()
