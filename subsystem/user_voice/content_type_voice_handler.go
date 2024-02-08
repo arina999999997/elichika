@@ -8,7 +8,7 @@ import (
 )
 
 func contentTypeVoiceHandler(session *userdata.Session, content *client.Content) any {
-	session.UpdateVoice(content.ContentId, false)
+	UpdateUserVoice(session, content.ContentId, false)
 	content.ContentAmount = 0
 	return nil
 }

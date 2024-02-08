@@ -12,6 +12,8 @@ import (
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_story_side"
 	"elichika/subsystem/user_suit"
+	"elichika/subsystem/user_voice"
+	"elichika/subsystem/user_training_tree"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -20,7 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
-
+// TODO(refactor): Move these logics into subsystem
 func activateTrainingTreeCell(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ActivateTrainingTreeCellRequest{}
@@ -65,7 +67,7 @@ func activateTrainingTreeCell(ctx *gin.Context) {
 			}
 		case enum.TrainingTreeCellTypeVoice:
 			naviActionId := trainingTree.NaviActionIds[cell.TrainingContentNo]
-			session.UpdateVoice(naviActionId, true)
+			user_voice.UpdateUserVoice(session, naviActionId, true)
 		case enum.TrainingTreeCellTypeStory:
 			// training_content_type 11 in m_training_tree_card_story_side
 			storySideId, exist := trainingTree.TrainingTreeCardStorySides[int(enum.TrainingContentTypeStory)]
@@ -122,11 +124,11 @@ func activateTrainingTreeCell(ctx *gin.Context) {
 				ActivatedAt: session.Time.Unix()})
 	}
 
-	session.InsertTrainingTreeCells(req.CardMasterId, unlockedCells)
+	user_training_tree.InsertUserTrainingTreeCells(session, req.CardMasterId, unlockedCells)
 	session.Finalize()
 
 	common.JsonResponse(ctx, &response.ActivateTrainingTreeCellResponse{
-		UserCardTrainingTreeCellList: session.GetTrainingTree(req.CardMasterId),
+		UserCardTrainingTreeCellList: user_training_tree.GetUserTrainingTree(session, req.CardMasterId),
 		UserModelDiff:                &session.UserModel,
 	})
 }

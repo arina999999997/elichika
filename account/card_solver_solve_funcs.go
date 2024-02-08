@@ -3,6 +3,7 @@ package account
 import (
 	"elichika/client"
 	"elichika/userdata"
+	"elichika/subsystem/user_training_tree"
 
 	"fmt"
 )
@@ -40,7 +41,7 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card clie
 	} // else {
 	// fmt.Println("Found solution for card", card.CardMasterId)
 	// }
-	session.InsertTrainingTreeCells(card.CardMasterId, solver.Cells)
+	user_training_tree.InsertUserTrainingTreeCells(session, card.CardMasterId, solver.Cells)
 	if int32(len(solver.Cells)) != card.TrainingActivatedCellCount {
 		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterId))
 	}

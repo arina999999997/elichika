@@ -8,6 +8,7 @@ import (
 	"elichika/router"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_reference_book"
+	"elichika/subsystem/user_unlock_scene"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -36,12 +37,12 @@ func tutorialSkip(ctx *gin.Context) {
 	user_live_deck.SaveUserLiveDeck(session, 1, req.CardWithSuitDict, req.SquadDict)
 
 	{ // unlock systems
-		session.UnlockScene(enum.UnlockSceneTypeLesson, enum.UnlockSceneStatusOpen)
-		session.UnlockScene(enum.UnlockSceneTypeFreeLive, enum.UnlockSceneStatusOpen)
-		session.UnlockScene(enum.UnlockSceneTypeAccessory, enum.UnlockSceneStatusOpen)
-		session.UnlockScene(enum.UnlockSceneTypeStoryMember, enum.UnlockSceneStatusOpen)
-		session.UnlockScene(enum.UnlockSceneTypeEvent, enum.UnlockSceneStatusOpen)
-		session.UnlockScene(enum.UnlockSceneTypeReferenceBookSelect, enum.UnlockSceneStatusOpen)
+		user_unlock_scene.UnlockScene(session, enum.UnlockSceneTypeLesson, enum.UnlockSceneStatusOpen)
+		user_unlock_scene.UnlockScene(session, enum.UnlockSceneTypeFreeLive, enum.UnlockSceneStatusOpen)
+		user_unlock_scene.UnlockScene(session, enum.UnlockSceneTypeAccessory, enum.UnlockSceneStatusOpen)
+		user_unlock_scene.UnlockScene(session, enum.UnlockSceneTypeStoryMember, enum.UnlockSceneStatusOpen)
+		user_unlock_scene.UnlockScene(session, enum.UnlockSceneTypeEvent, enum.UnlockSceneStatusOpen)
+		user_unlock_scene.UnlockScene(session, enum.UnlockSceneTypeReferenceBookSelect, enum.UnlockSceneStatusOpen)
 	}
 	{
 		// mark lesson as finished

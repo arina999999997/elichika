@@ -8,6 +8,7 @@ import (
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/subsystem/user_subscription_status"
 
 	"encoding/json"
 
@@ -27,7 +28,7 @@ func fetchSubscriptionPass(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	subscriptionStatus := session.GetSubsriptionStatus(req.SubscriptionMasterId)
+	subscriptionStatus := user_subscription_status.GetUserSubsriptionStatus(session, req.SubscriptionMasterId)
 
 	// subscriptionStatus.RenewalCount++
 	// subscriptionStatus.ContinueCount++

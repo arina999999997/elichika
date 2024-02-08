@@ -8,6 +8,7 @@ import (
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/subsystem/user_unlock_scene"
 
 	"encoding/json"
 
@@ -26,7 +27,7 @@ func saveUnlockedScene(ctx *gin.Context) {
 	defer session.Close()
 
 	for _, sceneType := range req.UnlockSceneTypes.Slice {
-		session.UnlockScene(sceneType, enum.UnlockSceneStatusOpened)
+		user_unlock_scene.UnlockScene(session, sceneType, enum.UnlockSceneStatusOpened)
 	}
 
 	session.Finalize()

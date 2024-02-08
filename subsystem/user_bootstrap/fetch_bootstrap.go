@@ -11,6 +11,7 @@ import (
 	"elichika/subsystem/user_expired_item"
 	"elichika/subsystem/user_login_bonus"
 	"elichika/subsystem/user_new_badge"
+	"elichika/subsystem/user_subscription_status"
 	"elichika/userdata"
 )
 
@@ -49,7 +50,7 @@ func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest
 	}
 	resp.MissionBeginnerMasterId, resp.ShowChallengeBeginnerButton, resp.ChallengeBeginnerCompletedIds =
 		user_beginner_challenge.GetUserBeginnerChallengeInfo(session)
-	status := session.GetSubsriptionStatus(13001)
+	status := user_subscription_status.GetUserSubsriptionStatus(session, 13001)
 	session.UserModel.UserSubscriptionStatusById.Set(status.SubscriptionMasterId, status)
 	return resp
 }

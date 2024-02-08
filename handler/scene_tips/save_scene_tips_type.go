@@ -7,6 +7,7 @@ import (
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/subsystem/user_scene_tips"
 
 	"encoding/json"
 
@@ -24,7 +25,7 @@ func saveSceneTipsType(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.SaveSceneTips(req.SceneTipsType)
+	user_scene_tips.SaveUserSceneTips(session, req.SceneTipsType)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

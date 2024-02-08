@@ -5,6 +5,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/userdata"
+	"elichika/subsystem/user_subscription_status"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +34,7 @@ func fetchShopSubscription(ctx *gin.Context) {
 	// it would be fancier if people can click on the purcharse button and it them a subscription
 	//  but let's settle on giving everyone who click on this button a subscription anyway
 
-	session.UserModel.UserSubscriptionStatusById.Set(13001, session.GetSubsriptionStatus(13001))
+	session.UserModel.UserSubscriptionStatusById.Set(13001, user_subscription_status.GetUserSubsriptionStatus(session, 13001))
 
 	session.Finalize()
 	common.JsonResponse(ctx, &resp)

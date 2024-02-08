@@ -6,6 +6,7 @@ import (
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/userdata"
+	"elichika/subsystem/user_voice"
 	"elichika/utils"
 
 	"encoding/json"
@@ -25,7 +26,7 @@ func saveUserNaviVoice(ctx *gin.Context) {
 	defer session.Close()
 
 	for _, naviVoiceMasterId := range req.NaviVoiceMasterIds.Slice {
-		session.UpdateVoice(naviVoiceMasterId, false)
+		user_voice.UpdateUserVoice(session, naviVoiceMasterId, false)
 	}
 
 	session.Finalize()

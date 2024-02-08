@@ -4,6 +4,7 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
+	"elichika/subsystem/user_training_tree"
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
@@ -25,7 +26,7 @@ func fetchTrainingTree(ctx *gin.Context) {
 	defer session.Close()
 
 	common.JsonResponse(ctx, response.FetchTrainingTreeResponse{
-		UserCardTrainingTreeCellList: session.GetTrainingTree(req.CardMasterId),
+		UserCardTrainingTreeCellList: user_training_tree.GetUserTrainingTree(session, req.CardMasterId),
 	})
 }
 
