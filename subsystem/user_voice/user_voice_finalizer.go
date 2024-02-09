@@ -1,8 +1,8 @@
 package user_voice
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func userVoiceFinalizer(session *userdata.Session) {

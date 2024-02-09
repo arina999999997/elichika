@@ -1,8 +1,8 @@
 package user_unlock_scene
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func userUnlockScenesFinalizer(session *userdata.Session) {

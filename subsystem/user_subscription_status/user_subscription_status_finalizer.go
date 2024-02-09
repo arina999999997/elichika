@@ -1,9 +1,10 @@
 package user_subscription_status
 
 import (
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
+
 func userSubscriptionStatusFinalizer(session *userdata.Session) {
 	for _, userSubscriptionStatus := range session.UserModel.UserSubscriptionStatusById.Map {
 		// userSubscriptionStatus.ExpireDate = (1 << 31) - 1 // patch it so we don't need to deal with expiration

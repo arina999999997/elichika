@@ -2,8 +2,8 @@ package user_subscription_status
 
 import (
 	"elichika/client"
-	"elichika/utils" 
-	"elichika/userdata" 
+	"elichika/userdata"
+	"elichika/utils"
 )
 
 func GetUserSubsriptionStatus(session *userdata.Session, subscriptionMasterId int32) client.UserSubscriptionStatus {

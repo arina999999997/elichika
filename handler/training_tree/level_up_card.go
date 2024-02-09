@@ -3,12 +3,9 @@ package training_tree
 import (
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/enum"
 	"elichika/handler/common"
-	"elichika/item"
 	"elichika/router"
-	"elichika/subsystem/user_card"
-	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_training_tree"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -28,18 +25,7 @@ func levelUpCard(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	if session.UserStatus.TutorialPhase == enum.TutorialPhaseTrainingLevelUp {
-		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingActivateCell
-	}
-
-	cardLevel := session.Gamedata.CardLevel[session.Gamedata.Card[req.CardMasterId].CardRarityType]
-	card := user_card.GetUserCard(session, req.CardMasterId)
-	user_content.RemoveContent(session, item.Gold.Amount(int32(
-		cardLevel.GameMoneyPrefixSum[card.Level+req.AdditionalLevel]-cardLevel.GameMoneyPrefixSum[card.Level])))
-	user_content.RemoveContent(session, item.EXP.Amount(int32(
-		cardLevel.ExpPrefixSum[card.Level+req.AdditionalLevel]-cardLevel.ExpPrefixSum[card.Level])))
-	card.Level += req.AdditionalLevel
-	user_card.UpdateUserCard(session, card)
+	user_training_tree.LevelUpCard(session, req.CardMasterId, req.AdditionalLevel)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.LevelUpCardResponse{

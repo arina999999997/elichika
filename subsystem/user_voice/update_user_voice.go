@@ -2,8 +2,8 @@ package user_voice
 
 import (
 	"elichika/client"
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 func UpdateUserVoice(session *userdata.Session, naviVoiceMasterId int32, isNew bool) {

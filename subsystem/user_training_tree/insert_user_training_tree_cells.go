@@ -5,7 +5,7 @@ import (
 	"elichika/userdata"
 )
 
-// insert a training cell sets
+// TODO(low): This shouldn't exist, but it's more work to remove it for now
 func InsertUserTrainingTreeCells(session *userdata.Session, cardMasterId int32, cells []client.UserCardTrainingTreeCell) {
 	type Wrapper struct {
 		CardMasterId int32

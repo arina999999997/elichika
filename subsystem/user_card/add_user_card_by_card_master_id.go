@@ -41,7 +41,7 @@ func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) cl
 		}
 	} else {
 		beforeLoveLevelLimit, afterLoveLevelLimit := user_member.IncreaseMemberLoveLevelLimit(
-			session, masterCard.Member.Id, masterCard.CardRarityType/10)
+			session, masterCard.Member.Id, masterCard.Rarity.PlusLevel)
 		beforeGrade := int32(0)
 		if card.Grade > 0 { // is a limit break
 			// add trigger card grade up so animation play when opening the card

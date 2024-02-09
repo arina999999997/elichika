@@ -6,9 +6,9 @@ import (
 	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_unlock_scene"
 	"elichika/userdata"
 	"elichika/utils"
-	"elichika/subsystem/user_unlock_scene"
 
 	"encoding/json"
 

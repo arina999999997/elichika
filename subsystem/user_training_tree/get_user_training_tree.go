@@ -3,8 +3,8 @@ package user_training_tree
 import (
 	"elichika/client"
 	"elichika/generic"
-	"elichika/utils"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
 // return the training tree for a card

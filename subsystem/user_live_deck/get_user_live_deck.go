@@ -7,13 +7,16 @@ import (
 )
 
 func GetUserLiveDeck(session *userdata.Session, userLiveDeckId int32) client.UserLiveDeck {
-	liveDeck := client.UserLiveDeck{}
-	exist, err := session.Db.Table("u_live_deck").
-		Where("user_id = ? AND user_live_deck_id = ?", session.UserId, userLiveDeckId).
-		Get(&liveDeck)
-	utils.CheckErr(err)
+	liveDeckPtr, exist := session.UserModel.UserLiveDeckById.Get(userLiveDeckId)
 	if !exist {
-		panic("Deck doesn't exist")
+		liveDeckPtr = &client.UserLiveDeck{}
+		exist, err := session.Db.Table("u_live_deck").
+			Where("user_id = ? AND user_live_deck_id = ?", session.UserId, userLiveDeckId).
+			Get(liveDeckPtr)
+		utils.CheckErr(err)
+		if !exist {
+			panic("Deck doesn't exist")
+		}
 	}
-	return liveDeck
+	return *liveDeckPtr
 }

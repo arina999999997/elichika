@@ -2,9 +2,9 @@ package tutorial
 
 import (
 	"elichika/client/response"
-	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_tutorial"
 	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"
@@ -16,10 +16,7 @@ func timingAdjusterEnd(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	if session.UserStatus.TutorialPhase != enum.TutorialPhaseTimingAdjuster {
-		panic("Unexpected tutorial phase")
-	}
-	session.UserStatus.TutorialPhase = enum.TutorialPhaseFavoriateMember
+	user_tutorial.TimingAdjusterEnd(session)
 
 	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{

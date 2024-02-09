@@ -3,8 +3,6 @@ package navi
 import (
 	"elichika/client/request"
 	"elichika/client/response"
-	"elichika/config"
-	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
 	"elichika/subsystem/user_member"
@@ -27,10 +25,7 @@ func tapLovePoint(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	user_member.AddMemberLovePoint(session, req.MemberMasterId, *config.Conf.TapBondGain)
-	if session.UserStatus.TutorialPhase == enum.TutorialPhaseLovePointUp {
-		session.UserStatus.TutorialPhase = enum.TutorialPhaseTrainingLevelUp
-	}
+	user_member.TapLovePoint(session, req.MemberMasterId)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

@@ -4,8 +4,8 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
-	"elichika/subsystem/user_training_tree"
 	"elichika/router"
+	"elichika/subsystem/user_training_tree"
 	"elichika/userdata"
 	"elichika/utils"
 

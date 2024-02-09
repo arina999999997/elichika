@@ -20,8 +20,9 @@ type Card struct {
 	MemberMasterId *int32  `xorm:"'member_m_id'"`
 	Member         *Member `xorm:"-"`
 	// SchoolIdolNo int `xorm:"'school_idol_no'"`
-	CardRarityType int32 `xorm:"'card_rarity_type'" enum:"CardRarityType"`
-	Role           int   `xorm:"'role'"`
+	CardRarityType int32       `xorm:"'card_rarity_type'" enum:"CardRarityType"`
+	Rarity         *CardRarity `xorm:"-"`
+	Role           int         `xorm:"'role'"`
 	// MemberCardThumbnailAssetPath string
 	// AtGacha bool
 	// AtEvent bool
@@ -49,7 +50,7 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	card.MemberMasterId = &card.Member.Id
 	card.TrainingTree = gamedata.TrainingTree[*card.TrainingTreeMasterId]
 	card.TrainingTreeMasterId = &card.TrainingTree.Id
-
+	card.Rarity = gamedata.CardRarity[card.CardRarityType]
 	{
 		card.CardGradeUpItem = make(map[int32](map[int32]client.Content))
 		gradeUps := []CardGradeUpItem{}
@@ -78,6 +79,7 @@ func loadCard(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, di
 
 func init() {
 	addLoadFunc(loadCard)
+	addPrequisite(loadCard, loadCardRarity)
 	addPrequisite(loadCard, loadMember)
 	addPrequisite(loadCard, loadTrainingTree)
 }

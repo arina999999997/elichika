@@ -4,8 +4,8 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/userdata"
 	"elichika/subsystem/user_subscription_status"
+	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"
 )
