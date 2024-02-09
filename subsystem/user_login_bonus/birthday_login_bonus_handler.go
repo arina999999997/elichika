@@ -21,7 +21,6 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 	year, month, day := session.Time.Date()
 	mmdd := int32(month)*100 + int32(day)
 	list, exists := session.Gamedata.MemberByBirthday[mmdd]
-	fmt.Println(mmdd, list, exists)
 	if !exists { // no one with this birthday
 		return
 	}

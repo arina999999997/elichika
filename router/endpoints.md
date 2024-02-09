@@ -166,7 +166,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /navi/tapLovePoint
 - [ ] /noop/noop
 - [x] /notice/fetchNotice
-- [ ] /notice/fetchNoticeDetail TODO(notice, gacha): this can also be triggered from gacha
+- [x] /notice/fetchNoticeDetail
 - [ ] /notice/fetchNoticeList
 - [ ] /notice/saveUserSuperNotice
 - [x] /present/fetch
@@ -225,7 +225,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /user/recoverLp
 - [x] /user/recoverLpSubscription
 - [x] /userAccountDeletion/checkUserAccountDeleted
-- [ ] /userAccountDeletion/deleteUserAccount
+- [ ] (the button for this is not in the app?, we need to turn it back on first) /userAccountDeletion/deleteUserAccount
 - [ ] (not necessary?) /userProfile/fetchDeck
 - [x] /userProfile/fetchProfile
 - [x] /userProfile/setCommboLive

@@ -29,7 +29,6 @@ Use to create new account:
 If the user Id is new, then a new account will be created.
 - The password entered will be the login password.
 - User can user the datalink function to change the password as long as they have access to the account.
-TODO(password): Password is stored in plaintext, maybe something like bcrypt would be better but the password is always sent using plain text anyway
 */
 func checkTakeOver(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
