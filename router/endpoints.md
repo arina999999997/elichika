@@ -61,7 +61,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /dailyTheaterArchive/fetchDailyTheaterArchive
 - [x] /dataLink/fetchDataLinks
 - [ ] (not necessary) /dataLink/fetchGameServiceData
-- [ ] (not necessary) /dataLink/fetchGameServiceDataBeforeLogin
+- [x] /dataLink/fetchGameServiceDataBeforeLogin
 - [ ] (not necessary) /dataLink/fetchSchoolIdolFestivalIdDataAfterLogin
 - [ ] (not necessary) /dataLink/fetchSchoolIdolFestivalIdDataBeforeLogin
 - [ ] (not necessary) /dataLink/linkGameService
