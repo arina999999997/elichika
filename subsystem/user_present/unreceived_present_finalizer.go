@@ -7,18 +7,19 @@ import (
 )
 
 func unreceivedPresentFinalizer(session *userdata.Session) {
+	// there has to be a duration, especially for accessory, otherwise it would be very questionable
 	for _, content := range session.UnreceivedContent {
 		// there doesn't seems to be a meaningful difference between these
 		if content.ContentType == enum.ContentTypeAccessory {
-			AddPresent(session, client.PresentItem{
+			AddPresentWithDuration(session, client.PresentItem{
 				Content:          content,
 				PresentRouteType: enum.PresentRouteTypeLiveAccessoryItemFull,
-			})
+			}, Duration30Days)
 		} else {
-			AddPresent(session, client.PresentItem{
+			AddPresentWithDuration(session, client.PresentItem{
 				Content:          content,
 				PresentRouteType: enum.PresentRouteTypeItemFull,
-			})
+			}, Duration30Days)
 		}
 	}
 }

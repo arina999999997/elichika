@@ -9,6 +9,7 @@ import (
 	"elichika/utils"
 )
 
+// return true if some has to be in present box
 func accessoryContentHandler(session *userdata.Session, content *client.Content) any {
 	// technically this counting method is incorrect but it sohuld be fine in this context (present / adding accessory)
 	currentAccessoryAmount, err := session.Db.Table("u_accessory").Where("user_id = ?", session.UserId).
@@ -21,7 +22,7 @@ func accessoryContentHandler(session *userdata.Session, content *client.Content)
 		currentAccessoryAmount++
 		if int32(currentAccessoryAmount) > session.UserModel.UserStatus.AccessoryBoxAdditional+AccessoryBoxDefaultLimit {
 			// can't take anymore
-			break
+			return true
 		}
 		content.ContentAmount--
 		accessory := GetUserAccessory(session, session.NextUniqueId())
@@ -38,7 +39,7 @@ func accessoryContentHandler(session *userdata.Session, content *client.Content)
 		}
 		UpdateUserAccessory(session, accessory)
 	}
-	return nil
+	return false
 }
 
 func init() {

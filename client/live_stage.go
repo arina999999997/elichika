@@ -1,9 +1,11 @@
 package client
 
 import (
+	"elichika/enum"
 	"elichika/generic"
 
 	"fmt"
+	"math/rand"
 )
 
 type LiveStage struct {
@@ -79,5 +81,12 @@ func (ls *LiveStage) Copy() LiveStage {
 		LiveWaveSettings: ls.LiveWaveSettings.Copy(),
 		NoteGimmicks:     ls.NoteGimmicks.Copy(),
 		StageGimmickDict: ls.StageGimmickDict.Copy(),
+	}
+}
+
+func (ls *LiveStage) AddNoteDrop() {
+	id := rand.Intn(ls.LiveNotes.Size())
+	if ls.LiveNotes.Slice[id].NoteType <= enum.NoteTypeLongEnd && ls.LiveNotes.Slice[id].GimmickId == 0 {
+		ls.LiveNotes.Slice[id].NoteRandomDropColor = rand.Int31n(enum.NoteDropColorBronze) + 1
 	}
 }

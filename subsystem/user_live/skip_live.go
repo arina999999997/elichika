@@ -46,8 +46,18 @@ func SkipLive(session *userdata.Session, req request.SkipLiveRequest) response.S
 	}
 
 	for i := int32(1); i <= req.TicketUseCount; i++ {
-		resp.SkipLiveResult.Drops.Append(client.LiveResultContentPack{})
+		standardDrops, isRewardAccessoryInPresentBox := getLiveStandardDrops(session, nil, liveDifficulty)
+		resp.SkipLiveResult.IsRewardAccessoryInPresentBox = resp.SkipLiveResult.IsRewardAccessoryInPresentBox || isRewardAccessoryInPresentBox
+
+		additionalDrops, isRewardAccessoryInPresentBox := getSkipAdditionalDrops(session, (i%2 == 0), liveDifficulty)
+		resp.SkipLiveResult.IsRewardAccessoryInPresentBox = resp.SkipLiveResult.IsRewardAccessoryInPresentBox || isRewardAccessoryInPresentBox
+
+		resp.SkipLiveResult.Drops.Append(client.LiveResultContentPack{
+			StandardDrops:   standardDrops,
+			AdditionalDrops: additionalDrops,
+		})
 	}
+
 	user_status.AddUserExp(session, resp.SkipLiveResult.GainUserExp)
 
 	deck := user_live_deck.GetUserLiveDeck(session, req.DeckId)

@@ -181,7 +181,20 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			}
 		}
 		resp.LiveResult.GainUserExp = liveDifficulty.RewardUserExp
+
+		// drops
+		resp.LiveResult.StandardDrops, resp.LiveResult.IsRewardAccessoryInPresentBox =
+			getLiveStandardDrops(session, &req.LiveScore, liveDifficulty)
+
+		var isRewardAccessoryInPresentBox bool
+		resp.LiveResult.AdditionalDrops, isRewardAccessoryInPresentBox = getLiveAdditionalDrops(session, &req.LiveScore, liveDifficulty)
+		resp.LiveResult.IsRewardAccessoryInPresentBox = resp.LiveResult.IsRewardAccessoryInPresentBox || isRewardAccessoryInPresentBox
+
+		resp.LiveResult.GimmickDrops, isRewardAccessoryInPresentBox = getLiveGimmickDrops(session, &live.LiveStage, &req.LiveScore, liveDifficulty)
+		resp.LiveResult.IsRewardAccessoryInPresentBox = resp.LiveResult.IsRewardAccessoryInPresentBox || isRewardAccessoryInPresentBox
+
 		user_status.AddUserExp(session, resp.LiveResult.GainUserExp)
+
 	}
 
 	memberRepresentativeCard := make(map[int32]int32)

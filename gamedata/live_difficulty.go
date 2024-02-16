@@ -5,6 +5,7 @@ import (
 	"elichika/config"
 	"elichika/dictionary"
 	"elichika/enum"
+	"elichika/gamedata/drop"
 	"elichika/generic"
 	"elichika/utils"
 
@@ -29,17 +30,27 @@ type LiveDifficulty struct {
 	ConsumedLP    int32 `xorm:"'consumed_lp'"`
 	RewardUserExp int32 `xorm:"'reward_user_exp'"`
 	// JudgeId int32
-	NoteDropGroupId *int32 `xorm:"'note_drop_group_id'"`
 
-	// NoteDropGroup *NoteDropGroup `xorm:"-"`
-	DropChooseCount    int32  `xorm:"'drop_choose_count'"`
-	RateDropRate       int32  `xorm:"'rare_drop_rate'"`
-	DropContentGroupId *int32 `xorm:"'drop_content_group_id'"`
-	// DropContentGroup *DropContentGroup `xorm:"-"`
-	RareDropContentGroupId *int32 `xorm:"'rare_drop_content_group_id'"`
-	// RareDropContentGroup *RareDropContentGroup `xorm:"-"`
-	AdditionalDropContentGroupId *int32 `xorm:"'additional_drop_content_group_id'"`
-	// AdditionalDropContentGroup *AdditionalDropContentGroup `xorm:"-"`
+	NoteDropGroupId *int32         `xorm:"'note_drop_group_id'"`
+	NoteDropGroup   *drop.DropList `xorm:"-"`
+
+	// not sure how to interpret this one?
+	DropChooseCount int32 `xorm:"'drop_choose_count'"`
+
+	// switch to the rare group if we hit the rare drop rate
+	RareDropRate int32 `xorm:"'rare_drop_rate'"`
+
+	DropContentGroupId     *int32         `xorm:"'drop_content_group_id'"`
+	DropContentGroup       *drop.DropList `xorm:"-"`
+	RareDropContentGroupId *int32         `xorm:"'rare_drop_content_group_id'"`
+	RareDropContentGroup   *drop.DropList `xorm:"-"`
+
+	AdditionalDropMaxCount           int32          `xorm:"additional_drop_max_count"`
+	AdditionalDropContentGroupId     *int32         `xorm:"'additional_drop_content_group_id'"`
+	AdditionalDropContentGroup       *drop.DropList `xorm:"-"`
+	AdditionalRareDropContentGroupId *int32         `xorm:"'additional_rare_drop_content_group_id'"`
+	AdditionalRareDropContentGroup   *drop.DropList `xorm:"-"`
+
 	// ?????
 	BottomTechnique              int32 `xorm:"'bottom_technique'"`
 	AdditionalDropDecayTechnique int32 `xorm:"'additional_drop_decay_technique'"`
@@ -102,6 +113,25 @@ func (ld *LiveDifficulty) populate(gamedata *Gamedata, masterdata_db, serverdata
 	utils.CheckErr(err)
 	for i := range ld.LiveDifficultyNoteGimmicks {
 		ld.LiveDifficultyNoteGimmicks[i].populate()
+	}
+
+	if ld.NoteDropGroupId != nil {
+		ld.NoteDropGroup = gamedata.LiveDropContentGroup[*ld.NoteDropGroupId]
+	}
+
+	if ld.DropContentGroupId != nil {
+		ld.DropContentGroup = gamedata.LiveDropContentGroup[*ld.DropContentGroupId]
+	}
+
+	if ld.RareDropContentGroupId != nil {
+		ld.RareDropContentGroup = gamedata.LiveDropContentGroup[*ld.RareDropContentGroupId]
+	}
+
+	if ld.AdditionalDropContentGroupId != nil {
+		ld.AdditionalDropContentGroup = gamedata.LiveDropContentGroup[*ld.AdditionalDropContentGroupId]
+	}
+	if ld.AdditionalRareDropContentGroupId != nil {
+		ld.AdditionalRareDropContentGroup = gamedata.LiveDropContentGroup[*ld.AdditionalRareDropContentGroupId]
 	}
 }
 
@@ -294,4 +324,5 @@ func loadLiveDifficulty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.S
 func init() {
 	addLoadFunc(loadLiveDifficulty)
 	addPrequisite(loadLiveDifficulty, loadLive)
+	addPrequisite(loadLiveDifficulty, loadLiveDropContentGroup)
 }

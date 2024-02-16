@@ -168,7 +168,8 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 			for b := 1; b <= 20; b++ {
 				i := a + b
 				cid := [10]generic.Nullable[int32]{}
-				// this order isn't actually correct to the official server
+				// TODO(new_account): this order isn't actually correct to the official server
+				// the can get the order from m_live_difficulty_override_member_mapping
 				for j := 1; j <= 9; j++ {
 					cid[j] = generic.NewNullable(gamedata.Member[int32(j+100*((i-1)%3))].MemberInit.SuitMasterId)
 				}

@@ -31,11 +31,10 @@ func StartLive(session *userdata.Session, req request.StartLiveRequest) response
 			IsPartnerFriend: true,
 			DeckId:          req.DeckId,
 			CellId:          req.CellId,
+			LiveStage:       masterLiveDifficulty.LiveStage.Copy(),
 		},
 		UserModelDiff: &session.UserModel,
 	}
-	resp.Live.LiveStage = masterLiveDifficulty.LiveStage.Copy()
-	// TODO(drop): fill in note here
 
 	if req.LiveTowerStatus.HasValue {
 		// is tower live, fetch this tower
@@ -52,6 +51,12 @@ func StartLive(session *userdata.Session, req request.StartLiveRequest) response
 			StartVoltage:  userTower.Voltage,
 		})
 		resp.Live.LiveType = enum.LiveTypeTower
+	} else {
+		// fill in the drops
+		// note that there is a chance to fail by selecting an invalid note, in which case the drop is just lost
+		for i := int32(0); i < masterLiveDifficulty.DropChooseCount; i++ {
+			resp.Live.LiveStage.AddNoteDrop()
+		}
 	}
 
 	if req.IsAutoPlay {
