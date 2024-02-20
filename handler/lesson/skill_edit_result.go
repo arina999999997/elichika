@@ -5,7 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_lesson"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -25,22 +25,7 @@ func skillEditResult(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	for cardMasterId, selectedSkills := range req.SelectedSkillIds.Map {
-		card := user_card.GetUserCard(session, cardMasterId)
-		for i, skillId := range selectedSkills.Slice {
-			switch i {
-			case 0:
-				card.AdditionalPassiveSkill1Id = skillId
-			case 1:
-				card.AdditionalPassiveSkill2Id = skillId
-			case 2:
-				card.AdditionalPassiveSkill3Id = skillId
-			case 3:
-				card.AdditionalPassiveSkill4Id = skillId
-			}
-		}
-		user_card.UpdateUserCard(session, card) // this is always updated even if no skill change happen
-	}
+	user_lesson.SkillEditResult(session, req)
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{

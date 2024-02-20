@@ -5,5 +5,5 @@ type LessonDropItem struct {
 	ContentId      int32 `json:"content_id"`
 	ContentAmount  int32 `json:"content_amount"`
 	DropRarity     int32 `json:"drop_rarity" enum:"LessonDropRarityType"`
-	IsSubscription int32 `json:"is_subscription"`
+	IsSubscription bool  `json:"is_subscription"`
 }

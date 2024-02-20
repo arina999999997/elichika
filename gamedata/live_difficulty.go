@@ -5,8 +5,8 @@ import (
 	"elichika/config"
 	"elichika/dictionary"
 	"elichika/enum"
-	"elichika/gamedata/drop"
 	"elichika/generic"
+	"elichika/generic/drop"
 	"elichika/utils"
 
 	"encoding/json"
@@ -31,8 +31,8 @@ type LiveDifficulty struct {
 	RewardUserExp int32 `xorm:"'reward_user_exp'"`
 	// JudgeId int32
 
-	NoteDropGroupId *int32         `xorm:"'note_drop_group_id'"`
-	NoteDropGroup   *drop.DropList `xorm:"-"`
+	NoteDropGroupId *int32                         `xorm:"'note_drop_group_id'"`
+	NoteDropGroup   *drop.DropList[client.Content] `xorm:"-"`
 
 	// not sure how to interpret this one?
 	DropChooseCount int32 `xorm:"'drop_choose_count'"`
@@ -40,16 +40,16 @@ type LiveDifficulty struct {
 	// switch to the rare group if we hit the rare drop rate
 	RareDropRate int32 `xorm:"'rare_drop_rate'"`
 
-	DropContentGroupId     *int32         `xorm:"'drop_content_group_id'"`
-	DropContentGroup       *drop.DropList `xorm:"-"`
-	RareDropContentGroupId *int32         `xorm:"'rare_drop_content_group_id'"`
-	RareDropContentGroup   *drop.DropList `xorm:"-"`
+	DropContentGroupId     *int32                         `xorm:"'drop_content_group_id'"`
+	DropContentGroup       *drop.DropList[client.Content] `xorm:"-"`
+	RareDropContentGroupId *int32                         `xorm:"'rare_drop_content_group_id'"`
+	RareDropContentGroup   *drop.DropList[client.Content] `xorm:"-"`
 
-	AdditionalDropMaxCount           int32          `xorm:"additional_drop_max_count"`
-	AdditionalDropContentGroupId     *int32         `xorm:"'additional_drop_content_group_id'"`
-	AdditionalDropContentGroup       *drop.DropList `xorm:"-"`
-	AdditionalRareDropContentGroupId *int32         `xorm:"'additional_rare_drop_content_group_id'"`
-	AdditionalRareDropContentGroup   *drop.DropList `xorm:"-"`
+	AdditionalDropMaxCount           int32                          `xorm:"additional_drop_max_count"`
+	AdditionalDropContentGroupId     *int32                         `xorm:"'additional_drop_content_group_id'"`
+	AdditionalDropContentGroup       *drop.DropList[client.Content] `xorm:"-"`
+	AdditionalRareDropContentGroupId *int32                         `xorm:"'additional_rare_drop_content_group_id'"`
+	AdditionalRareDropContentGroup   *drop.DropList[client.Content] `xorm:"-"`
 
 	// ?????
 	BottomTechnique              int32 `xorm:"'bottom_technique'"`

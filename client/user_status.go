@@ -47,7 +47,7 @@ type UserStatus struct {
 	LiveMaxScore                              int32                   `json:"live_max_score"`
 	MaxComboLiveDifficultyMasterId            generic.Nullable[int32] `xorm:"json 'max_combo_live_difficulty_master_id'" json:"max_combo_live_difficulty_master_id"`
 	LiveMaxCombo                              int32                   `json:"live_max_combo"`
-	LessonResumeStatus                        int32                   `json:"lesson_resume_status"`                                                      // for quitting while training, the number probably mean the phase of the training
+	LessonResumeStatus                        int32                   `json:"lesson_resume_status" enum:"TopPriorityProcessStatus"`                      // for quitting while training, the number probably mean the phase of the training
 	AccessoryBoxAdditional                    int32                   `json:"accessory_box_additional"`                                                  // additional accessory slot, max is 400 in official
 	TermsOfUseVersion                         int32                   `json:"terms_of_use_version"`                                                      // 3 mean nothing to accept
 	BootstrapSifidCheckAt                     int64                   `json:"bootstrap_sifid_check_at"`                                                  // not really what it sound like, probably safe to ignore it

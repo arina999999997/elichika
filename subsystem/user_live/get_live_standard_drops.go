@@ -50,9 +50,9 @@ func getLiveStandardDrops(session *userdata.Session, liveScore *client.LiveScore
 		isRare := rand.Int31n(10000) < liveDifficulty.RareDropRate
 		var content client.Content
 		if isRare {
-			content = liveDifficulty.RareDropContentGroup.GetRandomDrop()
+			content = liveDifficulty.RareDropContentGroup.GetRandomItem()
 		} else {
-			content = liveDifficulty.DropContentGroup.GetRandomDrop()
+			content = liveDifficulty.DropContentGroup.GetRandomItem()
 		}
 
 		result := user_content.AddContent(session, content)

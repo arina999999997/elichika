@@ -101,8 +101,11 @@ func init() {
 	AddTable("u_last_play_live_difficulty_deck", generic.UserIdWrapper[client.LastPlayLiveDifficultyDeck]{})
 
 	AddTable("u_login", generic.UserIdWrapper[response.LoginResponse]{})
+
 	AddTable("u_live", generic.UserIdWrapper[client.Live]{})
 	AddTable("u_start_live_request", generic.UserIdWrapper[request.StartLiveRequest]{})
+
+	AddTable("u_lesson", generic.UserIdWrapper[response.LessonResultResponse]{})
 
 	AddTable("u_card_training_tree_cell", generic.InterfaceWithAddedKey[int](
 		client.UserCardTrainingTreeCell{},

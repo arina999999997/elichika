@@ -28,7 +28,7 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/dictionary"
-	"elichika/gamedata/drop"
+	"elichika/generic/drop"
 
 	"fmt"
 	"reflect"
@@ -88,12 +88,16 @@ type Gamedata struct {
 	MemberLovePanelLevelAtLoveLevel []int32
 	MemberByBirthday                map[int32]([]*Member)
 
+	MemberGuildPeriod MemberGuildPeriod
+
 	Live                 map[int32]*Live
 	LiveParty            LiveParty
 	LiveDaily            map[int32]*LiveDaily
 	LiveMemberMapping    map[int32]LiveMemberMapping
 	LiveDifficulty       map[int32]*LiveDifficulty
-	LiveDropContentGroup map[int32]*drop.DropList
+	LiveDropContentGroup map[int32]*drop.DropList[client.Content]
+
+	LessonMenu map[int32]*LessonMenu
 
 	TrainingTreeCellItemSet map[int]*TrainingTreeCellItemSet
 	TrainingTreeDesign      map[int]*TrainingTreeDesign

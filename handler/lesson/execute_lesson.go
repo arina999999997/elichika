@@ -24,7 +24,10 @@ func executeLesson(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	common.JsonResponse(ctx, user_lesson.ExecuteLesson(session, req))
+	resp := user_lesson.ExecuteLesson(session, req)
+
+	session.Finalize()
+	common.JsonResponse(ctx, &resp)
 }
 
 func init() {

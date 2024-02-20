@@ -29,5 +29,5 @@ const (
 	ContentTypeStoryEventUnlock           int32 = 0x0000001e // use generic handler
 	ContentTypeRecoveryTowerCardUsedCount int32 = 0x0000001f // use generic handler
 	ContentTypeSubscriptionCoin           int32 = 0x00000020 // has handler
-	ContentTypeMemberGuildSupport         int32 = 0x00000021
+	ContentTypeMemberGuildSupport         int32 = 0x00000021 // has handler
 )
