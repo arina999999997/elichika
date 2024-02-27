@@ -14,6 +14,9 @@ type WeightedDropList[T any] struct {
 
 func (wdl *WeightedDropList[T]) AddItem(content T, weight int32) {
 	wdl.contents = append(wdl.contents, content)
+	if int64(wdl.totalWeight)+int64(weight) > 1<<31 {
+		panic("overflow")
+	}
 	wdl.totalWeight += weight
 	wdl.weights = append(wdl.weights, wdl.totalWeight)
 	wdl.n++
@@ -26,11 +29,11 @@ func (wdl *WeightedDropList[T]) GetRandomItem() T {
 	var mid, res int
 	for low <= high {
 		mid = (low + high) / 2
-		if wdl.weights[mid] < value {
+		if wdl.weights[mid] > value {
 			res = mid
-			low = mid + 1
-		} else {
 			high = mid - 1
+		} else {
+			low = mid + 1
 		}
 	}
 

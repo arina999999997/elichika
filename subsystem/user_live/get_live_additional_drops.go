@@ -31,9 +31,9 @@ func getLiveAdditionalDrops(session *userdata.Session, liveScore *client.LiveSco
 		isRare := rand.Int31n(10000) < liveDifficulty.RareDropRate
 		var content client.Content
 		if isRare {
-			content = liveDifficulty.AdditionalRareDropContentGroup.GetRandomItem()
+			content = liveDifficulty.AdditionalRareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		} else {
-			content = liveDifficulty.AdditionalDropContentGroup.GetRandomItem()
+			content = liveDifficulty.AdditionalDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		}
 
 		result := user_content.AddContent(session, content)

@@ -8,7 +8,7 @@ import (
 var (
 	EXP = client.Content{
 		ContentType:   enum.ContentTypeCardExp,
-		ContentId:     0,
+		ContentId:     1100,
 		ContentAmount: 1,
 	}
 )

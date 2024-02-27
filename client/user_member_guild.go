@@ -13,5 +13,5 @@ type UserMemberGuild struct {
 	DailyLovePointResetAt    int32 `xorm:"'daily_love_point_reset_at'" json:"daily_love_point_reset_at"`
 	MaxVoltage               int64 `xorm:"'max_voltage'" json:"max_voltage"`
 	SupportPointCountResetAt int64 `xorm:"'support_point_count_reset_at'" json:"support_point_count_reset_at"`
-	// DailyLovePointResetAt and MaxVoltage 's types are correct (match client), but maybe they meant to hibe the int64 to the reset at
+	// DailyLovePointResetAt and MaxVoltage 's types are correct (match client), but maybe they meant to have the int64 to the reset at
 }

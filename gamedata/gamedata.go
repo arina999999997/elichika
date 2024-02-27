@@ -88,14 +88,16 @@ type Gamedata struct {
 	MemberLovePanelLevelAtLoveLevel []int32
 	MemberByBirthday                map[int32]([]*Member)
 
-	MemberGuildPeriod MemberGuildPeriod
+	MemberGuildPeriod      MemberGuildPeriod
+	MemberGuildCheerReward map[int32]*drop.DropList[client.Content]
 
 	Live                 map[int32]*Live
 	LiveParty            LiveParty
 	LiveDaily            map[int32]*LiveDaily
 	LiveMemberMapping    map[int32]LiveMemberMapping
 	LiveDifficulty       map[int32]*LiveDifficulty
-	LiveDropContentGroup map[int32]*drop.DropList[client.Content]
+	LiveDropGroup        map[int32]*LiveDropGroup
+	LiveDropContentGroup map[int32]*drop.WeightedDropList[client.Content]
 
 	LessonMenu map[int32]*LessonMenu
 
@@ -107,6 +109,8 @@ type Gamedata struct {
 	Card       map[int32]*Card
 	CardLevel  map[int32]*CardLevel
 	CardRarity map[int32]*CardRarity
+
+	ContentRarity *ContentRarity
 
 	Suit map[int32]*Suit
 

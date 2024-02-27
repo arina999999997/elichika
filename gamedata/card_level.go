@@ -13,8 +13,8 @@ type CardLevel struct {
 	// from m_card_level
 	CardRarityType int `xorm:"pk 'card_rarity_type'"`
 	// prefix sum so we can calculate total cost in O(1)
-	ExpPrefixSum       []int `xorm:"-"`
-	GameMoneyPrefixSum []int `xorm:"-"`
+	ExpPrefixSum       []int32 `xorm:"-"`
+	GameMoneyPrefixSum []int32 `xorm:"-"`
 }
 
 func (cardLevel *CardLevel) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
@@ -25,8 +25,8 @@ func (cardLevel *CardLevel) populate(gamedata *Gamedata, masterdata_db, serverda
 	err = masterdata_db.Table("m_card_level").Where("card_rarity_type = ?", cardLevel.CardRarityType).OrderBy("level").Cols("game_money").
 		Find(&cardLevel.GameMoneyPrefixSum)
 	utils.CheckErr(err)
-	cardLevel.ExpPrefixSum = append([]int{0}, cardLevel.ExpPrefixSum...)
-	cardLevel.GameMoneyPrefixSum = append([]int{0}, cardLevel.GameMoneyPrefixSum...)
+	cardLevel.ExpPrefixSum = append([]int32{0}, cardLevel.ExpPrefixSum...)
+	cardLevel.GameMoneyPrefixSum = append([]int32{0}, cardLevel.GameMoneyPrefixSum...)
 	for i := 1; i < len(cardLevel.ExpPrefixSum); i++ {
 		cardLevel.ExpPrefixSum[i] += cardLevel.ExpPrefixSum[i-1]
 		cardLevel.GameMoneyPrefixSum[i] += cardLevel.GameMoneyPrefixSum[i-1]

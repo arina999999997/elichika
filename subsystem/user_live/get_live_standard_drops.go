@@ -45,14 +45,13 @@ func getLiveStandardDrops(session *userdata.Session, liveScore *client.LiveScore
 	if liveDifficulty.UnlockPattern == enum.LiveUnlockPatternStoryOnly {
 		dropCount /= 2 // story songs give half the drop
 	}
-
 	for i := 0; i < dropCount; i++ {
 		isRare := rand.Int31n(10000) < liveDifficulty.RareDropRate
 		var content client.Content
 		if isRare {
-			content = liveDifficulty.RareDropContentGroup.GetRandomItem()
+			content = liveDifficulty.RareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		} else {
-			content = liveDifficulty.DropContentGroup.GetRandomItem()
+			content = liveDifficulty.DropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		}
 
 		result := user_content.AddContent(session, content)

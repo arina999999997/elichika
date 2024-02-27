@@ -8,7 +8,7 @@ import (
 var (
 	Gold = client.Content{
 		ContentType:   enum.ContentTypeGameMoney,
-		ContentId:     0,
+		ContentId:     1200,
 		ContentAmount: 1,
 	}
 )

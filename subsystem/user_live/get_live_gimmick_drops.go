@@ -25,7 +25,7 @@ func getLiveGimmickDrops(session *userdata.Session, liveStage *client.LiveStage,
 			// this note has a drop, see if the user actually cleared it
 			if liveScore.ResultDict.Map[id].JudgeType >= enum.JudgeTypeBad {
 				// add a drop
-				content := liveDifficulty.NoteDropGroup.GetRandomItem()
+				content := liveDifficulty.NoteDropGroup.GetRandomItemByDropColor(liveStage.LiveNotes.Slice[i].NoteRandomDropColor)
 				result := user_content.AddContent(session, content)
 				if content.ContentType == enum.ContentTypeAccessory {
 					isRewardAccessoryInPresentBox = isRewardAccessoryInPresentBox || result.(bool)
