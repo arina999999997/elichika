@@ -16,7 +16,7 @@ import (
 
 // TODO(mission): Implement stuff
 
-func clearMissionBadge(ctx *gin.Context) {
+func clearMissionNewBadge(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.ClearMissionNewBadgeRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
@@ -25,12 +25,12 @@ func clearMissionBadge(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-
+	// update the mission state here
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
 }
 
 func init() {
-	router.AddHandler("/mission/clearMissionBadge", clearMissionBadge)
+	router.AddHandler("/mission/clearMissionNewBadge", clearMissionNewBadge)
 }

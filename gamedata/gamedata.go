@@ -91,6 +91,11 @@ type Gamedata struct {
 	MemberGuildPeriod      MemberGuildPeriod
 	MemberGuildCheerReward map[int32]*drop.DropList[client.Content]
 
+	Mission                     map[int32]*Mission
+	MissionByClearConditionType map[int32][]*Mission
+	MissionByTerm               map[int32][]*Mission
+	MissionByTriggerType        map[int32][]*Mission
+
 	Live                 map[int32]*Live
 	LiveParty            LiveParty
 	LiveDaily            map[int32]*LiveDaily

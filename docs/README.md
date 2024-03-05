@@ -15,20 +15,20 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] Profile
     - [x] User can customize the profile section.
     - [x] Birthday can be set during tutorial or changed using the WebUI.
-- [ ] Live show
+- [x] Live show
     - [x] Fully working normal live, skip ticket, and 3DMV mode.
     - [x] Correctly award bond points.
     - [x] You can use your own partner guests. 
-    - [ ] There isn't any item drops being handled.
+    - [x] Drops are handled "correctly"
 - [x] Story
     - [x] Fully working, you can read all kind of stories and play story songs.
     - [x] You can start from fresh and progress through the story, unlocking things that would be unlocked by story normally.
 - [ ] Gacha
     - [x] Working gacha with one banner for each group.
     - [ ] Things like scouting tickets are not implemented as of now.
-- [ ] Training
+- [x] Training
     - [x] Training works but always return a set of commonly used insight skills.
-    - [ ] No drop from training.
+    - [x] Training drops items, and drops rally megaphone while channel live is on.
 - [x] Member bond
     - [x] Working member bond system.
     - [x] Fully working bond board system.
@@ -45,20 +45,22 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] Exchange
     - [x] Working exchanges implementation.
     - [x] Exchange data depends on the database, by default it has items that was in the global server at the EOS.
-    - [ ] Note that Some item might not be exchangable, but that's more down to the handling of those items and not the exchange itself.
+    - [ ] Note that some item might not be exchangable, but that's more down to the handling of those items and not the exchange itself.
 - [x] School idol / Practice
     - [x] Fully working card grade up, level up, and practice system.
 - [ ] Accessores
     - [x] Fully working accessory power up system.
-    - [ ] There is no way to obtain accessories except from the WebUI, as there is no drop, and exchange for accessories doesn't work.
+    - [x] Accesory drops from live and can be exchanged in shop.
+    - [x] The WebUi functionality to add accessory is still there for accessory that are limited or can't be dropped, if you wish to get them
 - [ ] Channel
     - [x] Working channel system by returning fixed data.
     - [x] User can join specific member channels.
-    - [x] User can use the cheer system, but drops are not handled.
-    - [ ] Megaphones are not dropped from trainings.
-- [ ] Present box
-    - [x] Always empty, works by returning fixed data.
-    - [ ] Eventually should contains items that would be in present box instead of directly awarded.
+    - [x] Cheer system drop items correctly.
+    - [x] Megaphones are not dropped from trainings.
+    - [ ] No rakning or tracking of points for now.
+- [x] Present box
+    - [x] Working present box.
+    - [x] All items that are sent to present box should be there, but there might be mistakes.
 - [ ] Goal list
     - [x] Always empty, works by returning fixed data.
     - [ ] Eventually should handle goals and daily / weekly goals.
@@ -73,14 +75,15 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [ ] There's no proper handling of adding a title yet.
 - [x] Datalink
     - [x] The datalink system is used as account creation / account transfer, things should work properly.
-    - [ ] Password is stored in plaintext in DB, so don't use sentitive password if you plan on sharing your database.
+    - [x] Password is stored using bcrypt, so no worry of leaking password. 
 - [ ] Daily theater (JP client only)
     - [x] Works by returning fixed data.
     - [ ] Eventually should contain all the stories, user should be able to choose language some how.
     - [ ] Maybe make this feature available for WW to (need to hook some function or something)
-- [ ] User model
+- [x] User model
     - [x] Working user model.
-    - [ ] Level up are not handled properly.
+    - [x] Working LP recovery but LP is not consumed.
+    - [ ] Not working AP recovery
 - [x] DLP
     - [x] Working DLP that also track voltage ranking
     - [x] User can reset DLP progress using the WebUi.

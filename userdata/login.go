@@ -39,6 +39,7 @@ func (session *Session) Login() response.LoginResponse {
 	login.UserModel = &session.UserModel
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	session.SessionType = SessionTypeLogin
+	session.IsFetchingMission = true
 
 	fmt.Println("before")
 	for _, populator := range populators {

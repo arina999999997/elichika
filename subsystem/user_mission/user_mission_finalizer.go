@@ -30,6 +30,13 @@ func userMissionFinalizer(session *userdata.Session) {
 			userdata.GenericDatabaseInsert(session, "u_weekly_mission", *userWeeklyMission)
 		}
 	}
+
+	if !session.IsFetchingMission {
+		// delta patching is not sent unless explicitly asked for
+		session.UserModel.UserMissionByMissionId.Clear()
+		session.UserModel.UserDailyMissionByMissionId.Clear()
+		session.UserModel.UserWeeklyMissionByMissionId.Clear()
+	}
 }
 
 func init() {

@@ -16,7 +16,7 @@ const (
 	ContentTypeEmblem                     int32 = 0x0000000f // has handler
 	ContentTypeRecoveryAp                 int32 = 0x00000010 // use generic handler
 	ContentTypeRecoveryLp                 int32 = 0x00000011 // use generic handler
-	ContentTypeStorySide                  int32 = 0x00000013
+	ContentTypeStorySide                  int32 = 0x00000013 // only unlocked by training tree and added directly there
 	ContentTypeStoryMember                int32 = 0x00000014 // has handler
 	ContentTypeExchangeEventPoint         int32 = 0x00000015 // use generic handler
 	ContentTypeAccessory                  int32 = 0x00000017 // has handler

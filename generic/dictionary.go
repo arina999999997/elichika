@@ -95,6 +95,11 @@ func (d *Dictionary[K, V]) GetOnly(key K) *V {
 	return d.Map[key]
 }
 
+func (d *Dictionary[K, V]) Clear() {
+	d.Map = nil
+	d.OrderedKey = nil
+}
+
 func (d *Dictionary[K, V]) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		return nil

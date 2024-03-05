@@ -11,8 +11,8 @@ git clone --depth 1 https://github.com/arina999999997/elichika.git --branch $BRA
 cd elichika && \
 # get the submodules (i.e. assets and other)
 git submodule update --init && \
-# build server
-go build && \
+# build server, fallback to not using CGO to work on some devices
+(go build || CGO_ENABLED=0 go build) && \
 # set the permission
 chmod +rx elichika && \
 echo "Installed succesfully!"

@@ -41,6 +41,8 @@ type Session struct {
 	UserModel   client.UserModel
 
 	UniqueCount int64
+
+	IsFetchingMission bool
 }
 
 func (session *Session) NextUniqueId() int64 {
