@@ -14,7 +14,7 @@ type Locale struct {
 	// Loaded bool
 	Path          string
 	Language      string
-	StartupKey    string
+	StartupKey    []byte
 	MasterVersion string
 	Gamedata      *gamedata.Gamedata
 	Dictionary    *dictionary.Dictionary
@@ -41,7 +41,7 @@ func addLocale(path, language, masterVersion, startUpKey string) {
 		Path:          path,
 		Language:      language,
 		MasterVersion: masterVersion,
-		StartupKey:    startUpKey,
+		StartupKey:    []byte(startUpKey),
 	}
 	locale.Load()
 	Locales[language] = &locale

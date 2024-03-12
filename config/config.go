@@ -15,7 +15,7 @@ var (
 	// https://github.com/RayFirefist/SukuStar_Datamine/blob/master/lib/sifas_api/sifas.py#L400
 	ServerEventReceiverKey = "4924c4421e9e3a287dc31e2ff241a8fb46389c7f30bafee791bb06c9ae3b6c82"
 
-	SessionKey = "12345678123456781234567812345678"
+	DefaultSessionKey = "12345678123456781234567812345678"
 
 	AssetPath = "assets/"
 

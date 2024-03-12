@@ -7,10 +7,12 @@ import (
 	"elichika/locale"
 	"elichika/router"
 	"elichika/subsystem/user_account"
+	// "elichika/subsystem/user_authentication"
+	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
-	"net/http"
+	// "net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -24,12 +26,13 @@ func startup(ctx *gin.Context) {
 
 	resp := response.StartupResponse{}
 	resp.UserId = int32(user_account.CreateNewAccount(ctx, -1, ""))
-	resp.AuthorizationKey = StartupAuthorizationKey(req.Mask)
+
+	session := userdata.GetSession(ctx, resp.UserId)
+	defer session.Close()
+	resp.AuthorizationKey = session.EncodedAuthorizationKey(req.Mask)
 	// note that this use a different key than the common one
-	startupBody, _ := json.Marshal(resp)
-	respBody := common.SignResp(ctx, string(startupBody), ctx.MustGet("locale").(*locale.Locale).StartupKey)
-	ctx.Header("Content-Type", "application/json")
-	ctx.String(http.StatusOK, respBody)
+	ctx.Set("sign_key", ctx.MustGet("locale").(*locale.Locale).StartupKey)
+	common.JsonResponse(ctx, &resp)
 }
 
 func init() {

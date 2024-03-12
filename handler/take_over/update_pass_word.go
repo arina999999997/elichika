@@ -5,7 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_pass_word"
+	"elichika/subsystem/user_authentication"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,7 +26,7 @@ func updatePassWord(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	user_pass_word.SetPassWord(session, req.PassWord)
+	user_authentication.SetPassWord(session, req.PassWord)
 	session.Finalize()
 
 	common.JsonResponse(ctx, &response.UpdatePassWordResponse{

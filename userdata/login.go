@@ -4,7 +4,6 @@ import (
 	"elichika/client/response"
 	"elichika/utils"
 
-	"fmt"
 	"time"
 )
 
@@ -40,12 +39,10 @@ func (session *Session) Login() response.LoginResponse {
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	session.SessionType = SessionTypeLogin
 	session.IsFetchingMission = true
-
-	fmt.Println("before")
+	session.GenerateNewSessionKey()
 	for _, populator := range populators {
 		populator(session)
 	}
-	fmt.Println("after")
 	// only this part is necessary
 	login.MemberLovePanels.Slice = session.MemberLovePanels
 	return login

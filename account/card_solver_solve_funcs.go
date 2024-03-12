@@ -18,15 +18,10 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card clie
 	solver.TrainingTreeDesign = solver.TrainingTreeMapping.TrainingTreeDesign
 	solver.TimeStamp = int64(card.AcquiredAt)
 	solver.NodeCount = solver.TrainingTreeDesign.CellCount - 1 // not counting the starting node id 0
-	if card.IsAllTrainingActivated {                           // if maxed out then we don't need to solve
-		for _, cell := range solver.TrainingTreeMapping.TrainingTreeCellContents {
-			solver.AddCell(cell.CellId)
-		}
-	} else if card.TrainingActivatedCellCount == 0 {
-		// entirely new card, no need to do anything
-	} else if !solver.SolveForTileSet() { // otherwise we solve for a possible set of tiles
+	reset := func() {
 		fmt.Println("Solving failed for card", card.CardMasterId, ", reseting to default")
-		session.UserModel.UserCardByCardId.Set(card.CardMasterId, client.UserCard{
+		solver.Cells = nil
+		card = client.UserCard{
 			CardMasterId:        card.CardMasterId,
 			Level:               card.Level,
 			MaxFreePassiveSkill: solver.MasterCard.PassiveSkillSlot,
@@ -37,12 +32,23 @@ func (solver *TrainingTreeSolver) SolveCard(session *userdata.Session, card clie
 			PassiveSkillCLevel:  1,
 			AcquiredAt:          card.AcquiredAt,
 			IsNew:               true,
-		})
+		}
+		session.UserModel.UserCardByCardId.Set(card.CardMasterId, card)
+	}
+	if card.IsAllTrainingActivated { // if maxed out then we don't need to solve
+		for _, cell := range solver.TrainingTreeMapping.TrainingTreeCellContents {
+			solver.AddCell(cell.CellId)
+		}
+		card.TrainingActivatedCellCount = int32(len(solver.Cells))
+	} else if card.TrainingActivatedCellCount == 0 {
+		// entirely new card, no need to do anything
+	} else if !solver.SolveForTileSet() { // otherwise we solve for a possible set of tiles
+		reset()
 	} // else {
 	// fmt.Println("Found solution for card", card.CardMasterId)
 	// }
 	if int32(len(solver.Cells)) != card.TrainingActivatedCellCount {
-		panic(fmt.Sprint("wrong amount of cell, card master id: ", card.CardMasterId))
+		reset()
 	}
 	user_training_tree.InsertUserTrainingTreeCells(session, card.CardMasterId, solver.Cells)
 }

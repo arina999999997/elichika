@@ -16,9 +16,10 @@ import (
 )
 
 func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest) response.FetchBootstrapResponse {
-	// TODO(bootstrap, authentication): Log the user out if they have differnt device token / name
 	session.UserStatus.BootstrapSifidCheckAt = session.Time.UnixMilli()
 	session.UserStatus.DeviceToken = req.DeviceToken
+	// session key will take care of different devices
+
 	resp := response.FetchBootstrapResponse{
 		UserModelDiff: &session.UserModel,
 	}

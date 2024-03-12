@@ -4,10 +4,9 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
-	"elichika/handler/login"
 	"elichika/locale"
 	"elichika/router"
-	"elichika/subsystem/user_pass_word"
+	"elichika/subsystem/user_authentication"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -59,12 +58,13 @@ func checkTakeOver(ctx *gin.Context) {
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
 	}
 	if linkedSession != nil { // user exist
-		if !user_pass_word.CheckPassWord(linkedSession, req.PassWord) { // incorrect password
+		if !user_authentication.CheckPassWord(linkedSession, req.PassWord) { // incorrect password
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
 		}
 		resp.LinkedData.UserId = int32(linkedSession.UserId)
-		resp.LinkedData.AuthorizationKey = login.LoginSessionKey(req.Mask)
+		// resp.LinkedData.AuthorizationKey = user_authentication.LoginSessionKey(nil, req.Mask)
+		resp.LinkedData.AuthorizationKey = linkedSession.EncodedAuthorizationKey(req.Mask)
 		resp.LinkedData.Name = linkedSession.UserStatus.Name
 		resp.LinkedData.LastLoginAt = linkedSession.UserStatus.LastLoginAt
 		resp.LinkedData.SnsCoin = linkedSession.UserStatus.FreeSnsCoin +
@@ -73,7 +73,9 @@ func checkTakeOver(ctx *gin.Context) {
 
 	} else { // user doesn't exist, but we won't create an account until setTakeOver is called
 		resp.LinkedData.UserId = int32(linkedUserId)
-		resp.LinkedData.AuthorizationKey = login.LoginSessionKey(req.Mask)
+		// resp.LinkedData.AuthorizationKey = user_authentication.LoginSessionKey(nil, req.Mask)
+		// resp.LinkedData.AuthorizationKey = linkedSession.EncodedAuthorizationKey(req.Mask)
+		// resp.LinkedData.AuthorizationKey = ""
 		resp.LinkedData.Name.DotUnderText = "Newcomer"
 		resp.LinkedData.LastLoginAt = time.Now().Unix()
 		resp.LinkedData.SnsCoin = 100000

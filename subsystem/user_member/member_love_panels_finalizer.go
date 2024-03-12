@@ -10,6 +10,7 @@ func memberLovePanelsFinalizer(session *userdata.Session) {
 		session.MemberLovePanels = append(session.MemberLovePanels, panel)
 	}
 	for i := range session.MemberLovePanels {
+		session.MemberLovePanels[i].Fix()
 		affected, err := session.Db.Table("u_member_love_panel").
 			Where("user_id = ? AND member_id = ?", session.UserId,
 				session.MemberLovePanels[i].MemberId).AllCols().Update(session.MemberLovePanels[i])

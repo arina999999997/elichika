@@ -1,0 +1,73 @@
+# Condition types
+This is a list of condition type and whether they are actually handled. For details on each types, check for mentions of it in the code.
+
+A value is ticked if it is handled, so the tracking exist, and you can get rewards. Note that this might not be totally correct, so if you notice any inconsistency for the ALREADY IMPLEMENTED types, then send an issue or mention it in the discord or send pr or whatever.
+
+Also note that these are only the condition that were actually used, and we have the dictionary to help with the meaning. Unused condition are not supported, but they can potentially be used/reused. 
+
+- [ ] MissionClearConditionTypeCountEventMarathonPoint
+- [ ] MissionClearConditionTypeCountLoveLevel
+- [ ] MissionClearConditionTypeCountCard
+- [ ] MissionClearConditionTypeCountSpecificMember
+- [ ] MissionClearConditionTypeClearedEpisode
+- [ ] MissionClearConditionTypeUserRank
+- [x] (NOT SUPPORTED, only in old beginner mission) MissionClearConditionTypeCountEditProfile
+- [ ] MissionClearConditionTypeCountPlayLive
+- [ ] MissionClearConditionTypeCountClearedLive
+- [ ] MissionClearConditionTypeCountClearedLiveDifficultyType
+- [ ] MissionClearConditionTypeCountPerfectFullCombo
+- [ ] MissionClearConditionTypeAppealVoltage
+- [ ] MissionClearConditionTypeCountClearedSpecificGroup
+- [ ] MissionClearConditionTypeCountClearedSpecificUnit
+- [ ] MissionClearConditionTypeCountClearedSpecificMember
+- [ ] MissionClearConditionTypeCountClearedSpecificOnlySchoolYear
+- [ ] MissionClearConditionTypeCountUseSkill
+- [ ] MissionClearConditionTypeCountUseSpecialSkill
+- [ ] MissionClearConditionTypeCountUseVoltageSkill
+- [ ] MissionClearConditionTypeCountUseRecoverySkill
+- [ ] MissionClearConditionTypeCountUseBuffSkill
+- [ ] MissionClearConditionTypeClearedUnderUniqueMember
+- [ ] MissionClearConditionTypeAppealRecoveryValue
+- [ ] MissionClearConditionTypeAppealShieldValue
+- [ ] MissionClearConditionTypeCountUseSpecificMemberSkill
+- [ ] MissionClearConditionTypeCountUseSpecificMemberSpecialSkill
+- [ ] MissionClearConditionTypeCountClearedSpecificMemberAndPosition
+- [ ] MissionClearConditionTypeCountLogin
+- [ ] MissionClearConditionTypeCompleteDaily
+- [ ] MissionClearConditionTypeCompleteWeekly
+- [ ] MissionClearConditionTypeCountPassiveSkill
+- [ ] MissionClearConditionTypeCountLesson
+- [ ] MissionClearConditionTypeCountGradeEmblem
+- [ ] MissionClearConditionTypeCountActiveEmblem
+- [ ] MissionClearConditionTypeCountSpecificRarityMakeLevelMax
+- [ ] MissionClearConditionTypeCountSchoolIdolAwakening
+- [ ] MissionClearConditionTypeCountVoice
+- [ ] MissionClearConditionTypeCountSuit
+- [ ] MissionClearConditionTypeCountEditLiveDeck
+- [ ] MissionClearConditionTypeCountEditLessonDeck
+- [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCountFriend
+- [ ] MissionClearConditionTypeCountSchoolIdolGrade
+- [ ] MissionClearConditionTypeCountTrainingTreeCellType
+- [ ] MissionClearConditionTypeCountLiveMission
+- [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeEditLivePartyMember
+- [ ] MissionClearConditionTypeEditLivePartyAccessory
+- [ ] MissionClearConditionTypeCountAccessoryType
+- [ ] MissionClearConditionTypeCountAccessory
+- [ ] MissionClearConditionTypeCountAccessoryLevelUp
+- [ ] MissionClearConditionTypeCountAccessoryGradeUp
+- [ ] MissionClearConditionTypeCountAccessoryRarityUp
+- [ ] MissionClearConditionTypeCountAccessoryMelt
+- [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCompleteBeginner
+- [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeReadReferenceBook
+- [ ] MissionClearConditionTypeCountPlayLiveDailyMusic
+- [ ] MissionClearConditionTypeCountClearedLiveDailyMusic
+- [ ] MissionClearConditionTypeCountEventCoopAward
+- [ ] (old) MissionClearConditionTypeMemberLovePanelCell
+- [ ] MissionClearConditionTypeMemberLovePanel
+- [ ] MissionClearConditionTypeTowerPlayLive
+- [ ] MissionClearConditionTypeTowerClearLiveStage
+- [ ] MissionClearConditionTypeTowerRecoverPpForPersonal
+- [ ] MissionClearConditionTypeTowerRecoverPpForFree
+- [ ] MissionClearConditionTypeClearedStoryMainChapter
+- [ ] MissionClearConditionTypeCountReadDailyTheater
+- [ ] MissionClearConditionTypeClearedSRank

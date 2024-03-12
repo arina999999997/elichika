@@ -7,8 +7,8 @@ import (
 type LiveDifficultyMission struct {
 	// from m_live_difficulty_mission
 	// LiveDifficultyMasterId int
-	Position    int            `xorm:"'position'"`
-	TargetType  int            `xorm:"'target_type'"`
-	TargetValue int            `xorm:"'target_value'"`
-	Reward      client.Content `xorm:"extends"`
+	Position   int32 `xorm:"'position'"`
+	TargetType int32 `xorm:"'target_type'" enum:"LiveMissionType"`
+	// TargetValue int32            `xorm:"'target_value'"` // this field is wrong for some songs, so we use the LiveDifficulty's value instead
+	Reward client.Content `xorm:"extends"`
 }

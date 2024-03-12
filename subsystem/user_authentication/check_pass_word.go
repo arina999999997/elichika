@@ -1,4 +1,4 @@
-package user_pass_word
+package user_authentication
 
 import (
 	"elichika/userdata"

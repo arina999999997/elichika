@@ -3,6 +3,7 @@ package login
 import (
 	"elichika/client"
 	"elichika/client/request"
+	"elichika/client/response"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/generic"
@@ -10,6 +11,7 @@ import (
 	"elichika/router"
 	"elichika/subsystem/user_account"
 	"elichika/subsystem/user_live"
+	// "elichika/subsystem/user_authentication"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -25,7 +27,7 @@ func login(ctx *gin.Context) {
 	req := request.LoginRequest{}
 	err := json.Unmarshal([]byte(reqBody), &req)
 	utils.CheckErr(err)
-
+	// fmt.Println(ctx.GetString("reqBody"))
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
@@ -36,10 +38,20 @@ func login(ctx *gin.Context) {
 		defer session.Close()
 	}
 
+	ctx.Set("sign_key", session.AuthorizationKey())
+	if session.AuthenticationData.AuthorizationCount+1 != req.AuthCount { // wrong authcount
+		common.JsonResponseWithRespnoseType(ctx, response.InvalidAuthCountResponse{
+			AuthorizationCount: session.AuthenticationData.AuthorizationCount,
+		}, 1)
+		return
+	} else {
+		session.AuthenticationData.AuthorizationCount++
+	}
+
 	fmt.Println("User logins: ", userId)
 
 	resp := session.Login()
-	resp.SessionKey = LoginSessionKey(req.Mask)
+	resp.SessionKey = session.EncodedSessionKey(req.Mask)
 	{
 		exist, _, startLiveRequest := user_live.LoadUserLive(session)
 		if exist {
@@ -57,7 +69,7 @@ func login(ctx *gin.Context) {
 		}
 	}
 	session.Finalize()
-	common.JsonResponse(ctx, resp)
+	common.JsonResponse(ctx, &resp)
 
 	{
 		backupText, err := json.Marshal(resp)

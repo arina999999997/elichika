@@ -5,11 +5,10 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
-	"elichika/handler/login"
 	"elichika/locale"
 	"elichika/router"
 	"elichika/subsystem/user_account"
-	"elichika/subsystem/user_pass_word"
+	"elichika/subsystem/user_authentication"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -37,14 +36,18 @@ func setTakeOver(ctx *gin.Context) {
 		user_account.CreateNewAccount(ctx, linkedUserId, req.PassWord)
 		linkedSession = userdata.GetSession(ctx, linkedUserId)
 		defer linkedSession.Close()
-	} else if !user_pass_word.CheckPassWord(linkedSession, req.PassWord) {
+	} else if !user_authentication.CheckPassWord(linkedSession, req.PassWord) {
 		panic("wrong pass word")
+	} else {
+		linkedSession.GenerateNewSessionKey()
+		linkedSession.Finalize()
 	}
 
 	resp := response.SetTakeOverResponse{
 		Data: client.UserLinkData{
-			UserId:            int32(linkedSession.UserId),
-			AuthorizationKey:  login.StartupAuthorizationKey(req.Mask),
+			UserId: int32(linkedSession.UserId),
+			// AuthorizationKey:  user_authentication.StartupAuthorizationKey(nil, req.Mask),
+			AuthorizationKey:  linkedSession.EncodedAuthorizationKey(req.Mask),
 			Name:              linkedSession.UserStatus.Name,
 			LastLoginAt:       linkedSession.UserStatus.LastLoginAt,
 			SnsCoin:           linkedSession.UserStatus.FreeSnsCoin + linkedSession.UserStatus.AppleSnsCoin + linkedSession.UserStatus.GoogleSnsCoin,

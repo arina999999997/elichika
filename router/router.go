@@ -1,10 +1,6 @@
 package router
 
 import (
-	// "elichika/handler"
-	// "elichika/handler/live"
-
-	"elichika/middleware"
 	"elichika/webui"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +11,8 @@ import (
 type Handler = func(*gin.Context)
 
 var (
-	handlers = map[string]Handler{}
+	initialHandler Handler
+	handlers       = map[string]Handler{}
 )
 
 func AddHandler(path string, handler Handler) {
@@ -26,10 +23,17 @@ func AddHandler(path string, handler Handler) {
 	handlers[path] = handler
 }
 
+func AddInitialHandler(handler Handler) {
+	if initialHandler != nil {
+		panic("can't have more than 1 initial handler, call it directly or something")
+	}
+	initialHandler = handler
+}
+
 func Router(r *gin.Engine) {
 	r.Static("/static", "static")
 	{
-		api := r.Group("/", middleware.Common)
+		api := r.Group("/", initialHandler)
 		for path, handler := range handlers {
 			api.POST(path, handler)
 		}

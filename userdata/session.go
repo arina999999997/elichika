@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/userdata/database"
 	"elichika/utils"
 
 	"time"
@@ -40,9 +41,12 @@ type Session struct {
 	SessionType int
 	UserModel   client.UserModel
 
+	CommandId int32
+
 	UniqueCount int64
 
-	IsFetchingMission bool
+	IsFetchingMission  bool
+	AuthenticationData database.UserAuthentication
 }
 
 func (session *Session) NextUniqueId() int64 {
@@ -59,6 +63,7 @@ func (session *Session) Finalize() {
 	if session.SessionType == SessionTypeLogin {
 		// if login then we only need to update a thing
 		userStatusFinalizer(session)
+		userAuthenticationDataFinalizer(session)
 	} else {
 		for _, finalizer := range finalizers {
 			finalizer(session)
@@ -87,6 +92,7 @@ func userStatusFinalizer(session *Session) {
 		}
 	}
 }
+
 func init() {
 	AddFinalizer(userStatusFinalizer)
 }
@@ -116,6 +122,7 @@ func GetSession(ctx *gin.Context, userId int32) *Session {
 		s.Close()
 		return nil
 	}
+	s.fetchAuthenticationData()
 	s.UserStatus = &s.UserModel.UserStatus
 	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
 
@@ -135,6 +142,7 @@ func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginRes
 	utils.CheckErr(err)
 	s.UserModel = *loginData.UserModel
 	s.UserStatus = &s.UserModel.UserStatus
+	s.fetchAuthenticationData()
 
 	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
 

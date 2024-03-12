@@ -164,19 +164,34 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 		}
 
 		// award items
-		for i, mission := range liveDifficulty.Missions {
-			if (i == 0) || (int(req.LiveScore.CurrentScore) >= mission.TargetValue) {
-				resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsCurrentlyAchieved = true
-				if !resp.LiveResult.LiveResultAchievements.Map[int32(i+1)].IsAlreadyAchieved { // new, add reward
-					user_content.AddContent(session, mission.Reward)
-					switch i {
-					case 0:
-						userLiveDifficulty.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
-					case 1:
-						userLiveDifficulty.ClearedDifficultyAchievement2 = generic.NewNullable(int32(2))
-					case 2:
-						userLiveDifficulty.ClearedDifficultyAchievement3 = generic.NewNullable(int32(3))
-					}
+		for _, mission := range liveDifficulty.Missions {
+			// mission.TargetValue is wrong, and it's not used for displaying
+			// so we use the song's value instead
+
+			switch mission.TargetType {
+
+			case enum.LiveMissionTypeClear: // nothing to do
+			case enum.LiveMissionTypeEvaluationS:
+				if req.LiveScore.CurrentScore < liveDifficulty.EvaluationSScore {
+					continue
+				}
+			case enum.LiveMissionTypeEvaluationB:
+				if req.LiveScore.CurrentScore < liveDifficulty.EvaluationBScore {
+					continue
+				}
+			default:
+				panic("unsuported target type")
+			}
+			resp.LiveResult.LiveResultAchievements.Map[mission.Position].IsCurrentlyAchieved = true
+			if !resp.LiveResult.LiveResultAchievements.Map[mission.Position].IsAlreadyAchieved { // new, add reward
+				user_content.AddContent(session, mission.Reward)
+				switch mission.Position {
+				case 1:
+					userLiveDifficulty.ClearedDifficultyAchievement1 = generic.NewNullable(int32(1))
+				case 2:
+					userLiveDifficulty.ClearedDifficultyAchievement2 = generic.NewNullable(int32(2))
+				case 3:
+					userLiveDifficulty.ClearedDifficultyAchievement3 = generic.NewNullable(int32(3))
 				}
 			}
 		}
