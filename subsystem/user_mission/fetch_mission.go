@@ -6,7 +6,7 @@ import (
 )
 
 func FetchMission(session *userdata.Session) response.FetchMissionResponse {
-	session.IsFetchingMission = true
+	session.SendMissionDetail = true
 	resp := response.FetchMissionResponse{
 		UserModel: &session.UserModel,
 	}

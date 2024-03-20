@@ -31,7 +31,7 @@ func userMissionFinalizer(session *userdata.Session) {
 		}
 	}
 
-	if !session.IsFetchingMission {
+	if !session.SendMissionDetail {
 		// delta patching is not sent unless explicitly asked for
 		session.UserModel.UserMissionByMissionId.Clear()
 		session.UserModel.UserDailyMissionByMissionId.Clear()

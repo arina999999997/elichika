@@ -2,7 +2,7 @@
 // and a return interface if it's actually added
 // if it's not added, add the items into a unreceived list
 // finally there will be a finalizer that add the unreceived items to present box
-// when receving from present box, we can clear the list so there would be no doubtly added presents
+// when receving from present box, we can clear the list so there would be no doubly added presents
 
 package user_content
 

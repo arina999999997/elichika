@@ -38,7 +38,7 @@ func (session *Session) Login() response.LoginResponse {
 	login.UserModel = &session.UserModel
 	session.UserStatus.LastLoginAt = time.Now().Unix()
 	session.SessionType = SessionTypeLogin
-	session.IsFetchingMission = true
+	session.SendMissionDetail = true
 	session.GenerateNewSessionKey()
 	for _, populator := range populators {
 		populator(session)

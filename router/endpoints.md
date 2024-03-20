@@ -161,7 +161,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /memberGuild/joinMemberGuild
 - [x] /mission/clearMissionNewBadge
 - [x] /mission/fetchMission
-- [ ] /mission/receiveReward
+- [x] /mission/receiveReward
 - [x] /navi/saveUserNaviVoice
 - [x] /navi/tapLovePoint
 - [ ] /noop/noop

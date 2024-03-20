@@ -5,11 +5,14 @@ import (
 	"elichika/userdata"
 )
 
-// upgrade the progress of missions based on clear condition
-// this will only update uncleared missions (unclaimed reward), or daily/weekly missions
-// this is a very general functions, and should only be used for commonly triggered changes
-// for items that are harder to check, we might want to only check them when the mission is still there
-// so we should pass a lazily evaluated function
+// how mission progress work:
+// - because of many different types of mission condition, all the relevant data and context, ..., it's very hard to keep everything in one place
+// - so mission checking logic is decentralized, similar to many other system
+// - furthermore, there are thousands of missions, so we have to narrow it down in some way or it will take forever to calculate
+// - so the actual interface we have is the following:
+//   - in the relevant handler, call UpdateProgress
+//   - UpdateProgress will filter out the missions that are tracked, then call the actual handler on the avaiable missions
+//   - The handler then Update the mission using user_mission system
 
 // condition checking use function based on the ConditionType
 // - depend on how we choose to handle things, once of the following is most common:
@@ -21,45 +24,58 @@ import (
 // - the second type is nice when we do things like clear a bond episode, the bond episode count toward the
 // member's mission but it also count toward the general mission too
 
-// TODO(now): let's make it so there is a checking function per conditionType, and this function only get called when it's relevant
-// - The relevant subsystem register a list of possible calls with relevant data, ideally it doesn't do any computation yet
-// - Then this system figure out the relevant missions that those calls apply to, so not cleared stuff.
-// - And then that function is invoked with the original data and the list of relevant mission
-// - When a mission is finished, we can get new mission or trigger the progress of another mission, it should be fine to just call the relevant handler again
-func UpdateProgress(session *userdata.Session, count, conditionType int32, conditionParam1, conditionParam2 *int32) {
-	// TODO(optimisation): For now we iterate through the missions, but it's might be good to have a map
+// session, then the list of mission, finally the forwarded params
+type Handler = func(*userdata.Session, []any, ...any)
+
+func UpdateProgress(session *userdata.Session, conditionType int32, conditionParam1, conditionParam2 *int32,
+	handler Handler, handlerParams ...any) {
+	var missionList []any
 	for _, mission := range session.Gamedata.MissionByClearConditionType[conditionType] {
+		if (mission.StartAt > session.Time.Unix()) || (mission.EndAt < session.Time.Unix()) {
+			continue
+		}
+		// condition type must be the same, if a request is applicable to multiple condition type, split it to multiple conditions
+		if mission.MissionClearConditionType != conditionType {
+			continue
+		}
+		// if one side is nil, we have a match
+		// this might not be the correct way for all case, so check again in the handler if necessary
+		if (mission.MissionClearConditionParam1 != nil) && (conditionParam1 != nil) && (*mission.MissionClearConditionParam1 != *conditionParam1) {
+			continue
+		}
+		if (mission.MissionClearConditionParam2 != nil) && (conditionParam2 != nil) && (*mission.MissionClearConditionParam2 != *conditionParam2) {
+			continue
+		}
+
 		switch mission.Term {
 		case enum.MissionTermDaily:
 			userDailyMission := getUserDailyMission(session, mission.Id)
 			if userDailyMission.MissionMId == 0 {
 				continue
 			}
-			updateCountByConditionType(conditionType, &userDailyMission.MissionCount, count)
-			if userDailyMission.MissionCount >= userDailyMission.MissionStartCount+mission.MissionClearConditionCount {
-				userDailyMission.IsCleared = true
+			if userDailyMission.IsReceivedReward {
+				continue
 			}
-			// updateUserDailyMission(session, userDailyMission)
+			missionList = append(missionList, userDailyMission)
 		case enum.MissionTermWeekly:
 			userWeeklyMission := getUserWeeklyMission(session, mission.Id)
 			if userWeeklyMission.MissionMId == 0 {
 				continue
 			}
-			updateCountByConditionType(conditionType, &userWeeklyMission.MissionCount, count)
-			if userWeeklyMission.MissionCount >= userWeeklyMission.MissionStartCount+mission.MissionClearConditionCount {
-				userWeeklyMission.IsCleared = true
+			if userWeeklyMission.IsReceivedReward {
+				continue
 			}
-			// updateUserWeeklyMission(session, userWeeklyMission)
+			missionList = append(missionList, userWeeklyMission)
 		default:
 			userMission := getUserMission(session, mission.Id)
 			if userMission.MissionMId == 0 {
 				continue
 			}
-			updateCountByConditionType(conditionType, &userMission.MissionCount, count)
-			if userMission.MissionCount > mission.MissionClearConditionCount {
-				userMission.IsCleared = true
+			if userMission.IsReceivedReward {
+				continue
 			}
-			// updateUserMission(session, userMission)
+			missionList = append(missionList, userMission)
 		}
 	}
+	handler(session, missionList, handlerParams...)
 }

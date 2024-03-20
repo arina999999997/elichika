@@ -11,6 +11,7 @@ import (
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_lesson_deck"
 	"elichika/subsystem/user_member_guild"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_subscription_status"
 	"elichika/userdata"
 
@@ -89,6 +90,15 @@ func ExecuteLesson(session *userdata.Session, req request.ExecuteLessonRequest) 
 	if req.IsThreeTimes {
 		repeatCount = 3
 	}
+
+	// update mission progress
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountLesson, nil, nil,
+		func(session *userdata.Session, missionList []any, _ ...any) {
+			for _, mission := range missionList {
+				user_mission.AddMissionProgress(session, mission, int32(repeatCount))
+			}
+		})
+
 	session.UserStatus.LessonResumeStatus = enum.TopPriorityProcessStatusLesson
 
 	enhancingItems := map[int32]*client.Content{}

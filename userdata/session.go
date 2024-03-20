@@ -45,7 +45,8 @@ type Session struct {
 
 	UniqueCount int64
 
-	IsFetchingMission  bool
+	SendMissionDetail bool
+
 	AuthenticationData database.UserAuthentication
 }
 
