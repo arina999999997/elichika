@@ -17,6 +17,9 @@ func FetchMissionIds(session *userdata.Session) generic.List[int32] {
 		userDailyMission := getUserDailyMission(session, mission.Id)
 		if userDailyMission.MissionMId != 0 { // valid mission that we can have
 			missionIds.Append(userDailyMission.MissionMId)
+			if userDailyMission.IsNew {
+				session.UserModel.UserDailyMissionByMissionId.Set(mission.Id, userDailyMission)
+			}
 		}
 	}
 
@@ -28,6 +31,9 @@ func FetchMissionIds(session *userdata.Session) generic.List[int32] {
 		if userWeeklyMission.MissionMId != 0 { // valid mission that we can have
 			missionIds.Append(userWeeklyMission.MissionMId)
 		}
+		if userWeeklyMission.IsNew {
+			session.UserModel.UserWeeklyMissionByMissionId.Set(mission.Id, userWeeklyMission)
+		}
 	}
 
 	for _, mission := range session.Gamedata.MissionByTerm[enum.MissionTermFree] {
@@ -37,6 +43,9 @@ func FetchMissionIds(session *userdata.Session) generic.List[int32] {
 		userMission := getUserMission(session, mission.Id)
 		if userMission.MissionMId != 0 { // valid mission that we can have
 			missionIds.Append(userMission.MissionMId)
+		}
+		if userMission.IsNew {
+			session.UserModel.UserMissionByMissionId.Set(mission.Id, userMission)
 		}
 	}
 

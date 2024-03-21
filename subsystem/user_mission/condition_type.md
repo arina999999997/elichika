@@ -36,7 +36,7 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCompleteDaily
 - [ ] MissionClearConditionTypeCompleteWeekly
 - [ ] MissionClearConditionTypeCountPassiveSkill
-- [ ] MissionClearConditionTypeCountLesson
+- [x] MissionClearConditionTypeCountLesson
 - [ ] MissionClearConditionTypeCountGradeEmblem
 - [ ] MissionClearConditionTypeCountActiveEmblem
 - [ ] MissionClearConditionTypeCountSpecificRarityMakeLevelMax

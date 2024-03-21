@@ -50,28 +50,19 @@ func UpdateProgress(session *userdata.Session, conditionType int32, conditionPar
 		switch mission.Term {
 		case enum.MissionTermDaily:
 			userDailyMission := getUserDailyMission(session, mission.Id)
-			if userDailyMission.MissionMId == 0 {
-				continue
-			}
-			if userDailyMission.IsReceivedReward {
+			if (userDailyMission.MissionMId == 0) || userDailyMission.IsReceivedReward {
 				continue
 			}
 			missionList = append(missionList, userDailyMission)
 		case enum.MissionTermWeekly:
 			userWeeklyMission := getUserWeeklyMission(session, mission.Id)
-			if userWeeklyMission.MissionMId == 0 {
-				continue
-			}
-			if userWeeklyMission.IsReceivedReward {
+			if (userWeeklyMission.MissionMId == 0) || userWeeklyMission.IsReceivedReward {
 				continue
 			}
 			missionList = append(missionList, userWeeklyMission)
 		default:
 			userMission := getUserMission(session, mission.Id)
-			if userMission.MissionMId == 0 {
-				continue
-			}
-			if userMission.IsReceivedReward {
+			if (userMission.MissionMId == 0) || userMission.IsReceivedReward {
 				continue
 			}
 			missionList = append(missionList, userMission)

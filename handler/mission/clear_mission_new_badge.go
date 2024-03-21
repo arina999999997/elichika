@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -13,8 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
 )
-
-// TODO(mission): Implement stuff
 
 func clearMissionNewBadge(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -25,7 +24,10 @@ func clearMissionNewBadge(ctx *gin.Context) {
 	userId := int32(ctx.GetInt("user_id"))
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
-	// update the mission state here
+
+	user_mission.ClearMissionNewBadge(session, req.MissionTerm)
+
+	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

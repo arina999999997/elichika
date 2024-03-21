@@ -8,6 +8,7 @@ import (
 
 	"fmt"
 	"sort"
+	"time"
 
 	"xorm.io/xorm"
 )
@@ -93,6 +94,46 @@ func loadMission(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session,
 		sort.Slice(list, func(i, j int) bool {
 			return list[i].Id < list[j].Id
 		})
+	}
+	// the complete all daily / weekly mission don't have correct goal, we have to count it manually
+	timeStamp := time.Now().Unix()
+	for _, mission := range gamedata.MissionByTerm[enum.MissionTermDaily] {
+		if mission.EndAt < timeStamp {
+			continue
+		}
+		if mission.MissionClearConditionType == enum.MissionClearConditionTypeCompleteDaily {
+			mission.MissionClearConditionCount = 0
+			for _, m := range gamedata.MissionByTerm[enum.MissionTermDaily] {
+				if (m.EndAt < timeStamp) || (m == mission) {
+					continue
+				}
+				if (m.PickupType == nil) != (mission.PickupType == nil) {
+					continue
+				}
+				if (mission.PickupType == nil) || (*mission.PickupType == *m.PickupType) {
+					mission.MissionClearConditionCount++
+				}
+			}
+		}
+	}
+	for _, mission := range gamedata.MissionByTerm[enum.MissionTermWeekly] {
+		if mission.EndAt < timeStamp {
+			continue
+		}
+		if mission.MissionClearConditionType == enum.MissionClearConditionTypeCompleteWeekly {
+			mission.MissionClearConditionCount = 0
+			for _, m := range gamedata.MissionByTerm[enum.MissionTermWeekly] {
+				if (m.EndAt < timeStamp) || (m == mission) {
+					continue
+				}
+				if (m.PickupType == nil) != (mission.PickupType == nil) {
+					continue
+				}
+				if (mission.PickupType == nil) || (*mission.PickupType == *m.PickupType) {
+					mission.MissionClearConditionCount++
+				}
+			}
+		}
 	}
 }
 

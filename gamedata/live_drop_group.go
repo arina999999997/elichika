@@ -27,6 +27,13 @@ func (ldg *LiveDropGroup) Check() {
 }
 
 func (ldg *LiveDropGroup) GetRandomItemByDropColor(dropColor int32) client.Content {
+	_, exist := ldg.LiveDropContentGroupByDropColor[dropColor]
+	if !exist {
+		for fallback := range ldg.LiveDropContentGroupByDropColor {
+			dropColor = fallback
+			break
+		}
+	}
 	return ldg.LiveDropContentGroupByDropColor[dropColor].GetRandomItem().GetRandomItem()
 }
 
@@ -46,6 +53,10 @@ func loadLiveDropGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 	utils.CheckErr(err)
 
 	for _, row := range rows {
+		if gamedata.LiveDropContentGroup[row.DropContentGroupId] == nil {
+			continue
+		}
+
 		_, exist := gamedata.LiveDropGroup[row.GroupId]
 		if !exist {
 			gamedata.LiveDropGroup[row.GroupId] = new(LiveDropGroup)

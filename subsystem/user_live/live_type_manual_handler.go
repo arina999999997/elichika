@@ -14,6 +14,7 @@ import (
 	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
 	"elichika/subsystem/user_story_main"
@@ -167,9 +168,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 		for _, mission := range liveDifficulty.Missions {
 			// mission.TargetValue is wrong, and it's not used for displaying
 			// so we use the song's value instead
-
 			switch mission.TargetType {
-
 			case enum.LiveMissionTypeClear: // nothing to do
 			case enum.LiveMissionTypeEvaluationS:
 				if req.LiveScore.CurrentScore < liveDifficulty.EvaluationSScore {
@@ -182,6 +181,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			default:
 				panic("unsuported target type")
 			}
+
 			resp.LiveResult.LiveResultAchievements.Map[mission.Position].IsCurrentlyAchieved = true
 			if !resp.LiveResult.LiveResultAchievements.Map[mission.Position].IsAlreadyAchieved { // new, add reward
 				user_content.AddContent(session, mission.Reward)
@@ -210,11 +210,9 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 
 		user_status.AddUserExp(session, resp.LiveResult.GainUserExp)
 
-	}
-
-	memberRepresentativeCard := make(map[int32]int32)
-	memberLoveGained := make(map[int32]int32)
-	if lastPlayDeck.IsCleared {
+		// mvp and bond for the response
+		memberRepresentativeCard := make(map[int32]int32)
+		memberLoveGained := make(map[int32]int32)
 		for i := range req.LiveScore.CardStatDict.Map {
 			liveFinishCard := req.LiveScore.CardStatDict.Map[i]
 			// calculate mvp
@@ -260,6 +258,21 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			resp.LiveResult.MemberLoveStatuses.Set(liveFinishCard.CardMasterId, client.LiveResultMemberLoveStatus{
 				RewardLovePoint: addedLove,
 			})
+		}
+
+		// mission stuff
+
+		// clear a live show or play a live show
+		// TODO(behavior): ClearedLive and PlayLive are treated the same for now
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedLive,
+			&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPlayLive,
+			&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
+		if liveDifficulty.Live.IsDailyLive {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPlayLiveDailyMusic,
+				&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedLiveDailyMusic,
+				&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
 		}
 	}
 

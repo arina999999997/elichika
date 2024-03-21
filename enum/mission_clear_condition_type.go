@@ -14,7 +14,7 @@ const (
 	MissionClearConditionTypeUserRank                              int32 = 0x0000000b // current user rank
 	MissionClearConditionTypeCountEditProfile                      int32 = 0x0000000c // NOT SUPPORTED
 	MissionClearConditionTypeCountPlayLive                         int32 = 0x0000000d // play live, presumablly doesn't require actually clearing it
-	MissionClearConditionTypeCountClearedLive                      int32 = 0x0000000e // actually clearing started live the thing
+	MissionClearConditionTypeCountClearedLive                      int32 = 0x0000000e // actually clearing started live, skip ticket works
 	MissionClearConditionTypeCountClearedLiveDifficultyType        int32 = 0x0000000f // clear live with certain difficulty
 	MissionClearConditionTypeCountClearedLiveResultEvaluationType  int32 = 0x00000010 // unused
 	MissionClearConditionTypeCountFullCombo                        int32 = 0x00000011 // unused

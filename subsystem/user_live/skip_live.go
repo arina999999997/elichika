@@ -4,12 +4,14 @@ import (
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
+	"elichika/enum"
 	"elichika/generic"
 	"elichika/item"
 	"elichika/klab"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
 
@@ -99,5 +101,16 @@ func SkipLive(session *userdata.Session, req request.SkipLiveRequest) response.S
 	// 	// TODO(behavior): Check if this is counted toward card / clear usage and update that
 	// }
 
+	// mission stuff
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedLive,
+		&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, req.TicketUseCount)
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPlayLive,
+		&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, req.TicketUseCount)
+	if liveDifficulty.Live.IsDailyLive {
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPlayLiveDailyMusic,
+			&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, req.TicketUseCount)
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedLiveDailyMusic,
+			&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, req.TicketUseCount)
+	}
 	return resp
 }

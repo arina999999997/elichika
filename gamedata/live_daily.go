@@ -26,8 +26,13 @@ func loadLiveDaily(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sessio
 	gamedata.LiveDaily = make(map[int32]*LiveDaily)
 	err := masterdata_db.Table("m_live_daily").Find(&gamedata.LiveDaily)
 	utils.CheckErr(err)
+
+	for _, liveDaily := range gamedata.LiveDaily {
+		gamedata.Live[liveDaily.LiveId].IsDailyLive = true
+	}
 }
 
 func init() {
 	addLoadFunc(loadLiveDaily)
+	addPrequisite(loadLiveDaily, loadLive)
 }
