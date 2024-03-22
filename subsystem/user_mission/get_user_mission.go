@@ -2,7 +2,6 @@ package user_mission
 
 import (
 	"elichika/client"
-	"elichika/enum"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -14,7 +13,6 @@ import (
 //   - if the unlocked mission has the same MissionClearConditionType and MissionClearConditionParam1/2 with the parent
 //     mission, then the progress is carried over
 //   - otherwise the new mission progress is left at 0
-
 func getUserMission(session *userdata.Session, missionId int32) client.UserMission {
 	// check if the mission is valid and update it
 	if !hasMission(session, missionId) {
@@ -38,21 +36,13 @@ func getUserMission(session *userdata.Session, missionId int32) client.UserMissi
 			IsReceivedReward: false,
 			NewExpiredAt:     0,
 		}
-		// carry over old progress
+		// carry over old progress or initialize it
 		mission := session.Gamedata.Mission[missionId]
-		if mission.TriggerType == enum.MissionTriggerClearMission {
-			parent := session.Gamedata.Mission[mission.TriggerCondition1]
-			keepProgress := (parent.MissionClearConditionType == mission.MissionClearConditionType)
-			keepProgress = keepProgress && ((parent.MissionClearConditionParam1 == nil) == (mission.MissionClearConditionParam1 == nil))
-			keepProgress = keepProgress && ((parent.MissionClearConditionParam2 == nil) == (mission.MissionClearConditionParam2 == nil))
-			keepProgress = keepProgress && ((parent.MissionClearConditionParam1 == nil) ||
-				(*parent.MissionClearConditionParam1 == *mission.MissionClearConditionParam1))
-			keepProgress = keepProgress && ((parent.MissionClearConditionParam2 == nil) ||
-				(*parent.MissionClearConditionParam2 == *mission.MissionClearConditionParam2))
-			if keepProgress {
-				ptr.MissionCount = getUserMission(session, mission.TriggerCondition1).MissionCount
-				ptr.IsCleared = ptr.MissionCount >= parent.MissionClearConditionCount
-			}
+		initializer, exist := missionInitializers[mission.MissionClearConditionType]
+		if exist {
+			*ptr = initializer(session, *ptr)
+		} else {
+			*ptr = defaultInitializer(session, *ptr)
 		}
 	}
 	return *ptr

@@ -2,6 +2,7 @@ package user_mission
 
 import (
 	"elichika/client"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/userdata"
 )
@@ -9,6 +10,7 @@ import (
 // add the mission progress and update it directly
 // assuming we already filter through UpdateProgress first
 func AddMissionProgress(session *userdata.Session, mission any, count int32) {
+	count *= *config.Conf.MissionMultiplier
 	switch mission.(type) {
 	case client.UserMission:
 		userMission := mission.(client.UserMission)

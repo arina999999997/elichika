@@ -12,8 +12,8 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeClearedEpisode
 - [ ] MissionClearConditionTypeUserRank
 - [x] (NOT SUPPORTED, only in old beginner mission) MissionClearConditionTypeCountEditProfile
-- [ ] MissionClearConditionTypeCountPlayLive
-- [ ] MissionClearConditionTypeCountClearedLive
+- [x] MissionClearConditionTypeCountPlayLive
+- [x] MissionClearConditionTypeCountClearedLive
 - [ ] MissionClearConditionTypeCountClearedLiveDifficultyType
 - [ ] MissionClearConditionTypeCountPerfectFullCombo
 - [ ] MissionClearConditionTypeAppealVoltage
@@ -59,8 +59,8 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCountAccessoryMelt
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCompleteBeginner
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeReadReferenceBook
-- [ ] MissionClearConditionTypeCountPlayLiveDailyMusic
-- [ ] MissionClearConditionTypeCountClearedLiveDailyMusic
+- [x] MissionClearConditionTypeCountPlayLiveDailyMusic
+- [x] MissionClearConditionTypeCountClearedLiveDailyMusic
 - [ ] MissionClearConditionTypeCountEventCoopAward
 - [ ] (old) MissionClearConditionTypeMemberLovePanelCell
 - [ ] MissionClearConditionTypeMemberLovePanel
