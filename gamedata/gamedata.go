@@ -119,7 +119,8 @@ type Gamedata struct {
 
 	Suit map[int32]*Suit
 
-	StoryMember map[int32]*StoryMember
+	StoryMember      map[int32]*StoryMember
+	StoryMainChapter map[int32]*StoryMainChapter
 
 	Gacha              map[int32]*Gacha
 	GachaList          []*Gacha

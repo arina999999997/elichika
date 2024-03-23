@@ -9,8 +9,8 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCountLoveLevel
 - [ ] MissionClearConditionTypeCountCard
 - [ ] MissionClearConditionTypeCountSpecificMember
-- [ ] MissionClearConditionTypeClearedEpisode
-- [ ] MissionClearConditionTypeUserRank
+- [x] MissionClearConditionTypeClearedEpisode
+- [x] MissionClearConditionTypeUserRank
 - [x] (NOT SUPPORTED, only in old beginner mission) MissionClearConditionTypeCountEditProfile
 - [x] MissionClearConditionTypeCountPlayLive
 - [x] MissionClearConditionTypeCountClearedLive
@@ -68,6 +68,6 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeTowerClearLiveStage
 - [ ] MissionClearConditionTypeTowerRecoverPpForPersonal
 - [ ] MissionClearConditionTypeTowerRecoverPpForFree
-- [ ] MissionClearConditionTypeClearedStoryMainChapter
+- [x] MissionClearConditionTypeClearedStoryMainChapter
 - [ ] MissionClearConditionTypeCountReadDailyTheater
 - [ ] MissionClearConditionTypeClearedSRank
