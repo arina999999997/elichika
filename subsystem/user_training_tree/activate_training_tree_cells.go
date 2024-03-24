@@ -4,6 +4,7 @@ import (
 	"elichika/enum"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_story_side"
 	"elichika/subsystem/user_suit"
 	"elichika/subsystem/user_voice"
@@ -63,6 +64,9 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 			if exist {
 				user_story_side.InsertStorySide(session, storySideId)
 			}
+			// mision
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountSchoolIdolAwakening, nil, nil,
+				user_mission.AddProgressHandler, int32(1))
 		case enum.TrainingTreeCellTypeSuit:
 			// alternative suit is awarded based on amount of tile instead
 			user_suit.InsertUserSuit(session, trainingTree.SuitMIds[cell.TrainingContentNo])

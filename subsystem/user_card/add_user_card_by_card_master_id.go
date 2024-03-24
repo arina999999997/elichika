@@ -8,6 +8,7 @@ import (
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 )
 
@@ -16,6 +17,10 @@ import (
 // Note that this assume the card is added, so it's not used for present box and for gacha retry
 // the maxed limit break reward is also added directly to the user, the return value is only to help client display them
 func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) client.AddedCardResult {
+	// mission tracking
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountCard, nil, nil,
+		user_mission.AddProgressHandler, int32(1))
+
 	card := GetUserCard(session, cardMasterId)
 	masterCard := session.Gamedata.Card[cardMasterId]
 	card.Grade++

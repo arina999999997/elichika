@@ -33,6 +33,9 @@ func hasTriggerCondition(session *userdata.Session, missionId int32) bool {
 }
 
 func hasMission(session *userdata.Session, missionId int32) bool {
+	if session.UserStatus.TutorialPhase != enum.TutorialPhaseTutorialEnd {
+		return false
+	}
 	masterMissionId := session.Gamedata.Mission[missionId]
 	if masterMissionId == nil {
 		return false

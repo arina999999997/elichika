@@ -80,6 +80,8 @@ type Gamedata struct {
 	AccessoryMeltGroup     map[int32]*AccessoryMeltGroup
 	AccessoryLevelUpItem   map[int32]*AccessoryLevelUpItem
 
+	Emblem map[int32]*Emblem
+
 	Member                          map[int32]*Member
 	MemberLoveLevelLovePoint        []int32
 	MemberLoveLevelCount            int32

@@ -274,6 +274,15 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedLiveDailyMusic,
 				&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
 		}
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeClearedUnderUniqueMember, nil, nil,
+			func(session *userdata.Session, missionList []any, _ ...any) {
+				differentCount := int32(len(memberLoveGained))
+				for _, mission := range missionList {
+					if differentCount <= *user_mission.GetMasterMission(session, mission).MissionClearConditionParam1 {
+						user_mission.AddMissionProgress(session, mission, int32(1))
+					}
+				}
+			})
 	}
 
 	resp.LiveResult.LiveResultAchievementStatus.ClearCount = userLiveDifficulty.ClearCount

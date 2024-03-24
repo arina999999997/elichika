@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/user_live_party"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 
@@ -51,4 +52,21 @@ func SaveUserLiveDeck(session *userdata.Session, deckId int32,
 		user_live_party.UpdateUserLiveParty(session, userLiveParty)
 	}
 
+	// mission progress tracking
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountEditLiveDeck, nil, nil,
+		user_mission.AddProgressHandler, int32(1))
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeEditLivePartyAccessory, nil, nil,
+		func(session *userdata.Session, missionList []any, _ ...any) {
+			hasAccessory := false
+			for _, liveSquad := range squadDict.Map {
+				for position := 0; position < 3; position++ {
+					hasAccessory = hasAccessory || liveSquad.UserAccessoryIds.Slice[position].HasValue
+				}
+			}
+			if hasAccessory {
+				for _, mission := range missionList {
+					user_mission.AddMissionProgress(session, mission, int32(1))
+				}
+			}
+		})
 }

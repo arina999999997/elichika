@@ -2,10 +2,12 @@ package user_training_tree
 
 import (
 	"elichika/client"
+	"elichika/enum"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 )
 
@@ -28,4 +30,8 @@ func GradeUpCard(session *userdata.Session, cardMasterId, contentId int32) {
 		BeforeLoveLevelLimit: beforeLoveLevelLimit,
 		AfterLoveLevelLimit:  afterLoveLevelLimit,
 	})
+
+	// mission tracking
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountSchoolIdolGrade, nil, nil,
+		user_mission.AddProgressHandler, int32(1))
 }

@@ -6,9 +6,9 @@ import (
 	"elichika/userdata/database"
 	"elichika/utils"
 
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
-	"math/rand"
 )
 
 func randomKey() []byte {

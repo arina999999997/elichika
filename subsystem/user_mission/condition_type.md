@@ -7,7 +7,7 @@ Also note that these are only the condition that were actually used, and we have
 
 - [ ] MissionClearConditionTypeCountEventMarathonPoint
 - [ ] MissionClearConditionTypeCountLoveLevel
-- [ ] MissionClearConditionTypeCountCard
+- [x] MissionClearConditionTypeCountCard
 - [ ] MissionClearConditionTypeCountSpecificMember
 - [x] MissionClearConditionTypeClearedEpisode
 - [x] MissionClearConditionTypeUserRank
@@ -26,7 +26,7 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCountUseVoltageSkill
 - [ ] MissionClearConditionTypeCountUseRecoverySkill
 - [ ] MissionClearConditionTypeCountUseBuffSkill
-- [ ] MissionClearConditionTypeClearedUnderUniqueMember
+- [x] MissionClearConditionTypeClearedUnderUniqueMember
 - [ ] MissionClearConditionTypeAppealRecoveryValue
 - [ ] MissionClearConditionTypeAppealShieldValue
 - [ ] MissionClearConditionTypeCountUseSpecificMemberSkill
@@ -37,20 +37,20 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCompleteWeekly
 - [ ] MissionClearConditionTypeCountPassiveSkill
 - [x] MissionClearConditionTypeCountLesson
-- [ ] MissionClearConditionTypeCountGradeEmblem
+- [x] MissionClearConditionTypeCountGradeEmblem
 - [ ] MissionClearConditionTypeCountActiveEmblem
 - [ ] MissionClearConditionTypeCountSpecificRarityMakeLevelMax
-- [ ] MissionClearConditionTypeCountSchoolIdolAwakening
+- [x] MissionClearConditionTypeCountSchoolIdolAwakening
 - [ ] MissionClearConditionTypeCountVoice
 - [ ] MissionClearConditionTypeCountSuit
-- [ ] MissionClearConditionTypeCountEditLiveDeck
+- [x] MissionClearConditionTypeCountEditLiveDeck
 - [ ] MissionClearConditionTypeCountEditLessonDeck
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCountFriend
-- [ ] MissionClearConditionTypeCountSchoolIdolGrade
+- [x] MissionClearConditionTypeCountSchoolIdolGrade
 - [ ] MissionClearConditionTypeCountTrainingTreeCellType
 - [ ] MissionClearConditionTypeCountLiveMission
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeEditLivePartyMember
-- [ ] MissionClearConditionTypeEditLivePartyAccessory
+- [x] MissionClearConditionTypeEditLivePartyAccessory
 - [ ] MissionClearConditionTypeCountAccessoryType
 - [ ] MissionClearConditionTypeCountAccessory
 - [ ] MissionClearConditionTypeCountAccessoryLevelUp

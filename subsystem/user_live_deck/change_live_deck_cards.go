@@ -2,8 +2,10 @@ package user_live_deck
 
 import (
 	"elichika/client"
+	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/user_live_party"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_suit"
 	"elichika/userdata"
 
@@ -47,7 +49,7 @@ func ChangeLiveDeckCards(session *userdata.Session, deckId int32, cardMasterIds 
 	UpdateUserLiveDeck(session, deck)
 
 	parties := map[int32]client.UserLiveParty{}
-	for replaced, _ := range replacingCard {
+	for replaced := range replacingCard {
 		party := user_live_party.GetUserLivePartyWithDeckAndCardId(session, deckId, replaced)
 		parties[party.PartyId] = party
 	}
@@ -65,4 +67,8 @@ func ChangeLiveDeckCards(session *userdata.Session, deckId int32, cardMasterIds 
 			party.CardMasterId1.Value, party.CardMasterId2.Value, party.CardMasterId3.Value)
 		user_live_party.UpdateUserLiveParty(session, party)
 	}
+
+	// mission progress tracking
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountEditLiveDeck, nil, nil,
+		user_mission.AddProgressHandler, int32(1))
 }
