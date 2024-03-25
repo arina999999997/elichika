@@ -15,7 +15,7 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeCountPlayLive
 - [x] MissionClearConditionTypeCountClearedLive
 - [ ] MissionClearConditionTypeCountClearedLiveDifficultyType
-- [ ] MissionClearConditionTypeCountPerfectFullCombo
+- [x] MissionClearConditionTypeCountPerfectFullCombo
 - [ ] MissionClearConditionTypeAppealVoltage
 - [ ] MissionClearConditionTypeCountClearedSpecificGroup
 - [ ] MissionClearConditionTypeCountClearedSpecificUnit
@@ -31,7 +31,7 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeAppealShieldValue
 - [ ] MissionClearConditionTypeCountUseSpecificMemberSkill
 - [ ] MissionClearConditionTypeCountUseSpecificMemberSpecialSkill
-- [ ] MissionClearConditionTypeCountClearedSpecificMemberAndPosition
+- [x] MissionClearConditionTypeCountClearedSpecificMemberAndPosition
 - [ ] MissionClearConditionTypeCountLogin
 - [ ] MissionClearConditionTypeCompleteDaily
 - [ ] MissionClearConditionTypeCompleteWeekly
@@ -63,7 +63,7 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeCountClearedLiveDailyMusic
 - [ ] MissionClearConditionTypeCountEventCoopAward
 - [ ] (old) MissionClearConditionTypeMemberLovePanelCell
-- [ ] MissionClearConditionTypeMemberLovePanel
+- [x] MissionClearConditionTypeMemberLovePanel
 - [ ] MissionClearConditionTypeTowerPlayLive
 - [ ] MissionClearConditionTypeTowerClearLiveStage
 - [ ] MissionClearConditionTypeTowerRecoverPpForPersonal

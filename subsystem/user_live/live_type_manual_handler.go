@@ -283,6 +283,16 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 					}
 				}
 			})
+		if req.LiveScore.IsPerfectFullCombo {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPerfectFullCombo,
+				nil, nil, user_mission.AddProgressHandler, int32(1))
+		}
+		for i := int32(1); i <= 9; i++ {
+			cardMasterId := reflect.ValueOf(userLiveDeck).Field(1 + int(i)).Interface().(generic.Nullable[int32]).Value
+			memberId := gamedata.Card[cardMasterId].Member.Id
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificMemberAndPosition,
+				&memberId, &i, user_mission.AddProgressHandler, int32(1))
+		}
 	}
 
 	resp.LiveResult.LiveResultAchievementStatus.ClearCount = userLiveDifficulty.ClearCount

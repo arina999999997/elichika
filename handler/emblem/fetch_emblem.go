@@ -33,6 +33,7 @@ func fetchEmblem(ctx *gin.Context) {
 		}
 	}
 
+	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 }
 
