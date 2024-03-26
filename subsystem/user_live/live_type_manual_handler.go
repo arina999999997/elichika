@@ -287,11 +287,38 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPerfectFullCombo,
 				nil, nil, user_mission.AddProgressHandler, int32(1))
 		}
+
+		groups := map[int32]bool{}
+		units := map[int32]bool{}
+		members := map[int32]bool{}
 		for i := int32(1); i <= 9; i++ {
 			cardMasterId := reflect.ValueOf(userLiveDeck).Field(1 + int(i)).Interface().(generic.Nullable[int32]).Value
-			memberId := gamedata.Card[cardMasterId].Member.Id
+			member := gamedata.Card[cardMasterId].Member
+			groups[member.MemberGroup] = true
+			units[member.MemberUnit] = true
+			members[member.Id] = true
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificMemberAndPosition,
-				&memberId, &i, user_mission.AddProgressHandler, int32(1))
+				&member.Id, &i, user_mission.AddProgressHandler, int32(1))
+		}
+		if len(groups) == 1 {
+			for group := range groups {
+				user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificGroup,
+					&group, nil, user_mission.AddProgressHandler, int32(1))
+			}
+		}
+		if len(units) == 1 {
+			for unit := range units {
+				user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificUnit,
+					&unit, nil, user_mission.AddProgressHandler, int32(1))
+			}
+		}
+		if req.LiveScore.CurrentScore >= liveDifficulty.EvaluationSScore {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeClearedSRank,
+				&liveDifficulty.LiveDifficultyId, nil, user_mission.AddProgressHandler, int32(1))
+		}
+		for member := range members {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificMember,
+				&member, nil, user_mission.AddProgressHandler, int32(1))
 		}
 	}
 

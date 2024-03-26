@@ -58,7 +58,7 @@ type Member struct {
 	LoveLevelRewards   []([]client.Content) `xorm:"-"` // 2 indexed for love level
 
 	// from m_member_unit_detail
-	// Unit int // subgroup
+	MemberUnit int32 `xorm:"-"` // subgroup
 
 	// from m_member_init
 	MemberInit MemberInit `xorm:"-"`
@@ -100,6 +100,11 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 
 	{
 		exist, err := masterdata_db.Table("m_member_init").Where("member_m_id = ?", member.Id).Get(&member.MemberInit)
+		utils.CheckErrMustExist(err, exist)
+	}
+
+	{
+		exist, err := masterdata_db.Table("m_member_unit_detail").Where("member_m_id = ?", member.Id).Cols("member_unit").Get(&member.MemberUnit)
 		utils.CheckErrMustExist(err, exist)
 	}
 

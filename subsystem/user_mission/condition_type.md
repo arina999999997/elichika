@@ -17,9 +17,9 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCountClearedLiveDifficultyType
 - [x] MissionClearConditionTypeCountPerfectFullCombo
 - [ ] MissionClearConditionTypeAppealVoltage
-- [ ] MissionClearConditionTypeCountClearedSpecificGroup
-- [ ] MissionClearConditionTypeCountClearedSpecificUnit
-- [ ] MissionClearConditionTypeCountClearedSpecificMember
+- [x] MissionClearConditionTypeCountClearedSpecificGroup
+- [x] MissionClearConditionTypeCountClearedSpecificUnit
+- [x] MissionClearConditionTypeCountClearedSpecificMember
 - [ ] MissionClearConditionTypeCountClearedSpecificOnlySchoolYear
 - [ ] MissionClearConditionTypeCountUseSkill
 - [ ] MissionClearConditionTypeCountUseSpecialSkill
@@ -70,4 +70,4 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeTowerRecoverPpForFree
 - [x] MissionClearConditionTypeClearedStoryMainChapter
 - [ ] MissionClearConditionTypeCountReadDailyTheater
-- [ ] MissionClearConditionTypeClearedSRank
+- [x] MissionClearConditionTypeClearedSRank

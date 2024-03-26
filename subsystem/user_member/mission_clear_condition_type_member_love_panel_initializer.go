@@ -7,7 +7,7 @@ import (
 	"elichika/userdata"
 )
 
-func missionMissionClearConditionTypeMemberLovePanel(session *userdata.Session, userMission client.UserMission) client.UserMission {
+func missionClearConditionTypeMemberLovePanelInitializer(session *userdata.Session, userMission client.UserMission) client.UserMission {
 	mission := session.Gamedata.Mission[userMission.MissionMId]
 	if mission.MissionClearConditionParam1 == nil {
 		userMission.MissionCount = 0
@@ -26,5 +26,5 @@ func missionMissionClearConditionTypeMemberLovePanel(session *userdata.Session, 
 }
 
 func init() {
-	user_mission.AddMissionInitializer(enum.MissionClearConditionTypeMemberLovePanel, missionMissionClearConditionTypeMemberLovePanel)
+	user_mission.AddMissionInitializer(enum.MissionClearConditionTypeMemberLovePanel, missionClearConditionTypeMemberLovePanelInitializer)
 }
