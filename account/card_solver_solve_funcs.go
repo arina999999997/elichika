@@ -59,36 +59,36 @@ func (solver *TrainingTreeSolver) SolveForTileSet() bool {
 	for i := range solver.BFNodes {
 		solver.BFNodes[i] = []*SolverNode{}
 	}
-	for i := 1; i <= solver.NodeCount; i++ {
+	for i := int32(1); i <= solver.NodeCount; i++ {
 		solver.Node[i].Id = i
 	}
 	solver.MarkPicked(&solver.Node[0])
 
-	for i := 1; i <= solver.NodeCount; i++ {
+	for i := int32(1); i <= solver.NodeCount; i++ {
 		solver.Node[i].Prepare(solver)
 	}
-	for i := 1; i <= solver.NodeCount; i++ {
+	for i := 1; int32(i) <= solver.NodeCount; i++ {
 		if !solver.Node[i].Populate(solver) {
 			// failed to pick a consistent set at the ban-pick phase
 			return false
 		}
 	}
 	// brute force smaller stuff phase, prepare the BF target
-	solver.BFTarget[BFDimensionActiveSkillLevel] = int(solver.Card.ActiveSkillLevel - 1)
-	solver.BFTarget[BFDimensionMaxFreePassiveSkill] = int(solver.Card.MaxFreePassiveSkill - solver.MasterCard.PassiveSkillSlot)
-	solver.BFTarget[BFDimensionPassiveSkillALevel] = int(solver.Card.PassiveSkillALevel - 1)
+	solver.BFTarget[BFDimensionActiveSkillLevel] = solver.Card.ActiveSkillLevel - 1
+	solver.BFTarget[BFDimensionMaxFreePassiveSkill] = solver.Card.MaxFreePassiveSkill - solver.MasterCard.PassiveSkillSlot
+	solver.BFTarget[BFDimensionPassiveSkillALevel] = solver.Card.PassiveSkillALevel - 1
 	for i := range solver.BFCurrent {
 		solver.BFCurrent[i] = 0
 	}
 	return solver.BruteForce(0, 0)
 }
 
-func (solver *TrainingTreeSolver) BruteForce(dim, item int) bool {
+func (solver *TrainingTreeSolver) BruteForce(dim, item int32) bool {
 	if dim == BFDimensionCount {
 		// brute force successful, we need to solve for stats with this set
 		return solver.DynamicProgramming()
 	}
-	if item == len(solver.BFNodes[dim]) { // already done picking this dimension, pick for the next one
+	if item == int32(len(solver.BFNodes[dim])) { // already done picking this dimension, pick for the next one
 		return solver.BruteForce(dim+1, 0)
 	}
 	// if we can pick this item, then we have to mark it as picked
@@ -104,7 +104,7 @@ func (solver *TrainingTreeSolver) BruteForce(dim, item int) bool {
 		solver.UndoOperations(backup)
 	}
 	// if we can skip this item, then we have to mark it as banned
-	if solver.BFTarget[dim] <= solver.BFCurrent[dim]+len(solver.BFNodes[dim])-item-1 {
+	if solver.BFTarget[dim] <= solver.BFCurrent[dim]+int32(len(solver.BFNodes[dim]))-item-1 {
 		backup := solver.OperationCount
 		if solver.MarkBanned(solver.BFNodes[dim][item]) {
 			if solver.BruteForce(dim, item+1) {
@@ -120,10 +120,10 @@ func (solver *TrainingTreeSolver) DynamicProgramming() bool {
 	// iterate over the central path, then we can produce side path chains
 	// we can take a prefix of the chains for dynamic programming
 
-	state := [DPDimensionCount]int{int(solver.Card.TrainingActivatedCellCount),
-		int(solver.Card.TrainingLife), int(solver.Card.TrainingAttack), int(solver.Card.TrainingDexterity)}
-	wantedState := [DPDimensionCount]int{}
-	for i := 1; i <= solver.NodeCount; i++ {
+	state := [DPDimensionCount]int32{solver.Card.TrainingActivatedCellCount,
+		solver.Card.TrainingLife, solver.Card.TrainingAttack, solver.Card.TrainingDexterity}
+	wantedState := [DPDimensionCount]int32{}
+	for i := int32(1); i <= solver.NodeCount; i++ {
 		if solver.Node[i].IsPicked {
 			for j := range state {
 				state[j] -= solver.Node[i].DPWeight[j]
@@ -131,7 +131,7 @@ func (solver *TrainingTreeSolver) DynamicProgramming() bool {
 		}
 	}
 
-	exploredStates := map[[DPDimensionCount]int]([]*SolverNode){}
+	exploredStates := map[[DPDimensionCount]int32]([]*SolverNode){}
 	exploredStates[state] = []*SolverNode{}
 	centerNode := &solver.Node[1]
 	solution, exists := exploredStates[wantedState]
@@ -142,7 +142,7 @@ func (solver *TrainingTreeSolver) DynamicProgramming() bool {
 	for !centerNode.IsBanned {
 		if !centerNode.IsPicked {
 			// add this node to every existing dp solution
-			newExplored := map[[DPDimensionCount]int]([]*SolverNode){}
+			newExplored := map[[DPDimensionCount]int32]([]*SolverNode){}
 			for state, required := range exploredStates {
 				nState := state
 				for i := range nState {
@@ -187,7 +187,7 @@ func (solver *TrainingTreeSolver) DynamicProgramming() bool {
 					}
 				}
 				// update existing dp with this chain
-				newExplored := map[[DPDimensionCount]int]([]*SolverNode){}
+				newExplored := map[[DPDimensionCount]int32]([]*SolverNode){}
 				for state, requiredNodes := range exploredStates {
 					nState := state
 					for _, lastNode := range chain {
@@ -227,7 +227,7 @@ solutionFound:
 				panic("wrong logic")
 			}
 		}
-		for i := 1; i <= solver.NodeCount; i++ {
+		for i := int32(1); i <= solver.NodeCount; i++ {
 			if solver.Node[i].IsPicked {
 				solver.AddCell(solver.Node[i].Id)
 			}

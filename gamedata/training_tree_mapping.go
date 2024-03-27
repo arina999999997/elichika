@@ -12,11 +12,11 @@ import (
 type TrainingTreeCellContent struct {
 	// from m_training_tree_cell_content
 	// Id int `xorm:"'id'"`
-	CellId                     int                      `xorm:"'cell_id'"`
-	TrainingTreeCellType       int                      `xorm:"'training_tree_cell_type'" enum:"TrainingTreeCellType"`
-	TrainingContentNo          int                      `xorm:"'training_content_no'"`
-	RequiredGrade              int                      `xorm:"'required_grade'"`
-	TrainingTreeCellItemSetMId *int                     `xorm:"'training_tree_cell_item_set_m_id'"`
+	CellId                     int32                    `xorm:"'cell_id'"`
+	TrainingTreeCellType       int32                    `xorm:"'training_tree_cell_type'" enum:"TrainingTreeCellType"`
+	TrainingContentNo          int32                    `xorm:"'training_content_no'"`
+	RequiredGrade              int32                    `xorm:"'required_grade'"`
+	TrainingTreeCellItemSetMId *int32                   `xorm:"'training_tree_cell_item_set_m_id'"`
 	TrainingTreeCellItemSet    *TrainingTreeCellItemSet `xorm:"-"`
 
 	SnsCoin int `xorm:"'sns_coin'"`
@@ -29,10 +29,10 @@ func (obj *TrainingTreeCellContent) populate(gamedata *Gamedata, masterdata_db, 
 
 type TrainingTreeMapping struct {
 	// from m_training_tree_mapping
-	Id                         int                       `xorm:"pk 'id'"`
-	TrainingTreeCellContentMId int                       `xorm:"'training_tree_cell_content_m_id'"`
+	Id                         int32                     `xorm:"pk 'id'"`
+	TrainingTreeCellContentMId int32                     `xorm:"'training_tree_cell_content_m_id'"`
 	TrainingTreeCellContents   []TrainingTreeCellContent `xorm:"-"` // 0 indexed
-	TrainingTreeDesignMId      *int                      `xorm:"'training_tree_design_m_id'"`
+	TrainingTreeDesignMId      *int32                    `xorm:"'training_tree_design_m_id'"`
 	TrainingTreeDesign         *TrainingTreeDesign       `xorm:"-"`
 }
 
@@ -49,7 +49,7 @@ func (treeMapping *TrainingTreeMapping) populate(gamedata *Gamedata, masterdata_
 
 func loadTrainingTreeMapping(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading TrainingMapping")
-	gamedata.TrainingTreeMapping = make(map[int]*TrainingTreeMapping)
+	gamedata.TrainingTreeMapping = make(map[int32]*TrainingTreeMapping)
 	err := masterdata_db.Table("m_training_tree_mapping").Find(&gamedata.TrainingTreeMapping)
 	utils.CheckErr(err)
 	for _, treeMapping := range gamedata.TrainingTreeMapping {

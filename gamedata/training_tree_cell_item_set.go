@@ -12,7 +12,7 @@ import (
 
 type TrainingTreeCellItemSet struct {
 	// from m_training_tree_cell_item_set
-	Id        int              `xorm:"pk 'id'"`
+	Id        int32            `xorm:"pk 'id'"`
 	Resources []client.Content `xorm:"-"`
 }
 
@@ -23,7 +23,7 @@ func (set *TrainingTreeCellItemSet) populate(gamedata *Gamedata, masterdata_db, 
 
 func loadTrainingTreeCellItemSet(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading TrainingCellItemSet")
-	gamedata.TrainingTreeCellItemSet = make(map[int]*TrainingTreeCellItemSet)
+	gamedata.TrainingTreeCellItemSet = make(map[int32]*TrainingTreeCellItemSet)
 	err := masterdata_db.Table("m_training_tree_cell_item_set").Find(gamedata.TrainingTreeCellItemSet)
 	utils.CheckErr(err)
 	for _, set := range gamedata.TrainingTreeCellItemSet {

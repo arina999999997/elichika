@@ -16,19 +16,19 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeCountClearedLive
 - [ ] MissionClearConditionTypeCountClearedLiveDifficultyType
 - [x] MissionClearConditionTypeCountPerfectFullCombo
-- [ ] MissionClearConditionTypeAppealVoltage
+- [x] MissionClearConditionTypeAppealVoltage
 - [x] MissionClearConditionTypeCountClearedSpecificGroup
 - [x] MissionClearConditionTypeCountClearedSpecificUnit
 - [x] MissionClearConditionTypeCountClearedSpecificMember
 - [ ] MissionClearConditionTypeCountClearedSpecificOnlySchoolYear
-- [ ] MissionClearConditionTypeCountUseSkill
+- [x] MissionClearConditionTypeCountUseSkill
 - [ ] MissionClearConditionTypeCountUseSpecialSkill
-- [ ] MissionClearConditionTypeCountUseVoltageSkill
-- [ ] MissionClearConditionTypeCountUseRecoverySkill
-- [ ] MissionClearConditionTypeCountUseBuffSkill
+- [x] MissionClearConditionTypeCountUseVoltageSkill
+- [x] MissionClearConditionTypeCountUseRecoverySkill
+- [x] MissionClearConditionTypeCountUseBuffSkill
 - [x] MissionClearConditionTypeClearedUnderUniqueMember
-- [ ] MissionClearConditionTypeAppealRecoveryValue
-- [ ] MissionClearConditionTypeAppealShieldValue
+- [x] MissionClearConditionTypeAppealRecoveryValue
+- [x] MissionClearConditionTypeAppealShieldValue
 - [ ] MissionClearConditionTypeCountUseSpecificMemberSkill
 - [ ] MissionClearConditionTypeCountUseSpecificMemberSpecialSkill
 - [x] MissionClearConditionTypeCountClearedSpecificMemberAndPosition
@@ -47,7 +47,7 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCountEditLessonDeck
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCountFriend
 - [x] MissionClearConditionTypeCountSchoolIdolGrade
-- [ ] MissionClearConditionTypeCountTrainingTreeCellType
+- [x] MissionClearConditionTypeCountTrainingTreeCellType
 - [ ] MissionClearConditionTypeCountLiveMission
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeEditLivePartyMember
 - [x] MissionClearConditionTypeEditLivePartyAccessory

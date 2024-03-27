@@ -291,12 +291,16 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 		groups := map[int32]bool{}
 		units := map[int32]bool{}
 		members := map[int32]bool{}
+		spMembers := map[int32]bool{}
 		for i := int32(1); i <= 9; i++ {
 			cardMasterId := reflect.ValueOf(userLiveDeck).Field(1 + int(i)).Interface().(generic.Nullable[int32]).Value
 			member := gamedata.Card[cardMasterId].Member
 			groups[member.MemberGroup] = true
 			units[member.MemberUnit] = true
 			members[member.Id] = true
+			if i <= 3 {
+				spMembers[member.Id] = true
+			}
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificMemberAndPosition,
 				&member.Id, &i, user_mission.AddProgressHandler, int32(1))
 		}
@@ -320,6 +324,53 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedSpecificMember,
 				&member, nil, user_mission.AddProgressHandler, int32(1))
 		}
+
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeAppealVoltage, nil, nil,
+			func(session *userdata.Session, missionList []any, _ ...any) {
+				maxVoltage := int32(0)
+				for _, liveNoteScore := range req.LiveScore.ResultDict.Map {
+					if maxVoltage < liveNoteScore.Voltage {
+						maxVoltage = liveNoteScore.Voltage
+					}
+				}
+				for _, mission := range missionList {
+					user_mission.MaximizeMissionProgress(session, mission, maxVoltage)
+				}
+			})
+
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSkill, nil, nil,
+			user_mission.AddProgressHandler, req.LiveScore.UseVoltageActiveSkillCount+
+				req.LiveScore.UseHealActiveSkillCount+
+				req.LiveScore.UseDebufActiveSkillCount+
+				req.LiveScore.UseBufActiveSkillCount)
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSpecialSkill, nil, nil,
+			user_mission.AddProgressHandler, req.LiveScore.UseVoltageActiveSkillCount)
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseVoltageSkill, nil, nil,
+			user_mission.AddProgressHandler, req.LiveScore.UseSpSkillCount)
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseRecoverySkill, nil, nil,
+			user_mission.AddProgressHandler, req.LiveScore.UseHealActiveSkillCount)
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseBuffSkill, nil, nil,
+			user_mission.AddProgressHandler, req.LiveScore.UseBufActiveSkillCount)
+
+		for member := range spMembers {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSpecificMemberSpecialSkill,
+				&member, nil, user_mission.AddProgressHandler, int32(1))
+		}
+
+		maxShield := int32(0)
+		maxHeal := int32(0)
+		for _, liveTurnStat := range req.LiveScore.TurnStatDict.Map {
+			if maxShield < liveTurnStat.AppendedShield {
+				maxShield = liveTurnStat.AppendedShield
+			}
+			if maxHeal < liveTurnStat.HealedLife {
+				maxHeal = liveTurnStat.HealedLife
+			}
+		}
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeAppealRecoveryValue, nil, nil,
+			user_mission.MaximizeProgressHandler, maxHeal)
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeAppealShieldValue, nil, nil,
+			user_mission.MaximizeProgressHandler, maxShield)
 	}
 
 	resp.LiveResult.LiveResultAchievementStatus.ClearCount = userLiveDifficulty.ClearCount

@@ -20,25 +20,25 @@ import (
 // Children will have the main child (ParentBranchType = 100) as the first item, otherwise it doesn't matter what come first
 type TrainingTreeDesign struct {
 	// from m_training_tree_design
-	Id        int
-	CellCount int
-	Parent    []int
-	Children  []([]int)
-	// ParentBranchType []int
+	Id        int32
+	CellCount int32
+	Parent    []int32
+	Children  []([]int32)
+	// ParentBranchType []int32
 }
 
 func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading TrainingTreeDesign")
 	type TrainingTreeDesignCell struct {
-		DesignId         int `xorm:"'id'"`
-		CellId           int `xorm:"'cell_id'"`
-		ParentCellId     int `xorm:"'parent_cell_id'"`
-		ParentBranchType int `xorm:"'parent_branch_type'"`
+		DesignId         int32 `xorm:"'id'"`
+		CellId           int32 `xorm:"'cell_id'"`
+		ParentCellId     int32 `xorm:"'parent_cell_id'"`
+		ParentBranchType int32 `xorm:"'parent_branch_type'"`
 	}
 	cells := []TrainingTreeDesignCell{}
 	err := masterdata_db.Table("m_training_tree_design").Find(&cells)
 	utils.CheckErr(err)
-	gamedata.TrainingTreeDesign = make(map[int]*TrainingTreeDesign)
+	gamedata.TrainingTreeDesign = make(map[int32]*TrainingTreeDesign)
 	for _, cell := range cells {
 		_, exist := gamedata.TrainingTreeDesign[cell.DesignId]
 		if !exist {
@@ -49,9 +49,9 @@ func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xo
 		gamedata.TrainingTreeDesign[cell.DesignId].CellCount++
 	}
 	for _, design := range gamedata.TrainingTreeDesign {
-		for i := 0; i < design.CellCount; i++ {
+		for i := int32(0); i < design.CellCount; i++ {
 			design.Parent = append(design.Parent, 0)
-			design.Children = append(design.Children, []int{})
+			design.Children = append(design.Children, []int32{})
 		}
 	}
 	for _, cell := range cells {

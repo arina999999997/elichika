@@ -22,11 +22,11 @@ type Card struct {
 	// SchoolIdolNo int `xorm:"'school_idol_no'"`
 	CardRarityType int32       `xorm:"'card_rarity_type'" enum:"CardRarityType"`
 	Rarity         *CardRarity `xorm:"-"`
-	Role           int         `xorm:"'role'"`
+	Role           int32       `xorm:"'role'"`
 	// MemberCardThumbnailAssetPath string
 	// AtGacha bool
 	// AtEvent bool
-	TrainingTreeMasterId *int          `xorm:"'training_tree_m_id'"` // must be equal to Id
+	TrainingTreeMasterId *int32        `xorm:"'training_tree_m_id'"` // must be equal to Id
 	TrainingTree         *TrainingTree `xorm:"-"`
 	// ActiveSkillVoicePath string
 	// SpPoint int

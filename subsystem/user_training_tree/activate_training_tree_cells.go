@@ -30,8 +30,9 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 				user_content.RemoveContent(session, resource)
 			}
 		}
-
-		switch int32(cell.TrainingTreeCellType) {
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountTrainingTreeCellType,
+			&cell.TrainingTreeCellType, nil, user_mission.AddProgressHandler, int32(1))
+		switch cell.TrainingTreeCellType {
 		// note that this reference is different from m_training_tree_cell_type_setting
 		// that table is for training_content_type
 		case enum.TrainingTreeCellTypeParameter:
@@ -51,7 +52,7 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 			user_voice.UpdateUserVoice(session, naviActionId, true)
 		case enum.TrainingTreeCellTypeStory:
 			// training_content_type 11 in m_training_tree_card_story_side
-			storySideId, exist := trainingTree.TrainingTreeCardStorySides[int(enum.TrainingContentTypeStory)]
+			storySideId, exist := trainingTree.TrainingTreeCardStorySides[enum.TrainingContentTypeStory]
 			if !exist {
 				panic("story doesn't exist")
 			}
@@ -60,7 +61,7 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 			// idolize
 			card.IsAwakening = true
 			card.IsAwakeningImage = true
-			storySideId, exist := trainingTree.TrainingTreeCardStorySides[int(enum.TrainingContentTypeAwakening)]
+			storySideId, exist := trainingTree.TrainingTreeCardStorySides[enum.TrainingContentTypeAwakening]
 			if exist {
 				user_story_side.InsertStorySide(session, storySideId)
 			}

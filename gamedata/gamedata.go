@@ -108,10 +108,10 @@ type Gamedata struct {
 
 	LessonMenu map[int32]*LessonMenu
 
-	TrainingTreeCellItemSet map[int]*TrainingTreeCellItemSet
-	TrainingTreeDesign      map[int]*TrainingTreeDesign
-	TrainingTreeMapping     map[int]*TrainingTreeMapping
-	TrainingTree            map[int]*TrainingTree
+	TrainingTreeCellItemSet map[int32]*TrainingTreeCellItemSet
+	TrainingTreeDesign      map[int32]*TrainingTreeDesign
+	TrainingTreeMapping     map[int32]*TrainingTreeMapping
+	TrainingTree            map[int32]*TrainingTree
 
 	Card       map[int32]*Card
 	CardLevel  map[int32]*CardLevel

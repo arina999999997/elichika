@@ -39,21 +39,21 @@ import (
 // finally, if we can't find a correct set of tiles then we reset the card to completely new just to make sure things are consistent
 
 const (
-	BFDimensionMaxFreePassiveSkill = 0
-	BFDimensionActiveSkillLevel    = 1
-	BFDimensionPassiveSkillALevel  = 2
-	BFDimensionCount               = 3
+	BFDimensionMaxFreePassiveSkill int32 = 0
+	BFDimensionActiveSkillLevel    int32 = 1
+	BFDimensionPassiveSkillALevel  int32 = 2
+	BFDimensionCount               int32 = 3
 
-	DPDimensionTrainingActivatedCellCount = 0
-	DPDimensionTrainingLife               = 1
-	DPDimensionTrainingAttack             = 2
-	DPDimensionTrainingDexterity          = 3
-	DPDimensionCount                      = 4
+	DPDimensionTrainingActivatedCellCount int32 = 0
+	DPDimensionTrainingLife               int32 = 1
+	DPDimensionTrainingAttack             int32 = 2
+	DPDimensionTrainingDexterity          int32 = 3
+	DPDimensionCount                      int32 = 4
 )
 
 type SolverNode struct {
-	Id       int
-	DPWeight [DPDimensionCount]int
+	Id       int32
+	DPWeight [DPDimensionCount]int32
 	Parent   *SolverNode
 	Children []*SolverNode
 
@@ -67,7 +67,7 @@ type TrainingTreeSolver struct {
 	HasStorySide        map[int32]bool
 	HasSuit             map[int32]bool
 	Node                [100]SolverNode // need at most 91
-	NodeCount           int
+	NodeCount           int32
 	TrainingTree        *gamedata.TrainingTree
 	TrainingTreeMapping *gamedata.TrainingTreeMapping
 	TrainingTreeDesign  *gamedata.TrainingTreeDesign
@@ -78,8 +78,8 @@ type TrainingTreeSolver struct {
 	Card                *client.UserCard
 
 	BFNodes   [BFDimensionCount]([]*SolverNode)
-	BFTarget  [BFDimensionCount]int
-	BFCurrent [BFDimensionCount]int
+	BFTarget  [BFDimensionCount]int32
+	BFCurrent [BFDimensionCount]int32
 
 	OperationStack [100]struct {
 		Ptr      *bool
@@ -139,7 +139,7 @@ func (node *SolverNode) Prepare(solver *TrainingTreeSolver) {
 func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 	// get the content
 	cell := solver.TrainingTreeMapping.TrainingTreeCellContents[node.Id]
-	if cell.RequiredGrade > int(solver.Card.Grade) {
+	if cell.RequiredGrade > solver.Card.Grade {
 		return solver.MarkBanned(node)
 	}
 	node.DPWeight[DPDimensionTrainingActivatedCellCount] = 1
@@ -216,11 +216,11 @@ func (solver *TrainingTreeSolver) LoadUserLogin(login *response.LoginResponse) {
 	}
 }
 
-func (solver *TrainingTreeSolver) AddCell(cellId int) {
+func (solver *TrainingTreeSolver) AddCell(cellId int32) {
 	if cellId == 0 {
 		return
 	}
 	solver.Cells = append(solver.Cells, client.UserCardTrainingTreeCell{
-		CellId:      int32(cellId),
+		CellId:      cellId,
 		ActivatedAt: solver.TimeStamp})
 }
