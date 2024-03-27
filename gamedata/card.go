@@ -64,6 +64,8 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 			card.CardGradeUpItem[gradeUp.Grade][gradeUp.Resource.ContentId] = gradeUp.Resource
 		}
 	}
+
+	gamedata.CardByMemberId[*card.MemberMasterId] = append(gamedata.CardByMemberId[*card.MemberMasterId], card)
 }
 
 func loadCard(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
@@ -71,6 +73,7 @@ func loadCard(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, di
 	gamedata.Card = make(map[int32]*Card)
 	err := masterdata_db.Table("m_card").Find(&gamedata.Card)
 	utils.CheckErr(err)
+	gamedata.CardByMemberId = map[int32][]*Card{}
 
 	for _, card := range gamedata.Card {
 		card.populate(gamedata, masterdata_db, serverdata_db, dictionary)

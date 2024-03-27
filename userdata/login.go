@@ -36,7 +36,11 @@ func (session *Session) Login() response.LoginResponse {
 	// perform a login, load the relevant data into UserModel and load login data into login
 	login := session.GetLoginResponse()
 	login.UserModel = &session.UserModel
-	session.UserStatus.LastLoginAt = time.Now().Unix()
+
+	if session.UserStatus.LastLoginAt < utils.BeginOfDay(session.Time).Unix() { // new day
+		session.UserStatus.LoginDays++
+	}
+	session.UserStatus.LastLoginAt = session.Time.Unix()
 	session.SessionType = SessionTypeLogin
 	session.SendMissionDetail = true
 	session.GenerateNewSessionKey()

@@ -343,10 +343,12 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 				req.LiveScore.UseHealActiveSkillCount+
 				req.LiveScore.UseDebufActiveSkillCount+
 				req.LiveScore.UseBufActiveSkillCount)
+
 		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSpecialSkill, nil, nil,
-			user_mission.AddProgressHandler, req.LiveScore.UseVoltageActiveSkillCount)
-		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseVoltageSkill, nil, nil,
 			user_mission.AddProgressHandler, req.LiveScore.UseSpSkillCount)
+
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseVoltageSkill, nil, nil,
+			user_mission.AddProgressHandler, req.LiveScore.UseVoltageActiveSkillCount)
 		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseRecoverySkill, nil, nil,
 			user_mission.AddProgressHandler, req.LiveScore.UseHealActiveSkillCount)
 		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseBuffSkill, nil, nil,
@@ -354,7 +356,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 
 		for member := range spMembers {
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSpecificMemberSpecialSkill,
-				&member, nil, user_mission.AddProgressHandler, int32(1))
+				&member, nil, user_mission.AddProgressHandler, req.LiveScore.UseSpSkillCount)
 		}
 
 		maxShield := int32(0)

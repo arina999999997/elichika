@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_emblem"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -24,10 +25,10 @@ func activateEmblem(ctx *gin.Context) {
 	session := userdata.GetSession(ctx, userId)
 	defer session.Close()
 
-	session.UserStatus.EmblemId = req.EmblemMasterId
+	user_emblem.ActivateEmblem(session, req.EmblemMasterId)
 
 	session.Finalize()
-	common.JsonResponse(ctx, response.ActivateEmblemResponse{
+	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
 }

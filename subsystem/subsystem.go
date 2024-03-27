@@ -29,6 +29,7 @@ import (
 	_ "elichika/subsystem/user_live_mv"
 	_ "elichika/subsystem/user_live_partner"
 	_ "elichika/subsystem/user_live_party"
+	_ "elichika/subsystem/user_login"
 	_ "elichika/subsystem/user_login_bonus"
 	_ "elichika/subsystem/user_member"
 	_ "elichika/subsystem/user_member_guild"

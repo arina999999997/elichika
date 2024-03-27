@@ -6,9 +6,9 @@ A value is ticked if it is handled, so the tracking exist, and you can get rewar
 Also note that these are only the condition that were actually used, and we have the dictionary to help with the meaning. Unused condition are not supported, but they can potentially be used/reused. 
 
 - [ ] MissionClearConditionTypeCountEventMarathonPoint
-- [ ] MissionClearConditionTypeCountLoveLevel
+- [x] MissionClearConditionTypeCountLoveLevel
 - [x] MissionClearConditionTypeCountCard
-- [ ] MissionClearConditionTypeCountSpecificMember
+- [x] MissionClearConditionTypeCountSpecificMember
 - [x] MissionClearConditionTypeClearedEpisode
 - [x] MissionClearConditionTypeUserRank
 - [x] (NOT SUPPORTED, only in old beginner mission) MissionClearConditionTypeCountEditProfile
@@ -22,7 +22,7 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeCountClearedSpecificMember
 - [ ] MissionClearConditionTypeCountClearedSpecificOnlySchoolYear
 - [x] MissionClearConditionTypeCountUseSkill
-- [ ] MissionClearConditionTypeCountUseSpecialSkill
+- [x] MissionClearConditionTypeCountUseSpecialSkill
 - [x] MissionClearConditionTypeCountUseVoltageSkill
 - [x] MissionClearConditionTypeCountUseRecoverySkill
 - [x] MissionClearConditionTypeCountUseBuffSkill
@@ -30,18 +30,18 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeAppealRecoveryValue
 - [x] MissionClearConditionTypeAppealShieldValue
 - [ ] MissionClearConditionTypeCountUseSpecificMemberSkill
-- [ ] MissionClearConditionTypeCountUseSpecificMemberSpecialSkill
+- [x] MissionClearConditionTypeCountUseSpecificMemberSpecialSkill
 - [x] MissionClearConditionTypeCountClearedSpecificMemberAndPosition
-- [ ] MissionClearConditionTypeCountLogin
-- [ ] MissionClearConditionTypeCompleteDaily
-- [ ] MissionClearConditionTypeCompleteWeekly
+- [x] MissionClearConditionTypeCountLogin
+- [x] MissionClearConditionTypeCompleteDaily
+- [x] MissionClearConditionTypeCompleteWeekly
 - [ ] MissionClearConditionTypeCountPassiveSkill
 - [x] MissionClearConditionTypeCountLesson
 - [x] MissionClearConditionTypeCountGradeEmblem
-- [ ] MissionClearConditionTypeCountActiveEmblem
+- [x] MissionClearConditionTypeCountActiveEmblem
 - [ ] MissionClearConditionTypeCountSpecificRarityMakeLevelMax
 - [x] MissionClearConditionTypeCountSchoolIdolAwakening
-- [ ] MissionClearConditionTypeCountVoice
+- [x] MissionClearConditionTypeCountVoice
 - [ ] MissionClearConditionTypeCountSuit
 - [x] MissionClearConditionTypeCountEditLiveDeck
 - [ ] MissionClearConditionTypeCountEditLessonDeck

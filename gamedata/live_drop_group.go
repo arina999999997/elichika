@@ -30,6 +30,7 @@ func (ldg *LiveDropGroup) GetRandomItemByDropColor(dropColor int32) client.Conte
 	_, exist := ldg.LiveDropContentGroupByDropColor[dropColor]
 	if !exist {
 		for fallback := range ldg.LiveDropContentGroupByDropColor {
+			// TODO(drop): this is wrong for daily drop(?)
 			dropColor = fallback
 			break
 		}
