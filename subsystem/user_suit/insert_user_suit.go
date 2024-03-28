@@ -2,6 +2,8 @@ package user_suit
 
 import (
 	"elichika/client"
+	"elichika/enum"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 )
 
@@ -9,7 +11,11 @@ import (
 
 func InsertUserSuits(session *userdata.Session, suits []client.UserSuit) {
 	for _, suit := range suits {
-		session.UserModel.UserSuitBySuitId.Set(suit.SuitMasterId, suit)
+		if !userdata.GenericDatabaseExist(session, "u_suit", suit) {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountSuit, nil, nil,
+				user_mission.AddProgressHandler, int32(1))
+			session.UserModel.UserSuitBySuitId.Set(suit.SuitMasterId, suit)
+		}
 	}
 }
 
@@ -18,5 +24,9 @@ func InsertUserSuit(session *userdata.Session, suitMasterId int32) {
 		SuitMasterId: suitMasterId,
 		IsNew:        true,
 	}
-	session.UserModel.UserSuitBySuitId.Set(suit.SuitMasterId, suit)
+	if !userdata.GenericDatabaseExist(session, "u_suit", suit) {
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountSuit, nil, nil,
+			user_mission.AddProgressHandler, int32(1))
+		session.UserModel.UserSuitBySuitId.Set(suit.SuitMasterId, suit)
+	}
 }

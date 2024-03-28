@@ -29,34 +29,34 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeClearedUnderUniqueMember
 - [x] MissionClearConditionTypeAppealRecoveryValue
 - [x] MissionClearConditionTypeAppealShieldValue
-- [ ] MissionClearConditionTypeCountUseSpecificMemberSkill
+- [x] MissionClearConditionTypeCountUseSpecificMemberSkill
 - [x] MissionClearConditionTypeCountUseSpecificMemberSpecialSkill
 - [x] MissionClearConditionTypeCountClearedSpecificMemberAndPosition
 - [x] MissionClearConditionTypeCountLogin
 - [x] MissionClearConditionTypeCompleteDaily
 - [x] MissionClearConditionTypeCompleteWeekly
-- [ ] MissionClearConditionTypeCountPassiveSkill
+- [x] MissionClearConditionTypeCountPassiveSkill
 - [x] MissionClearConditionTypeCountLesson
 - [x] MissionClearConditionTypeCountGradeEmblem
 - [x] MissionClearConditionTypeCountActiveEmblem
 - [x] MissionClearConditionTypeCountSpecificRarityMakeLevelMax
 - [x] MissionClearConditionTypeCountSchoolIdolAwakening
 - [x] MissionClearConditionTypeCountVoice
-- [ ] MissionClearConditionTypeCountSuit
+- [x] MissionClearConditionTypeCountSuit
 - [x] MissionClearConditionTypeCountEditLiveDeck
 - [ ] MissionClearConditionTypeCountEditLessonDeck
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCountFriend
 - [x] MissionClearConditionTypeCountSchoolIdolGrade
 - [x] MissionClearConditionTypeCountTrainingTreeCellType
-- [ ] MissionClearConditionTypeCountLiveMission
+- [x] MissionClearConditionTypeCountLiveMission
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeEditLivePartyMember
 - [x] MissionClearConditionTypeEditLivePartyAccessory
 - [x] MissionClearConditionTypeCountAccessoryType
 - [x] MissionClearConditionTypeCountAccessory
-- [ ] MissionClearConditionTypeCountAccessoryLevelUp
-- [ ] MissionClearConditionTypeCountAccessoryGradeUp
-- [ ] MissionClearConditionTypeCountAccessoryRarityUp
-- [ ] MissionClearConditionTypeCountAccessoryMelt
+- [x] MissionClearConditionTypeCountAccessoryLevelUp
+- [x] MissionClearConditionTypeCountAccessoryGradeUp
+- [x] MissionClearConditionTypeCountAccessoryRarityUp
+- [x] MissionClearConditionTypeCountAccessoryMelt
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeCompleteBeginner
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeReadReferenceBook
 - [x] MissionClearConditionTypeCountPlayLiveDailyMusic
@@ -65,7 +65,7 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] (old) MissionClearConditionTypeMemberLovePanelCell
 - [x] MissionClearConditionTypeMemberLovePanel
 - [ ] MissionClearConditionTypeTowerPlayLive
-- [ ] MissionClearConditionTypeTowerClearLiveStage
+- [x] MissionClearConditionTypeTowerClearLiveStage
 - [ ] MissionClearConditionTypeTowerRecoverPpForPersonal
 - [ ] MissionClearConditionTypeTowerRecoverPpForFree
 - [x] MissionClearConditionTypeClearedStoryMainChapter

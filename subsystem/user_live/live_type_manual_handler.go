@@ -373,6 +373,12 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			user_mission.MaximizeProgressHandler, maxHeal)
 		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeAppealShieldValue, nil, nil,
 			user_mission.MaximizeProgressHandler, maxShield)
+
+		for _, cardStat := range req.LiveScore.CardStatDict.Map {
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSpecificMemberSkill,
+				&gamedata.Card[cardStat.CardMasterId].Member.Id, nil,
+				user_mission.AddProgressHandler, cardStat.SkillTriggeredCount)
+		}
 	}
 
 	resp.LiveResult.LiveResultAchievementStatus.ClearCount = userLiveDifficulty.ClearCount

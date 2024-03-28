@@ -10,6 +10,7 @@ import (
 	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_tower"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 
 	"fmt"
@@ -72,12 +73,18 @@ func liveTypeTowerHandler(session *userdata.Session, req request.FinishLiveReque
 					currentScore.Voltage = req.LiveScore.CurrentScore
 					user_tower.UpdateUserTowerVoltageRankingScore(session, currentScore)
 				}
+				// mission tracking
+				user_mission.UpdateProgress(session, enum.MissionClearConditionTypeTowerClearLiveStage, nil, nil,
+					user_mission.AddProgressHandler, int32(1))
 			}
 		} else if req.LiveScore.CurrentScore >= req.LiveScore.TargetScore { // first clear
 			increasePlayCount = true
 			awardFirstClearReward = true
 			userTower.ClearedFloor = live.TowerLive.Value.FloorNo
 			userTower.Voltage = 0
+			// mission tracking
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeTowerClearLiveStage, nil, nil,
+				user_mission.AddProgressHandler, int32(1))
 		} else { // not cleared
 			increasePlayCount = true
 			userTower.Voltage = int32(req.LiveScore.CurrentScore)
