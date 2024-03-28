@@ -8,9 +8,9 @@ import (
 	"elichika/generic"
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_live_difficulty"
+	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_present"
 	"elichika/subsystem/user_tower"
-	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 
 	"fmt"

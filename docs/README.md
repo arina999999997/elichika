@@ -48,7 +48,7 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [ ] Note that some item might not be exchangable, but that's more down to the handling of those items and not the exchange itself.
 - [x] School idol / Practice
     - [x] Fully working card grade up, level up, and practice system.
-- [ ] Accessores
+- [x] Accessories
     - [x] Fully working accessory power up system.
     - [x] Accesory drops from live and can be exchanged in shop.
     - [x] The WebUi functionality to add accessory is still there for accessory that are limited or can't be dropped, if you wish to get them
@@ -61,18 +61,20 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] Present box
     - [x] Working present box.
     - [x] All items that are sent to present box should be there, but there might be mistakes.
-- [ ] Goal list
-    - [x] Always empty, works by returning fixed data.
-    - [ ] Eventually should handle goals and daily / weekly goals.
+- [x] Goal list
+    - [x] Working daily / weekly goals that reset correctly.
+    - [x] Working goals tracking for free goals that are available at EOS
+    - [ ] Some other event exclusive goals are not implemented, they might be revived later on.
 - [x] Notices / news
     - [x] Always empty, works by returning fixed data.
     - [ ] There is no plan for now, but this section can be used to put tutorial and suchs.
 - [ ] Social (friends)
     - [x] Works by returing fixed data.
     - [ ] The server allow for separate account, but implementation of social systems are not planned.
-- [ ] Title List
+- [x] Title List
     - [x] Stored and fetch from database.
-    - [ ] There's no proper handling of adding a title yet.
+    - [x] Title is added through user content system.
+    - [x] User can obtain title through goals and suchs
 - [x] Datalink
     - [x] The datalink system is used as account creation / account transfer, things should work properly.
     - [x] Password is stored using bcrypt, so no worry of leaking password. 

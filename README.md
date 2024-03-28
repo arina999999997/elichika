@@ -41,6 +41,11 @@ The fields are as follow (might not be up to date, you can check the code to see
     - The autoplay judgement type.
     - Default to `20` (great) like the original.
     - Some other possible value include `30` for perfect and `14` for good.
+- ``"mission_multiplier"``
+    - Can be used to complete mission fasters.
+    - Default to `1`, so no bonus.
+    - This only works for certain type of goals, some goals are tracked using other method and this won't work.
+    - Do not set to too large or you might have overflow problems.
 
 ## Running the server
 After setting up the server, we need to run it. Simply navigate to `elichika`'s directory and run it:
