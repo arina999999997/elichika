@@ -39,7 +39,7 @@ Also note that these are only the condition that were actually used, and we have
 - [x] MissionClearConditionTypeCountLesson
 - [x] MissionClearConditionTypeCountGradeEmblem
 - [x] MissionClearConditionTypeCountActiveEmblem
-- [ ] MissionClearConditionTypeCountSpecificRarityMakeLevelMax
+- [x] MissionClearConditionTypeCountSpecificRarityMakeLevelMax
 - [x] MissionClearConditionTypeCountSchoolIdolAwakening
 - [x] MissionClearConditionTypeCountVoice
 - [ ] MissionClearConditionTypeCountSuit
@@ -51,8 +51,8 @@ Also note that these are only the condition that were actually used, and we have
 - [ ] MissionClearConditionTypeCountLiveMission
 - [ ] (NOT SUPPORTED old beginner only) MissionClearConditionTypeEditLivePartyMember
 - [x] MissionClearConditionTypeEditLivePartyAccessory
-- [ ] MissionClearConditionTypeCountAccessoryType
-- [ ] MissionClearConditionTypeCountAccessory
+- [x] MissionClearConditionTypeCountAccessoryType
+- [x] MissionClearConditionTypeCountAccessory
 - [ ] MissionClearConditionTypeCountAccessoryLevelUp
 - [ ] MissionClearConditionTypeCountAccessoryGradeUp
 - [ ] MissionClearConditionTypeCountAccessoryRarityUp

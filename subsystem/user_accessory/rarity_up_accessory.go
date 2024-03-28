@@ -3,9 +3,11 @@ package user_accessory
 import (
 	"elichika/client"
 	"elichika/client/response"
+	"elichika/enum"
 	"elichika/generic"
 	"elichika/item"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 )
 
@@ -37,5 +39,8 @@ func RarityUpAccessory(session *userdata.Session, userAccessoryId int64) respons
 	// remove resource used
 	user_content.RemoveContent(session, masterAccessory.RarityUp.RarityUpGroup.Resource)
 	user_content.RemoveContent(session, item.Gold.Amount(masterAccessory.Rarity.RarityUpMoney))
+	// mission
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountAccessoryRarityUp, nil, nil,
+		user_mission.AddProgressHandler, int32(1))
 	return resp
 }

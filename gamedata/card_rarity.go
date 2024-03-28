@@ -9,8 +9,8 @@ import (
 
 type CardRarity struct {
 	CardRarityType int32 `xorm:"pk"`
-	// MaxLevel int32
-	PlusLevel int32
+	MaxLevel       int32
+	PlusLevel      int32
 }
 
 func loadCardRarity(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

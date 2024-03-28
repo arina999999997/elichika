@@ -7,6 +7,7 @@ import (
 	"elichika/generic"
 	"elichika/item"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 
 	"math/rand"
@@ -49,6 +50,10 @@ func LevelUpAccessory(session *userdata.Session, userAccessoryId int64,
 				userAccessory.PassiveSkill2Id = generic.NewNullable(*masterAccessory.Grade[userAccessory.Grade].PassiveSkill2MasterId)
 			}
 			resp.DoPowerUp.DoGradeUp = true
+
+			// mission tracking
+			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountAccessoryGradeUp, nil, nil,
+				user_mission.AddProgressHandler, int32(1))
 		} else {
 			expGain += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].PlusExp
 			moneyUsed += masterPowerUpAccessory.Rarity.LevelUp[powerUpAccessory.Level].GameMoney
@@ -112,5 +117,9 @@ func LevelUpAccessory(session *userdata.Session, userAccessoryId int64,
 	}
 	UpdateUserAccessory(session, userAccessory)
 	user_content.RemoveContent(session, item.Gold.Amount(moneyUsed))
+
+	// mission
+	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountAccessoryLevelUp, nil, nil,
+		user_mission.AddProgressHandler, int32(1))
 	return resp
 }

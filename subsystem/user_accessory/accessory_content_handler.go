@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/user_content"
+	"elichika/subsystem/user_mission"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -38,6 +39,10 @@ func accessoryContentHandler(session *userdata.Session, content *client.Content)
 			accessory.PassiveSkill2Id = generic.NewNullable(*masterAccessory.Grade[0].PassiveSkill2MasterId)
 		}
 		UpdateUserAccessory(session, accessory)
+
+		// mission
+		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountAccessory, nil, nil,
+			user_mission.AddProgressHandler, int32(1))
 	}
 	return false
 }
