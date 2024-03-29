@@ -12,15 +12,11 @@ import (
 )
 
 func randomKey() []byte {
-	if *config.Conf.UseAuthenticationKeys {
-		// random 32 bytes
-		b := make([]byte, 32)
-		_, err := rand.Read(b)
-		utils.CheckErr(err)
-		return b
-	} else {
-		return []byte(config.DefaultSessionKey)
-	}
+	// random 32 bytes
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	utils.CheckErr(err)
+	return b
 }
 
 // load the auth from database, or generate new one
@@ -56,18 +52,13 @@ func (session *Session) GenerateNewAuthorizationKey() {
 }
 
 func (session *Session) AuthorizationKey() []byte {
-	if *config.Conf.UseAuthenticationKeys {
-		return session.AuthenticationData.AuthorizationKey
-	} else {
-		return []byte(config.DefaultSessionKey)
+	if session == nil {
+		return randomKey()
 	}
+	return session.AuthenticationData.AuthorizationKey
 }
 func (session *Session) SessionKey() []byte {
-	if *config.Conf.UseAuthenticationKeys {
-		return session.AuthenticationData.SessionKey
-	} else {
-		return []byte(config.DefaultSessionKey)
-	}
+	return session.AuthenticationData.SessionKey
 }
 
 func (session *Session) EncodedAuthorizationKey(mask64 string) string {

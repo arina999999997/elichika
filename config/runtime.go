@@ -10,30 +10,28 @@ import (
 )
 
 type RuntimeConfig struct {
-	CdnServer             *string `json:"cdn_server"`
-	ServerAddress         *string `json:"server_address"`
-	TapBondGain           *int32  `json:"tap_bond_gain"`
-	AutoJudgeType         *int32  `json:"auto_judge_type"`
-	Tutorial              *bool   `json:"tutorial"`                // whether to turn on tutorial when starting a new account
-	LoginBonusSecond      *int    `json:"login_bonus_second"`      // the second from mid-night till login bonus
-	TimeZone              *string `json:"timezone"`                // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-	DefaultContentAmount  *int32  `json:"default_content_amount"`  // the amount of items to give an user if they don't have that item
-	UseAuthenticationKeys *bool   `json:"use_authentication_keys"` // whether to give each user unique authentication/session keys, or use the default key
-	MissionMultiplier     *int32  `json:"mission_multiplier"`      // multiply the progress of missions. Only work for do "x" of things, not for "get x different thing or reach x level"
+	CdnServer            *string `json:"cdn_server"`
+	ServerAddress        *string `json:"server_address"`
+	TapBondGain          *int32  `json:"tap_bond_gain"`
+	AutoJudgeType        *int32  `json:"auto_judge_type"`
+	Tutorial             *bool   `json:"tutorial"`               // whether to turn on tutorial when starting a new account
+	LoginBonusSecond     *int    `json:"login_bonus_second"`     // the second from mid-night till login bonus
+	TimeZone             *string `json:"timezone"`               // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	DefaultContentAmount *int32  `json:"default_content_amount"` // the amount of items to give an user if they don't have that item
+	MissionMultiplier    *int32  `json:"mission_multiplier"`     // multiply the progress of missions. Only work for do "x" of things, not for "get x different thing or reach x level"
 }
 
 func defaultConfigs() *RuntimeConfig {
 	configs := RuntimeConfig{
-		CdnServer:             new(string), // self-hosted
-		ServerAddress:         new(string),
-		TapBondGain:           new(int32),
-		AutoJudgeType:         new(int32),
-		Tutorial:              new(bool),
-		LoginBonusSecond:      new(int),
-		TimeZone:              new(string),
-		DefaultContentAmount:  new(int32),
-		UseAuthenticationKeys: new(bool),
-		MissionMultiplier:     new(int32),
+		CdnServer:            new(string), // self-hosted
+		ServerAddress:        new(string),
+		TapBondGain:          new(int32),
+		AutoJudgeType:        new(int32),
+		Tutorial:             new(bool),
+		LoginBonusSecond:     new(int),
+		TimeZone:             new(string),
+		DefaultContentAmount: new(int32),
+		MissionMultiplier:    new(int32),
 	}
 	*configs.CdnServer = "https://llsifas.catfolk.party/static/"
 	*configs.ServerAddress = "0.0.0.0:8080"
@@ -43,7 +41,6 @@ func defaultConfigs() *RuntimeConfig {
 	*configs.LoginBonusSecond = enum.HourSecondCount * 4
 	*configs.TimeZone = "Asia/Tokyo"
 	*configs.DefaultContentAmount = 10000000
-	*configs.UseAuthenticationKeys = false
 	*configs.MissionMultiplier = 1
 	return &configs
 }

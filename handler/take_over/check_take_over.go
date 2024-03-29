@@ -28,6 +28,8 @@ Use to create new account:
 If the user Id is new, then a new account will be created.
 - The password entered will be the login password.
 - User can user the datalink function to change the password as long as they have access to the account.
+
+Special behavior when user_id
 */
 func checkTakeOver(ctx *gin.Context) {
 	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
@@ -45,6 +47,9 @@ func checkTakeOver(ctx *gin.Context) {
 		goto FINISH_RESPONSE
 	}
 	linkedUserId = int32(_linkedUserId)
+	if linkedUserId < -1 {
+		panic("user_id can't be negative except for the recovery ones")
+	}
 
 	currentSession = userdata.GetSession(ctx, req.UserId)
 	defer currentSession.Close()
@@ -52,7 +57,7 @@ func checkTakeOver(ctx *gin.Context) {
 	defer linkedSession.Close()
 
 	if currentSession != nil { // has current session, fill in current user
-		resp.CurrentData.UserId = int32(currentSession.UserId)
+		resp.CurrentData.UserId = currentSession.UserId
 		resp.CurrentData.LastLoginAt = currentSession.UserStatus.LastLoginAt
 		resp.CurrentData.SnsCoin = currentSession.UserStatus.FreeSnsCoin +
 			currentSession.UserStatus.AppleSnsCoin + currentSession.UserStatus.GoogleSnsCoin
@@ -62,7 +67,7 @@ func checkTakeOver(ctx *gin.Context) {
 			resp.IsNotTakeOver = true
 			goto FINISH_RESPONSE
 		}
-		resp.LinkedData.UserId = int32(linkedSession.UserId)
+		resp.LinkedData.UserId = linkedSession.UserId
 		// resp.LinkedData.AuthorizationKey = user_authentication.LoginSessionKey(nil, req.Mask)
 		resp.LinkedData.AuthorizationKey = linkedSession.EncodedAuthorizationKey(req.Mask)
 		resp.LinkedData.Name = linkedSession.UserStatus.Name
@@ -72,14 +77,21 @@ func checkTakeOver(ctx *gin.Context) {
 		resp.LinkedData.TermsOfUseVersion = linkedSession.UserStatus.TermsOfUseVersion
 
 	} else { // user doesn't exist, but we won't create an account until setTakeOver is called
-		resp.LinkedData.UserId = int32(linkedUserId)
+		resp.LinkedData.UserId = linkedUserId
 		// resp.LinkedData.AuthorizationKey = user_authentication.LoginSessionKey(nil, req.Mask)
 		// resp.LinkedData.AuthorizationKey = linkedSession.EncodedAuthorizationKey(req.Mask)
 		// resp.LinkedData.AuthorizationKey = ""
-		resp.LinkedData.Name.DotUnderText = "Newcomer"
-		resp.LinkedData.LastLoginAt = time.Now().Unix()
-		resp.LinkedData.SnsCoin = 100000
-		resp.LinkedData.TermsOfUseVersion = 4
+		if linkedUserId == -1 {
+			resp.LinkedData.Name.DotUnderText = "Recovery"
+			resp.LinkedData.LastLoginAt = time.Now().Unix()
+			resp.LinkedData.SnsCoin = 0
+			resp.LinkedData.TermsOfUseVersion = 4
+		} else {
+			resp.LinkedData.Name.DotUnderText = "Newcomer"
+			resp.LinkedData.LastLoginAt = time.Now().Unix()
+			resp.LinkedData.SnsCoin = 100000
+			resp.LinkedData.TermsOfUseVersion = 4
+		}
 	}
 
 FINISH_RESPONSE:
