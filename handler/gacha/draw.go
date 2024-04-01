@@ -20,9 +20,7 @@ func draw(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseGacha {
 		session.UserStatus.TutorialPhase = enum.TutorialPhaseFinal
@@ -31,7 +29,6 @@ func draw(ctx *gin.Context) {
 	ctx.Set("session", session)
 	gacha, resultCards := user_gacha.HandleGacha(ctx, req)
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.DrawGachaResponse{
 		Gacha:         gacha,
 		ResultCards:   resultCards,

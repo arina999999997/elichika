@@ -22,16 +22,13 @@ func fetchSubscriptionPass(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	subscriptionStatus := user_subscription_status.GetUserSubsriptionStatus(session, req.SubscriptionMasterId)
 
 	// subscriptionStatus.RenewalCount++
 	// subscriptionStatus.ContinueCount++
 	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
-	session.Finalize()
 
 	common.JsonResponse(ctx, response.FetchSubscriptionPassResponse{
 		BeforeContinueCount: generic.NewNullable(subscriptionStatus.RenewalCount),

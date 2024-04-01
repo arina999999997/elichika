@@ -18,9 +18,7 @@ func setProfile(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	if req.Name.HasValue {
 		session.UserStatus.Name.DotUnderText = req.Name.Value
@@ -35,7 +33,6 @@ func setProfile(ctx *gin.Context) {
 		session.UserStatus.DeviceToken = req.DeviceToken.Value
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

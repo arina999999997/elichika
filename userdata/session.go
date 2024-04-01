@@ -48,6 +48,8 @@ type Session struct {
 	SendMissionDetail bool
 
 	AuthenticationData database.UserAuthentication
+
+	Finalized bool
 }
 
 func (session *Session) NextUniqueId() int64 {
@@ -56,10 +58,14 @@ func (session *Session) NextUniqueId() int64 {
 	return result
 }
 
-// Push update into the db and create the diff
-// The actual response depend on the API, but they often contain the diff somewhere
-// The mainKey is the key to the diff
+// Commit changes into the db
+// Calling multiple time is fine as it allow for some specific use case
+// Note that calling Finalize again does nothing, after calling it once, the session can no longer be used to write or read
 func (session *Session) Finalize() {
+	if (session == nil) || session.Finalized {
+		return
+	}
+	session.Finalized = true
 	var err error
 	if session.SessionType == SessionTypeLogin {
 		// if login then we only need to update a thing

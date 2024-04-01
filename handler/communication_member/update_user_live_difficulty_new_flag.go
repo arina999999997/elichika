@@ -23,9 +23,7 @@ func updateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	liveDifficultyRecords := user_live_difficulty.GetAllLiveDifficulties(session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
@@ -48,7 +46,6 @@ func updateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

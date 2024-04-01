@@ -12,13 +12,10 @@ import (
 
 func phaseEnd(ctx *gin.Context) {
 	// there's no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	user_tutorial.PhaseEnd(session)
 
-	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

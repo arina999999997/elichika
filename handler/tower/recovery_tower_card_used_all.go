@@ -19,9 +19,7 @@ func recoveryTowerCardUsedAll(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	resp := response.RecoveryTowerCardUsedResponse{
 		TowerCardUsedCountRows: user_tower.GetUserTowerCardUsedList(session, req.TowerId),
@@ -33,7 +31,6 @@ func recoveryTowerCardUsedAll(ctx *gin.Context) {
 		user_tower.UpdateUserTowerCardUsed(session, req.TowerId, resp.TowerCardUsedCountRows.Slice[i])
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 }
 

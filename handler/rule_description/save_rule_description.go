@@ -20,15 +20,12 @@ func saveRuleDescription(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// response with user model
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	for _, ruleDescriptionId := range req.RuleDescriptionMasterIds.Slice {
 		user_rule_description.UpdateUserRuleDescription(session, ruleDescriptionId)
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

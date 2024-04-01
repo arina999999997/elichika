@@ -13,15 +13,12 @@ import (
 
 func recoverLpSubscription(ctx *gin.Context) {
 	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	user_status.AddUserLp(session, session.Gamedata.UserRank[session.UserStatus.Rank].MaxLp)
 	session.UserStatus.LivePointSubscriptionRecoveryDailyCount = 1 // 1 mean used
 	session.UserStatus.LivePointSubscriptionRecoveryDailyResetAt = utils.StartOfNextDay(session.Time).Unix()
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

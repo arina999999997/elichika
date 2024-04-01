@@ -4,7 +4,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/userdata"
+	// "elichika/userdata"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,9 +13,7 @@ import (
 
 func fetchMemberGuildSelect(ctx *gin.Context) {
 	// There is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	// session := ctx.MustGet("session").(*userdata.Session)
 
 	// this just work
 	resp := response.FetchMemberGuildSelectResponse{}

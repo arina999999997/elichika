@@ -21,9 +21,7 @@ func recoveryTowerCardUsed(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	for _, cardMasterId := range req.CardMasterIds.Slice {
 		cardUsedCount := user_tower.GetUserTowerCardUsed(session, req.TowerId, cardMasterId)

@@ -12,12 +12,9 @@ import (
 func fetchShopSnsCoin(ctx *gin.Context) {
 	// there is no request body
 	// special behaviour to add 10000 gems if someone try to buy gem
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 	session.UserModel.UserStatus.FreeSnsCoin += 10000
 
-	session.Finalize()
 	common.JsonResponse(ctx, &response.FetchShopSnsCoinResponse{})
 }
 

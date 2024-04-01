@@ -19,6 +19,7 @@ var (
 // take no params, return a new card
 func GuaranteedNewCard(ctx *gin.Context, gachaGuarantee *serverdata.GachaGuarantee) int32 {
 	cardPool := ctx.MustGet("gacha_card_pool").([]serverdata.GachaCard)
+
 	session := ctx.MustGet("session").(*userdata.Session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	newCards := []serverdata.GachaCard{}

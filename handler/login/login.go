@@ -9,9 +9,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_account"
 	"elichika/subsystem/user_live"
-	// "elichika/subsystem/user_authentication"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,15 +24,7 @@ func login(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
-
-	if session == nil {
-		user_account.CreateNewAccount(ctx, userId, "")
-		session = userdata.GetSession(ctx, userId)
-		defer session.Close()
-	}
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	ctx.Set("sign_key", session.AuthorizationKey())
 	if session.AuthenticationData.AuthorizationCount+1 != req.AuthCount { // wrong authcount
@@ -46,7 +36,7 @@ func login(ctx *gin.Context) {
 		session.AuthenticationData.AuthorizationCount++
 	}
 
-	fmt.Println("User logins: ", userId)
+	// fmt.Println("User logins: ", userId)
 
 	resp := session.Login()
 	resp.SessionKey = session.EncodedSessionKey(req.Mask)
@@ -66,13 +56,12 @@ func login(ctx *gin.Context) {
 			}
 		}
 	}
-	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 
 	{
 		backupText, err := json.Marshal(resp)
 		utils.CheckErr(err)
-		utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", userId, ".json"), string(backupText))
+		utils.WriteAllText(fmt.Sprint(config.UserDataBackupPath, "login_", session.UserId, ".json"), string(backupText))
 	}
 }
 

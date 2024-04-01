@@ -11,13 +11,8 @@ import (
 )
 
 func updateIsNew(ctx *gin.Context) {
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	user_accessory.ClearIsNewFlags(ctx.MustGet("session").(*userdata.Session))
 
-	user_accessory.ClearIsNewFlags(session)
-
-	session.Finalize()
 	common.JsonResponse(ctx, &response.EmptyResponse{})
 }
 

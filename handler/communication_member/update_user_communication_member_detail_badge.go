@@ -20,9 +20,7 @@ func updateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	detailBadge := user_member.GetUserCommunicationMemberDetailBadge(session, req.MemberMasterId)
 	switch req.CommunicationMemberDetailBadgeType {
@@ -43,7 +41,6 @@ func updateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	}
 	user_member.UpdateUserCommunicationMemberDetailBadge(session, detailBadge)
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

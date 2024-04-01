@@ -20,9 +20,7 @@ func fetchLiveDeckSelect(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	common.JsonResponse(ctx, response.FetchLiveDeckSelectResponse{
 		LastPlayLiveDifficultyDeck: user_live_difficulty.GetLastPlayLiveDifficultyDeck(session, req.LiveDifficultyId),

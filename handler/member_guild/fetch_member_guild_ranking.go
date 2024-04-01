@@ -15,9 +15,7 @@ import (
 
 func fetchMemberGuildRanking(ctx *gin.Context) {
 	// There is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	resp := response.FetchMemberGuildRankingResponse{}
 	resp.MemberGuildRanking.ViewYear = 2024

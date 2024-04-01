@@ -21,16 +21,13 @@ func addAccessoryBoxLimit(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	req.Count *= 10 // count is the amount of time it is performed, not the amount of slot / gem used
 
 	user_status.AddUserAccessoryLimit(session, req.Count)
 	user_content.RemoveContent(session, item.StarGem.Amount(req.Count))
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

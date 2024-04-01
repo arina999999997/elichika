@@ -21,9 +21,7 @@ func recoverLp(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	// TODO(hardcode): technically this is defined in m_recovery_lp
 	// and SnsCoinForLpRecover in m_constant
@@ -39,7 +37,6 @@ func recoverLp(ctx *gin.Context) {
 		user_content.RemoveContent(session, item.StarGem.Amount(req.Count.Value*10))
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

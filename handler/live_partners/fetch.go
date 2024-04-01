@@ -19,12 +19,10 @@ func fetch(ctx *gin.Context) {
 	resp := response.FetchLiveParntersResponse{}
 
 	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	partnerUserIds := []int32{} // TODO(friend): Fill this with some users
-	partnerUserIds = append(partnerUserIds, userId)
+	partnerUserIds = append(partnerUserIds, session.UserId)
 
 	for _, partnerId := range partnerUserIds {
 		resp.PartnerSelectState.LivePartners.Append(user_live_partner.GetOtherUserLivePartner(session, partnerId))

@@ -12,9 +12,8 @@ import (
 
 func fetch(ctx *gin.Context) {
 	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+
+	session := ctx.MustGet("session").(*userdata.Session)
 	// TODO(database): Have a common function to sync present state maybe
 	resp := response.FetchPresentResponse{
 		PresentItems:        user_present.FetchPresentItems(session),

@@ -19,13 +19,10 @@ func levelUpCard(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	user_training_tree.LevelUpCard(session, req.CardMasterId, req.AdditionalLevel)
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.LevelUpCardResponse{
 		UserModelDiff: &session.UserModel,
 	})

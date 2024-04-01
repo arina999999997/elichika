@@ -20,15 +20,12 @@ func updatePassWord(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	user_authentication.SetPassWord(session, req.PassWord)
-	session.Finalize()
 
 	common.JsonResponse(ctx, &response.UpdatePassWordResponse{
-		TakeOverId: fmt.Sprint(userId),
+		TakeOverId: fmt.Sprint(session.UserId),
 	})
 }
 

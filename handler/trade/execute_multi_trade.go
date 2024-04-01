@@ -19,9 +19,7 @@ func executeMultiTrade(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	sentToPresentBox := false
 	for _, trade := range req.TradeOrders.Slice {
@@ -30,6 +28,7 @@ func executeMultiTrade(ctx *gin.Context) {
 		}
 	}
 	sentToPresentBox = sentToPresentBox || (len(session.UnreceivedContent) > 0)
+
 	session.Finalize()
 	common.JsonResponse(ctx, response.ExecuteTradeResponse{
 		Trades:           user_trade.GetTrades(session, session.Gamedata.Trade[session.Gamedata.TradeProduct[req.TradeOrders.Slice[0].ProductId].TradeId].TradeType),

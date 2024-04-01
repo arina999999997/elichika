@@ -3,6 +3,7 @@ package common
 import (
 	"elichika/encrypt"
 	"elichika/locale"
+	"elichika/userdata"
 	"elichika/utils"
 
 	"encoding/json"
@@ -24,9 +25,11 @@ func SignResp(ctx *gin.Context, body string, key []byte) (resp string) {
 }
 
 func JsonResponse(ctx *gin.Context, resp any) {
+	session := ctx.MustGet("session").(*userdata.Session)
+	if session != nil {
+		session.Finalize() // calling this multiple time is fine, sometime we want some result that is only obtained after finalizing
+	}
 	signBody, err := json.Marshal(resp)
-	// fmt.Println(string(signBody))
-	// fmt.Println(ctx.MustGet("sign_key").([]byte))
 	utils.CheckErr(err)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, SignResp(ctx, string(signBody), ctx.MustGet("sign_key").([]byte)))
@@ -43,6 +46,10 @@ func SignRespWithRespnoseType(ctx *gin.Context, body string, key []byte, rType i
 }
 
 func JsonResponseWithRespnoseType(ctx *gin.Context, resp any, rType int32) {
+	session := ctx.MustGet("session").(*userdata.Session)
+	if session != nil {
+		session.Finalize() // calling this multiple time is fine
+	}
 	signBody, err := json.Marshal(resp)
 	// fmt.Println(string(signBody))
 	// fmt.Println(ctx.MustGet("sign_key").([]byte))

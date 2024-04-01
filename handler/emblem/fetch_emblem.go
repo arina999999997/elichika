@@ -12,9 +12,7 @@ import (
 
 func fetchEmblem(ctx *gin.Context) {
 	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	// this is official server behavior:
 	// populate UserEmblemByEmblemId like login, then mirror that data for EmblemIsNewDataList
@@ -33,7 +31,6 @@ func fetchEmblem(ctx *gin.Context) {
 		}
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 }
 

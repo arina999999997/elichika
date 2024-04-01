@@ -12,9 +12,8 @@ import (
 
 func updateSubscription(ctx *gin.Context) {
 	// there's no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	// TODO(subscription): Implement subscription logic better
 	subscriptionStatus := user_subscription_status.GetUserSubsriptionStatus(session, 13001)
@@ -23,7 +22,6 @@ func updateSubscription(ctx *gin.Context) {
 	subscriptionStatus.PlatformExpireDate = subscriptionStatus.ExpireDate
 	session.UserModel.UserSubscriptionStatusById.Set(subscriptionStatus.SubscriptionMasterId, subscriptionStatus)
 
-	session.Finalize()
 	common.JsonResponse(ctx, &response.UpdateSubscriptionResponse{
 		UserModel: &session.UserModel,
 	})

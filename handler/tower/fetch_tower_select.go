@@ -11,9 +11,7 @@ import (
 
 func fetchTowerSelect(ctx *gin.Context) {
 	// there's no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	// no need to return anything, the client uses database for this
 	// probably used to add DLP without having to add anything to database

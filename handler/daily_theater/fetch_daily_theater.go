@@ -21,16 +21,12 @@ func fetchDailyTheater(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	if !req.DailyTheaterId.HasValue { // latest item
 		req.DailyTheaterId = generic.NewNullable(int32(1))
 	}
 	// fetch and track the item
-
-	session.Finalize()
 
 	common.JsonResponse(ctx, response.FetchDailyTheaterResponse{
 		DailyTheaterDetail: client.DailyTheaterDetail{

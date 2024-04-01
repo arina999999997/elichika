@@ -24,9 +24,7 @@ func finishUserStoryMain(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	if req.IsAutoMode.HasValue {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
@@ -47,7 +45,6 @@ func finishUserStoryMain(ctx *gin.Context) {
 		user_story_main.UpdateUserStoryMainSelected(session, req.CellId, req.MemberId.Value)
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 }
 

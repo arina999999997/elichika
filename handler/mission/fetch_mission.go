@@ -11,13 +11,10 @@ import (
 
 func fetchMission(ctx *gin.Context) {
 	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	resp := user_mission.FetchMission(session)
 
-	session.Finalize() // fetch mission can trigger daily/weekly mission to reset
 	common.JsonResponse(ctx, &resp)
 }
 

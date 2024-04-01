@@ -11,9 +11,8 @@ import (
 
 func resultLesson(ctx *gin.Context) {
 	// there is no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	resp := user_lesson.ResultLesson(session)
 

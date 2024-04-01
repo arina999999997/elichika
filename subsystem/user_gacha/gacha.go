@@ -62,6 +62,7 @@ func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed 
 }
 
 func HandleGacha(ctx *gin.Context, req request.DrawGachaRequest) (client.Gacha, generic.List[client.AddedGachaCardResult]) {
+
 	session := ctx.MustGet("session").(*userdata.Session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	draw := *gamedata.GachaDraw[req.GachaDrawMasterId]

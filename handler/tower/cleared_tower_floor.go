@@ -19,9 +19,7 @@ func clearedTowerFloor(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	userTower := user_tower.GetUserTower(session, req.TowerId)
 	if userTower.ClearedFloor < req.FloorNo {
@@ -32,7 +30,6 @@ func clearedTowerFloor(ctx *gin.Context) {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, &response.ClearedTowerFloorResponse{
 		UserModelDiff: &session.UserModel,
 	})

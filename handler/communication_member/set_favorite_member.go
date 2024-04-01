@@ -20,9 +20,7 @@ func setFavoriteMember(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	session.UserStatus.FavoriteMemberId = int32(req.MemberMasterId)
 	if session.UserStatus.TutorialPhase == enum.TutorialPhaseFavoriateMember {
@@ -34,7 +32,6 @@ func setFavoriteMember(ctx *gin.Context) {
 		session.UserStatus.RecommendCardMasterId = intiialSr // this is for the pop up
 	}
 
-	session.Finalize()
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

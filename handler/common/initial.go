@@ -47,15 +47,19 @@ func initial(ctx *gin.Context) {
 	err = json.Unmarshal(messages[n-1], &sign)
 	utils.CheckErr(err)
 
+	var session *userdata.Session
+	defer func() { session.Close() }()
+	// the session will always be closed this way
+	// this session will be passed downstream using ctx, any panic in handling will lead to the whole request being ignored
+	// finally, if it managed to reach the end then session.Finalize() is called
+	// session.Finalize() will be called before generating the response:
+	// - Responses should use a pointer to user model, so we can create the response object, but it will use user model after finalize
+
 	if userIdErr == nil {
-		session := userdata.GetSession(ctx, int32(userId))
-		defer session.Close()
+		session = userdata.GetSession(ctx, int32(userId))
 		if session == nil {
 			panic("session is nil, use a transfer to get a proper user id")
 		}
-		// TODO(refactor): Reuse this session for the request instead of ending it
-		// ctx.Set("session", session)
-
 		ctx.Set("sign_key", session.SessionKey())
 		// signAuth := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])), session.AuthorizationKey())
 		// signSession := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])), session.SessionKey())
@@ -81,9 +85,7 @@ func initial(ctx *gin.Context) {
 				session.AuthenticationData.CommandId++
 			}
 		}
-		session.Finalize()
 	} else { // no user id, use the start up key
-		// ctx.Set("session", nil)
 		signStartUp := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])),
 			locale.Locales[lang].StartupKey)
 		if sign != signStartUp { // incorrect start up key, reject
@@ -91,7 +93,7 @@ func initial(ctx *gin.Context) {
 			panic("wrong startup key, get the correct app version")
 		}
 	}
-
+	ctx.Set("session", session)
 	ctx.Next()
 }
 

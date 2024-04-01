@@ -12,9 +12,7 @@ import (
 
 func fetchShopSubscription(ctx *gin.Context) {
 	// there's no request body
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	resp := response.FetchShopSubscriptionResponse{}
 	// product := response.ShopBillingProduct{
@@ -36,7 +34,6 @@ func fetchShopSubscription(ctx *gin.Context) {
 
 	session.UserModel.UserSubscriptionStatusById.Set(13001, user_subscription_status.GetUserSubsriptionStatus(session, 13001))
 
-	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 }
 

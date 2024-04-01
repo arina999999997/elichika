@@ -19,12 +19,9 @@ func saveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 	user_story_main.InsertUserStoryMainPartDigestMovie(session, req.PartId)
 
-	session.Finalize()
 	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})

@@ -18,13 +18,10 @@ func cheerMemberGuild(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	resp := user_member_guild.Cheer(session, req.CheerItemAmount)
 
-	session.Finalize()
 	common.JsonResponse(ctx, &resp)
 }
 

@@ -19,16 +19,13 @@ func finishStoryLinkage(ctx *gin.Context) {
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	if req.IsAutoMode.HasValue {
 		session.UserStatus.IsAutoMode = req.IsAutoMode.Value
 	}
 	user_story_linkage.InsertUserStoryLinkage(session, req.CellId)
 
-	session.Finalize()
 	common.JsonResponse(ctx, &response.AddStoryLinkageResponse{
 		UserModelDiff: &session.UserModel,
 	})
