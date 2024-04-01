@@ -15,13 +15,11 @@ import (
 	// "net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 func startup(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.StartupRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
+	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	resp := response.StartupResponse{}

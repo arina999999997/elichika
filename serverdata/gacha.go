@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/tidwall/gjson"
 	"xorm.io/xorm"
 )
 
@@ -42,6 +41,14 @@ type ServerGacha struct {
 	// the groups (predefined) that the gacha can result in
 	GachaGroups    []int32   `xorm:"json"`
 	DrawGuarantees [][]int32 `xorm:"json"`
+}
+
+type GachaDrawSetupInfo struct {
+	Guarantees []int32 `json:"guarantees"`
+}
+type GachaSetupInfo struct {
+	GachaGroups []int32              `json:"gacha_groups"`
+	GachaDraws  []GachaDrawSetupInfo `json:"gacha_draws"`
 }
 
 func InitGacha(session *xorm.Session, args []string) {
@@ -110,27 +117,27 @@ func InsertGacha(session *xorm.Session, args []string) {
 	// insert gacha from json format, with some exceptions.
 	file := args[0]
 	gachaJsons := utils.ReadAllText(file)
+
 	gachas := []client.Gacha{}
 	err := json.Unmarshal([]byte(gachaJsons), &gachas)
 	utils.CheckErr(err)
+
+	gachaSetups := []GachaSetupInfo{}
+	err = json.Unmarshal([]byte(gachaJsons), &gachaSetups)
+	utils.CheckErr(err)
+
 	for pos, gacha := range gachas {
 		serverGacha := ServerGacha{
 			GachaMasterId:  gacha.GachaMasterId,
-			GachaGroups:    []int32{},
+			GachaGroups:    gachaSetups[pos].GachaGroups,
 			DrawGuarantees: [][]int32{},
 		}
-		bytes := []byte(gjson.Get(gachaJsons, fmt.Sprintf("%d.gacha_groups", pos)).String())
+
 		for i := range gacha.GachaDraws.Slice {
-			guarantee := []int32{}
 			// TODO(gacha): Remove this magic id and use a link or something
 			gacha.GachaDraws.Slice[i].GachaDrawMasterId = gacha.GachaMasterId*10 + int32(i)
-			bytes := []byte(gjson.Get(gachaJsons, fmt.Sprintf("%d.gacha_draws.%d.guarantees", pos, i)).String())
-			err := json.Unmarshal(bytes, &guarantee)
-			utils.CheckErr(err)
-			serverGacha.DrawGuarantees = append(serverGacha.DrawGuarantees, guarantee)
+			serverGacha.DrawGuarantees = append(serverGacha.DrawGuarantees, gachaSetups[pos].GachaDraws[i].Guarantees)
 		}
-		err := json.Unmarshal(bytes, &serverGacha.GachaGroups)
-		utils.CheckErr(err)
 		serverGacha.ClientGacha = gacha
 		_, err = session.Table("s_gacha").Insert(serverGacha)
 		utils.CheckErr(err)

@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 /*
@@ -32,9 +31,8 @@ If the user Id is new, then a new account will be created.
 Special behavior when user_id
 */
 func checkTakeOver(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.CheckTakeOverRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
+	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	resp := response.CheckTakeOverResponse{}

@@ -13,15 +13,13 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 func fetchSubscriptionPass(ctx *gin.Context) {
 	// TODO(subscription): everytime someone click on this, give them 1 month of reward because why not
 	// reward is cyclic, after the last month it come back to normal
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.FetchSubscriptionPassRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
+	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	userId := int32(ctx.GetInt("user_id"))

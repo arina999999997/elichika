@@ -23,8 +23,6 @@ func initial(ctx *gin.Context) {
 
 	defer ctx.Request.Body.Close()
 
-	ctx.Set("reqBody", string(body))
-
 	lang, _ := ctx.GetQuery("l")
 	if lang == "" {
 		lang = "ja"
@@ -42,10 +40,13 @@ func initial(ctx *gin.Context) {
 	messages := []json.RawMessage{}
 	err = json.Unmarshal(body, &messages)
 	utils.CheckErr(err)
+
 	n := len(messages)
+	ctx.Set("reqBody", &messages[n-2])
 	sign := ""
 	err = json.Unmarshal(messages[n-1], &sign)
 	utils.CheckErr(err)
+
 	if userIdErr == nil {
 		session := userdata.GetSession(ctx, int32(userId))
 		defer session.Close()
@@ -82,6 +83,7 @@ func initial(ctx *gin.Context) {
 		}
 		session.Finalize()
 	} else { // no user id, use the start up key
+		// ctx.Set("session", nil)
 		signStartUp := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])),
 			locale.Locales[lang].StartupKey)
 		if sign != signStartUp { // incorrect start up key, reject

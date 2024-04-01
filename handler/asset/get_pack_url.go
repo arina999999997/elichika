@@ -12,13 +12,11 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 func getPackUrl(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.GetPackUrlRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
+	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	// these are hardcoded links to the original asset version

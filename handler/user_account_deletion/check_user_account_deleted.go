@@ -11,13 +11,11 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 func checkUserAccountDeleted(ctx *gin.Context) {
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UserAccountDeletionRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
+	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	// response with an empty response, or more precisely UserAccountDeletionRecoverableExceptionResponse if the user exist

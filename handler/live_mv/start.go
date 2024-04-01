@@ -12,9 +12,9 @@ import (
 func start(ctx *gin.Context) {
 	// we don't really need the request
 	// maybe it's once needed or it's only used for gathering data
-	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	// reqBody := ctx.Get("reqBody").(json.RawMessage)
 	// req := request.StartLiveMvRequest{}
-	// err := json.Unmarshal([]byte(reqBody), &req)
+	// err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	// utils.CheckErr(err)
 
 	userId := int32(ctx.GetInt("user_id"))

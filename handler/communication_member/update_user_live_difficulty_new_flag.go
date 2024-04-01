@@ -13,16 +13,14 @@ import (
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 func updateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 	// mark all the song that this member is featured in as not new
 	// only choose from the song user has access to, so no bond song and story locked songs
 	// this use the same request as the above, must have been coded around the same time
-	reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
 	req := request.UpdateMemberDetailBadgeRequest{}
-	err := json.Unmarshal([]byte(reqBody), &req)
+	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	userId := int32(ctx.GetInt("user_id"))

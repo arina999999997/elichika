@@ -10,9 +10,9 @@ import (
 
 // TODO(push_notification): Support this once we figure push notifications out
 func updatePushNotificationSettings(ctx *gin.Context) {
-	// reqBody := gjson.Parse(ctx.GetString("reqBody")).Array()[0].String()
+	// reqBody := ctx.Get("reqBody").(json.RawMessage)
 	// req := request.PushNotificationSettingsRequest{}
-	// err := json.Unmarshal([]byte(reqBody), &req)
+	// err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	// utils.CheckErr(err)
 
 	common.JsonResponse(ctx, response.EmptyResponse{})

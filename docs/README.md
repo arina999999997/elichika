@@ -57,7 +57,7 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [x] User can join specific member channels.
     - [x] Cheer system drop items correctly.
     - [x] Megaphones are not dropped from trainings.
-    - [ ] No rakning or tracking of points for now.
+    - [ ] No ranking or tracking of points for now.
 - [x] Present box
     - [x] Working present box.
     - [x] All items that are sent to present box should be there, but there might be mistakes.
