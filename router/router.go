@@ -40,6 +40,8 @@ func Router(r *gin.Engine) {
 	}
 
 	{
+		r.GET("/config_editor", webui.ConfigEditor)
+		r.POST("/update_config", webui.UpdateConfig)
 		webapi := r.Group("/webui", webui.Common)
 		r.Static("/webui", "webui")
 		// the web ui cover for functionality that can't be done by the client or is currently missing

@@ -19,34 +19,6 @@ curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/ins
 
 Or clone the respository and build manually, look at the scripts for the steps.
 
-## Setting up config file
-Use ``config.json`` to change some runtime parameters. If the file is not present, you can run elichika to generate it.
-
-If a field is present in ``config.json``, it will be used, otherwise, it will take the default config's value.
-
-The fields are as follow (might not be up to date, you can check the code to see what field actually does what):
-
-- ``"cdn_server"`` 
-    - The server for client to download assets.
-    - Default to  https://llsifas.catfolk.party/static/ (special thanks to sarah for hosting it).
-    - We can host our own CDN with `elichika` by put the relevant files in `elichika/static`.
-        - You should look into this if you want to further develop the game/server, as doing so might require redownloading things a lot.
-- ``"server_address"``
-    - The address to host the server at.
-    - Default to ``0.0.0.0:8080`` (server listen at port 8080 on all interfaces).
-- ``"tap_bond_gain"``
-    - The amount of bond gained by tapping an idol.
-    - Default to `20` like the original, but we can change it to a big value to skip farming bond.
-- ``"auto_judge_type"``
-    - The autoplay judgement type.
-    - Default to `20` (great) like the original.
-    - Some other possible value include `30` for perfect and `14` for good.
-- ``"mission_multiplier"``
-    - Can be used to complete mission fasters.
-    - Default to `1`, so no bonus.
-    - This only works for certain type of goals, some goals are tracked using other method and this won't work.
-    - Do not set to too large or you might have overflow problems.
-
 ## Running the server
 After setting up the server, we need to run it. Simply navigate to `elichika`'s directory and run it:
 
@@ -68,8 +40,9 @@ You can update the server by running:
 git pull && go build
 ```
 
-Note that this might introduce problems because the new server might not be compatible with old database format, so you might lose progress.
-Future versions will try to keep things compatible or have a safe way to transfer. Though, if you know what you're doing, you can still transfer things over anyway.
+As of current version, you should be able to keep your progress while doing this, so it's recommended to do it often so you get access to newly implemented features.
+
+If you absolutely don't want to lose your data, you can always backup ``userdata.db`` and revert to an old version if necessary.
 
 ## Playing the game
 With the server running, and the client network setup correctly, simply open the game and play.
@@ -82,10 +55,13 @@ You can use the account transfer system to switch / create account. Select ``tra
 ![Transfer system](docs/images/transfer_1.png)
 
 Enter your user / player id and a password:
+
 - UserId is an non-negative integer with at most 9 digits.
 - If user is in the database, password will be checked against the stored password.
 - Otherwise a new account with that player id and password.
     - You can also leave the password empty.
+    - If you are not running the server yourself, it's highly recommended that you setup a password, because other user can take over your account if they know your user id.
+    - Passwords are securely stored with bcrypt.
 
 ![Set the id and password](docs/images/transfer_2.png)
 
@@ -104,14 +80,43 @@ You can use both the Japanese and Global client for the same server (and the sam
 
 However, it's recommended to not play one account (user id) in both Japanese and Global client, because some contents are exclusive to only 1 server, and will cause the client to freeze.
 
-### Multiplayer
-The current implementation doesn't explicitly support multiplayer:
+### Multi devices
+You can use multiple devices to play the game from one server, if you have set things up correctly.
 
-- More precisely, it doesn't explicitly support 2 clients connecting at once.
-- If something happens to works, it works.
-- If something fails, it's the expected outcome.
+Playing the game on another device while the current one is running will cause the current one to disconnect, preventing any error being done to your user data.
 
-So you can switch accounts and things should work, but logging in with multiple clients might result in problems.
+### Setting up runtime configs
+There are some configuration you can change to make the server more suitable to you.
+
+With the server running, you can use the web config editor to change runtime configs. Some changes will take effect instantly, while some will require you to restart the server.
+
+- To access the editor, navigate to `<server_address>/config_editor` using a web browser (from the device you are playing/running the server on).
+
+    - By default, this is http://127.0.0.1:8080/config_editor
+- The config is stored in ``config.json``, so you can edit it directly if you want to.
+- Howerver, it's recommended to use the web config editor as it explains some stuff and has checks to make sure nothing will go wrong.
+- If your config has problems that make it so you can't run the server, you can always delete ``config.json`` to reset to the default one.
+
+More details explanation of some config options:
+
+- Server's address:
+
+    - The address to host the server at.
+    - Default to ``0.0.0.0:8080`` (server listen at port 8080 on all interfaces).
+
+- CDN server's address:
+
+    - The server for clients to download assets.
+    - Default to  https://llsifas.catfolk.party/static/ (special thanks to sarah for hosting it).
+    - We can host our own CDN with `elichika` by put the relevant files in `elichika/static`.
+        - You should look into this if you want to further develop the game/server, as doing so might require redownloading things a lot.
+    
+- Default item count:
+
+    - The amount of items to give a player to start with.
+    - Default to a generous amount, but you can set it to 0 to have a more true experience.
+    - Note that you have to obtain the item in game first before you are given the "default item count" amount of that item.
+
 
 ## WebUI
 The WebUI for the sever can be located at `<server_address>/webui`.

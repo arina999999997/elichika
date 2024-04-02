@@ -16,7 +16,7 @@ import (
 // the latest login bonus that can be claimed
 func latestLoginBonusTime(timePoint time.Time) time.Time {
 	year, month, day := timePoint.Date()
-	res := time.Date(year, month, day, 0, 0, *config.Conf.LoginBonusSecond, 0, timePoint.Location())
+	res := time.Date(year, month, day, 0, 0, int(*config.Conf.LoginBonusSecond), 0, timePoint.Location())
 	if res.After(timePoint) {
 		res = res.AddDate(0, 0, -1)
 	}
