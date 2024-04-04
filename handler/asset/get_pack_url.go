@@ -27,7 +27,7 @@ func getPackUrl(ctx *gin.Context) {
 
 	resp := response.GetPackUrlResponse{}
 	for _, pack := range req.PackNames.Slice {
-		if *config.Conf.CdnServer == "http://127.0.0.1:8080/static" {
+		if *config.Conf.CdnServer != "https://llsifas.catfolk.party/static/" {
 			resp.UrlList.Append(*config.Conf.CdnServer + "/" + "assets" + "/" + pack)
 		} else {
 			resp.UrlList.Append(*config.Conf.CdnServer + "/" + cdnMasterVersion + "/" + pack)
