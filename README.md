@@ -108,7 +108,7 @@ More details explanation of some config options:
 
     - The server for clients to download assets.
     - Default to  https://llsifas.catfolk.party/static/ (special thanks to sarah for hosting it).
-    - We can host our own CDN with `elichika` by put the relevant files in `elichika/static`.
+    - We can host our own CDN with `elichika` by put the relevant files in `elichika/static/assets`.
         - You should look into this if you want to further develop the game/server, as doing so might require redownloading things a lot.
     
 - Default item count:
