@@ -9,12 +9,15 @@ import (
 	"elichika/utils"
 
 	"reflect"
+	"os"
 
 	"xorm.io/xorm"
 )
 
 // initialise the engine and add the tables that is constructed from client types
 func init() {
+	_ = os.Remove(config.UserdataPath + "-journal") // remove the dirty transactions, if any
+
 	var err error
 	Engine, err = xorm.NewEngine("sqlite", config.UserdataPath)
 	utils.CheckErr(err)

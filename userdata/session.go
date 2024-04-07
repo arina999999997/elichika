@@ -85,7 +85,14 @@ func (session *Session) Close() {
 	if session == nil {
 		return
 	}
-	session.Db.Close()
+	err := recover()
+	if err != nil {
+		session.Db.Rollback()
+		session.Db.Close()
+		panic(err)
+	} else {
+		session.Db.Close()
+	}
 }
 
 func userStatusFinalizer(session *Session) {
