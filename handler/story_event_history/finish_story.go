@@ -31,5 +31,5 @@ func finishStory(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/storyEventHistory/finishStory", finishStory)
+	router.AddHandler("/", "POST", "/storyEventHistory/finishStory", finishStory)
 }

@@ -31,5 +31,5 @@ func openMemberLovePanel(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/member/openMemberLovePanel", openMemberLovePanel)
+	router.AddHandler("/", "POST", "/member/openMemberLovePanel", openMemberLovePanel)
 }

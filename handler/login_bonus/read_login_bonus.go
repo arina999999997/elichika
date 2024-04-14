@@ -18,5 +18,5 @@ func readLoginBonus(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/loginBonus/readLoginBonus", readLoginBonus)
+	router.AddHandler("/", "POST", "/loginBonus/readLoginBonus", readLoginBonus)
 }

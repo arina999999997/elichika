@@ -29,5 +29,5 @@ func activateEmblem(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/emblem/activateEmblem", activateEmblem)
+	router.AddHandler("/", "POST", "/emblem/activateEmblem", activateEmblem)
 }

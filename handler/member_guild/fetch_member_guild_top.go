@@ -34,5 +34,5 @@ func fetchMemberGuildTop(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/memberGuild/fetchMemberGuildTop", fetchMemberGuildTop)
+	router.AddHandler("/", "POST", "/memberGuild/fetchMemberGuildTop", fetchMemberGuildTop)
 }

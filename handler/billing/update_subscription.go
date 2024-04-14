@@ -28,5 +28,5 @@ func updateSubscription(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/billing/updateSubscription", updateSubscription)
+	router.AddHandler("/", "POST", "/billing/updateSubscription", updateSubscription)
 }

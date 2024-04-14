@@ -17,5 +17,5 @@ func updateIsNew(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/accessory/updateIsNew", updateIsNew)
+	router.AddHandler("/", "POST", "/accessory/updateIsNew", updateIsNew)
 }

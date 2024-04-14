@@ -29,5 +29,5 @@ func resume(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/resume", resume)
+	router.AddHandler("/", "POST", "/live/resume", resume)
 }

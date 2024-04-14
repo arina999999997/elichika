@@ -32,5 +32,5 @@ func saveRuleDescription(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/ruleDescription/saveRuleDescription", saveRuleDescription)
+	router.AddHandler("/", "POST", "/ruleDescription/saveRuleDescription", saveRuleDescription)
 }

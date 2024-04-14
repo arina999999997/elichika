@@ -22,5 +22,5 @@ func readMemberLoveLevelUp(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/infoTrigger/readMemberLoveLevelUp", readMemberLoveLevelUp)
+	router.AddHandler("/", "POST", "/infoTrigger/readMemberLoveLevelUp", readMemberLoveLevelUp)
 }

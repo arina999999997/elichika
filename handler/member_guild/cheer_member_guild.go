@@ -26,5 +26,5 @@ func cheerMemberGuild(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/memberGuild/cheerMemberGuild", cheerMemberGuild)
+	router.AddHandler("/", "POST", "/memberGuild/cheerMemberGuild", cheerMemberGuild)
 }

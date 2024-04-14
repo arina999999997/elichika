@@ -18,5 +18,5 @@ func updatePushNotificationSettings(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/gameSettings/updatePushNotificationSettings", updatePushNotificationSettings)
+	router.AddHandler("/", "POST", "/gameSettings/updatePushNotificationSettings", updatePushNotificationSettings)
 }

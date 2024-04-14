@@ -49,5 +49,5 @@ func finishUserStoryMain(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/story/finishUserStoryMain", finishUserStoryMain)
+	router.AddHandler("/", "POST", "/story/finishUserStoryMain", finishUserStoryMain)
 }

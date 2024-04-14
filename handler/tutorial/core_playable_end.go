@@ -22,5 +22,5 @@ func corePlayableEnd(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tutorial/corePlayableEnd", corePlayableEnd)
+	router.AddHandler("/", "POST", "/tutorial/corePlayableEnd", corePlayableEnd)
 }

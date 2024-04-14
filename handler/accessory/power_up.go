@@ -26,5 +26,5 @@ func powerUp(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/accessory/powerUp", powerUp)
+	router.AddHandler("/", "POST", "/accessory/powerUp", powerUp)
 }

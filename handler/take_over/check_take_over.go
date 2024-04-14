@@ -101,5 +101,5 @@ FINISH_RESPONSE:
 }
 
 func init() {
-	router.AddHandler("/takeOver/checkTakeOver", checkTakeOver)
+	router.AddHandler("/", "POST", "/takeOver/checkTakeOver", checkTakeOver)
 }

@@ -29,5 +29,5 @@ func tutorialSkip(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tutorial/tutorialSkip", tutorialSkip)
+	router.AddHandler("/", "POST", "/tutorial/tutorialSkip", tutorialSkip)
 }

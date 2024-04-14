@@ -63,5 +63,5 @@ func fetchTowerTop(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tower/fetchTowerTop", fetchTowerTop)
+	router.AddHandler("/", "POST", "/tower/fetchTowerTop", fetchTowerTop)
 }

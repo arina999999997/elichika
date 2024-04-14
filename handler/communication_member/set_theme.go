@@ -34,5 +34,5 @@ func setTheme(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/communicationMember/setTheme", setTheme)
+	router.AddHandler("/", "POST", "/communicationMember/setTheme", setTheme)
 }

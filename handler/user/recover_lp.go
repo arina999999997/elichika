@@ -43,5 +43,5 @@ func recoverLp(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/user/recoverLp", recoverLp)
+	router.AddHandler("/", "POST", "/user/recoverLp", recoverLp)
 }

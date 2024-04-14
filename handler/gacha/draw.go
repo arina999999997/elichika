@@ -37,5 +37,5 @@ func draw(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/gacha/draw", draw)
+	router.AddHandler("/", "POST", "/gacha/draw", draw)
 }

@@ -31,5 +31,5 @@ func saveUserNaviVoice(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/navi/saveUserNaviVoice", saveUserNaviVoice)
+	router.AddHandler("/", "POST", "/navi/saveUserNaviVoice", saveUserNaviVoice)
 }

@@ -55,5 +55,5 @@ func finishUserStoryMember(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/communicationMember/finishUserStoryMember", finishUserStoryMember)
+	router.AddHandler("/", "POST", "/communicationMember/finishUserStoryMember", finishUserStoryMember)
 }

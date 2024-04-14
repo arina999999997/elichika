@@ -28,5 +28,5 @@ func read(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/infoTrigger/read", read)
+	router.AddHandler("/", "POST", "/infoTrigger/read", read)
 }

@@ -47,5 +47,5 @@ func updateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/communicationMember/updateUserCommunicationMemberDetailBadge", updateUserCommunicationMemberDetailBadge)
+	router.AddHandler("/", "POST", "/communicationMember/updateUserCommunicationMemberDetailBadge", updateUserCommunicationMemberDetailBadge)
 }

@@ -26,5 +26,5 @@ func finish(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/finish", finish)
+	router.AddHandler("/", "POST", "/live/finish", finish)
 }

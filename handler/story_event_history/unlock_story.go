@@ -32,5 +32,5 @@ func unlockStory(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/storyEventHistory/unlockStory", unlockStory)
+	router.AddHandler("/", "POST", "/storyEventHistory/unlockStory", unlockStory)
 }

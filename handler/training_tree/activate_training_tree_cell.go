@@ -31,5 +31,5 @@ func activateTrainingTreeCell(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/trainingTree/activateTrainingTreeCell", activateTrainingTreeCell)
+	router.AddHandler("/", "POST", "/trainingTree/activateTrainingTreeCell", activateTrainingTreeCell)
 }

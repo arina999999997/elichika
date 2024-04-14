@@ -27,5 +27,5 @@ func fetchTrade(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/trade/fetchTrade", fetchTrade)
+	router.AddHandler("/", "POST", "/trade/fetchTrade", fetchTrade)
 }

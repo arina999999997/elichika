@@ -19,5 +19,5 @@ func fetchShopSnsCoin(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/shop/fetchShopSnsCoin", fetchShopSnsCoin)
+	router.AddHandler("/", "POST", "/shop/fetchShopSnsCoin", fetchShopSnsCoin)
 }

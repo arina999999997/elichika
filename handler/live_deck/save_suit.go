@@ -29,5 +29,5 @@ func saveSuit(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/liveDeck/saveSuit", saveSuit)
+	router.AddHandler("/", "POST", "/liveDeck/saveSuit", saveSuit)
 }

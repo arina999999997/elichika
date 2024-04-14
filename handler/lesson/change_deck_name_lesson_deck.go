@@ -29,5 +29,5 @@ func changeDeckNameLessonDeck(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/lesson/changeDeckNameLessonDeck", changeDeckNameLessonDeck)
+	router.AddHandler("/", "POST", "/lesson/changeDeckNameLessonDeck", changeDeckNameLessonDeck)
 }

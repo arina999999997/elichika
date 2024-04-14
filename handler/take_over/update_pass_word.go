@@ -30,5 +30,5 @@ func updatePassWord(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/takeOver/updatePassWord", updatePassWord)
+	router.AddHandler("/", "POST", "/takeOver/updatePassWord", updatePassWord)
 }

@@ -35,5 +35,5 @@ func fetch(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/loveRanking/fetch", fetch)
+	router.AddHandler("/", "POST", "/loveRanking/fetch", fetch)
 }

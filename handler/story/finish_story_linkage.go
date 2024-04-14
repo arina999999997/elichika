@@ -32,5 +32,5 @@ func finishStoryLinkage(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/story/finishStoryLinkage", finishStoryLinkage)
+	router.AddHandler("/", "POST", "/story/finishStoryLinkage", finishStoryLinkage)
 }

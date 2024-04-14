@@ -29,5 +29,5 @@ func checkUserAccountDeleted(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userAccountDeletion/checkUserAccountDeleted", checkUserAccountDeleted)
+	router.AddHandler("/", "POST", "/userAccountDeletion/checkUserAccountDeleted", checkUserAccountDeleted)
 }

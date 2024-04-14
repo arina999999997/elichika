@@ -1,0 +1,152 @@
+<html>
+
+<body onload="check_login()">
+    <div>User Id: <label id="user_id_label"></label></div>
+    <div><button onclick="logout()">Logout</button></div>
+    <div>Client language: <select id="user_locale" onchange="update_locale()">
+            <option value="en">English</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh">Chinese (simplified)</option>
+        </select></div>
+    <div><button onclick="window.location.replace('/webui/user' + window.location.search)">Return to main menu</button>
+    </div>
+    {{ .body | noescape }}
+</body>
+
+</html>
+
+<script>
+    function check_login() {
+        // if there is a session then use it
+        var session = sessionStorage.getItem("user_session_key")
+        var userId = sessionStorage.getItem("user_id")
+        if ((session != null) && (userId != null)) {
+            render_page()
+        } else {
+            // otherwise force a login, the login page will process this and then redirect back with a valid session
+            window.location.replace("/webui/user/login")
+        }
+    }
+
+    function render_page() {
+        document.getElementById("user_id_label").innerText = sessionStorage.getItem("user_id")
+        var locale = localStorage.getItem("user_locale")
+        if (locale != null) {
+            document.getElementById("user_locale").value = locale
+        } else {
+            document.getElementById("user_locale").value = "en"
+        }
+        update_locale()
+    }
+
+    function logout() {
+        sessionStorage.clear()
+        localStorage.clear()
+        window.location.replace("/webui/user")
+    }
+
+
+    function update_locale() {
+        if (localStorage.getItem("user_local") != document.getElementById("user_locale").value) {
+            localStorage.setItem("user_locale", document.getElementById("user_locale").value)
+        }
+        const url = new URL(location.href)
+        if (url.searchParams.get("l") != document.getElementById("user_locale").value) {
+            url.searchParams.set("l", document.getElementById("user_locale").value)
+            location.assign(url.search)
+        }
+    }
+
+    function clear_login_data() {
+        localStorage.removeItem("user_id")
+        localStorage.removeItem("user_password")
+        localStorage.removeItem("keep_login")
+    }
+
+    // submit the form along with the verification from local storage
+    function submit_form(formId, submitTo, isResponseFile = false) {
+        var formData
+        if (formId != null) {
+            formData = new FormData(document.getElementById(formId))
+        } else {
+            formData = new FormData()
+        }
+        formData.append("user_session_key", sessionStorage.getItem("user_session_key"))
+        formData.append("user_id", sessionStorage.getItem("user_id"))
+        var req = new XMLHttpRequest()
+        req.open("POST", submitTo)
+        if (!isResponseFile) {
+            req.send(formData)
+            req.onreadystatechange = function () {
+                if (req.readyState != 4) return
+                if (req.status == 200) {
+                    console.log(req.responseText)
+                    const resp = JSON.parse(req.responseText)
+
+                    if (resp.error != null) {
+                        clear_login_data()
+                        alert(resp.error)
+                        window.location.replace("/webui/user/login")
+                    } else {
+                        alert(resp.response)
+                    }
+                } else {
+                    // no clear response from server
+                    clear_login_data()
+                    alert("unexpected error, status: " + req.status)
+                    window.location.replace("/webui/user/login")
+                }
+            }
+        } else { // file, use this hack so there's a save dialog
+            req.responseType = 'arraybuffer'
+            req.send(formData)
+            req.onreadystatechange = function () {
+                if (req.readyState != 4) return
+                if (req.status == 200) {
+                    // https://gist.github.com/zynick/12bae6dbc76f6aacedf0
+                    var filename = "";
+                    var disposition = req.getResponseHeader('Content-Disposition');
+                    if (disposition && disposition.indexOf('attachment') !== -1) {
+                        var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                        var matches = filenameRegex.exec(disposition);
+                        if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                    }
+                    var type = req.getResponseHeader('Content-Type');
+
+                    var blob = new Blob([this.response], { type: type });
+                    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                        // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                        window.navigator.msSaveBlob(blob, filename);
+                    } else {
+                        var URL = window.URL || window.webkitURL;
+                        var downloadUrl = URL.createObjectURL(blob);
+
+                        if (filename) {
+                            // use HTML5 a[download] attribute to specify filename
+                            var a = document.createElement("a");
+                            // safari doesn't support this yet
+                            if (typeof a.download === 'undefined') {
+                                window.location = downloadUrl;
+                            } else {
+                                a.href = downloadUrl;
+                                a.download = filename;
+                                document.body.appendChild(a);
+                                a.click();
+                            }
+                        } else {
+                            window.location = downloadUrl;
+                        }
+
+                        setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+                    }
+                } else {
+                    // no clear response from server
+                    clear_login_data()
+                    alert("unexpected error, status: " + req.status)
+                    window.location.replace("/webui/user/login")
+                }
+            }
+        }
+    }
+</script>

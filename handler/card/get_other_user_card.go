@@ -28,5 +28,5 @@ func getOtherUserCard(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/card/getOtherUserCard", getOtherUserCard)
+	router.AddHandler("/", "POST", "/card/getOtherUserCard", getOtherUserCard)
 }

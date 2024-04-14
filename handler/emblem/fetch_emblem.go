@@ -35,5 +35,5 @@ func fetchEmblem(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/emblem/fetchEmblem", fetchEmblem)
+	router.AddHandler("/", "POST", "/emblem/fetchEmblem", fetchEmblem)
 }

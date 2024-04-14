@@ -22,5 +22,5 @@ func fetchMemberGuildSelect(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/memberGuild/fetchMemberGuildSelect", fetchMemberGuildSelect)
+	router.AddHandler("/", "POST", "/memberGuild/fetchMemberGuildSelect", fetchMemberGuildSelect)
 }

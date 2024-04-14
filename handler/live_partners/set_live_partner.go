@@ -27,5 +27,5 @@ func setLivePartner(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/livePartners/setLivePartner", setLivePartner)
+	router.AddHandler("/", "POST", "/livePartners/setLivePartner", setLivePartner)
 }

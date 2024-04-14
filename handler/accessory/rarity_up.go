@@ -26,5 +26,5 @@ func rarityUp(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/accessory/rarityUp", rarityUp)
+	router.AddHandler("/", "POST", "/accessory/rarityUp", rarityUp)
 }

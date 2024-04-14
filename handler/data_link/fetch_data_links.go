@@ -16,5 +16,5 @@ func fetchDataLinks(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/dataLink/fetchDataLinks", fetchDataLinks)
+	router.AddHandler("/", "POST", "/dataLink/fetchDataLinks", fetchDataLinks)
 }

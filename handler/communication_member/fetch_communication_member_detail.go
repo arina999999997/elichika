@@ -30,5 +30,5 @@ func fetchCommunicationMemberDetail(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/communicationMember/fetchCommunicationMemberDetail", fetchCommunicationMemberDetail)
+	router.AddHandler("/", "POST", "/communicationMember/fetchCommunicationMemberDetail", fetchCommunicationMemberDetail)
 }

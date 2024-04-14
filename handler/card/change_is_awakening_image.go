@@ -31,5 +31,5 @@ func changeIsAwakeningImage(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/card/changeIsAwakeningImage", changeIsAwakeningImage)
+	router.AddHandler("/", "POST", "/card/changeIsAwakeningImage", changeIsAwakeningImage)
 }

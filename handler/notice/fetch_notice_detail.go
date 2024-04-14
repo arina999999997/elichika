@@ -37,5 +37,5 @@ func fetchNoticeDetail(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/notice/fetchNoticeDetail", fetchNoticeDetail)
+	router.AddHandler("/", "POST", "/notice/fetchNoticeDetail", fetchNoticeDetail)
 }

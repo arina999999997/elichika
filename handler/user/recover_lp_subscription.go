@@ -25,5 +25,5 @@ func recoverLpSubscription(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/user/recoverLpSubscription", recoverLpSubscription)
+	router.AddHandler("/", "POST", "/user/recoverLpSubscription", recoverLpSubscription)
 }

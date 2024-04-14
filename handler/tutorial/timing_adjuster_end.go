@@ -22,5 +22,5 @@ func timingAdjusterEnd(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tutorial/timingAdjusterEnd", timingAdjusterEnd)
+	router.AddHandler("/", "POST", "/tutorial/timingAdjusterEnd", timingAdjusterEnd)
 }

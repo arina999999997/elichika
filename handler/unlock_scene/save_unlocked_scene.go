@@ -32,5 +32,5 @@ func saveUnlockedScene(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/unlockScene/saveUnlockedScene", saveUnlockedScene)
+	router.AddHandler("/", "POST", "/unlockScene/saveUnlockedScene", saveUnlockedScene)
 }

@@ -34,5 +34,5 @@ func getPackUrl(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/asset/getPackUrl", getPackUrl)
+	router.AddHandler("/", "POST", "/asset/getPackUrl", getPackUrl)
 }

@@ -29,5 +29,5 @@ func changeDeckNameLiveDeck(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/liveDeck/changeDeckNameLiveDeck", changeDeckNameLiveDeck)
+	router.AddHandler("/", "POST", "/liveDeck/changeDeckNameLiveDeck", changeDeckNameLiveDeck)
 }

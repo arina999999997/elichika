@@ -26,5 +26,5 @@ func skip(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/skip", skip)
+	router.AddHandler("/", "POST", "/live/skip", skip)
 }

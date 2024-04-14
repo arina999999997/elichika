@@ -26,7 +26,7 @@ func init() {
 	// Engine.ShowSQL(true)
 
 	AddTable("u_status", generic.UserIdWrapper[client.UserStatus]{})
-	AddTable("u_content", generic.InterfaceWithAddedKey[int](
+	AddTable("u_content", generic.InterfaceWithAddedKey[int32](
 		// user_id can't be pk because we can't mark client content as pk to fetch into map
 		// that won't be a problems once gamedata is updated
 		client.Content{},
@@ -110,7 +110,7 @@ func init() {
 
 	AddTable("u_lesson", generic.UserIdWrapper[response.LessonResultResponse]{})
 
-	AddTable("u_card_training_tree_cell", generic.InterfaceWithAddedKey[int](
+	AddTable("u_card_training_tree_cell", generic.InterfaceWithAddedKey[int32](
 		client.UserCardTrainingTreeCell{},
 		[]string{"UserId", "CardMasterId"},
 		[]reflect.StructTag{`xorm:"'user_id'"`, `xorm:"'card_master_id'"`},

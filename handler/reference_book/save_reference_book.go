@@ -29,5 +29,5 @@ func saveReferenceBook(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/referenceBook/saveReferenceBook", saveReferenceBook)
+	router.AddHandler("/", "POST", "/referenceBook/saveReferenceBook", saveReferenceBook)
 }

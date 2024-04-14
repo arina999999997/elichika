@@ -31,5 +31,5 @@ func changeFavorite(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/card/changeFavorite", changeFavorite)
+	router.AddHandler("/", "POST", "/card/changeFavorite", changeFavorite)
 }

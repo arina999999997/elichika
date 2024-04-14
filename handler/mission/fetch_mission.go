@@ -19,5 +19,5 @@ func fetchMission(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/mission/fetchMission", fetchMission)
+	router.AddHandler("/", "POST", "/mission/fetchMission", fetchMission)
 }

@@ -13,39 +13,34 @@ import (
 
 var (
 	Engine                       *xorm.Engine
-	userDataTableNameToInterface = map[string]interface{}{}
+	UserDataTableNameToInterface = map[string]interface{}{}
 )
 
 func AddTable(tableName string, structure interface{}) {
-	_, exist := userDataTableNameToInterface[tableName]
+	_, exist := UserDataTableNameToInterface[tableName]
 	if exist {
 		panic("table name already used: " + tableName)
 	}
-	userDataTableNameToInterface[tableName] = structure
+	UserDataTableNameToInterface[tableName] = structure
 }
 
-func InitTable(tableName string, structure interface{}, overwrite bool) {
-	exist, err := Engine.Table(tableName).IsTableExist(tableName)
+func InitTable(session *xorm.Session, tableName string, structure interface{}) {
+	exist, err := session.Table(tableName).IsTableExist(tableName)
 	utils.CheckErr(err)
 
 	if !exist {
 		fmt.Println("Creating new table:", tableName)
-		err = Engine.Table(tableName).CreateTable(structure)
-		utils.CheckErr(err)
-	} else {
-		if !overwrite {
-			return
-		}
-		fmt.Println("Overwrite existing table:", tableName)
-		err := Engine.DropTables(tableName)
-		utils.CheckErr(err)
-		err = Engine.Table(tableName).CreateTable(structure)
+		err = session.Table(tableName).CreateTable(structure)
 		utils.CheckErr(err)
 	}
 }
 
-func InitTables(overwrite bool) {
-	for tableName, structure := range userDataTableNameToInterface {
-		InitTable(tableName, structure, overwrite)
+func InitTables(engine *xorm.Engine) {
+	session := engine.NewSession()
+	session.Begin()
+	defer session.Close()
+	for tableName, structure := range UserDataTableNameToInterface {
+		InitTable(session, tableName, structure)
 	}
+	session.Commit()
 }

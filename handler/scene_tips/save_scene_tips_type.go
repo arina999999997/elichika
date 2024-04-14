@@ -29,5 +29,5 @@ func saveSceneTipsType(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/sceneTips/saveSceneTipsType", saveSceneTipsType)
+	router.AddHandler("/", "POST", "/sceneTips/saveSceneTipsType", saveSceneTipsType)
 }

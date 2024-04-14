@@ -22,5 +22,5 @@ func readMemberGuildSupportItemExpired(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/infoTrigger/readMemberGuildSupportItemExpired", readMemberGuildSupportItemExpired)
+	router.AddHandler("/", "POST", "/infoTrigger/readMemberGuildSupportItemExpired", readMemberGuildSupportItemExpired)
 }

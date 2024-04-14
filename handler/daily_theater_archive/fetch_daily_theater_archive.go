@@ -39,5 +39,5 @@ func fetchDailyTheaterArchive(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/dailyTheaterArchive/fetchDailyTheaterArchive", fetchDailyTheaterArchive)
+	router.AddHandler("/", "POST", "/dailyTheaterArchive/fetchDailyTheaterArchive", fetchDailyTheaterArchive)
 }

@@ -55,5 +55,5 @@ func fetchShopTop(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/shop/fetchShopTop", fetchShopTop)
+	router.AddHandler("/", "POST", "/shop/fetchShopTop", fetchShopTop)
 }

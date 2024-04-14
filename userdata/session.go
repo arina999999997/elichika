@@ -2,7 +2,6 @@ package userdata
 
 import (
 	"elichika/client"
-	"elichika/client/response"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/userdata/database"
@@ -22,6 +21,7 @@ const (
 	SessionTypeGameplay      = 0
 	SessionTypeLogin         = 1
 	SessionTypeImportAccount = 2
+	SessionTypeDirectDbWrite = 3
 )
 
 type Session struct {
@@ -67,13 +67,15 @@ func (session *Session) Finalize() {
 	}
 	session.Finalized = true
 	var err error
-	if session.SessionType == SessionTypeLogin {
-		// if login then we only need to update a thing
-		userStatusFinalizer(session)
-		userAuthenticationDataFinalizer(session)
-	} else {
-		for _, finalizer := range finalizers {
-			finalizer(session)
+	if session.SessionType != SessionTypeDirectDbWrite {
+		if session.SessionType == SessionTypeLogin {
+			// if login then we only need to update a thing
+			userStatusFinalizer(session)
+			userAuthenticationDataFinalizer(session)
+		} else {
+			for _, finalizer := range finalizers {
+				finalizer(session)
+			}
 		}
 	}
 	err = session.Db.Commit()
@@ -125,7 +127,12 @@ func GetSession(ctx *gin.Context, userId int32) *Session {
 	s.Time = time.Now()
 	s.Ctx = ctx
 	s.UserId = userId
-	s.Gamedata = ctx.MustGet("gamedata").(*gamedata.Gamedata)
+	{
+		g, exist := ctx.Get("gamedata")
+		if exist {
+			s.Gamedata = g.(*gamedata.Gamedata)
+		}
+	}
 	s.Db = Engine.NewSession()
 	err := s.Db.Begin()
 	utils.CheckErr(err)
@@ -141,27 +148,5 @@ func GetSession(ctx *gin.Context, userId int32) *Session {
 	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
 
 	s.MemberLovePanelDiffs = make(map[int32]client.MemberLovePanel)
-	return &s
-}
-
-func SessionFromImportedLoginData(ctx *gin.Context, loginData *response.LoginResponse, userId int32) *Session {
-	s := Session{}
-	s.Time = time.Now()
-	s.SessionType = SessionTypeImportAccount
-	s.Ctx = ctx
-	s.UserId = userId
-	s.Gamedata = ctx.MustGet("gamedata").(*gamedata.Gamedata)
-	s.Db = Engine.NewSession()
-	err := s.Db.Begin()
-	utils.CheckErr(err)
-	s.UserModel = *loginData.UserModel
-	s.UserStatus = &s.UserModel.UserStatus
-	s.fetchAuthenticationData()
-
-	s.UserContentDiffs = make(map[int32](map[int32]client.Content))
-
-	s.MemberLovePanels = loginData.MemberLovePanels.Slice
-	GenericDatabaseInsert(&s, "u_login", *loginData)
-	utils.CheckErr(err)
 	return &s
 }

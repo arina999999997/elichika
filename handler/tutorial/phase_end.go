@@ -22,5 +22,5 @@ func phaseEnd(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tutorial/phaseEnd", phaseEnd)
+	router.AddHandler("/", "POST", "/tutorial/phaseEnd", phaseEnd)
 }

@@ -34,5 +34,5 @@ func startup(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/login/startup", startup)
+	router.AddHandler("/", "POST", "/login/startup", startup)
 }

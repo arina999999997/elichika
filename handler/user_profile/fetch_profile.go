@@ -24,5 +24,5 @@ func fetchProfile(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userProfile/fetchProfile", fetchProfile)
+	router.AddHandler("/", "POST", "/userProfile/fetchProfile", fetchProfile)
 }

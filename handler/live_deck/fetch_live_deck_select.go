@@ -28,5 +28,5 @@ func fetchLiveDeckSelect(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/liveDeck/fetchLiveDeckSelect", fetchLiveDeckSelect)
+	router.AddHandler("/", "POST", "/liveDeck/fetchLiveDeckSelect", fetchLiveDeckSelect)
 }

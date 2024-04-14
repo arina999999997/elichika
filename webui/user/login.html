@@ -1,0 +1,70 @@
+<!-- User template -->
+<html>
+<body onload="try_login()">
+    <form id="login_form" action="/user_auth" method="POST" enctype="multipart/form-data">
+        <div><label>User Id</label><input type="number" id="user_id" name="user_id" min="0" max="999999999"></div>
+        <div><label>Password</label><input type="password" id="user_password" name="user_password"></div>
+        <div><label>Stay logged-in</label><input type="checkbox" id="keep_login"></div>
+        <div><input type="button" onclick="login()" value="Login" /></div>
+        <div><label>If you don't have an account, create one using the client (on android / ios)
+            first!</label></div>
+    </form>
+</body>
+</html>
+<script>
+    function try_login() {
+        // try to login with existing data
+        var userId = localStorage.getItem("user_id")
+        if (userId != null) {
+            var userPassword = localStorage.getItem("user_password")
+            if (userPassword == null) {
+                userPassword = ""
+            }
+            // try to authenticate
+            document.getElementById("user_id").value = userId
+            document.getElementById("user_password").value = userPassword
+            document.getElementById("keep_login").checked = localStorage.getItem("keep_login")
+            if (document.getElementById("keep_login").checked)
+                login()
+        }
+    }
+
+    function clear_login_data() {
+        localStorage.removeItem("user_id")
+        localStorage.removeItem("user_password")
+        localStorage.removeItem("keep_login")
+    }
+
+    function login() {
+        clear_login_data()
+        sessionStorage.removeItem("user_session_key")
+        if (document.getElementById("keep_login").checked) {
+            localStorage.setItem("user_id", document.getElementById("user_id").value)
+            localStorage.setItem("user_password", document.getElementById("user_password").value)
+            localStorage.setItem("keep_login", true)
+        }
+        var formData = new FormData(document.getElementById("login_form"))
+        var req = new XMLHttpRequest()
+        req.open("POST", "/webui/user/login")
+        req.send(formData)
+        req.onreadystatechange = function () {
+            if (req.readyState != 4) return
+            if (req.status == 200) {
+                const resp = JSON.parse(req.responseText)
+                if (resp.error != null) {
+                    clear_login_data()
+                    alert(resp.error)
+                } else {
+                    sessionStorage.setItem("user_session_key", resp.response)
+                    sessionStorage.setItem("user_id", document.getElementById("user_id").value)
+                    // nagivate to the main user webui hub
+                    window.location.replace("/webui/user")
+                }
+            } else {
+                // no clear response from server
+                clear_login_data()
+                alert("unexpected error, status: " + req.status)
+            }
+        }
+    }
+</script>

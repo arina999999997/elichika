@@ -39,5 +39,5 @@ func setProfile(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userProfile/setProfile", setProfile)
+	router.AddHandler("/", "POST", "/userProfile/setProfile", setProfile)
 }

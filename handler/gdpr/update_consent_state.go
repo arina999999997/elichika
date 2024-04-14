@@ -44,5 +44,5 @@ func updateConsentState(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/gdpr/updateConsentState", updateConsentState)
+	router.AddHandler("/", "POST", "/gdpr/updateConsentState", updateConsentState)
 }

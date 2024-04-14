@@ -98,5 +98,5 @@ func initial(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddInitialHandler(initial)
+	router.AddInitialHandler("/", initial)
 }

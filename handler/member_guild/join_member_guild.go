@@ -32,5 +32,5 @@ func joinMemberGuild(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/memberGuild/joinMemberGuild", joinMemberGuild)
+	router.AddHandler("/", "POST", "/memberGuild/joinMemberGuild", joinMemberGuild)
 }

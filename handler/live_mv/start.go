@@ -26,5 +26,5 @@ func start(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/liveMv/start", start)
+	router.AddHandler("/", "POST", "/liveMv/start", start)
 }

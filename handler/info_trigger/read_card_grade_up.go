@@ -29,5 +29,5 @@ func readCardGradeUp(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/infoTrigger/readCardGradeUp", readCardGradeUp)
+	router.AddHandler("/", "POST", "/infoTrigger/readCardGradeUp", readCardGradeUp)
 }

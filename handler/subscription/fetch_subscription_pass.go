@@ -36,5 +36,5 @@ func fetchSubscriptionPass(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/subscription/fetchSubscriptionPass", fetchSubscriptionPass)
+	router.AddHandler("/", "POST", "/subscription/fetchSubscriptionPass", fetchSubscriptionPass)
 }

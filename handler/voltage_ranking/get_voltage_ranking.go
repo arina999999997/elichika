@@ -27,5 +27,5 @@ func getVoltageRanking(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("voltageRanking/getVoltageRanking", getVoltageRanking)
+	router.AddHandler("/", "POST", "voltageRanking/getVoltageRanking", getVoltageRanking)
 }

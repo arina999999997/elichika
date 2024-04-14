@@ -26,5 +26,5 @@ func fetchBootstrap(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/bootstrap/fetchBootstrap", fetchBootstrap)
+	router.AddHandler("/", "POST", "/bootstrap/fetchBootstrap", fetchBootstrap)
 }

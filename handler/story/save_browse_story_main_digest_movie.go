@@ -28,5 +28,5 @@ func saveBrowseStoryMainDigestMovie(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/story/saveBrowseStoryMainDigestMovie", saveBrowseStoryMainDigestMovie)
+	router.AddHandler("/", "POST", "/story/saveBrowseStoryMainDigestMovie", saveBrowseStoryMainDigestMovie)
 }

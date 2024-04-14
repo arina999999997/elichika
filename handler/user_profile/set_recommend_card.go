@@ -28,5 +28,5 @@ func setRecommendCard(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userProfile/setRecommendCard", setRecommendCard)
+	router.AddHandler("/", "POST", "/userProfile/setRecommendCard", setRecommendCard)
 }

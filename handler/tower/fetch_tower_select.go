@@ -21,5 +21,5 @@ func fetchTowerSelect(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tower/fetchTowerSelect", fetchTowerSelect)
+	router.AddHandler("/", "POST", "/tower/fetchTowerSelect", fetchTowerSelect)
 }

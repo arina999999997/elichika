@@ -38,5 +38,5 @@ func setFavoriteMember(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/communicationMember/setFavoriteMember", setFavoriteMember)
+	router.AddHandler("/", "POST", "/communicationMember/setFavoriteMember", setFavoriteMember)
 }

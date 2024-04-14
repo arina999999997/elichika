@@ -12,5 +12,5 @@ func fetchMemberGuildRankingYear(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/memberGuild/fetchMemberGuildRankingYear", fetchMemberGuildRankingYear)
+	router.AddHandler("/", "POST", "/memberGuild/fetchMemberGuildRankingYear", fetchMemberGuildRankingYear)
 }

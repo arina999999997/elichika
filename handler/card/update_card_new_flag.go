@@ -33,5 +33,5 @@ func updateCardNewFlag(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/card/updateCardNewFlag", updateCardNewFlag)
+	router.AddHandler("/", "POST", "/card/updateCardNewFlag", updateCardNewFlag)
 }

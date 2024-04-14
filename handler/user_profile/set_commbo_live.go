@@ -29,5 +29,5 @@ func setCommboLive(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userProfile/setCommboLive", setCommboLive)
+	router.AddHandler("/", "POST", "/userProfile/setCommboLive", setCommboLive)
 }

@@ -13,5 +13,5 @@ func getClearedPlatformAchievement(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/bootstrap/getClearedPlatformAchievement", getClearedPlatformAchievement)
+	router.AddHandler("/", "POST", "/bootstrap/getClearedPlatformAchievement", getClearedPlatformAchievement)
 }

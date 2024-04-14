@@ -23,5 +23,5 @@ func fetchBillingHistory(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/billing/fetchBillingHistory", fetchBillingHistory)
+	router.AddHandler("/", "POST", "/billing/fetchBillingHistory", fetchBillingHistory)
 }

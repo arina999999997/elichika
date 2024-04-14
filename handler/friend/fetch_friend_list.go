@@ -24,5 +24,5 @@ func fetchFriendList(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/friend/fetchFriendList", fetchFriendList)
+	router.AddHandler("/", "POST", "/friend/fetchFriendList", fetchFriendList)
 }

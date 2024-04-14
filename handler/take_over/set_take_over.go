@@ -74,5 +74,5 @@ func setTakeOver(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/takeOver/setTakeOver", setTakeOver)
+	router.AddHandler("/", "POST", "/takeOver/setTakeOver", setTakeOver)
 }

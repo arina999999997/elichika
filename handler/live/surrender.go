@@ -23,5 +23,5 @@ func surrender(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/surrender", surrender)
+	router.AddHandler("/", "POST", "/live/surrender", surrender)
 }

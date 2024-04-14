@@ -27,5 +27,5 @@ func fetchTrainingTree(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/trainingTree/fetchTrainingTree", fetchTrainingTree)
+	router.AddHandler("/", "POST", "/trainingTree/fetchTrainingTree", fetchTrainingTree)
 }

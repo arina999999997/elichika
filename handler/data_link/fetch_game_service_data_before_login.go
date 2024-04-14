@@ -54,5 +54,5 @@ func fetchGameServiceDataBeforeLogin(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/dataLink/fetchGameServiceDataBeforeLogin", fetchGameServiceDataBeforeLogin)
+	router.AddHandler("/", "POST", "/dataLink/fetchGameServiceDataBeforeLogin", fetchGameServiceDataBeforeLogin)
 }

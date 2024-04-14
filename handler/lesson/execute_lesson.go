@@ -26,5 +26,5 @@ func executeLesson(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/lesson/executeLesson", executeLesson)
+	router.AddHandler("/", "POST", "/lesson/executeLesson", executeLesson)
 }

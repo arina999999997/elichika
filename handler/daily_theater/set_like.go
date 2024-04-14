@@ -34,5 +34,5 @@ func setLike(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/dailyTheater/setLike", setLike)
+	router.AddHandler("/", "POST", "/dailyTheater/setLike", setLike)
 }

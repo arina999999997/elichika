@@ -27,5 +27,5 @@ func dataLink(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/sif2DataLink/dataLink", dataLink)
+	router.AddHandler("/", "POST", "/sif2DataLink/dataLink", dataLink)
 }

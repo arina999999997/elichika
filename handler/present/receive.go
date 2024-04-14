@@ -37,5 +37,5 @@ func receive(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/present/receive", receive)
+	router.AddHandler("/", "POST", "/present/receive", receive)
 }

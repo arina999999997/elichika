@@ -38,5 +38,5 @@ func fetchShopSubscription(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/shop/fetchShopSubscription", fetchShopSubscription)
+	router.AddHandler("/", "POST", "/shop/fetchShopSubscription", fetchShopSubscription)
 }

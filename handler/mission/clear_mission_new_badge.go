@@ -29,5 +29,5 @@ func clearMissionNewBadge(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/mission/clearMissionNewBadge", clearMissionNewBadge)
+	router.AddHandler("/", "POST", "/mission/clearMissionNewBadge", clearMissionNewBadge)
 }

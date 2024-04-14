@@ -31,5 +31,5 @@ func melt(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/accessory/melt", melt)
+	router.AddHandler("/", "POST", "/accessory/melt", melt)
 }

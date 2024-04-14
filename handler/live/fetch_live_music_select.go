@@ -19,5 +19,5 @@ func fetchLiveMusicSelect(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/fetchLiveMusicSelect", fetchLiveMusicSelect)
+	router.AddHandler("/", "POST", "/live/fetchLiveMusicSelect", fetchLiveMusicSelect)
 }

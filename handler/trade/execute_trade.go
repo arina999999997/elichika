@@ -34,5 +34,5 @@ func executeTrade(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/trade/executeTrade", executeTrade)
+	router.AddHandler("/", "POST", "/trade/executeTrade", executeTrade)
 }

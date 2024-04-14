@@ -36,5 +36,5 @@ func setProfileBirthday(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userProfile/setProfileBirthday", setProfileBirthday)
+	router.AddHandler("/", "POST", "/userProfile/setProfileBirthday", setProfileBirthday)
 }

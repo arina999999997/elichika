@@ -29,5 +29,5 @@ func levelUpCard(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/trainingTree/levelUpCard", levelUpCard)
+	router.AddHandler("/", "POST", "/trainingTree/levelUpCard", levelUpCard)
 }

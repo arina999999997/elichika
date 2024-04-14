@@ -29,5 +29,5 @@ func setScoreLive(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/userProfile/setScoreLive", setScoreLive)
+	router.AddHandler("/", "POST", "/userProfile/setScoreLive", setScoreLive)
 }

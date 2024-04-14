@@ -34,5 +34,5 @@ func addAccessoryBoxLimit(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/user/addAccessoryBoxLimit", addAccessoryBoxLimit)
+	router.AddHandler("/", "POST", "/user/addAccessoryBoxLimit", addAccessoryBoxLimit)
 }

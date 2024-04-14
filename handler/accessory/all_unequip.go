@@ -29,5 +29,5 @@ func allUnequip(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/accessory/allUnequip", allUnequip)
+	router.AddHandler("/", "POST", "/accessory/allUnequip", allUnequip)
 }

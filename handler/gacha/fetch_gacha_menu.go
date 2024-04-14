@@ -21,5 +21,5 @@ func fetchGachaMenu(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/gacha/fetchGachaMenu", fetchGachaMenu)
+	router.AddHandler("/", "POST", "/gacha/fetchGachaMenu", fetchGachaMenu)
 }

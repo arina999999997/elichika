@@ -48,5 +48,5 @@ func recoveryTowerCardUsed(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tower/recoveryTowerCardUsed", recoveryTowerCardUsed)
+	router.AddHandler("/", "POST", "/tower/recoveryTowerCardUsed", recoveryTowerCardUsed)
 }

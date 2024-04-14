@@ -26,5 +26,5 @@ func finishTutorial(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/finishTutorial", finishTutorial)
+	router.AddHandler("/", "POST", "/live/finishTutorial", finishTutorial)
 }

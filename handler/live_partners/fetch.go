@@ -32,5 +32,5 @@ func fetch(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/livePartners/fetch", fetch)
+	router.AddHandler("/", "POST", "/livePartners/fetch", fetch)
 }

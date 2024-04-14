@@ -28,5 +28,5 @@ func agreement(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/terms/agreement", agreement)
+	router.AddHandler("/", "POST", "/terms/agreement", agreement)
 }

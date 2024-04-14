@@ -52,5 +52,5 @@ func updateUserLiveDifficultyNewFlag(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/communicationMember/updateUserLiveDifficultyNewFlag", updateUserLiveDifficultyNewFlag)
+	router.AddHandler("/", "POST", "/communicationMember/updateUserLiveDifficultyNewFlag", updateUserLiveDifficultyNewFlag)
 }

@@ -36,20 +36,18 @@ import (
 // - /bootstrap/fetchBootstrap: ditto
 // - /trainingTree/fetchTrainingTree: see cars_solver.go
 
-// export to string to write to file or to return to webui
-func ExportUser(ctx *gin.Context) string {
-	userId := int32(ctx.GetInt("user_id"))
-	session := userdata.GetSession(ctx, userId)
-	defer session.Close()
+// export login data to json string to write to file or to return to webui
+func ExportLoginJson(session *userdata.Session) []byte {
 	loginData := session.Login()
 	text, err := json.Marshal(loginData)
 	utils.CheckErr(err)
-	return string(text)
+	return text
 }
 
-func ImportUser(ctx *gin.Context, loginJson string, userId int32) string {
+func ImportUserJson(ctx *gin.Context, loginJson []byte) string {
 	loginData := response.LoginResponse{}
 	loginData.UserModel = new(client.UserModel)
+
 	err := json.Unmarshal([]byte(loginJson), &loginData)
 	if err != nil {
 		if jsonErr, ok := err.(*json.SyntaxError); ok {
@@ -58,8 +56,10 @@ func ImportUser(ctx *gin.Context, loginJson string, userId int32) string {
 		}
 	}
 	utils.CheckErr(err)
-	session := userdata.SessionFromImportedLoginData(ctx, &loginData, userId)
-	defer session.Close()
+
+	session := ctx.MustGet("session").(*userdata.Session)
+	session.ImportLoginData(ctx, &loginData)
+
 	// insert training tree data to make training consistent
 	solver := TrainingTreeSolver{}
 	solver.LoadUserLogin(&loginData)
@@ -69,10 +69,7 @@ func ImportUser(ctx *gin.Context, loginJson string, userId int32) string {
 	// update term of use and stuff
 
 	// actually populate the tracking field so we can import items
-	if session.SessionType == userdata.SessionTypeImportAccount {
-		user_content.PopulateGenericContentDiffFromUserModel(session)
-	}
+	user_content.PopulateGenericContentDiffFromUserModel(session)
 	session.Finalize()
-
-	return "OK"
+	return "Imported json data"
 }

@@ -34,5 +34,5 @@ func receiveReward(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/mission/receiveReward", receiveReward)
+	router.AddHandler("/", "POST", "/mission/receiveReward", receiveReward)
 }

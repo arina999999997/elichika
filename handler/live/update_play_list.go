@@ -30,5 +30,5 @@ func updatePlayList(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/live/updatePlayList", updatePlayList)
+	router.AddHandler("/", "POST", "/live/updatePlayList", updatePlayList)
 }

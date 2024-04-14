@@ -29,5 +29,5 @@ func updateIsLock(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/accessory/updateIsLock", updateIsLock)
+	router.AddHandler("/", "POST", "/accessory/updateIsLock", updateIsLock)
 }

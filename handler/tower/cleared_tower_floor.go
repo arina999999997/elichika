@@ -36,5 +36,5 @@ func clearedTowerFloor(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/tower/clearedTowerFloor", clearedTowerFloor) // dlp story
+	router.AddHandler("/", "POST", "/tower/clearedTowerFloor", clearedTowerFloor) // dlp story
 }

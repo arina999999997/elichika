@@ -29,5 +29,5 @@ func tapLovePoint(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/navi/tapLovePoint", tapLovePoint)
+	router.AddHandler("/", "POST", "/navi/tapLovePoint", tapLovePoint)
 }

@@ -5,6 +5,7 @@ import (
 	_ "elichika/handler"
 	_ "elichika/subsystem"
 	"elichika/userdata"
+	_ "elichika/webui"
 
 	"elichika/router"
 
@@ -33,5 +34,5 @@ func main() {
 	router.Router(r)
 	fmt.Println("server address: ", *config.Conf.ServerAddress)
 	fmt.Println("WebUI address: ", *config.Conf.ServerAddress+"/webui")
-	r.Run(*config.Conf.ServerAddress) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run(*config.Conf.ServerAddress)
 }

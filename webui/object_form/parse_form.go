@@ -2,6 +2,7 @@ package object_form
 
 import (
 	"errors"
+	"mime/multipart"
 	"reflect"
 	"strconv"
 	"strings"
@@ -10,7 +11,7 @@ import (
 )
 
 func ParseForm(ctx *gin.Context, defaultObjPtr any) error {
-	form, _ := ctx.MultipartForm()
+	form := ctx.MustGet("form").(*multipart.Form)
 	ptr := reflect.ValueOf(defaultObjPtr) // pointer
 	if ptr.Kind() != reflect.Pointer {
 		return errors.New("must pass a pointer to object")
@@ -19,13 +20,19 @@ func ParseForm(ctx *gin.Context, defaultObjPtr any) error {
 	for i := 0; i < ptr.Elem().Type().NumField(); i++ {
 
 		field := ptr.Elem().Type().Field(i)
-		ptr.Elem().Field(i).Set(reflect.New(ptr.Elem().Field(i).Type().Elem()))
-		if field.Type == reflect.TypeOf((*bool)(nil)) {
+		if field.Type.Kind() == reflect.Pointer {
+			ptr.Elem().Field(i).Set(reflect.New(ptr.Elem().Field(i).Type().Elem()))
+		}
+		if (field.Type == reflect.TypeOf((*bool)(nil))) || (field.Type == reflect.TypeOf((bool)(false))) {
 			onString, on := form.Value[field.Name]
 			if on && (onString[0] != "on") {
 				return errors.New("explicit off checkbox?")
 			}
-			reflect.Indirect(ptr.Elem().Field(i)).Set(reflect.ValueOf(on))
+			if field.Type.Kind() == reflect.Pointer {
+				reflect.Indirect(ptr.Elem().Field(i)).Set(reflect.ValueOf(on))
+			} else {
+				ptr.Elem().Field(i).Set(reflect.ValueOf(on))
+			}
 			continue
 		}
 

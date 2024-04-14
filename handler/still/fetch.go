@@ -15,5 +15,5 @@ func fetch(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/still/fetch", fetch)
+	router.AddHandler("/", "POST", "/still/fetch", fetch)
 }

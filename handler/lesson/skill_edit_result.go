@@ -29,5 +29,5 @@ func skillEditResult(ctx *gin.Context) {
 }
 
 func init() {
-	router.AddHandler("/lesson/skillEditResult", skillEditResult)
+	router.AddHandler("/", "POST", "/lesson/skillEditResult", skillEditResult)
 }
