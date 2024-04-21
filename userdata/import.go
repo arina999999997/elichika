@@ -34,11 +34,10 @@ func (session *Session) ImportDatabaseData(ctx *gin.Context, bytes []byte) (*str
 	err := os.WriteFile(fileName, bytes, 0644)
 	utils.CheckErr(err)
 	defer func() {
-		// err :=
 		os.Remove(fileName)
-		// utils.CheckErr(err)
 	}()
 	engine, err := xorm.NewEngine("sqlite", fileName)
+	utils.CheckErr(err)
 	engine.SetMaxOpenConns(1)
 	engine.SetMaxIdleConns(1)
 

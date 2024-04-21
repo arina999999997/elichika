@@ -12,10 +12,10 @@ import (
 
 type StoryMember struct {
 	// from m_story_member
-	Id int32 `xorm:"pk 'id'"`
-	// MemberMasterId int `xorm:"member_master_id"`
+	Id        int32 `xorm:"pk 'id'"`
+	MemberMId int32 `xorm:"'member_m_id'"`
 	// StoryNo int
-	// LoveLevel int
+	LoveLevel int32 `xorm:"'love_level'"`
 	// Title string
 	// Description string
 	// ScenarioScriptAssetPath string

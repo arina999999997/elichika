@@ -135,6 +135,13 @@ func GetSession(ctx *gin.Context, userId int32) *Session {
 	}
 	s.Db = Engine.NewSession()
 	err := s.Db.Begin()
+	defer func() {
+		err := recover()
+		if err != nil {
+			s.Db.Close()
+			panic(err)
+		}
+	}()
 	utils.CheckErr(err)
 
 	exist, err := s.Db.Table("u_status").Where("user_id = ?", userId).Get(&s.UserModel.UserStatus)

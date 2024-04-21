@@ -21,14 +21,14 @@ type StoryMainChapter struct {
 	// BgmAssetPath string `xorm:"'bgm_asset_path'"`
 
 	// from m_story_main_cell
-	LastCellId int32 `xorm:"-"`
+	Cells      []int32 `xorm:"-"`
+	LastCellId int32   `xorm:"-"`
 }
 
 func (smc *StoryMainChapter) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	cells := []int32{}
-	err := masterdata_db.Table("m_story_main_cell").Where("chapter_id = ?", smc.Id).Cols("id").Find(&cells)
+	err := masterdata_db.Table("m_story_main_cell").Where("chapter_id = ?", smc.Id).Cols("id").Find(&smc.Cells)
 	utils.CheckErr(err)
-	for _, cellId := range cells {
+	for _, cellId := range smc.Cells {
 		if smc.LastCellId < cellId {
 			smc.LastCellId = cellId
 		}

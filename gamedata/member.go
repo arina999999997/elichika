@@ -132,4 +132,5 @@ func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, 
 func init() {
 	addLoadFunc(loadMember)
 	addPrequisite(loadMember, loadMemberLoveLevel)
+	addPrequisite(loadMember, loadMemberGroup)
 }

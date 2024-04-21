@@ -64,14 +64,33 @@
         localStorage.removeItem("keep_login")
     }
 
+    function change_disable_state(disabled = false) {
+        var all = document.getElementsByTagName("*")
+        if (disabled) {
+            for (let element of all) {
+                element.setAttribute("disabled", null)
+            }
+        } else {
+            for (let element of all) {
+                element.removeAttribute("disabled")
+            }
+        }
+    }
+
     // submit the form along with the verification from local storage
-    function submit_form(formId, submitTo, isResponseFile = false) {
+    function submit_form(formId, submitTo, isResponseFile = false, callback = null) {
+        console.log(callback)
         var formData
         if (formId != null) {
+            if (!document.getElementById(formId).checkValidity()) {
+                document.getElementById(formId).reportValidity()
+                return
+            }
             formData = new FormData(document.getElementById(formId))
         } else {
             formData = new FormData()
         }
+        change_disable_state(true)
         formData.append("user_session_key", sessionStorage.getItem("user_session_key"))
         formData.append("user_id", sessionStorage.getItem("user_id"))
         var req = new XMLHttpRequest()
@@ -90,6 +109,12 @@
                         window.location.replace("/webui/user/login")
                     } else {
                         alert(resp.response)
+                        if (callback != null) {
+                            change_disable_state(false)
+                            callback()
+                        } else {
+                            change_disable_state(false)
+                        }
                     }
                 } else {
                     // no clear response from server
@@ -140,6 +165,8 @@
 
                         setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
                     }
+                    change_disable_state(false)
+                    callback()
                 } else {
                     // no clear response from server
                     clear_login_data()

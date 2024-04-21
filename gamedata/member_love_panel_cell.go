@@ -16,8 +16,8 @@ type MemberLovePanelCell struct {
 	PanelIndex              int32            `xorm:"'panel_index'"`
 	MemberLovePanelMasterId *int32           `xorm:"'member_love_panel_master_id'"`
 	MemberLovePanel         *MemberLovePanel `xorm:"-"`
-	// BonusType
-	// BonusValue
+	BonusType               int32            `xorm:"bonus_type" enum:"MemberLovePanelEffectType"`
+	BonusValue              int32            `xorm:"bonus_value"`
 
 	// from m_member_love_panel_cell_source_content
 	Resources []client.Content `xorm:"-"`

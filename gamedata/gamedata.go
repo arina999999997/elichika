@@ -83,6 +83,7 @@ type Gamedata struct {
 	Emblem map[int32]*Emblem
 
 	Member                          map[int32]*Member
+	MemberGroup                     map[int32]*MemberGroup
 	MemberLoveLevelLovePoint        []int32
 	MemberLoveLevelCount            int32
 	MemberLovePanel                 map[int32]*MemberLovePanel
@@ -97,6 +98,10 @@ type Gamedata struct {
 	MissionByClearConditionType map[int32][]*Mission
 	MissionByTerm               map[int32][]*Mission
 	MissionByTriggerType        map[int32][]*Mission
+
+	NaviVoice map[int32]*NaviVoice
+
+	CustomBackground map[int32]*CustomBackground
 
 	Live                 map[int32]*Live
 	LiveParty            LiveParty
@@ -123,8 +128,9 @@ type Gamedata struct {
 
 	Suit map[int32]*Suit
 
-	StoryMember      map[int32]*StoryMember
-	StoryMainChapter map[int32]*StoryMainChapter
+	StoryMember       map[int32]*StoryMember
+	StoryMainChapter  map[int32]*StoryMainChapter
+	StoryEventHistory map[int32]*StoryEventHistory
 
 	Gacha              map[int32]*Gacha
 	GachaList          []*Gacha

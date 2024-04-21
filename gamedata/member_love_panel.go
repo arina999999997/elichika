@@ -9,6 +9,10 @@ import (
 	"xorm.io/xorm"
 )
 
+type MemberLovePanelBonus struct {
+	BonusType  int32 `xorm:"bonus_type" enum:"MemberLovePanelEffectType"`
+	BonusValue int32 `xorm:"bonus_value"`
+}
 type MemberLovePanel struct {
 	// from m_member_love_panel
 	Id                       int32            `xorm:"pk 'id'"`
@@ -16,11 +20,16 @@ type MemberLovePanel struct {
 	MemberMasterId           *int32           `xorm:"member_master_id"`
 	Member                   *Member          `xorm:"-"`
 	NextPanel                *MemberLovePanel `xorm:"-"`
+
+	// from m_member_love_panel_bonus
+	Bonuses []MemberLovePanelBonus `xorm:"-"`
 }
 
 func (panel *MemberLovePanel) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	panel.Member = gamedata.Member[*panel.MemberMasterId]
 	panel.MemberMasterId = &panel.Member.Id
+	err := masterdata_db.Table("m_member_love_panel_bonus").Where("member_love_panel_master_id = ?", panel.Id).Find(&panel.Bonuses)
+	utils.CheckErr(err)
 }
 
 func loadMemberLovePanel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

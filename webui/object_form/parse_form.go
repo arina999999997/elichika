@@ -51,7 +51,7 @@ func ParseForm(ctx *gin.Context, defaultObjPtr any) error {
 				}
 				reflect.Indirect(ptr.Elem().Field(i)).Set(reflect.ValueOf(int32(value)))
 			default:
-				errors.New("field type not supported")
+				return errors.New("field type not supported")
 			}
 		} else if customType == "time" {
 			switch field.Type {

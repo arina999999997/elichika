@@ -20,8 +20,9 @@ func GradeUpCard(session *userdata.Session, cardMasterId, contentId int32) {
 	card := user_card.GetUserCard(session, cardMasterId)
 	card.Grade++
 	user_card.UpdateUserCard(session, card)
-
-	user_content.RemoveContent(session, masterCard.CardGradeUpItem[card.Grade][contentId])
+	if contentId != 0 {
+		user_content.RemoveContent(session, masterCard.CardGradeUpItem[card.Grade][contentId])
+	}
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking
 	// this trigger show the pop up after limit break

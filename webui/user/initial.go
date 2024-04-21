@@ -42,6 +42,8 @@ func userInitial(ctx *gin.Context) {
 				if !bytes.Equal(sessionKey, session.SessionKey()) {
 					panic("wrong session key")
 				}
+			} else {
+				session.SessionType = userdata.SessionTypeLogin
 			}
 		}
 		ctx.Set("session", session)
