@@ -2,53 +2,54 @@
 A fork of https://github.com/YumeMichi/elichika, check out the original.
 
 ## Installing
-Note that this part concern only this server implementation. For the clients, connections, and general knowledge about the game, checkout the [LL hax wiki](https://carette.codeberg.page/ll-hax-docs/sifas/)
+Note that this part concern only this server implementation, and it only provide the easiest way to do things.
+
+You should check out checkout the [LL hax wiki](https://carette.codeberg.page/ll-hax-docs/sifas/) for clarification and general knowledge, as it explain things better (or it can lead you to places where you can ask questions).
 
 ### Android
-To run the server, first install termux, you can get it from [f-droid](https://f-droid.org/en/packages/com.termux/) or [github](https://github.com/termux/termux-app#github). Note that the google play store version will most likely NOT WORK.
+To install the server, first install termux, you can get it from [f-droid](https://f-droid.org/en/packages/com.termux/) or [github](https://github.com/termux/termux-app#github). Note that the google play store version will most likely NOT WORK.
 
 Then run the install script inside termux, this will take care of everything:
 ```
 curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/install.sh | bash
 ```
+
+To run a command, copy (or type) it and hit the enter button.
 ### Window / Linux
-Use the same install script with termux (on Windows, run inside git bash or some other linux shell emulator):
+You can setup the server in a desktop machine to play on android or ios. To do this, use the same install script with termux (on Windows, run inside git bash or some other linux shell emulator):
+
 ```
 curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/install.sh | bash
 ```
 
-Or clone the respository and build manually, look at the scripts for the steps.
+This will leave some trashes, so you can clone the respository and build manually, look at the scripts for the necessary steps.
 
 ## Running the server
-After setting up the server, we need to run it. Simply navigate to `elichika`'s directory and run it:
+After installing, you need to run the server to play using the following command:
 
 ```
-./elichika
-```
-
-For Windows:
-```
-elichika
+run_elichika
 ```
 
 If you have GUI for Windows/Linux, you can also just run the executable directly.
+
+Note that whenever you want to play, the server need to be on, so if you already closed termux or the server, you will have to run it again.
 
 ## Updating the server
 You can update the server by running:
 
 ```
-git pull && go build
+update_elichika
 ```
 
 As of current version, you should be able to keep your progress while doing this, so it's recommended to do it often so you get access to newly implemented features.
 
-If you absolutely don't want to lose your data, you can always backup ``userdata.db`` and revert to an old version if necessary.
+It is also a good idea to backup ``userdata.db`` or to export your data (with the WebUI) before doing this, as updating can result in breaking changes.
 
 ## Playing the game
 With the server running, and the client network setup correctly, simply open the game and play.
 
-Logging in will create an account if one is not present in the server.
-- User id will be set to random if there is no user id in the client.
+The first time you login, you will be given a random user id. If you wish to, you can use the transfer account to obtain a specific user id.
 
 ### Multi accounts / Account transfer
 You can use the account transfer system to switch / create account. Select ``transfer with password``. 
@@ -85,19 +86,21 @@ You can use multiple devices to play the game from one server, if you have set t
 
 Playing the game on another device while the current one is running will cause the current one to disconnect, preventing any error being done to your user data.
 
-### Setting up runtime configs
-There are some configuration you can change to make the server more suitable to you.
+## WebUI
+The WebUI allow you to interact with the server in a more direct way, both to change the server and to change your player data.
 
-With the server running, you can use the web config editor to change runtime configs. Some changes will take effect instantly, while some will require you to restart the server.
+To use the WebUI, navigate to the relevant address using a web browser.
 
-- To access the editor, navigate to `<server_address>/config_editor` using a web browser (from the device you are playing/running the server on).
+### Admin
+The admin WebUI is used to change the server's behaviors.
 
-    - By default, this is http://127.0.0.1:8080/config_editor
-- The config is stored in ``config.json``, so you can edit it directly if you want to.
-- Howerver, it's recommended to use the web config editor as it explains some stuff and has checks to make sure nothing will go wrong.
-- If your config has problems that make it so you can't run the server, you can always delete ``config.json`` to reset to the default one.
+It can be found at: `<server_address>/webui/admin`, which default to http://127.0.0.1:8080/webui/admin
 
-More details explanation of some config options:
+To use the admin webui, you will need the admin password, but it is empty by default.
+
+Currently, it only has the config editor, but in the future it can include things like starting/ending event and such.
+
+Detailed explanations of some config options:
 
 - Server's address:
 
@@ -118,17 +121,23 @@ More details explanation of some config options:
     - Note that you have to obtain the item in game first before you are given the "default item count" amount of that item.
 
 
-## WebUI
-The WebUI for the sever can be located at `<server_address>/webui`.
-- By default, this is http://127.0.0.1:8080/webui
-- The WebUI can import and export account data.
-- The WebUI can be used to do stuff that the client can't do on its own.
-    - For example, the birthday can only be set during tutorial. The WebUI can change the birthday.
-- The WebUI also has some account editing functions.
+### User
+The user WebUI has features to help you with playing the game:
 
+- Doing things quickly in your account, or setting up a maxed account.
+- Adding resources to skip the grind.
+- Import export data.
+
+It can be located at: `<server_address>/webui/user`, which default to http://127.0.0.1:8080/webui/user
+
+Check out the user [docs](webui/user/README.md) for more details.
+
+Note that the user WebUI is not an account data editor, something like that be developed later.
 
 ## More docs
-Checkout the [docs](https://github.com/arina999999997/elichika/tree/master/docs) for more details on the server and how to do more advanced stuffs. 
+Checkout the [docs](https://github.com/arina999999997/elichika/tree/master/docs) for more details on the server and how to do more advanced stuffs.
+
+Docs can also be found in relevant package in `.md` files. 
 
 ## Credit
 Special thanks to the LL Hax community in general for:
@@ -136,10 +145,11 @@ Special thanks to the LL Hax community in general for:
 - Archiving and hosting database / assets
 - General and specific knowledges about the game
 
-Even more special thanks for the specific individuals:
+Even more special thanks for the specific individuals (in no particular order):
 
 - YumeMichi for original elichika.
-- triangle for informations and scripts to encode/decode database, as well as patching the clients.
+- triangle for informations and scripts to encode/decode database, and for patching the ios clients.
+- ethan for hosting various resource and hosting a public testing server.
 - rayfirefirst, cppo for various cryptographic keys.
 - tungnotpunk for ios client and help with network structure.
 - Suyooo for the very helpful [SIFAS wiki](https://suyo.be/sifas/wiki/) and for providing more accurate stage data.

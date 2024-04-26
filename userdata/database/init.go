@@ -21,7 +21,7 @@ func init() {
 	var err error
 	Engine, err = xorm.NewEngine("sqlite", config.UserdataPath)
 	utils.CheckErr(err)
-	Engine.SetMaxOpenConns(50)
+	Engine.SetMaxOpenConns(1)
 	Engine.SetMaxIdleConns(10)
 	// Engine.ShowSQL(true)
 

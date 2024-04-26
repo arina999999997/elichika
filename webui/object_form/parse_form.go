@@ -39,7 +39,7 @@ func ParseForm(ctx *gin.Context, defaultObjPtr any) error {
 		stringValue := form.Value[field.Name][0]
 		customType := field.Tag.Get("of_type")
 
-		if customType == "select" || customType == "" {
+		if customType == "select" || customType == "" || customType == "password" {
 			// there is no special type, just parse directly
 			switch field.Type {
 			case reflect.TypeOf((*string)(nil)):

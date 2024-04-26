@@ -12,6 +12,7 @@ import (
 type RuntimeConfig struct {
 	ServerAddress        *string `json:"server_address" of_label:"Server's address"`
 	CdnServer            *string `json:"cdn_server" of_label:"CDN server's address"`
+	AdminPassword        *string `json:"admin_password" of_label:"Admin password" of_type:"password""`
 	TapBondGain          *int32  `json:"tap_bond_gain" of_label:"Partner tap bond reward" of_attrs:"min=\"0\" max=\"20000000\"`
 	AutoJudgeType        *int32  `json:"auto_judge_type" of_type:"select" of_options:"None\n1\nMiss\n10\nBad\n12\nGood\n14\nGreat\n20\nPerfect\n30" of_label:"Autoplay judge type"`
 	Tutorial             *bool   `json:"tutorial" of_label:"Enable tutorial"`                                                          // whether to turn on tutorial when starting a new account
@@ -25,7 +26,8 @@ func defaultConfigs() *RuntimeConfig {
 	// TODO(refactor): use reflect or something
 	configs := RuntimeConfig{
 		ServerAddress:        new(string),
-		CdnServer:            new(string), // self-hosted
+		CdnServer:            new(string),
+		AdminPassword:        new(string),
 		TapBondGain:          new(int32),
 		AutoJudgeType:        new(int32),
 		Tutorial:             new(bool),
@@ -36,6 +38,7 @@ func defaultConfigs() *RuntimeConfig {
 	}
 	*configs.CdnServer = "https://llsifas.catfolk.party/static/"
 	*configs.ServerAddress = "0.0.0.0:8080"
+	*configs.AdminPassword = ""
 	*configs.TapBondGain = 20
 	*configs.AutoJudgeType = enum.JudgeTypeGreat
 	*configs.Tutorial = true

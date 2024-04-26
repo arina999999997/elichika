@@ -6,12 +6,10 @@ import (
 	"elichika/userdata"
 	"elichika/utils"
 	"elichika/webui/object_form"
+	"elichika/webui/webui_utils"
 
-	// "fmt"
 	"encoding/json"
 	"net/http"
-	// "strings"
-	// "time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,7 +38,7 @@ func ResetHandler(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	session := ctx.MustGet("session").(*userdata.Session)
-	resp := Response{
+	resp := webui_utils.Response{
 		Response: new(string),
 	}
 

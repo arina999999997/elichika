@@ -1,10 +1,12 @@
 package user
 
 import (
+	"elichika/enum"
 	"elichika/router"
 	"elichika/subsystem/user_authentication"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/webui/webui_utils"
 
 	"encoding/base64"
 	"encoding/json"
@@ -16,7 +18,7 @@ import (
 
 func Login(ctx *gin.Context) {
 	var respString string
-	resp := Response{}
+	resp := webui_utils.Response{}
 
 	form := ctx.MustGet("form").(*multipart.Form)
 
@@ -26,15 +28,17 @@ func Login(ctx *gin.Context) {
 
 	if session == nil {
 		resp.Error = &respString
-		*resp.Error = "User doesn't exist"
+		*resp.Error = "User doesn't exist!"
 	} else if !user_authentication.CheckPassWord(session, userPassword) {
 		resp.Error = &respString
-		*resp.Error = "Wrong password"
+		*resp.Error = "Wrong password!"
+	} else if session.UserStatus.TutorialPhase != enum.TutorialPhaseTutorialEnd {
+		resp.Error = &respString
+		*resp.Error = "Finish the tutorial (in game) first before using the WebUI!"
 	} else {
-		// invalidate existing sessions
-		session.GenerateNewSessionKey()
-		session.Finalize()
-
+		// TODO: invalidating existing sessions is kinda annoying, maybe we can put it in the news instead?
+		// session.GenerateNewSessionKey()
+		// session.Finalize()
 		resp.Response = &respString
 		*resp.Response = base64.StdEncoding.EncodeToString(session.SessionKey())
 	}

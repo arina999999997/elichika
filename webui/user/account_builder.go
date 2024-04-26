@@ -66,7 +66,7 @@ func (bf *BuilderFeature) ToHTML() string {
 func builderForm(ctx *gin.Context) {
 	form :=
 		`<div><label>Perform actions in the game quickly, just like you actually did the things in the client!</label></div>
-<div><label>Note that this feature only perform "simulated client actions" on your account and some simple stuff. In other words, no undoing progresses like unleveling cards.</label></div>
+<div><label>Note that this feature perform "simulated client actions" on your account, if you just want some help with the resource then you should use the Resource Helper instead.</label></div>
 <div><label>To use, just click on the relevant button after setting the input, if there's any.</label></div>
 <div><label>Some request will take a while to finish, be patience and wait for it.</label></div>
 <div><label>Also, don't be too greedy or your account might become unplayable due to overflow.</label></div>
@@ -128,7 +128,7 @@ func init() {
 			exp := webui_utils.GetFormInt32(ctx, "exp")
 			user_status.AddUserExp(session, exp)
 			session.Finalize()
-			commonResponse(ctx, fmt.Sprintf("Added user EXP: %d", exp), "")
+			webui_utils.CommonResponse(ctx, fmt.Sprintf("Added user EXP: %d", exp), "")
 		})
 	AddBuilderFeature("Add LP", "add_lp",
 		`<input type="number" name="lp" min="1" max="10000" value="0">`, "Add LP",
@@ -137,7 +137,7 @@ func init() {
 			lp := webui_utils.GetFormInt32(ctx, "lp")
 			user_status.AddUserLp(session, lp)
 			session.Finalize()
-			commonResponse(ctx, fmt.Sprintf("Added LP: %d", lp), "")
+			webui_utils.CommonResponse(ctx, fmt.Sprintf("Added LP: %d", lp), "")
 		})
 	AddBuilderFeature("Add Star Gem", "add_sns_coin",
 		`<input type="number" name="sns_coin" min="1" max="10000" value="0">`, "Add Star Gem",
@@ -146,7 +146,7 @@ func init() {
 			snsCoin := webui_utils.GetFormInt32(ctx, "sns_coin")
 			user_content.AddContent(session, item.StarGem.Amount(snsCoin))
 			session.Finalize()
-			commonResponse(ctx, fmt.Sprintf("Added star gem: %d", snsCoin), "")
+			webui_utils.CommonResponse(ctx, fmt.Sprintf("Added star gem: %d", snsCoin), "")
 		})
 	AddBuilderFeature("Add member coin", "add_subscription_coin",
 		`<input type="number" name="subscription_coin" min="1" max="10000" value="0">`, "Add member coin",
@@ -155,7 +155,7 @@ func init() {
 			subscriptionCoin := webui_utils.GetFormInt32(ctx, "subscription_coin")
 			user_content.AddContent(session, item.MemberCoin.Amount(subscriptionCoin))
 			session.Finalize()
-			commonResponse(ctx, fmt.Sprintf("Added member coin: %d", subscriptionCoin), "")
+			webui_utils.CommonResponse(ctx, fmt.Sprintf("Added member coin: %d", subscriptionCoin), "")
 		})
 	AddBuilderFeature("Add login day", "add_login_day",
 		`<input type="number" name="login_day" min="1" max="10000" value="0">`, "Add login day",
@@ -164,7 +164,7 @@ func init() {
 			loginDay := webui_utils.GetFormInt32(ctx, "login_day")
 			session.UserStatus.LoginDays += loginDay
 			session.Finalize()
-			commonResponse(ctx, fmt.Sprintf("Added login day: %d", loginDay), "")
+			webui_utils.CommonResponse(ctx, fmt.Sprintf("Added login day: %d", loginDay), "")
 		})
 
 	AddBuilderFeature("Add costume", "add_suit",
@@ -182,7 +182,7 @@ func init() {
 				}
 			}
 			session.Finalize()
-			commonResponse(ctx, "Added costumes", "")
+			webui_utils.CommonResponse(ctx, "Added costumes", "")
 		})
 
 	AddBuilderFeature("Clear ALL missions", "clear_mission",
@@ -191,7 +191,7 @@ func init() {
 			session := ctx.MustGet("session").(*userdata.Session)
 			confirm := webui_utils.GetFormBool(ctx, "confirm")
 			if !confirm {
-				commonResponse(ctx, "Check the confirm box if you really want to complete all missions", "")
+				webui_utils.CommonResponse(ctx, "Check the confirm box if you really want to complete all missions", "")
 				return
 			}
 			user_mission.FetchMission(session)
@@ -212,7 +212,7 @@ func init() {
 				user_mission.ReceiveReward(session, ids)
 			}
 			session.Finalize()
-			commonResponse(ctx, "Cleared all mission, all reward delivered", "")
+			webui_utils.CommonResponse(ctx, "Cleared all mission, all reward delivered", "")
 		})
 
 	{
@@ -277,7 +277,7 @@ func init() {
 					user_card.AddUserCardByCardMasterId(session, card.Id)
 				}
 				session.Finalize()
-				commonResponse(ctx, "Added cards", "")
+				webui_utils.CommonResponse(ctx, "Added cards", "")
 			})
 
 		AddBuilderFeature("Increase to max limit break all owned cards of ", "mlb",
@@ -301,7 +301,7 @@ func init() {
 					user_training_tree.GradeUpCard(session, cardId, 0)
 				}
 				session.Finalize()
-				commonResponse(ctx, "Max limit breaked cards", "")
+				webui_utils.CommonResponse(ctx, "Max limit breaked cards", "")
 			})
 
 		AddBuilderFeature("Increase bond point of", "increase_love",
@@ -319,7 +319,7 @@ func init() {
 					user_member.AddMemberLovePoint(session, member.Id, amount)
 				}
 				session.Finalize()
-				commonResponse(ctx, "Increased bond points", "")
+				webui_utils.CommonResponse(ctx, "Increased bond points", "")
 			})
 
 		AddBuilderFeature("Unlock all available bond board boards of ", "unlock_love_panel",
@@ -355,7 +355,7 @@ func init() {
 					user_member.UpdateMemberLovePanel(session, userLovePanel)
 				}
 				session.Finalize()
-				commonResponse(ctx, "Unlocked bond board(s)", "")
+				webui_utils.CommonResponse(ctx, "Unlocked bond board(s)", "")
 			})
 
 		AddBuilderFeature("Practice (tiles and level) all owned cards of", "practice_cards",
@@ -437,7 +437,7 @@ func init() {
 					}
 				}
 				session.Finalize()
-				commonResponse(ctx, "Practiced(s)", "")
+				webui_utils.CommonResponse(ctx, "Practiced(s)", "")
 			})
 
 		AddBuilderFeature("Finish owned bond episodes of", "finish_member_story",
@@ -457,7 +457,7 @@ func init() {
 				}
 				session.UserModel.UserInfoTriggerBasicByTriggerId.Clear()
 				session.Finalize()
-				commonResponse(ctx, "Finished bond episodes", "")
+				webui_utils.CommonResponse(ctx, "Finished bond episodes", "")
 			})
 	}
 
@@ -467,7 +467,7 @@ func init() {
 			session := ctx.MustGet("session").(*userdata.Session)
 			confirm := webui_utils.GetFormBool(ctx, "confirm")
 			if !confirm {
-				commonResponse(ctx, "Check the confirm box if you really want to finish main story", "")
+				webui_utils.CommonResponse(ctx, "Check the confirm box if you really want to finish main story", "")
 				return
 			}
 			for _, story := range session.Gamedata.StoryMainChapter {
@@ -476,7 +476,7 @@ func init() {
 				}
 			}
 			session.Finalize()
-			commonResponse(ctx, "Finish main story!", "")
+			webui_utils.CommonResponse(ctx, "Finish main story!", "")
 		})
 	AddBuilderFeature("Unlock voice lines", "unlock_voice",
 		"", "Unlock",
@@ -490,7 +490,7 @@ func init() {
 				user_voice.UpdateUserVoice(session, voice.Id, false)
 			}
 			session.Finalize()
-			commonResponse(ctx, "Unlocked all voice lines!", "")
+			webui_utils.CommonResponse(ctx, "Unlocked all voice lines!", "")
 		})
 	AddBuilderFeature("Unlock all backgrounds", "unlock_background",
 		"", "Unlock",
@@ -504,7 +504,7 @@ func init() {
 				})
 			}
 			session.Finalize()
-			commonResponse(ctx, "Unlocked all backgrounds!", "")
+			webui_utils.CommonResponse(ctx, "Unlocked all backgrounds!", "")
 		})
 	AddBuilderFeature("Unlock all event stories", "unlock_event_story",
 		"", "Unlock",
@@ -514,6 +514,6 @@ func init() {
 				user_story_event_history.UnlockEventStory(session, story.StoryEventId)
 			}
 			session.Finalize()
-			commonResponse(ctx, "Unlocked all event stories!", "")
+			webui_utils.CommonResponse(ctx, "Unlocked all event stories!", "")
 		})
 }

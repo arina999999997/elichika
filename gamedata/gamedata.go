@@ -123,8 +123,10 @@ type Gamedata struct {
 	CardRarity     map[int32]*CardRarity
 	CardByMemberId map[int32][]*Card
 
-	ContentRarity *ContentRarity
-	ContentType   map[int32]*ContentType
+	ContentRarity         *ContentRarity
+	ContentType           map[int32]*ContentType
+	Content               map[int32]map[int32]*Content // content type then content id, not guaranteed to be valid for things like Card/Suit/...
+	ContentsByContentType map[int32][]*client.Content
 
 	Suit map[int32]*Suit
 

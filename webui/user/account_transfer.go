@@ -5,6 +5,7 @@ import (
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
+	"elichika/webui/webui_utils"
 
 	"encoding/json"
 	"fmt"
@@ -21,7 +22,7 @@ func transferAccount(ctx *gin.Context) {
 	form, _ := ctx.MultipartForm()
 	fileHeader := form.File["file"][0]
 	ext := path.Ext(fileHeader.Filename)
-	resp := Response{
+	resp := webui_utils.Response{
 		Response: new(string),
 	}
 	if (ext != ".json") && (ext != ".db") {

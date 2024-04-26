@@ -1,0 +1,38 @@
+<!-- User template -->
+<html>
+<head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
+<body onload="try_login()">
+    <form id="login_form" method="POST" enctype="multipart/form-data" onkeydown="if(event.keyCode === 13) {
+        alert('You have pressed Enter key, use submit button instead'); 
+        return false;
+    }">
+        <div><label>Admin Password</label><input type="password" id="admin_password" name="admin_password"></div>
+        <div><input type="button" onclick="login()" value="Login" /></div>
+        <div><label>The admin password is stored in config.json, defaulted to an empty string (so just click the login button).</label></div>
+    </form>
+</body>
+</html>
+<script>
+
+    function login() {
+        var formData = new FormData(document.getElementById("login_form"))
+        var req = new XMLHttpRequest()
+        req.open("POST", "/webui/admin/login")
+        req.send(formData)
+        req.onreadystatechange = function () {
+            if (req.readyState != 4) return
+            if (req.status == 200) {
+                const resp = JSON.parse(req.responseText)
+                if (resp.error != null) {
+                    alert(resp.error)
+                } else {
+                    sessionStorage.setItem("admin_session_key", resp.response)
+                    // nagivate to the main user webui hub
+                    window.location.replace("/webui/admin")
+                }
+            } else {
+                alert("unexpected error, status: " + req.status)
+            }
+        }
+    }
+</script>

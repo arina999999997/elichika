@@ -1,4 +1,4 @@
-package user
+package webui_utils
 
 import (
 	"elichika/utils"
@@ -14,7 +14,7 @@ type Response struct {
 	Error    *string `json:"error"`
 }
 
-func commonResponse(ctx *gin.Context, responseStr, errorStr string) {
+func CommonResponse(ctx *gin.Context, responseStr, errorStr string) {
 	resp := Response{}
 	if errorStr == "" {
 		resp.Response = &responseStr

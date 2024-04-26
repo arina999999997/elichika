@@ -7,7 +7,10 @@ import (
 )
 
 func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitText string) string {
-	html := `<form id="` + formId + `" method="POST"  enctype="multipart/form-data">` + "\n"
+	html := `<form id="` + formId + `" method="POST"  enctype="multipart/form-data" onkeydown="if(event.keyCode === 13) {
+		alert('You have pressed Enter key, use submit button instead'); 
+		return false;
+	}">` + "\n"
 	// html
 	ptr := reflect.ValueOf(defaultObjPtr) // pointer
 	if ptr.Kind() != reflect.Pointer {
@@ -64,7 +67,9 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 				switch field.Type {
 				case reflect.TypeOf((*string)(nil)):
 					html += `type="text" value="`
-					html += reflect.Indirect(ptr.Elem().Field(i)).Interface().(string)
+					if customType != "password" {
+						html += reflect.Indirect(ptr.Elem().Field(i)).Interface().(string)
+					}
 					html += `"`
 				case reflect.TypeOf((*int32)(nil)):
 					html += `type="number" value="`
@@ -77,7 +82,9 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 					}
 				case reflect.TypeOf((string)("")):
 					html += `type="text" value="`
-					html += ptr.Elem().Field(i).Interface().(string)
+					if customType != "password" {
+						html += ptr.Elem().Field(i).Interface().(string)
+					}
 					html += `"`
 				case reflect.TypeOf((int32)(0)):
 					html += `type="number" value="`

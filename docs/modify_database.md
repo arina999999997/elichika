@@ -18,7 +18,6 @@ To modify the database, directly modify the server's database in `elichika/asset
     - This can be done manually using some program like [DB brower for SQLite](https://sqlitebrowser.org/)
     - It can also be done through SQL scripts, that can be executed by [DB brower for SQLite](https://sqlitebrowser.org/) or any program that support handling such scripts.
     - And you can also just replace the files with files you got from elsewhere.
-    - TODO: Add database mod to WebUI?
 
 After that, you only need to restart the server and it will automatically generate the necessary files. Then you only have to login or move around with the client to trigger a database update on client side.
 

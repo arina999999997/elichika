@@ -1,15 +1,8 @@
 <html>
 <head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
 <body onload="check_login()">
-    <div>User Id: <label id="user_id_label"></label></div>
-    <div><button onclick="logout()">Logout</button></div>
-    <div>Client language: <select id="user_locale" onchange="update_locale()">
-            <option value="en">English</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="zh">Chinese (simplified)</option>
-        </select></div>
-    <div><button onclick="window.location.replace('/webui/user' + window.location.search)">Return to main menu</button>
+    <div>
+        <button onclick="window.location.replace('/webui/admin' + window.location.search)">Return to main menu</button>
     </div>
     {{ .body | noescape }}
 </body>
@@ -19,49 +12,14 @@
 <script>
     function check_login() {
         // if there is a session then use it
-        var session = sessionStorage.getItem("user_session_key")
-        var userId = sessionStorage.getItem("user_id")
-        if ((session != null) && (userId != null)) {
-            render_page()
-        } else {
-            // otherwise force a login, the login page will process this and then redirect back with a valid session
-            window.location.replace("/webui/user/login")
-        }
-    }
-
-    function render_page() {
-        document.getElementById("user_id_label").innerText = sessionStorage.getItem("user_id")
-        var locale = localStorage.getItem("user_locale")
-        if (locale != null) {
-            document.getElementById("user_locale").value = locale
-        } else {
-            document.getElementById("user_locale").value = "en"
-        }
-        update_locale()
-    }
-
-    function logout() {
-        sessionStorage.clear()
-        localStorage.clear()
-        window.location.replace("/webui/user")
-    }
-
-
-    function update_locale() {
-        if (localStorage.getItem("user_local") != document.getElementById("user_locale").value) {
-            localStorage.setItem("user_locale", document.getElementById("user_locale").value)
-        }
-        const url = new URL(location.href)
-        if (url.searchParams.get("l") != document.getElementById("user_locale").value) {
-            url.searchParams.set("l", document.getElementById("user_locale").value)
-            location.assign(url.search)
+        var session = sessionStorage.getItem("admin_session_key")
+        if (session == null) {
+            window.location.replace("/webui/admin/login")
         }
     }
 
     function clear_login_data() {
-        localStorage.removeItem("user_id")
-        localStorage.removeItem("user_password")
-        localStorage.removeItem("keep_login")
+        sessionStorage.removeItem("admin_session_key")
     }
 
     function change_disable_state(disabled = false) {
@@ -91,8 +49,7 @@
             formData = new FormData()
         }
         change_disable_state(true)
-        formData.append("user_session_key", sessionStorage.getItem("user_session_key"))
-        formData.append("user_id", sessionStorage.getItem("user_id"))
+        formData.append("admin_session_key", sessionStorage.getItem("admin_session_key"))
         var req = new XMLHttpRequest()
         req.open("POST", submitTo)
         if (!isResponseFile) {
@@ -106,7 +63,7 @@
                     if (resp.error != null) {
                         clear_login_data()
                         alert(resp.error)
-                        window.location.replace("/webui/user/login")
+                        window.location.replace("/webui/admin/login")
                     } else {
                         alert(resp.response)
                         if (callback != null) {
@@ -120,7 +77,7 @@
                     // no clear response from server
                     clear_login_data()
                     alert("unexpected error, status: " + req.status)
-                    window.location.replace("/webui/user/login")
+                    window.location.replace("/webui/admin/login")
                 }
             }
         } else { // file, use this hack so there's a save dialog
@@ -171,7 +128,7 @@
                     // no clear response from server
                     clear_login_data()
                     alert("unexpected error, status: " + req.status)
-                    window.location.replace("/webui/user/login")
+                    window.location.replace("/webui/admin/login")
                 }
             }
         }

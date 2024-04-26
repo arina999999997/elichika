@@ -16,4 +16,16 @@ git submodule update --init && \
 # set the permission
 chmod +rx elichika && \
 echo "Installed succesfully!"
-# TODO: maybe edit .bashrc to make an easier command
+
+if [ $? -eq 0 ]; then
+# setting up the script and run bash so it's actually sourced
+    touch ~/.bashrc && \
+    echo ELICHIKA_DIR=$PWD >> ~/.bashrc && \
+    echo "alias run_elichika='cd \$ELICHIKA_DIR && ./elichika'" >> ~/.bashrc && \
+    echo "alias update_elichika='cd \$ELICHIKA_DIR && git pull && (go build || CGO_ENABLED=0 go build)'" >> ~/.bashrc && \
+    echo "Use \"run_elichika\" in termux to run the server!" && \
+    echo "Use \"update_elichika\" in termux to update the server!" && \
+    bash
+else
+    echo "Error installing"
+fi
