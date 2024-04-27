@@ -18,14 +18,15 @@ chmod +rx elichika && \
 echo "Installed succesfully!"
 
 if [ $? -eq 0 ]; then
-# setting up the script and run bash so it's actually sourced
-    touch ~/.bashrc && \
-    echo ELICHIKA_DIR=$PWD >> ~/.bashrc && \
-    echo "alias run_elichika='cd \$ELICHIKA_DIR && ./elichika'" >> ~/.bashrc && \
-    echo "alias update_elichika='cd \$ELICHIKA_DIR && git pull && (go build || CGO_ENABLED=0 go build)'" >> ~/.bashrc && \
-    echo "Use \"run_elichika\" in termux to run the server!" && \
-    echo "Use \"update_elichika\" in termux to update the server!" && \
-    bash
+    echo "cd $PWD && ./elichika" > ~/run_elichika && \
+    echo "cd $PWD && git pull && \
+    git submodule deinit -f . && \
+    git submodule update --init --recursive --checkout && \
+    (go build || CGO_ENABLED=0 go build)" > ~/update_elichika && \
+    chmod +x ~/run_elichika && \
+    chmod +x ~/update_elichika && \
+    echo "Use \"~/run_elichika\" in termux to run the server!" && \
+    echo "Use \"~/update_elichika\" in termux to update the server!"
 else
     echo "Error installing"
 fi
