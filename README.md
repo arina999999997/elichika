@@ -28,7 +28,7 @@ This will leave some trashes, so you can clone the respository and build manuall
 After installing, you need to run the server to play using the following command:
 
 ```
-run_elichika
+~/run_elichika
 ```
 
 If you have GUI for Windows/Linux, you can also just run the executable directly.
@@ -39,12 +39,12 @@ Note that whenever you want to play, the server need to be on, so if you already
 You can update the server by running:
 
 ```
-update_elichika
+~/update_elichika
 ```
 
 As of current version, you should be able to keep your progress while doing this, so it's recommended to do it often so you get access to newly implemented features.
 
-It is also a good idea to backup ``userdata.db`` or to export your data (with the WebUI) before doing this, as updating can result in breaking changes.
+It is also a good idea to backup ``userdata.db`` or to export your data (with the WebUI) before doing this, as updating from a too old version might result in breaking changes.
 
 ## Playing the game
 With the server running, and the client network setup correctly, simply open the game and play.

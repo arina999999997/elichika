@@ -51,7 +51,7 @@ func checkTakeOver(ctx *gin.Context) {
 
 	currentSession = userdata.GetSession(ctx, req.UserId)
 	defer currentSession.Close()
-	linkedSession = userdata.GetSession(ctx, linkedUserId)
+	linkedSession = userdata.GetSessionWithSharedDb(ctx, linkedUserId, currentSession)
 	defer linkedSession.Close()
 
 	if currentSession != nil { // has current session, fill in current user

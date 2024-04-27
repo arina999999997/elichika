@@ -49,7 +49,8 @@ type Session struct {
 
 	AuthenticationData database.UserAuthentication
 
-	Finalized bool
+	Finalized  bool
+	IsSharedDb bool
 }
 
 func (session *Session) NextUniqueId() int64 {
@@ -78,13 +79,15 @@ func (session *Session) Finalize() {
 			}
 		}
 	}
-	err = session.Db.Commit()
-	utils.CheckErr(err)
+	if !session.IsSharedDb {
+		err = session.Db.Commit()
+		utils.CheckErr(err)
+	}
 }
 
 func (session *Session) Close() {
 	// fmt.Printf("close: %p\n", session)
-	if session == nil {
+	if (session == nil) || session.IsSharedDb {
 		return
 	}
 	err := recover()
@@ -123,6 +126,10 @@ func UserExist(userId int32) bool {
 }
 
 func GetSession(ctx *gin.Context, userId int32) *Session {
+	return GetSessionWithSharedDb(ctx, userId, nil)
+}
+
+func GetSessionWithSharedDb(ctx *gin.Context, userId int32, otherSession *Session) *Session {
 	s := Session{}
 	s.Time = time.Now()
 	s.Ctx = ctx
@@ -133,8 +140,6 @@ func GetSession(ctx *gin.Context, userId int32) *Session {
 			s.Gamedata = g.(*gamedata.Gamedata)
 		}
 	}
-	s.Db = Engine.NewSession()
-	err := s.Db.Begin()
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -142,7 +147,14 @@ func GetSession(ctx *gin.Context, userId int32) *Session {
 			panic(err)
 		}
 	}()
-	utils.CheckErr(err)
+	if otherSession != nil {
+		s.Db = otherSession.Db
+		s.IsSharedDb = true
+	} else {
+		s.Db = Engine.NewSession()
+		err := s.Db.Begin()
+		utils.CheckErr(err)
+	}
 
 	exist, err := s.Db.Table("u_status").Where("user_id = ?", userId).Get(&s.UserModel.UserStatus)
 	utils.CheckErr(err)
