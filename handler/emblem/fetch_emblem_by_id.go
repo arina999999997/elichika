@@ -21,7 +21,7 @@ func fetchEmblemById(ctx *gin.Context) {
 
 	session := ctx.MustGet("session").(*userdata.Session)
 
-	otherUserSession := userdata.GetSession(ctx, req.UserId)
+	otherUserSession := userdata.GetSessionWithSharedDb(ctx, req.UserId, session)
 	otherUserSession.PopulateUserModelField("UserEmblemByEmblemId")
 	resp := response.FetchEmblemResponse{
 		UserModel: &session.UserModel,
