@@ -37,7 +37,7 @@ func getUserDailyMission(session *userdata.Session, missionId int32) client.User
 		ptr.MissionStartCount = ptr.MissionCount
 		ptr.IsCleared = false
 		ptr.IsReceivedReward = false
-		ptr.ClearedExpiredAt = generic.NewNullable(utils.StartOfNextDay(session.Time).Unix())
+		ptr.ClearedExpiredAt = generic.NewNullable(utils.BeginOfNextDay(session.Time).Unix())
 	}
 	return *ptr
 }

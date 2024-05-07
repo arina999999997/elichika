@@ -1,11 +1,11 @@
-package member_guild
+package info_trigger
 
 import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_member_guild"
+	"elichika/subsystem/user_info_trigger"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -14,20 +14,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func joinMemberGuild(ctx *gin.Context) {
-	req := request.JoinMemberGuildRequest{}
+func readByType(ctx *gin.Context) {
+	req := request.ReadInfoTriggerByTypeRequest{}
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
 
 	session := ctx.MustGet("session").(*userdata.Session)
+	user_info_trigger.DeleteTriggerBasicByType(session, req.InfoTriggerType)
 
-	user_member_guild.JoinMemberGuild(session, req.MemberMasterId)
-
-	common.JsonResponse(ctx, response.UserModelResponse{
+	common.JsonResponse(ctx, &response.UserModelResponse{
 		UserModel: &session.UserModel,
 	})
 }
 
 func init() {
-	router.AddHandler("/", "POST", "/memberGuild/joinMemberGuild", joinMemberGuild)
+	router.AddHandler("/", "POST", "/infoTrigger/readByType", readByType)
 }

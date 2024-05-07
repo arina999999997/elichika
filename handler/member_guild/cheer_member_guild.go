@@ -20,8 +20,9 @@ func cheerMemberGuild(ctx *gin.Context) {
 
 	session := ctx.MustGet("session").(*userdata.Session)
 
-	resp := user_member_guild.Cheer(session, req.CheerItemAmount)
-
+	resp := user_member_guild.CheerMemberGuild(session, req.CheerItemAmount)
+	session.Finalize()
+	resp.MemberGuildTopStatus = user_member_guild.FetchMemberGuildTop(session).MemberGuildTopStatus
 	common.JsonResponse(ctx, &resp)
 }
 

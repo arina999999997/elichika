@@ -17,7 +17,7 @@ func recoverLpSubscription(ctx *gin.Context) {
 
 	user_status.AddUserLp(session, session.Gamedata.UserRank[session.UserStatus.Rank].MaxLp)
 	session.UserStatus.LivePointSubscriptionRecoveryDailyCount = 1 // 1 mean used
-	session.UserStatus.LivePointSubscriptionRecoveryDailyResetAt = utils.StartOfNextDay(session.Time).Unix()
+	session.UserStatus.LivePointSubscriptionRecoveryDailyResetAt = utils.BeginOfNextDay(session.Time).Unix()
 
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,

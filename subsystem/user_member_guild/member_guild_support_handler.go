@@ -19,9 +19,9 @@ func userMemberGuildContentHandler(session *userdata.Session, content *client.Co
 		}
 	}
 
-	if int64(item.SupportItemResetAt) < session.Time.Unix() {
+	if int64(item.SupportItemResetAt) <= session.Time.Unix() {
 		item.Amount = 0
-		item.SupportItemResetAt = int32(GetCurrentMemberGuildRankingPeriodStart(session) + session.Gamedata.MemberGuildPeriod.RankingEndSecs - 1)
+		item.SupportItemResetAt = int32(GetCurrentMemberGuildEnd(session))
 	}
 
 	item.Amount += content.ContentAmount

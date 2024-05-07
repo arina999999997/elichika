@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"strconv"
 	"strings"
 
@@ -22,6 +23,8 @@ func initial(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	defer ctx.Request.Body.Close()
+
+	log.Println("Accepting: ", ctx.Request.URL.String())
 
 	lang, _ := ctx.GetQuery("l")
 	if lang == "" {

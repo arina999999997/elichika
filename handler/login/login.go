@@ -28,7 +28,7 @@ func login(ctx *gin.Context) {
 
 	ctx.Set("sign_key", session.AuthorizationKey())
 	if session.AuthenticationData.AuthorizationCount+1 != req.AuthCount { // wrong authcount
-		common.JsonResponseWithRespnoseType(ctx, response.InvalidAuthCountResponse{
+		common.JsonResponseWithResponseType(ctx, response.InvalidAuthCountResponse{
 			AuthorizationCount: session.AuthenticationData.AuthorizationCount,
 		}, 1)
 		return

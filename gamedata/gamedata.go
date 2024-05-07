@@ -91,8 +91,13 @@ type Gamedata struct {
 	MemberLovePanelLevelAtLoveLevel []int32
 	MemberByBirthday                map[int32]([]*Member)
 
-	MemberGuildPeriod      MemberGuildPeriod
-	MemberGuildCheerReward map[int32]*drop.DropList[client.Content]
+	MemberGuildConstant             MemberGuildConstant
+	MemberGuildPeriod               MemberGuildPeriod
+	MemberGuildCheerReward          map[int32]*drop.DropList[client.Content]
+	MemberGuildRankingRewardInside  map[int32]*MemberGuildRankingReward
+	MemberGuildRankingRewardOutside map[int32]*MemberGuildRankingReward
+	MemberGuildPointClearReward     map[int32]*MemberGuildPointClearReward
+	MemberGuildChallengeLive        MemberGuildChallengeLive
 
 	Mission                     map[int32]*Mission
 	MissionByClearConditionType map[int32][]*Mission

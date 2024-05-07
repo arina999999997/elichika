@@ -14,6 +14,7 @@ import (
 	"elichika/subsystem/user_live_difficulty"
 	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_member_guild"
 	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_profile"
 	"elichika/subsystem/user_status"
@@ -244,7 +245,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			if !exist {
 				memberRepresentativeCard[memberMasterId] = liveFinishCard.CardMasterId
 			}
-			memberLoveGained[memberMasterId] += int32(addedLove)
+			memberLoveGained[memberMasterId] += addedLove
 		}
 		// it's normal to show +0 on the bond screen if the person is already maxed
 		// this is checked against (video) recording
@@ -258,6 +259,27 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			resp.LiveResult.MemberLoveStatuses.Set(liveFinishCard.CardMasterId, client.LiveResultMemberLoveStatus{
 				RewardLovePoint: addedLove,
 			})
+		}
+		// member guild
+		if user_member_guild.IsMemberGuildRankingPeriod(session) {
+			memberGuildMemberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId
+			if memberGuildMemberMasterId.HasValue && user_member_guild.IsMemberGuildRankingPeriod(session) {
+				loveGained, hasLove := memberLoveGained[session.UserModel.UserStatus.MemberGuildMemberMasterId.Value]
+				voltagePoint := int32(0)
+				hasVoltage := false
+				if liveDifficulty.IsCountTarget {
+					voltagePoint, hasVoltage = user_member_guild.UpdateVoltagePoint(session, liveDifficulty.Live.LiveId, req.LiveScore.CurrentScore)
+				}
+				if hasLove || hasVoltage {
+					lovePointAdded := user_member_guild.AddLovePoint(session, loveGained)
+					resp.LiveResult.LiveResultMemberGuild = generic.NewNullable(client.LiveResultMemberGuild{
+						MemberGuildId:       user_member_guild.GetCurrentMemberGuildId(session),
+						ReceiveLovePoint:    lovePointAdded,
+						ReceiveVoltagePoint: voltagePoint,
+						TotalPoint:          user_member_guild.GetCurrentUserMemberGuildTotalPoint(session),
+					})
+				}
+			}
 		}
 
 		// mission stuff

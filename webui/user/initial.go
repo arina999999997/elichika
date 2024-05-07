@@ -6,11 +6,11 @@ import (
 	"elichika/userdata"
 	"elichika/utils"
 
+	"bytes"
 	"encoding/base64"
+	"log"
 	"strconv"
 	"strings"
-	// "fmt"
-	"bytes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +27,7 @@ func userInitial(ctx *gin.Context) {
 	var session *userdata.Session
 	defer func() { session.Close() }()
 	if ctx.Request.Method == "POST" {
+		log.Println("Accepting: ", ctx.Request.URL.String())
 		form, err := ctx.MultipartForm()
 		utils.CheckErr(err)
 		ctx.Set("form", form)

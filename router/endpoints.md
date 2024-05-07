@@ -106,14 +106,14 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /gdpr/updateConsentState
 - [ ] /gpsPresent/saveCampaignLocation
 - [x] /infoTrigger/read
-- [ ] /infoTrigger/readByType
+- [x] /infoTrigger/readByType
 - [x] /infoTrigger/readCardGradeUp
 - [ ] /infoTrigger/readEventCommonShowResult
 - [ ] /infoTrigger/readEventMarathonResult
 - [ ] /infoTrigger/readEventMiningResult
 - [ ] /infoTrigger/readExpiredGiftBox
 - [ ] /infoTrigger/readGachaPointExchange
-- [ ] /infoTrigger/readMemberGuildRankingResult
+- [x] /infoTrigger/readMemberGuildRankingResult
 - [x] /infoTrigger/readMemberGuildSupportItemExpired
 - [x] /infoTrigger/readMemberLoveLevelUp
 - [ ] /infoTrigger/readSubscriptionEnd

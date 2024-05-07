@@ -9,31 +9,25 @@ import (
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_present"
 	"elichika/userdata"
+	"elichika/utils"
 )
 
-func Cheer(session *userdata.Session, count generic.Nullable[int32]) response.CheerMemberGuildResponse {
+func CheerMemberGuild(session *userdata.Session, count generic.Nullable[int32]) response.CheerMemberGuildResponse {
 	resp := response.CheerMemberGuildResponse{
 		UserModelDiff: &session.UserModel,
 	}
-
-	// this is the same with FetchMemberGuildTop
-	rank := int32(0)
-	for _, member := range session.Gamedata.Member {
-		rank++
-		resp.MemberGuildTopStatus.MemberGuildRankingAnimationInfo.Append(
-			client.MemberGuildRankingAnimationInfo{
-				MemberMasterId:          member.Id,
-				MemberGuildRankingOrder: rank,
-				MemberGuildRankingPoint: 100000 - rank*1000,
-			})
+	userMemberGuild := GetCurrentUserMemberGuild(session)
+	if !count.HasValue { // free chance
+		userMemberGuild.SupportPointCountResetAt = utils.BeginOfNextHalfDay(session.Time).Unix()
+		count.Value = 1
+	} else {
+		user_content.RemoveContent(session, item.RallyMegaphone.Amount(count.Value))
 	}
 
-	// TODO(member_guild): Award cheer points when we implement it
-	if !count.HasValue {
-		count.Value = 1
-		// TODO(member_guild): Mark this as used?
-	} else {
-		user_content.RemoveContent(session, item.RallyMegaphone.Amount(-count.Value))
+	if IsMemberGuildRankingPeriod(session) {
+		pointGain := session.Gamedata.MemberGuildConstant.SupportPoint * count.Value
+		userMemberGuild.SupportPoint += pointGain
+		userMemberGuild.DailySupportPoint += pointGain
 	}
 
 	for i := int32(0); i < count.Value; i++ {
@@ -45,5 +39,6 @@ func Cheer(session *userdata.Session, count generic.Nullable[int32]) response.Ch
 		})
 		resp.Rewards.Append(content)
 	}
+	UpdateUserMemberGuild(session, userMemberGuild)
 	return resp
 }

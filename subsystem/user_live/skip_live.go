@@ -11,6 +11,7 @@ import (
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
+	"elichika/subsystem/user_member_guild"
 	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_status"
 	"elichika/userdata"
@@ -95,6 +96,21 @@ func SkipLive(session *userdata.Session, req request.SkipLiveRequest) response.S
 		resp.SkipLiveResult.MemberLoveStatuses.Set(cardMasterId, client.LiveResultMemberLoveStatus{
 			RewardLovePoint: addedLove,
 		})
+	}
+
+	// member guild
+	memberGuildMemberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId
+	if memberGuildMemberMasterId.HasValue {
+		loveGained, exist := memberLoveGained[session.UserModel.UserStatus.MemberGuildMemberMasterId.Value]
+		if exist && (user_member_guild.IsMemberGuildRankingPeriod(session)) {
+			lovePointAdded := user_member_guild.AddLovePoint(session, loveGained)
+			resp.SkipLiveResult.LiveResultMemberGuild = generic.NewNullable(client.LiveResultMemberGuild{
+				MemberGuildId:       user_member_guild.GetCurrentMemberGuildId(session),
+				ReceiveLovePoint:    lovePointAdded,
+				ReceiveVoltagePoint: 0,
+				TotalPoint:          user_member_guild.GetCurrentUserMemberGuildTotalPoint(session),
+			})
+		}
 	}
 
 	// if liveDifficulty.IsCountTarget { // counted toward target and profiles

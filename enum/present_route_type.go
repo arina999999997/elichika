@@ -37,9 +37,9 @@ const (
 	PresentRouteTypeStoryLinkageAddtional             int32 = 0x00000022 // unused for now
 	PresentRouteTypeExternalMovieReward               int32 = 0x00000023 // unused for now
 	PresentRouteTypeMemberGuildSupportReward          int32 = 0x00000024 // handled
-	PresentRouteTypeMemberGuildInsideRankingReward    int32 = 0x00000025 // unused for now
-	PresentRouteTypeMemberGuildOutsideRankingReward   int32 = 0x00000026 // unused for now
-	PresentRouteTypeMemberGuildPointClearReward       int32 = 0x00000027 // unused for now
+	PresentRouteTypeMemberGuildInsideRankingReward    int32 = 0x00000025 // handled
+	PresentRouteTypeMemberGuildOutsideRankingReward   int32 = 0x00000026 // handled
+	PresentRouteTypeMemberGuildPointClearReward       int32 = 0x00000027 // handled
 	PresentRouteTypeTowerBonusLiveRankingReward       int32 = 0x00000028 // unused for now
 	PresentRouteTypeSteadyVoltageRankingReward        int32 = 0x00000029 // unused for now
 	PresentRouteTypeDebug                             int32 = 0x00000063 // unused for now

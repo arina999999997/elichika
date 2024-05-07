@@ -45,7 +45,7 @@ func SignRespWithRespnoseType(ctx *gin.Context, body string, key []byte, rType i
 	return
 }
 
-func JsonResponseWithRespnoseType(ctx *gin.Context, resp any, rType int32) {
+func JsonResponseWithResponseType(ctx *gin.Context, resp any, rType int32) {
 	session := ctx.MustGet("session").(*userdata.Session)
 	if session != nil {
 		session.Finalize() // calling this multiple time is fine

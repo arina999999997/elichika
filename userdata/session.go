@@ -116,8 +116,8 @@ func init() {
 	AddFinalizer(userStatusFinalizer)
 }
 
-func UserExist(userId int32) bool {
-	exist, err := Engine.Table("u_status").Exist(
+func (session *Session) UserExist(userId int32) bool {
+	exist, err := session.Db.Table("u_status").Exist(
 		&generic.UserIdWrapper[client.UserStatus]{
 			UserId: userId,
 		})

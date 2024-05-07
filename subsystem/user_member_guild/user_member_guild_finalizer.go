@@ -7,6 +7,7 @@ import (
 
 func userMemberGuildFinalizer(session *userdata.Session) {
 	for _, userMemberGuild := range session.UserModel.UserMemberGuildById.Map {
+		userMemberGuild.TotalPoint = userMemberGuild.SupportPoint + userMemberGuild.LovePoint + userMemberGuild.VoltagePoint
 		affected, err := session.Db.Table("u_member_guild").Where("user_id = ? AND member_guild_id = ?",
 			session.UserId, userMemberGuild.MemberGuildId).AllCols().Update(*userMemberGuild)
 		utils.CheckErr(err)

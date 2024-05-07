@@ -1,24 +1,19 @@
 package member_guild
 
 import (
-	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	// "elichika/userdata"
+	"elichika/subsystem/user_member_guild"
+	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"
 )
 
-// TODO(member_guild): the logic of this part is wrong or missing
-
 func fetchMemberGuildSelect(ctx *gin.Context) {
 	// There is no request body
-	// session := ctx.MustGet("session").(*userdata.Session)
+	session := ctx.MustGet("session").(*userdata.Session)
 
-	// this just work
-	resp := response.FetchMemberGuildSelectResponse{}
-
-	common.JsonResponse(ctx, resp)
+	common.JsonResponse(ctx, user_member_guild.FetchMemberGuildSelect(session))
 }
 
 func init() {
