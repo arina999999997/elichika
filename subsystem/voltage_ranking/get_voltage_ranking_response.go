@@ -4,7 +4,7 @@ import (
 	"elichika/client"
 	"elichika/client/response"
 	"elichika/subsystem/cache"
-	"elichika/subsystem/user_profile"
+	"elichika/subsystem/user_social"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -41,7 +41,7 @@ func getVoltageRankingResponseNoCache(session *userdata.Session, liveDifficultyI
 		resp.VoltageRankingCells.Append(client.VoltageRankingCell{
 			Order:              int32(i + 1),
 			VoltagePoint:       record.VoltagePoint,
-			VoltageRankingUser: user_profile.GetVoltageRankingUser(session, record.UserId),
+			VoltageRankingUser: user_social.GetVoltageRankingUser(session, record.UserId),
 		})
 	}
 	return &resp

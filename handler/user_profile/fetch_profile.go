@@ -4,7 +4,7 @@ import (
 	"elichika/client/request"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_profile"
+	"elichika/subsystem/user_social"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -20,7 +20,7 @@ func fetchProfile(ctx *gin.Context) {
 
 	session := ctx.MustGet("session").(*userdata.Session)
 
-	common.JsonResponse(ctx, user_profile.GetOtherUserProfileResponse(session, req.UserId))
+	common.JsonResponse(ctx, user_social.GetOtherUserProfileResponse(session, req.UserId))
 }
 
 func init() {

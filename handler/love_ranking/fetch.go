@@ -7,7 +7,7 @@ import (
 	"elichika/generic"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_profile"
+	"elichika/subsystem/user_social"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -26,7 +26,7 @@ func fetch(ctx *gin.Context) {
 	// TODO(ranking): fetch from db instead
 	resp := response.FetchLoveRankingResponse{}
 	resp.LoveRankingData.Append(client.LoveRankingData{
-		RankingUser: user_profile.GetRankingUser(session, session.UserId),
+		RankingUser: user_social.GetRankingUser(session, session.UserId),
 		Order:       1,
 		LovePoint:   1000000,
 	})

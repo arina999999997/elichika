@@ -5,21 +5,18 @@ import (
 	"elichika/enum"
 	"elichika/handler/common"
 	"elichika/router"
-	// "elichika/userdata"
+	"elichika/subsystem/user_social"
+	"elichika/userdata"
 
 	"github.com/gin-gonic/gin"
 )
 
-// TODO(friend): Implement friend system
 func fetchFriendList(ctx *gin.Context) {
-	// there's no request body
-
-	// userId := int32(ctx.GetInt("user_id"))
-	// session := userdata.GetSession(ctx, userId)
-	// defer session.Close()
+	session := ctx.MustGet("session").(*userdata.Session)
 
 	common.JsonResponse(ctx, response.FriendListResponse{
-		SuccessType: enum.FriendSuccessTypeNoProblem, // not sure why this value is necessary but ok
+		SuccessType:    enum.FriendSuccessTypeNoProblem,
+		FriendViewList: user_social.GetFriendViewList(session),
 	})
 }
 

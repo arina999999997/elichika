@@ -49,7 +49,7 @@ func (session *Session) ImportDatabaseData(ctx *gin.Context, bytes []byte) (*str
 	var userId *int32
 	// allow importing from a separate user id to
 	for table, inter := range database.UserDataTableNameToInterface {
-		if table == "u_pass_word" || table == "u_authentication" {
+		if table == "u_pass_word" || table == "u_authentication" || table == "u_friend_status" {
 			continue
 		}
 		rows := reflect.New(reflect.SliceOf(reflect.TypeOf(inter)))

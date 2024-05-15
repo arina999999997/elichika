@@ -16,7 +16,7 @@ import (
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_member_guild"
 	"elichika/subsystem/user_mission"
-	"elichika/subsystem/user_profile"
+	"elichika/subsystem/user_social"
 	"elichika/subsystem/user_status"
 	"elichika/subsystem/user_story_main"
 	"elichika/subsystem/voltage_ranking"
@@ -407,7 +407,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 	resp.LiveResult.LiveResultAchievementStatus.GotVoltage = req.LiveScore.CurrentScore
 	resp.LiveResult.LiveResultAchievementStatus.RemainingStamina = req.LiveScore.RemainingStamina
 	if live.LivePartnerCard.HasValue {
-		resp.LiveResult.Partner = generic.NewNullable(user_profile.GetOtherUser(session, startReq.PartnerUserId))
+		resp.LiveResult.Partner = generic.NewNullable(user_social.GetOtherUser(session, startReq.PartnerUserId))
 	}
 
 	user_live_difficulty.UpdateLiveDifficulty(session, userLiveDifficulty)

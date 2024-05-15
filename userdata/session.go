@@ -3,7 +3,6 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/gamedata"
-	"elichika/generic"
 	"elichika/userdata/database"
 	"elichika/utils"
 
@@ -114,15 +113,6 @@ func userStatusFinalizer(session *Session) {
 
 func init() {
 	AddFinalizer(userStatusFinalizer)
-}
-
-func (session *Session) UserExist(userId int32) bool {
-	exist, err := session.Db.Table("u_status").Exist(
-		&generic.UserIdWrapper[client.UserStatus]{
-			UserId: userId,
-		})
-	utils.CheckErr(err)
-	return exist
 }
 
 func GetSession(ctx *gin.Context, userId int32) *Session {

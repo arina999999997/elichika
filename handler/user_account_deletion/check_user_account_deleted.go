@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
+	"elichika/subsystem/user_social"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -19,17 +20,11 @@ func checkUserAccountDeleted(ctx *gin.Context) {
 	utils.CheckErr(err)
 
 	// response with an empty response, or more precisely UserAccountDeletionRecoverableExceptionResponse if the user exist
-	// do not response otherwise
-	// TODO(protocol): This one can have alternative response, check it (some other might have too)
 	session := ctx.MustGet("session").(*userdata.Session)
-	if !session.UserExist(req.UserId) {
-		common.JsonResponseWithResponseType(ctx, response.UserAccountDeletionRecoverableExceptionResponse{}, 1)
+	if !user_social.UserExist(session, req.UserId) {
+		common.AlternativeJsonResponse(ctx, response.UserAccountDeletionRecoverableExceptionResponse{})
 	} else {
-		common.JsonResponseWithResponseType(ctx, response.UserAccountDeletionRecoverableExceptionResponse{}, 1)
-		// TODO(multiplayer):
-		// TODO(friend):
-		// This prevent users from viewing other users profile, because doing so currently lead to a frozen game
-		// common.JsonResponse(ctx, response.EmptyResponse{})
+		common.JsonResponse(ctx, response.EmptyResponse{})
 	}
 }
 

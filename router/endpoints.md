@@ -87,17 +87,17 @@ Also note that some endpoints won't need to be handled at all either because the
 - [ ] /eventMiningRanking/fetchEventMiningRanking
 - [ ] /externalMovie/fetchBrowseExternalMovie
 - [ ] /externalMovie/saveBrowseExternalMovie
-- [ ] /friend/apply
-- [ ] /friend/applyOtherScene
-- [ ] /friend/approve
-- [ ] /friend/approveOtherScene
-- [ ] /friend/cancel
-- [ ] /friend/cancelOtherScene
+- [x] /friend/apply
+- [x] /friend/applyOtherScene
+- [x] /friend/approve
+- [x] /friend/approveOtherScene
+- [x] /friend/cancel
+- [x] /friend/cancelOtherScene
 - [x] /friend/fetchFriendList
-- [ ] /friend/refuse
-- [ ] /friend/remove
-- [ ] /friend/removeOtherScene
-- [ ] /friend/searchUserId
+- [x] /friend/refuse
+- [x] /friend/remove
+- [x] /friend/removeOtherScene
+- [x] /friend/searchUserId
 - [x] /gacha/draw
 - [x] /gacha/fetchGachaMenu
 - [ ] /gacha/fixRetry

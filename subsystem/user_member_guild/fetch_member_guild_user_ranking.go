@@ -3,7 +3,7 @@ package user_member_guild
 import (
 	"elichika/client"
 	"elichika/generic"
-	"elichika/subsystem/user_profile"
+	"elichika/subsystem/user_social"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -26,7 +26,7 @@ func FetchMemberGuildUserRanking(session *userdata.Session, memberGuildId int32)
 		memberGuild := user.Object
 		ranking.TopRanking.Append(client.MemberGuildUserRankingCell{
 			TotalPoint:                     memberGuild.TotalPoint,
-			MemberGuildUserRankingUserData: user_profile.GetMemberGuildUserRankingUserData(session, user.UserId),
+			MemberGuildUserRankingUserData: user_social.GetMemberGuildUserRankingUserData(session, user.UserId),
 		})
 		if (i == 0) || (ranking.TopRanking.Slice[i].TotalPoint != ranking.TopRanking.Slice[i-1].TotalPoint) {
 			ranking.TopRanking.Slice[i].Order = generic.NewNullable(int32(i + 1))
@@ -68,7 +68,7 @@ func FetchMemberGuildUserRanking(session *userdata.Session, memberGuildId int32)
 			memberGuild := user.Object
 			ranking.MyRanking.Append(client.MemberGuildUserRankingCell{
 				TotalPoint:                     memberGuild.TotalPoint,
-				MemberGuildUserRankingUserData: user_profile.GetMemberGuildUserRankingUserData(session, user.UserId),
+				MemberGuildUserRankingUserData: user_social.GetMemberGuildUserRankingUserData(session, user.UserId),
 			})
 			ranking.MyRanking.Slice[i].Order = generic.NewNullable(int32(i) + int32(rank))
 		}

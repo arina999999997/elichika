@@ -27,7 +27,7 @@ func receiveReward(ctx *gin.Context) {
 	case response.MissionReceiveResponse:
 		common.JsonResponse(ctx, &resp)
 	case response.MissionReceiveErrorResponse:
-		common.JsonResponseWithResponseType(ctx, &resp, 1)
+		common.AlternativeJsonResponse(ctx, &resp)
 	default:
 		panic("not supported")
 	}
