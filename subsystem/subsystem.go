@@ -27,7 +27,6 @@ import (
 	_ "elichika/subsystem/user_live_deck"
 	_ "elichika/subsystem/user_live_difficulty"
 	_ "elichika/subsystem/user_live_mv"
-	_ "elichika/subsystem/user_live_partner"
 	_ "elichika/subsystem/user_live_party"
 	_ "elichika/subsystem/user_login"
 	_ "elichika/subsystem/user_login_bonus"

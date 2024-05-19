@@ -1,4 +1,4 @@
-package user_live_partner
+package user_social
 
 import (
 	"elichika/client"

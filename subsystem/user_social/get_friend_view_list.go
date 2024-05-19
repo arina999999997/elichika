@@ -27,6 +27,9 @@ func GetFriendViewList(session *userdata.Session) client.FriendViewList {
 			UpdateUserFriendStatus(session, friendStatus)
 		}
 	}
-	// TODO(social): Fill the RecomendPlayerList too
+	recommend := GetRecommendedUserIds(session)
+	for _, otherUserId := range recommend {
+		view.RecomendPlayerList.Append(GetOtherUser(session, otherUserId))
+	}
 	return view
 }

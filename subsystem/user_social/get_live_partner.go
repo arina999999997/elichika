@@ -1,4 +1,4 @@
-package user_live_partner
+package user_social
 
 import (
 	"elichika/client"
@@ -6,13 +6,15 @@ import (
 	"elichika/utils"
 )
 
-func GetOtherUserLivePartner(session *userdata.Session, otherUserId int32) client.LivePartner {
+// TODO(cache): This can be cached
+
+func GetLivePartner(session *userdata.Session, otherUserId int32) client.LivePartner {
 	partner := client.LivePartner{}
 
 	exist, err := session.Db.Table("u_status").Where("user_id = ?", otherUserId).Get(&partner)
 	utils.CheckErrMustExist(err, exist)
 
-	partner.IsFriend = true
+	partner.IsFriend = IsFriend(session, otherUserId)
 	for i := int32(1); i <= 7; i++ {
 		partnerCard := GetOtherUserProfileLivePartnerCard(session, otherUserId, i)
 		if partnerCard.PartnerCard.CardMasterId != 0 {

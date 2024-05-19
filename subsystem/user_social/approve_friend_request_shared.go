@@ -23,7 +23,7 @@ func ApproveFriendRequestShared(session *userdata.Session, otherUserId int32) (b
 	if IsOtherUserMaxFriend(session, otherUserId) {
 		return false, enum.FriendFailureTypeApproveMaxTargetFriend
 	}
-	// TODO(social): FriendFailureTypeApproveExpired is not implemented as friend requests don't expire for now
+	// TODO(extra, social): FriendFailureTypeApproveExpired is not implemented as friend requests don't expire for now
 
 	incoming := GetUserFriendStatus(session, otherUserId)
 	if !incoming.IsRequestPending {

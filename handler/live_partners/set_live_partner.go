@@ -5,7 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/router"
-	"elichika/subsystem/user_live_partner"
+	"elichika/subsystem/user_social"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -21,7 +21,7 @@ func setLivePartner(ctx *gin.Context) {
 
 	session := ctx.MustGet("session").(*userdata.Session)
 
-	user_live_partner.SetLivePartnerCard(session, req.LivePartnerCategoryId, req.CardMasterId)
+	user_social.SetLivePartnerCard(session, req.LivePartnerCategoryId, req.CardMasterId)
 
 	common.JsonResponse(ctx, response.EmptyResponse{})
 }

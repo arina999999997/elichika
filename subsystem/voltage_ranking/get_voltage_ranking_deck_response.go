@@ -23,7 +23,7 @@ func GetVoltageRankingDeckResponse(session *userdata.Session, liveDifficultyId i
 		cacher.Value = getVoltageRankingDeckNoCache(session, liveDifficultyId, userId)
 	}
 	return response.GetVoltageRankingDeckResponse{
-		User: user_social.GetOtherUser(session, userId),
+		User:       user_social.GetOtherUser(session, userId),
 		DeckDetail: *cacher.Value,
 	}
 }
