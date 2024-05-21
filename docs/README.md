@@ -34,8 +34,8 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [x] Fully working bond board system.
     - [x] Bond stories are unlocked by level once you unlock the bond story feature for one member (get to level 3 bond).
     - [x] Bond songs unlocked at spefiic levels.
-- [ ] Bond ranking
-    - [x] Working but return fixed data, eventually should return actual data.
+- [x] Bond ranking
+    - [x] Working bond ranking, but it might be slow if there are a lot of account.
 - [ ] Membership (subscription)
     - [x] Keep membership info for imported data.
     - [x] Add default membership for new account.
@@ -52,12 +52,8 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [x] Fully working accessory power up system.
     - [x] Accesory drops from live and can be exchanged in shop.
     - [x] The WebUi functionality to add accessory is still there for accessory that are limited or can't be dropped, if you wish to get them
-- [ ] Channel
-    - [x] Working channel system by returning fixed data.
-    - [x] User can join specific member channels.
-    - [x] Cheer system drop items correctly.
-    - [x] Megaphones are not dropped from trainings.
-    - [ ] No ranking or tracking of points for now.
+- [x] Channel
+    - [x] Working channel system with ranking reward and reward.
 - [x] Present box
     - [x] Working present box.
     - [x] All items that are sent to present box should be there, but there might be mistakes.
@@ -68,9 +64,9 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] Notices / news
     - [x] Always empty, works by returning fixed data.
     - [ ] There is no plan for now, but this section can be used to put tutorial and suchs.
-- [ ] Social (friends)
-    - [x] Works by returing fixed data.
-    - [ ] The server allow for separate account, but implementation of social systems are not planned.
+- [x] Social (friends)
+    - [x] Working social system.
+    - [x] Working bad word checker.
 - [x] Title List
     - [x] Stored and fetch from database.
     - [x] Title is added through user content system.

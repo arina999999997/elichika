@@ -118,7 +118,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /infoTrigger/readMemberLoveLevelUp
 - [ ] /infoTrigger/readSubscriptionEnd
 - [ ] /infoTrigger/readSubscriptionTrialEnd
-- [ ] /itemDetail/fetchItemDetailRelateLiveList
+- [x] /itemDetail/fetchItemDetailRelateLiveList
 - [x] /lesson/changeDeckNameLessonDeck
 - [x] /lesson/executeLesson
 - [ ] (not necessary) /lesson/resetDeck

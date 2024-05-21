@@ -152,7 +152,7 @@ Even more special thanks for the specific individuals (in no particular order):
 - ethan for hosting various resource and hosting a public testing server.
 - rayfirefirst, cppo for various cryptographic keys.
 - tungnotpunk for ios client and help with network structure.
-- Suyooo for the very helpful [SIFAS wiki](https://suyo.be/sifas/wiki/) and for providing more accurate stage data.
+- Suyooo for the very helpful [SIFAS wiki](https://suyo.be/sifas/wiki/), for providing more accurate stage data, and for the bad word lists.
 - sarah for hosting public Internet CDN.
 - Caret for the LL Hax discord.
 - And other people who more than deserve to be here but I can't quite recall right now.

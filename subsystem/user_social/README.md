@@ -34,6 +34,3 @@ There are 2 records per connection. The fields are as follow:
 
 - Each user can have at most n friends, n is decided by the database
 - Each user can have at most n/m incoming/outgoing request, n/m is decided by the constant database
-
- <!-- TODO(now): be sure to add bad word checker -->
-

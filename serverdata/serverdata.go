@@ -45,7 +45,7 @@ func InitTables(overwrite bool) {
 	InitTable("s_login_bonus", LoginBonus{}, overwrite)
 	InitTable("s_login_bonus_reward_day", LoginBonusRewardDay{}, overwrite)
 	InitTable("s_login_bonus_reward_content", LoginBonusRewardContent{}, overwrite)
-
+	InitTable("s_ng_word", NgWord{}, overwrite)
 }
 
 func AutoInsert() {
@@ -54,13 +54,26 @@ func AutoInsert() {
 	session.Begin()
 	total, err := session.Table("s_trade").Count()
 	utils.CheckErr(err)
-	if total > 0 { // already have something
-		return
+	if total == 0 { // already have something
+		TradeCli(session, []string{"insert", config.ServerInitJsons + "trade.json"})
 	}
-	TradeCli(session, []string{"insert", config.ServerInitJsons + "trade.json"})
-	GachaCli(session, []string{"init"})
-	GachaCli(session, []string{"insert", config.ServerInitJsons + "gacha.json"})
-	InitialiseLoginBonus(session)
+
+	total, err = session.Table("s_gacha").Count()
+	utils.CheckErr(err)
+	if total == 0 {
+		GachaCli(session, []string{"init"})
+		GachaCli(session, []string{"insert", config.ServerInitJsons + "gacha.json"})
+	}
+	total, err = session.Table("s_login_bonus").Count()
+	utils.CheckErr(err)
+	if total == 0 {
+		InitialiseLoginBonus(session)
+	}
+	total, err = session.Table("s_ng_word").Count()
+	utils.CheckErr(err)
+	if total == 0 {
+		InitialiseNgWord(session)
+	}
 	session.Commit()
 }
 

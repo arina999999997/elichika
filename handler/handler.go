@@ -20,6 +20,7 @@ import (
 	_ "elichika/handler/game_settings"
 	_ "elichika/handler/gdpr"
 	_ "elichika/handler/info_trigger"
+	_ "elichika/handler/item_detail"
 	_ "elichika/handler/lesson"
 	_ "elichika/handler/live"
 	_ "elichika/handler/live_deck"
