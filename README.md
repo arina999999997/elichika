@@ -6,6 +6,8 @@ Note that this part concern only this server implementation, and it only provide
 
 You should check out checkout the [LL hax wiki](https://carette.codeberg.page/ll-hax-docs/sifas/) for clarification and general knowledge, as it explain things better (or it can lead you to places where you can ask questions).
 
+A [docker compose](./docker/docker-compose.yml) is provided with this repository for creating a container. More information on deploying with docker can be found [here](./docs/docker.md).
+
 ### Android
 To install the server, first install termux, you can get it from [f-droid](https://f-droid.org/en/packages/com.termux/) or [github](https://github.com/termux/termux-app#github). Note that the google play store version will most likely NOT WORK.
 

@@ -1,0 +1,12 @@
+version: '3'
+services:
+  llas:
+    image: llas:latest
+    container_name: llas
+    build:
+      dockerfile: "./Dockerfile"
+    environment:
+      - BRANCH
+    ports:
+      - 8080:8080
+    restart: unless-stopped
