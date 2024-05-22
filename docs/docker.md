@@ -12,7 +12,11 @@ docker compose up -d
 
 Additionally, the server can be deployed on a different GitHub branch:
 ```
-docker compose up -d -e BRANCH=<branch_name>
+# Create image with branch
+docker build --build-arg BRANCH=<BRANCH_NAME> -t llas .
+
+# Create container
+docker compose up -d
 ```
 
 A container will be generated and expose ports required to accessing the server via `server_address:8080/webui/admin`.
@@ -31,10 +35,16 @@ docker compose up -d
 
 # Place user data inside container
 docker container cp userdata.db llas:/elichika
+
+# Restart container with new changes
+docker container restart llas
 ```
 
 Optionally, the update can be ran in place:
 ```
-docker container exec -d llas bash /elichika/update_elichika
+docker container exec -it llas bash /root/update_elichika
+
+# Restart container with new changes
+docker container restart llas
 ```
 
