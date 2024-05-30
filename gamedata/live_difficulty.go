@@ -76,7 +76,7 @@ type LiveDifficulty struct {
 	SimpleLiveStage *SimpleLiveStage  `xorm:"-"`
 
 	// from m_live_difficulty_gimmick
-	LiveDifficultyGimmick *LiveDifficultyGimmick `xorm:"-"`
+	LiveDifficultyGimmicks []LiveDifficultyGimmick `xorm:"-"`
 
 	// from m_live_difficulty_note_gimmick
 	LiveDifficultyNoteGimmicks []LiveDifficultyNoteGimmick `xorm:"-"`
@@ -94,17 +94,9 @@ func (ld *LiveDifficulty) populate(gamedata *Gamedata, masterdata_db, serverdata
 	// 	return
 	// }
 
-	ld.LiveDifficultyGimmick = new(LiveDifficultyGimmick)
-	exists, err := masterdata_db.Table("m_live_difficulty_gimmick").Where("live_difficulty_master_id = ?", ld.LiveDifficultyId).
-		Get(ld.LiveDifficultyGimmick)
+	err = masterdata_db.Table("m_live_difficulty_gimmick").Where("live_difficulty_master_id = ?", ld.LiveDifficultyId).
+		Find(&ld.LiveDifficultyGimmicks)
 	utils.CheckErr(err)
-
-	if !exists {
-		// doesn't exist for a small set of things that shouldn't matter
-		// panic(fmt.Sprint("gimmick doesn't exist for: ", ld.LiveDifficultyId))
-		ld.LiveDifficultyGimmick = nil
-		// fmt.Println("gimmick doesn't exist for: ", ld.LiveDifficultyId)
-	}
 
 	err = masterdata_db.Table("m_live_difficulty_note_gimmick").Where("live_difficulty_id = ?", ld.LiveDifficultyId).
 		Find(&ld.LiveDifficultyNoteGimmicks)
@@ -254,17 +246,18 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	for i := range ld.LiveStage.NoteGimmicks.Slice {
 		ld.LiveStage.NoteGimmicks.Slice[i].UniqId = int32(2001 + i)
 	}
-	if ld.LiveDifficultyGimmick != nil {
-		ld.LiveStage.StageGimmickDict.Set(ld.LiveDifficultyGimmick.TriggerType, generic.Array[client.LiveStageGimmick]{
-			Slice: []client.LiveStageGimmick{client.LiveStageGimmick{
-				GimmickMasterId:    ld.LiveDifficultyGimmick.Id,
-				ConditionMasterId1: ld.LiveDifficultyGimmick.ConditionMasterId1,
-				ConditionMasterId2: generic.NewNullable(ld.LiveDifficultyGimmick.ConditionMasterId2),
-				SkillMasterId:      ld.LiveDifficultyGimmick.SkillMasterId,
-				UniqId:             1001,
-			},
-			}})
-
+	
+	for i, gimmick := range ld.LiveDifficultyGimmicks {
+		if !ld.LiveStage.StageGimmickDict.Has(gimmick.TriggerType) {
+			ld.LiveStage.StageGimmickDict.Set(gimmick.TriggerType, generic.Array[client.LiveStageGimmick]{})
+		}
+		ld.LiveStage.StageGimmickDict.Map[gimmick.TriggerType].Append(client.LiveStageGimmick{
+			GimmickMasterId:    gimmick.Id,
+			ConditionMasterId1: gimmick.ConditionMasterId1,
+			ConditionMasterId2: generic.NewNullable(gimmick.ConditionMasterId2),
+			SkillMasterId:      gimmick.SkillMasterId,
+			UniqId:             int32(1001 + i),
+		})
 	}
 
 	// save the new map

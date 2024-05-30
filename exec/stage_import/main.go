@@ -1,8 +1,8 @@
 package main
 
 import (
-	"elichika/model"
 	"elichika/utils"
+	"elichika/client"
 
 	"encoding/json"
 	"fmt"
@@ -12,23 +12,23 @@ import (
 )
 
 type SimpleLiveNote struct {
-	// Id                  int `json:"id"`
-	CallTime     int `json:"call_time"`
-	NoteType     int `json:"note_type"`
-	NotePosition int `json:"note_position"`
-	// GimmickId           int `json:"gimmick_id"`
-	NoteAction int `json:"note_action"`
-	WaveId     int `json:"wave_id"`
-	// NoteRandomDropColor int `json:"note_random_drop_color"`
-	// AutoJudgeType       int `json:"auto_judge_type"` // relevant because some note actually have different auto judge type (to force fully trigger stuff?)
+	// Id                  int32 `json:"id"`
+	CallTime     int32 `json:"call_time"`
+	NoteType     int32 `json:"note_type"`
+	NotePosition int32 `json:"note_position"`
+	// GimmickId           int32 `json:"gimmick_id"`
+	NoteAction int32 `json:"note_action"`
+	WaveId     int32 `json:"wave_id"`
+	// NoteRandomDropColor int32 `json:"note_random_drop_color"`
+	// AutoJudgeType       int32 `json:"auto_judge_type"` // relevant because some note actually have different auto judge type (to force fully trigger stuff?)
 }
 
 type SimpleLiveStage struct {
-	LiveDifficultyId int                     `json:"live_difficulty_id"`
+	LiveDifficultyId int32                     `json:"live_difficulty_id"`
 	LiveNotes        []SimpleLiveNote        `json:"live_notes"`
-	LiveWaveSettings []model.LiveWaveSetting `json:"live_wave_settings"`
+	LiveWaveSettings []client.LiveWaveSetting `json:"live_wave_settings"`
 
-	Original *int `json:"original"`
+	Original *int32 `json:"original"`
 }
 
 type SimpleLiveStartResponse struct {
@@ -44,9 +44,9 @@ type FullLiveStartResponse struct {
 	} `json:"live"`
 }
 
-var fullStages map[int]*FullLiveStage
-var stages map[int]*SimpleLiveStage
-var stageOrigins map[int]string
+var fullStages map[int32]*FullLiveStage
+var stages map[int32]*SimpleLiveStage
+var stageOrigins map[int32]string
 
 func isSame(a, b *SimpleLiveStage) bool {
 	if len(a.LiveNotes) != len(b.LiveNotes) {
@@ -153,14 +153,14 @@ func main() {
 		handleDirectory(path)
 	}
 	fmt.Println("Discovered", len(files), "relevant files")
-	stages = make(map[int]*SimpleLiveStage)
-	fullStages = make(map[int]*FullLiveStage)
-	stageOrigins = make(map[int]string)
+	stages = make(map[int32]*SimpleLiveStage)
+	fullStages = make(map[int32]*FullLiveStage)
+	stageOrigins = make(map[int32]string)
 	for file := range files {
 		parseFile(file)
 	}
 	fmt.Println("Found", len(stages), "different stages.\nRemoving similar maps")
-	ids := []int{}
+	ids := []int32{}
 	for id := range stages {
 		ids = append(ids, id)
 	}
@@ -175,7 +175,7 @@ func main() {
 			}
 			if isSame(stages[id], stages[other]) {
 				fmt.Println("Found unoriginal map: ", id, " -> ", other)
-				stages[id].Original = new(int)
+				stages[id].Original = new(int32)
 				*stages[id].Original = other
 				break
 			}
