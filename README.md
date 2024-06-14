@@ -111,7 +111,12 @@ Detailed explanations of some config options:
 
     - The server for clients to download assets.
     - Default to  https://llsifas.catfolk.party/static/ (special thanks to sarah for hosting it).
-    - We can host our own CDN with `elichika` by put the relevant files in `elichika/static`.
+    - `elichika` also has the ability to host the CDN itself:
+
+        - To do this, put the relevant files in `elichika/static`.
+        - Then set the CDN server address to the STRING (no protocol) `elichika` (or `elichika_tls` if you're using HTTPS).
+        - This will automatically use whatever the address the client reach `elichika` with as the CDN server.
+        - Aside from that, you can also just use the address like normal.
         - You should look into this if you want to further develop the game/server, as doing so might require redownloading things a lot.
     
 - Default item count:
@@ -132,7 +137,7 @@ It can be located at: `<server_address>/webui/user`, which default to http://127
 
 Check out the user [docs](webui/user/README.md) for more details.
 
-Note that the user WebUI is not an account data editor, something like that be developed later.
+Note that the user WebUI is not an account data editor, something like that might be developed later on.
 
 ## More docs
 Checkout the [docs](https://github.com/arina999999997/elichika/tree/master/docs) for more details on the server and how to do more advanced stuffs.
@@ -145,10 +150,11 @@ Special thanks to the LL Hax community in general for:
 - Archiving and hosting database / assets
 - General and specific knowledges about the game
 
-Even more special thanks for the specific individuals (in no particular order):
+Even more special thanks for the specific individuals or groups (in no particular order):
 
 - YumeMichi for original elichika.
-- triangle for informations and scripts to encode/decode database, and for patching the ios clients.
+- triangle for informations and scripts to encode/decode database, for patching the ios clients, and for daily theater logs.
+- [SIFAStheatre](https://twitter.com/SIFAStheatre) and [Idol Story](https://twitter.com/idoldotst) for Daily theater English tranlation and for the original Japanese transcript.
 - ethan for hosting various resource and hosting a public testing server.
 - rayfirefirst, cppo for various cryptographic keys.
 - tungnotpunk for ios client and help with network structure.

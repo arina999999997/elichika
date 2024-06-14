@@ -1,8 +1,8 @@
 package main
 
 import (
-	"elichika/utils"
 	"elichika/client"
+	"elichika/utils"
 
 	"encoding/json"
 	"fmt"
@@ -24,8 +24,8 @@ type SimpleLiveNote struct {
 }
 
 type SimpleLiveStage struct {
-	LiveDifficultyId int32                     `json:"live_difficulty_id"`
-	LiveNotes        []SimpleLiveNote        `json:"live_notes"`
+	LiveDifficultyId int32                    `json:"live_difficulty_id"`
+	LiveNotes        []SimpleLiveNote         `json:"live_notes"`
 	LiveWaveSettings []client.LiveWaveSetting `json:"live_wave_settings"`
 
 	Original *int32 `json:"original"`

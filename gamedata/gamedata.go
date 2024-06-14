@@ -74,11 +74,15 @@ func generateLoadOrder(fid uintptr) {
 }
 
 type Gamedata struct {
+	Language string
+
 	Accessory              map[int32]*Accessory
 	AccessoryRarity        map[int32]*AccessoryRarity
 	AccessoryRarityUpGroup map[int32]*AccessoryRarityUpGroup
 	AccessoryMeltGroup     map[int32]*AccessoryMeltGroup
 	AccessoryLevelUpItem   map[int32]*AccessoryLevelUpItem
+
+	AssetPack map[string]*AssetPack
 
 	NgWord *NgWordNode
 
@@ -160,10 +164,14 @@ type Gamedata struct {
 
 	UserRank    map[int32]*UserRank
 	UserRankMax int32
+
+	DailyTheater          map[int32]*DailyTheater
+	LastestDailyTheaterId int32
 }
 
-func (gamedata *Gamedata) Init(masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {
+func (gamedata *Gamedata) Init(language string, masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {
 	start := time.Now()
+	gamedata.Language = language
 	masterdata_session := masterdata.NewSession()
 	serverdata_session := serverdata.NewSession()
 	defer masterdata_session.Close()

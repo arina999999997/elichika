@@ -74,10 +74,11 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] Datalink
     - [x] The datalink system is used as account creation / account transfer, things should work properly.
     - [x] Password is stored using bcrypt, so no worry of leaking password. 
-- [ ] Daily theater (JP client only)
-    - [x] Works by returning fixed data.
-    - [ ] Eventually should contain all the stories, user should be able to choose language some how.
-    - [ ] Maybe make this feature available for WW to (need to hook some function or something)
+- [x] Daily theater
+    - [x] Working daily theater server code. 
+    - [x] Working Global client with the feature enabled.
+    - [x] Japanese text use network log or transcript, English text use translation (thanks to [SIFAStheatre](https://twitter.com/SIFAStheatre) and [Idol Story](https://twitter.com/idoldotst))
+    - [ ] Korean and Chinese (zh) translation is not avaialble.
 - [x] User model
     - [x] Working user model.
     - [x] Working LP recovery but LP is not consumed.

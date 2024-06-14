@@ -29,7 +29,7 @@ func (locale *Locale) Load() {
 	locale.Dictionary = new(dictionary.Dictionary)
 	locale.Dictionary.Init(locale.Path, locale.Language)
 	locale.Gamedata = new(gamedata.Gamedata)
-	locale.Gamedata.Init(MasterdataEngine, serverdata.Engine, locale.Dictionary)
+	locale.Gamedata.Init(locale.Language, MasterdataEngine, serverdata.Engine, locale.Dictionary)
 }
 
 var (

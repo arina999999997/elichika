@@ -246,7 +246,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	for i := range ld.LiveStage.NoteGimmicks.Slice {
 		ld.LiveStage.NoteGimmicks.Slice[i].UniqId = int32(2001 + i)
 	}
-	
+
 	for i, gimmick := range ld.LiveDifficultyGimmicks {
 		if !ld.LiveStage.StageGimmickDict.Has(gimmick.TriggerType) {
 			ld.LiveStage.StageGimmickDict.Set(gimmick.TriggerType, generic.Array[client.LiveStageGimmick]{})
