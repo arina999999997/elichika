@@ -2,6 +2,7 @@ package user_trade
 
 import (
 	"elichika/client"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_present"
@@ -31,10 +32,12 @@ func ExecuteTrade(session *userdata.Session, productId, tradeCount int32) bool {
 			user_content.AddContent(session, content.Amount(tradedCount))
 		}
 	}
-	user_content.RemoveContent(session, client.Content{
-		ContentType:   trade.SourceContentType,
-		ContentId:     trade.SourceContentId,
-		ContentAmount: product.SourceAmount * tradeCount,
-	})
+	if config.Conf.ResourceConfig().ConsumeExchangeCurrency {
+		user_content.RemoveContent(session, client.Content{
+			ContentType:   trade.SourceContentType,
+			ContentId:     trade.SourceContentId,
+			ContentAmount: product.SourceAmount * tradeCount,
+		})
+	}
 	return inPresentBox
 }

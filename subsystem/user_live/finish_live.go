@@ -15,8 +15,6 @@ func FinishLive(session *userdata.Session, req request.FinishLiveRequest) respon
 	exist, live, startReq := LoadUserLive(session)
 	utils.MustExist(exist)
 	ClearUserLive(session)
-	// TODO(lp): Remove LP here if we want that
-
 	switch live.LiveType {
 	case enum.LiveTypeManual:
 		return liveTypeManualHandler(session, req, live, startReq)

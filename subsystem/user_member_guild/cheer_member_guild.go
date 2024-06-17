@@ -3,6 +3,7 @@ package user_member_guild
 import (
 	"elichika/client"
 	"elichika/client/response"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/item"
@@ -21,7 +22,9 @@ func CheerMemberGuild(session *userdata.Session, count generic.Nullable[int32]) 
 		userMemberGuild.SupportPointCountResetAt = utils.BeginOfNextHalfDay(session.Time).Unix()
 		count.Value = 1
 	} else {
-		user_content.RemoveContent(session, item.RallyMegaphone.Amount(count.Value))
+		if config.Conf.ResourceConfig().ConsumeMemberCheerItem {
+			user_content.RemoveContent(session, item.RallyMegaphone.Amount(count.Value))
+		}
 	}
 
 	if IsMemberGuildRankingPeriod(session) {

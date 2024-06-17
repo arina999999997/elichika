@@ -14,6 +14,7 @@ import (
 	"time"
 )
 
+// TODO(live): This can potentially fail and return some other response
 func StartLive(session *userdata.Session, req request.StartLiveRequest) response.StartLiveResponse {
 	gamedata := session.Gamedata
 

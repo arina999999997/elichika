@@ -28,7 +28,7 @@ func loadLiveDaily(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sessio
 	utils.CheckErr(err)
 
 	for _, liveDaily := range gamedata.LiveDaily {
-		gamedata.Live[liveDaily.LiveId].IsDailyLive = true
+		gamedata.Live[liveDaily.LiveId].LiveDailies = append(gamedata.Live[liveDaily.LiveId].LiveDailies, liveDaily)
 	}
 }
 

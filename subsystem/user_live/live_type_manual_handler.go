@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/klab"
@@ -28,6 +29,10 @@ import (
 func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequest, live client.Live, startReq request.StartLiveRequest) response.FinishLiveResponse {
 	gamedata := session.Gamedata
 	liveDifficulty := gamedata.LiveDifficulty[session.UserStatus.LastLiveDifficultyId]
+
+	if config.Conf.ResourceConfig().ConsumeLp {
+		user_status.AddUserLp(session, -liveDifficulty.ConsumedLP)
+	}
 
 	userLiveDifficulty := user_live_difficulty.GetUserLiveDifficulty(session, session.UserStatus.LastLiveDifficultyId)
 	userLiveDifficulty.IsNew = false
@@ -282,6 +287,18 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			}
 		}
 
+		// daily limit
+		if liveDifficulty.UnlockPattern == enum.LiveUnlockPatternDaily && config.Conf.ResourceConfig().ConsumeDailyLiveLimit {
+			liveDailyMasterId := GetLiveDailyMasterId(session, liveDifficulty.Live.LiveId)
+			if liveDailyMasterId != nil {
+				// this could happen if the user started the song before today
+				// if that's the case, we don't need to track the play anymore
+				userLiveDaily := GetUserLiveDaily(session, *liveDailyMasterId)
+				userLiveDaily.RemainingPlayCount--
+				UpdateUserLiveDaily(session, userLiveDaily)
+			}
+		}
+
 		// mission stuff
 
 		// clear a live show or play a live show
@@ -290,7 +307,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
 		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPlayLive,
 			&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
-		if liveDifficulty.Live.IsDailyLive {
+		if liveDifficulty.UnlockPattern == enum.LiveUnlockPatternDaily {
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountPlayLiveDailyMusic,
 				&liveDifficulty.Live.LiveId, nil, user_mission.AddProgressHandler, int32(1))
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountClearedLiveDailyMusic,

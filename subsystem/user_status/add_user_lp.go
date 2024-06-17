@@ -1,6 +1,7 @@
 package user_status
 
 import (
+	"elichika/enum"
 	"elichika/userdata"
 )
 
@@ -13,13 +14,13 @@ func AddUserLp(session *userdata.Session, lp int32) {
 
 	maxLp := session.Gamedata.UserRank[session.UserStatus.Rank].MaxLp
 	currentLp := session.UserStatus.LivePointBroken
-	const LivePointRecoverlyAt int32 = 240
+	// how many second it take to recover 1 lp
+	// is 240 with official servers but can be changed
+	livePointRecoverlyAt := session.Gamedata.ConstantInt[enum.ConstantIntLivePointRecoverlyAt]
 	if session.Time.Unix() < session.UserStatus.LivePointFullAt { // already full
-		// calculate the current LP using the recovery rate, this is defined using m_constant LivePointRecoverlyAt
 		timeLeft := int32(session.UserStatus.LivePointFullAt - session.Time.Unix())
-
-		toRecover := timeLeft / LivePointRecoverlyAt
-		if timeLeft%LivePointRecoverlyAt != 0 {
+		toRecover := timeLeft / livePointRecoverlyAt
+		if timeLeft%livePointRecoverlyAt != 0 {
 			toRecover++
 		}
 		currentLp = session.UserStatus.LivePointBroken - toRecover
@@ -30,6 +31,6 @@ func AddUserLp(session *userdata.Session, lp int32) {
 		session.UserStatus.LivePointFullAt = session.Time.Unix()
 	} else {
 		session.UserStatus.LivePointBroken = maxLp
-		session.UserStatus.LivePointFullAt -= int64(lp * LivePointRecoverlyAt)
+		session.UserStatus.LivePointFullAt -= int64(lp * livePointRecoverlyAt)
 	}
 }

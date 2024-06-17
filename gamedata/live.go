@@ -34,8 +34,7 @@ type Live struct {
 	LiveDifficulties []*LiveDifficulty `xorm:"-"`
 
 	// from m_live_daily
-	// assume that a live can be daily or not daily
-	IsDailyLive bool `xorm:"-"`
+	LiveDailies []*LiveDaily `xorm:"-"`
 
 	// from m_live, m_live_difficulty, and dictionary
 

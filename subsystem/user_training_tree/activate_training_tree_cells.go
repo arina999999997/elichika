@@ -1,6 +1,7 @@
 package user_training_tree
 
 import (
+	"elichika/config"
 	"elichika/enum"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
@@ -27,7 +28,10 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 		// consume practice items only if this is not tutorial
 		if session.UserStatus.TutorialPhase == enum.TutorialPhaseTutorialEnd {
 			for _, resource := range cell.TrainingTreeCellItemSet.Resources {
-				user_content.RemoveContent(session, resource)
+
+				if config.Conf.ResourceConfig().ConsumePracticeItems {
+					user_content.RemoveContent(session, resource)
+				}
 			}
 		}
 		user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountTrainingTreeCellType,

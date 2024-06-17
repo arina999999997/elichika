@@ -2,6 +2,7 @@ package user_member
 
 import (
 	"elichika/client"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/subsystem/user_content"
@@ -22,7 +23,9 @@ func UnlockMemberLovePanel(session *userdata.Session, memberId, memberLovePanelI
 	// remove resource
 	for _, cellId := range lovePanelCellIds {
 		for _, resource := range session.Gamedata.MemberLovePanelCell[cellId].Resources {
-			user_content.RemoveContent(session, resource)
+			if config.Conf.ResourceConfig().ConsumePracticeItems {
+				user_content.RemoveContent(session, resource)
+			}
 		}
 	}
 

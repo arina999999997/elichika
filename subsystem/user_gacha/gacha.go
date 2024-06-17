@@ -3,11 +3,13 @@ package user_gacha
 import (
 	"elichika/client"
 	"elichika/client/request"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/serverdata"
 	"elichika/subsystem/user_card"
+	"elichika/subsystem/user_content"
 	"elichika/userdata"
 
 	"math/rand"
@@ -66,6 +68,20 @@ func HandleGacha(ctx *gin.Context, req request.DrawGachaRequest) (client.Gacha, 
 	session := ctx.MustGet("session").(*userdata.Session)
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	draw := *gamedata.GachaDraw[req.GachaDrawMasterId]
+	// payment
+	if config.Conf.ResourceConfig().ConsumeGachaCurrency {
+		contentType := enum.ContentTypeSnsCoin
+		switch draw.GachaPaymentType {
+		case enum.GachaPaymentTypeGachaTicket:
+		case enum.GachaPaymentTypePremiumGachaTicket:
+			contentType = enum.ContentTypeGachaTicket
+		}
+		user_content.RemoveContent(session, client.Content{
+			ContentType:   contentType,
+			ContentId:     draw.GachaPaymentMasterId,
+			ContentAmount: draw.GachaPaymentAmount,
+		})
+	}
 
 	gacha := *gamedata.Gacha[req.GachaDrawMasterId/10]
 	cardPool := []serverdata.GachaCard{}

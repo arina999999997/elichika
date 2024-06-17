@@ -3,6 +3,7 @@ package user_accessory
 import (
 	"elichika/client"
 	"elichika/client/response"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/item"
@@ -64,11 +65,14 @@ func LevelUpAccessory(session *userdata.Session, userAccessoryId int64,
 
 	for _, item := range accessoryLevelUpItems.Slice {
 		itemId := item.AccessoryLevelUpItemMasterId
-		user_content.RemoveContent(session, client.Content{
-			ContentType:   enum.ContentTypeAccessoryLevelUp,
-			ContentId:     itemId,
-			ContentAmount: item.Amount,
-		})
+
+		if config.Conf.ResourceConfig().ConsumePracticeItems {
+			user_content.RemoveContent(session, client.Content{
+				ContentType:   enum.ContentTypeAccessoryLevelUp,
+				ContentId:     itemId,
+				ContentAmount: item.Amount,
+			})
+		}
 		expGain += item.Amount * session.Gamedata.AccessoryLevelUpItem[itemId].PlusExp
 		moneyUsed += item.Amount * session.Gamedata.AccessoryLevelUpItem[itemId].GameMoney
 	}
@@ -116,7 +120,9 @@ func LevelUpAccessory(session *userdata.Session, userAccessoryId int64,
 		resp.DoPowerUp.DoSkillProcessed = true
 	}
 	UpdateUserAccessory(session, userAccessory)
-	user_content.RemoveContent(session, item.Gold.Amount(moneyUsed))
+	if config.Conf.ResourceConfig().ConsumePracticeItems {
+		user_content.RemoveContent(session, item.Gold.Amount(moneyUsed))
+	}
 
 	// mission
 	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountAccessoryLevelUp, nil, nil,

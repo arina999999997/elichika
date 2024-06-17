@@ -3,6 +3,7 @@ package story_event_history
 import (
 	"elichika/client/request"
 	"elichika/client/response"
+	"elichika/config"
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
@@ -24,7 +25,9 @@ func unlockStory(ctx *gin.Context) {
 	session := ctx.MustGet("session").(*userdata.Session)
 
 	user_story_event_history.UnlockEventStory(session, req.EventStoryMasterId)
-	user_content.RemoveContent(session, item.MemoryKey)
+	if config.Conf.ResourceConfig().ConsumeMiscItems {
+		user_content.RemoveContent(session, item.MemoryKey)
+	}
 
 	common.JsonResponse(ctx, response.UserModelResponse{
 		UserModel: &session.UserModel,

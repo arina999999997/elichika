@@ -128,7 +128,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /live/fetchLiveMusicSelect
 - [x] /live/finish
 - [x] /live/finishTutorial
-- [ ] /live/recoverDailyLiveMusicPlayable
+- [x] /live/recoverDailyLiveMusicPlayable
 - [x] /live/resume
 - [x] /live/skip
 - [x] /live/start
@@ -221,7 +221,7 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /tutorial/tutorialSkip
 - [x] /unlockScene/saveUnlockedScene
 - [x] /user/addAccessoryBoxLimit
-- [ ] /user/recoverAp
+- [x] /user/recoverAp
 - [x] /user/recoverLp
 - [x] /user/recoverLpSubscription
 - [x] /userAccountDeletion/checkUserAccountDeleted

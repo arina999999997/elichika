@@ -82,6 +82,8 @@ type Gamedata struct {
 	AccessoryMeltGroup     map[int32]*AccessoryMeltGroup
 	AccessoryLevelUpItem   map[int32]*AccessoryLevelUpItem
 
+	ActivityPointRecoveryPrice []ActivityPointRecoveryPrice
+
 	AssetPack map[string]*AssetPack
 
 	NgWord *NgWordNode

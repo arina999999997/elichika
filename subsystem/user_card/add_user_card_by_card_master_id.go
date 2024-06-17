@@ -26,6 +26,7 @@ func AddUserCardByCardMasterId(session *userdata.Session, cardMasterId int32) cl
 	card.Grade++
 	if card.Grade > enum.CardMaxGrade {
 		// max limit already, award the item
+		// TODO(hardcoded)
 		reward := item.SchoolIdolRadiance
 		switch masterCard.CardRarityType {
 		case enum.CardRarityTypeSRare:

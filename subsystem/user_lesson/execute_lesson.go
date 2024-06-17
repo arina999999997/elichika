@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/client/request"
 	"elichika/client/response"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/generic/drop"
@@ -12,6 +13,7 @@ import (
 	"elichika/subsystem/user_lesson_deck"
 	"elichika/subsystem/user_member_guild"
 	"elichika/subsystem/user_mission"
+	"elichika/subsystem/user_status"
 	"elichika/subsystem/user_subscription_status"
 	"elichika/userdata"
 
@@ -86,16 +88,18 @@ func ExecuteLesson(session *userdata.Session, req request.ExecuteLessonRequest) 
 	}
 
 	deck := user_lesson_deck.GetUserLessonDeck(session, req.SelectedDeckId)
-	repeatCount := 1
+	repeatCount := int32(1)
 	if req.IsThreeTimes {
 		repeatCount = 3
 	}
-
+	if config.Conf.ResourceConfig().ConsumeAp {
+		user_status.AddUserAp(session, -repeatCount)
+	}
 	// update mission progress
 	user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountLesson, nil, nil,
 		func(session *userdata.Session, missionList []any, _ ...any) {
 			for _, mission := range missionList {
-				user_mission.AddMissionProgress(session, mission, int32(repeatCount))
+				user_mission.AddMissionProgress(session, mission, repeatCount)
 			}
 		})
 
@@ -125,7 +129,7 @@ func ExecuteLesson(session *userdata.Session, req request.ExecuteLessonRequest) 
 
 	isMemberGuildRankingPeriod := user_member_guild.IsMemberGuildRankingPeriod(session)
 
-	for repeat := 1; repeat <= repeatCount; repeat++ {
+	for repeat := int32(1); repeat <= repeatCount; repeat++ {
 		usedItems := []int32{}
 		for _, itemId := range req.ConsumedContentIds.Slice {
 			if enhancingItems[itemId].ContentAmount > 0 {

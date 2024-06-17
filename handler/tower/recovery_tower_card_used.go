@@ -3,6 +3,7 @@ package tower
 import (
 	"elichika/client/request"
 	"elichika/client/response"
+	"elichika/config"
 	"elichika/handler/common"
 	"elichika/item"
 	"elichika/router"
@@ -33,11 +34,13 @@ func recoveryTowerCardUsed(ctx *gin.Context) {
 
 	has := user_content.GetUserContentByContent(session, item.PerformanceDrink).ContentAmount
 	cardCount := int32(req.CardMasterIds.Size())
-	if has >= cardCount {
-		user_content.RemoveContent(session, item.PerformanceDrink.Amount(cardCount))
-	} else {
-		user_content.RemoveContent(session, item.PerformanceDrink.Amount(has))
-		user_content.RemoveContent(session, item.StarGem.Amount((cardCount-has)*int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin)))
+	if config.Conf.ResourceConfig().ConsumeMiscItems {
+		if has >= cardCount {
+			user_content.RemoveContent(session, item.PerformanceDrink.Amount(cardCount))
+		} else {
+			user_content.RemoveContent(session, item.PerformanceDrink.Amount(has))
+			user_content.RemoveContent(session, item.StarGem.Amount((cardCount-has)*int32(session.Gamedata.Tower[req.TowerId].RecoverCostBySnsCoin)))
+		}
 	}
 
 	session.Finalize()

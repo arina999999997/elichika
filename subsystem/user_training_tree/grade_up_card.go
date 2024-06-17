@@ -2,6 +2,7 @@ package user_training_tree
 
 import (
 	"elichika/client"
+	"elichika/config"
 	"elichika/enum"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
@@ -21,7 +22,9 @@ func GradeUpCard(session *userdata.Session, cardMasterId, contentId int32) {
 	card.Grade++
 	user_card.UpdateUserCard(session, card)
 	if contentId != 0 {
-		user_content.RemoveContent(session, masterCard.CardGradeUpItem[card.Grade][contentId])
+		if config.Conf.ResourceConfig().ConsumePracticeItems {
+			user_content.RemoveContent(session, masterCard.CardGradeUpItem[card.Grade][contentId])
+		}
 	}
 	// we need to set user_info_trigger_card_grade_up_by_trigger_id
 	// for the pop up after limit breaking

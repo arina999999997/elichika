@@ -20,6 +20,7 @@ type RuntimeConfig struct {
 	TimeZone             *string `json:"timezone" of_label:"Timezone (from tz database)"`                                              // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 	DefaultContentAmount *int32  `json:"default_content_amount" of_label:"Default item count" of_attrs:"min=\"0\" max=\"1000000000\""` // the amount of items to give an user if they don't have that item
 	MissionMultiplier    *int32  `json:"mission_multiplier" of_label:"Mission progress multiplier" of_attrs:"min=\"0\" max=\"10000\""` // multiply the progress of missions. Only work for do "x" of things, not for "get x different thing or reach x level"
+	ResourceConfigType   *string `json:"resource_config_type" of_type:"select" of_options:"Original\noriginal\nComfortable\ncomfortable\nFree\nfree" of_label:"Resource config"`
 }
 
 func defaultConfigs() *RuntimeConfig {
@@ -35,6 +36,7 @@ func defaultConfigs() *RuntimeConfig {
 		TimeZone:             new(string),
 		DefaultContentAmount: new(int32),
 		MissionMultiplier:    new(int32),
+		ResourceConfigType:   new(string),
 	}
 	*configs.CdnServer = "https://llsifas.catfolk.party/static/"
 	*configs.ServerAddress = "0.0.0.0:8080"
@@ -46,6 +48,7 @@ func defaultConfigs() *RuntimeConfig {
 	*configs.TimeZone = "Asia/Tokyo"
 	*configs.DefaultContentAmount = 10000000
 	*configs.MissionMultiplier = 1
+	*configs.ResourceConfigType = "comfortable"
 	return &configs
 }
 
@@ -89,4 +92,8 @@ func UpdateConfig(newConfig *RuntimeConfig) {
 	// if someone had an old version of confs then they would just have an access to the old config until they discard it
 	// this also assume the pointer size is less than machine word, which it should be
 	Conf = newConfig
+}
+
+func (r RuntimeConfig) ResourceConfig() *ResourceConfig {
+	return resourceConfigs[*r.ResourceConfigType]
 }
