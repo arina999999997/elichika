@@ -20,6 +20,7 @@ func missionClearConditionTypeClearedStoryMainChapterInitializer(session *userda
 	}
 	return userMission
 }
+
 func init() {
 	user_mission.AddMissionInitializer(enum.MissionClearConditionTypeClearedStoryMainChapter, missionClearConditionTypeClearedStoryMainChapterInitializer)
 }

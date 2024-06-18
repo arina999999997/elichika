@@ -7,6 +7,7 @@ import (
 	"elichika/item"
 	"elichika/locale"
 	"elichika/router"
+	"elichika/subsystem/user_beginner_challenge"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_member"
@@ -213,6 +214,28 @@ func init() {
 			}
 			session.Finalize()
 			webui_utils.CommonResponse(ctx, "Cleared all mission, all reward delivered", "")
+		})
+
+	AddBuilderFeature("Clear ALL beginner challenge", "clear_beginner_challenge",
+		`<input type="checkbox" name="confirm"><label>I want to clear ALL  beginner challenges and lose track of the current progress</label>`, "Clear all challenges",
+		func(ctx *gin.Context) {
+			session := ctx.MustGet("session").(*userdata.Session)
+			confirm := webui_utils.GetFormBool(ctx, "confirm")
+			if !confirm {
+				webui_utils.CommonResponse(ctx, "Check the confirm box if you really want to complete all challenges", "")
+				return
+			}
+			challengeCells := user_beginner_challenge.GetBeginnerChallengeCells(session)
+
+			for _, cell := range challengeCells {
+				if cell.IsRewardReceived {
+					continue
+				}
+				cell.IsRewardReceived = true
+				user_beginner_challenge.UpdateChallengeCell(session, *cell)
+			}
+			session.Finalize()
+			webui_utils.CommonResponse(ctx, "Cleared all beginner challenges", "")
 		})
 
 	{

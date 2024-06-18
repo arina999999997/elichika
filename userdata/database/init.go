@@ -36,6 +36,7 @@ func init() {
 	AddTable("u_member", generic.UserIdWrapper[client.UserMember]{})
 	AddTable("u_suit", generic.UserIdWrapper[client.UserSuit]{})
 	AddTable("u_card", generic.UserIdWrapper[client.UserCard]{})
+	AddTable("u_beginner_challenge_cell", generic.UserIdWrapper[client.ChallengeCell]{})
 	AddTable("u_lesson_deck", generic.UserIdWrapper[client.UserLessonDeck]{})
 	AddTable("u_accessory", generic.UserIdWrapper[client.UserAccessory]{})
 	AddTable("u_live_daily", generic.UserIdWrapper[client.LiveDaily]{})

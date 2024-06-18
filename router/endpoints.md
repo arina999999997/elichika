@@ -30,8 +30,8 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /card/getOtherUserCard
 - [x] /card/updateCardNewFlag
 - [ ] (not necessary) /caution/read
-- [ ] /challenge/fetchBeginner
-- [ ] /challenge/receiveRewardBeginner
+- [x] /challenge/fetchBeginner
+- [x] /challenge/receiveRewardBeginner
 - [x] /communicationMember/fetchCommunicationMemberDetail
 - [x] /communicationMember/finishUserStoryMember
 - [x] /communicationMember/finishUserStorySide

@@ -86,6 +86,10 @@ type Gamedata struct {
 
 	AssetPack map[string]*AssetPack
 
+	BeginnerChallenge                         map[int32]*BeginnerChallenge
+	BeginnerChallengeCell                     map[int32]*BeginnerChallengeCell
+	BeginnerChallengeCellByClearConditionType map[int32][]*BeginnerChallengeCell
+
 	NgWord *NgWordNode
 
 	ConstantInt []int32

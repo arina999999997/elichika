@@ -9,6 +9,7 @@ import (
 	_ "elichika/handler/billing"
 	_ "elichika/handler/bootstrap"
 	_ "elichika/handler/card"
+	_ "elichika/handler/challenge"
 	_ "elichika/handler/common"
 	_ "elichika/handler/communication_member"
 	_ "elichika/handler/daily_theater"

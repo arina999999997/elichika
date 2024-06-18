@@ -2,6 +2,7 @@ package user_mission
 
 import (
 	"elichika/enum"
+	"elichika/subsystem/user_beginner_challenge"
 	"elichika/userdata"
 )
 
@@ -29,6 +30,8 @@ type Handler = func(*userdata.Session, []any, ...any)
 
 func UpdateProgress(session *userdata.Session, conditionType int32, conditionParam1, conditionParam2 *int32,
 	handler Handler, handlerParams ...any) {
+	// defer a call to the user_beginner_challenge system, so we don't have to write 2 of the call everywhere
+	user_beginner_challenge.UpdateProgress(session, conditionType, conditionParam1, conditionParam2, handler, handlerParams...)
 	var missionList []any
 	for _, mission := range session.Gamedata.MissionByClearConditionType[conditionType] {
 		if (mission.StartAt > session.Time.Unix()) || (mission.EndAt < session.Time.Unix()) {

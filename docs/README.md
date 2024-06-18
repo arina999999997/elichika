@@ -45,7 +45,6 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] Exchange
     - [x] Working exchanges implementation.
     - [x] Exchange data depends on the database, by default it has items that was in the global server at the EOS.
-    - [ ] Note that some item might not be exchangable, but that's more down to the handling of those items and not the exchange itself.
 - [x] School idol / Practice
     - [x] Fully working card grade up, level up, and practice system.
 - [x] Accessories
@@ -81,8 +80,7 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [ ] Korean and Chinese (zh) translation is not avaialble.
 - [x] User model
     - [x] Working user model.
-    - [x] Working LP recovery but LP is not consumed.
-    - [ ] Not working AP recovery
+    - [x] Working LP and AP recovery system (in original resource setting)
 - [x] DLP
     - [x] Working DLP that also track voltage ranking
     - [x] User can reset DLP progress using the WebUi.

@@ -50,8 +50,11 @@ func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest
 			panic("unexpected type")
 		}
 	}
-	resp.MissionBeginnerMasterId, resp.ShowChallengeBeginnerButton, resp.ChallengeBeginnerCompletedIds =
-		user_beginner_challenge.GetUserBeginnerChallengeInfo(session)
+
+	// MissionBeginnerMasterId seems to no longer be used, and it's not necessary for the newest set
+	resp.ShowChallengeBeginnerButton, resp.ChallengeBeginnerCompletedIds =
+		user_beginner_challenge.GetUserBeginnerChallengeBootstrap(session)
+
 	status := user_subscription_status.GetUserSubsriptionStatus(session, 13001)
 	session.UserModel.UserSubscriptionStatusById.Set(status.SubscriptionMasterId, status)
 

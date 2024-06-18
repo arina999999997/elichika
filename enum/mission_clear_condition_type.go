@@ -84,7 +84,7 @@ const (
 	MissionClearConditionTypeCountAccessoryMelt                    int32 = 0x00000052 // melt accessorty x times
 	MissionClearConditionTypeCompleteBeginner                      int32 = 0x00000053 // complete beginner mission (old)
 	MissionClearConditionTypeDataLink                              int32 = 0x00000054 // unused
-	MissionClearConditionTypeReadReferenceBook                     int32 = 0x00000055 // read reference book for beginner mission (old)
+	MissionClearConditionTypeReadReferenceBook                     int32 = 0x00000055 // read reference book for beginner mission
 	MissionClearConditionTypeCountPlayLiveDailyMusic               int32 = 0x00000056 // play daily song
 	MissionClearConditionTypeCountClearedLiveDailyMusic            int32 = 0x00000057 // clear daily song
 	MissionClearConditionTypeCountEventMiningPoint                 int32 = 0x00000058 // unused

@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
+	"elichika/subsystem/user_beginner_challenge"
 	"elichika/userdata"
 )
 
@@ -55,6 +56,10 @@ func AddMissionProgress(session *userdata.Session, mission any, count int32) {
 		} else {
 			session.UserModel.UserWeeklyMissionByMissionId.Set(userWeeklyMission.MissionMId, userWeeklyMission)
 		}
+	case client.ChallengeCell: // for the beginner challenge system
+		userChallengeCell := mission.(client.ChallengeCell)
+		userChallengeCell.Progress += count
+		user_beginner_challenge.UpdateChallengeCell(session, userChallengeCell)
 	default:
 		panic("not supported")
 	}
