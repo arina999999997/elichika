@@ -67,7 +67,12 @@ func liveTypeTowerHandler(session *userdata.Session, req request.FinishLiveReque
 				// so it's better to just use something else
 				// that will also help with displaying the ranking
 				currentScore := user_tower.GetUserTowerVoltageRankingScore(session, live.TowerLive.Value.TowerId, live.TowerLive.Value.FloorNo)
+
 				if (req.LiveScore.CurrentScore >= req.LiveScore.TargetScore) && (currentScore.Voltage < req.LiveScore.CurrentScore) {
+					additionalScore := req.LiveScore.CurrentScore - currentScore.Voltage
+					ranking := user_tower.GetRankingByTowerId(session, live.TowerLive.Value.TowerId)
+					ranking.AddScore(session.UserId, additionalScore)
+
 					increasePlayCount = true
 					awardFirstClearReward = currentScore.Voltage == 0
 					currentScore.Voltage = req.LiveScore.CurrentScore

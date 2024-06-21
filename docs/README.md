@@ -86,23 +86,32 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [x] User can reset DLP progress using the WebUi.
 
 ## Importing/Exporting account
-You can import account from the login json or export account to json. This help with recovering your account, moving it, or update to a new server version that has a breaking change with the old database structure.
+You can use the user WebUI to export and import your account.
 
-You can access this feature from the WebUI (check repository main page):
+You can use either `json` or `db` formats.
 
-- Upload json data to import.
-- Download json data for moving / backup.
+### DB
+This is the prefered format for this implementation. It's basically a database that contain only 1 account. It save every data, and exporting and reimporting should result in no change in the account. Howerver, there are some limitation:
 
-Other than that, the server also generate a backup exported data everytime you login. You can find the backup in `elichika/backup`.
+- The friend data is not extracted, as the friends are not guaranteed to exists in whatever server you import to:
+    
+    - More precisely, the friends are server side only, and doesn't change no matter what account you import.
+    - Even if you import another account to your current user id, you still have the same friend set.
+    - But importing your exported account to another server will use that server's friend set.
 
-The import / exporting process keep 100% of the login response data, even the things that shouldn't matter by now, so you should be safe to make progress and still upgrade to the newer server version later.
+- Credential data is also not extracted in a similar manner.
 
-For recovering data from network data (pcap), you can check out this [guide](https://github.com/arina999999997/elichika/blob/master/docs/extracting_pcap.md) on how to do that.
+### JSON
+You can import account from the login json or export account to json. This help with recovering your account, moving it, or update to a new server version (or another different server).
 
-### How it work
+The server also generate a backup exported data everytime you login. You can find the backup in `elichika/backup`.
+
+This can also be used to recover data from captured network data (pcap), you can check out this [guide](https://github.com/arina999999997/elichika/blob/master/docs/extracting_pcap.md) on how to do that.
+
+#### How it work
 
 - This is done using the login response from the server, which contain almost (but not quite) everything relevant to your account.
-- For the information not contained in login, they are sometime can be reconstructed from context, but sometime they are just lost.
+- For the information not contained in login, they are sometime can be reconstructed from context, but sometime they are just lost:
 
     - For example, card practice data are reconstructed from the stat of the cards given in login.
 
@@ -114,12 +123,11 @@ For recovering data from network data (pcap), you can check out this [guide](htt
 
 - For now we don't care that much about those data as it's not core to the gameplay experience. 
 
-<!-- - TODO: Maybe implement spliting the database to save everything instead. -->
 ## Modifying client database
 
 This server by default provide the databases as they were at EOS, plus the relevant modification for the features (turning DLP on and so), but if necessary, you can modify the databases that the game and the server use.
 
-This can be done to achieve the following:
+This can be done to achieve the following, but also much more:
 
 - Daily songs contain all songs instead of the 3 songs per day that we have.
 - Use more than 20 skip tickets at once.
@@ -133,4 +141,4 @@ For more information, check [how to modify database](https://github.com/arina999
 
 ## How the server work
 
-TODO: You will just have to read the code and/or ask around for now.
+You will just have to read the code if you want more details.

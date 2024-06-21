@@ -1,3 +1,5 @@
 package request
 
-type FetchTowerRankingRequest = FetchTowerTopRequest
+type FetchTowerRankingRequest struct {
+	TowerId int32 `json:"tower_id"`
+}

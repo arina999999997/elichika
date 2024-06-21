@@ -19,7 +19,7 @@ func login(ctx *gin.Context) {
 	resp := webui_utils.Response{}
 	form := ctx.MustGet("form").(*multipart.Form)
 
-	// TODO: this is vulnerable to timing attack but it's whatever
+	// TODO(extra): this is vulnerable to timing attack but it's whatever
 	adminPassword := form.Value["admin_password"][0]
 	if *config.Conf.AdminPassword != adminPassword {
 		resp.Error = &respString

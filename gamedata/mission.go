@@ -55,7 +55,6 @@ func loadMission(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session,
 	gamedata.Mission = make(map[int32]*Mission)
 	err := masterdata_db.Table("m_mission").Find(&gamedata.Mission)
 	utils.CheckErr(err)
-	// TODO(optimization): Maybe these can be array instead
 	gamedata.MissionByClearConditionType = make(map[int32][]*Mission)
 	gamedata.MissionByTerm = make(map[int32][]*Mission)
 	gamedata.MissionByTriggerType = make(map[int32][]*Mission)

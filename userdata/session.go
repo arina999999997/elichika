@@ -30,7 +30,7 @@ type Session struct {
 	UserId     int32
 	Gamedata   *gamedata.Gamedata
 	UserStatus *client.UserStatus // link to UserModel.UserStatus
-	// TODO: change the map to index map?
+	// TODO(extra): change the map to index map?
 	MemberLovePanelDiffs map[int32]client.MemberLovePanel
 	MemberLovePanels     []client.MemberLovePanel
 	UserContentDiffs     map[int32](map[int32]client.Content) // content_type then content_id

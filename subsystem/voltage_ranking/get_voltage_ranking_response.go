@@ -3,46 +3,19 @@ package voltage_ranking
 import (
 	"elichika/client"
 	"elichika/client/response"
-	"elichika/subsystem/cache"
 	"elichika/subsystem/user_social"
 	"elichika/userdata"
-	"elichika/utils"
 )
 
-var (
-	getVoltageRankingResponseCache = cache.UniquePointerMap[int32, cache.CachedObject[response.GetVoltageRankingResponse]]{}
-)
-
-func GetVoltageRankingResponse(session *userdata.Session, liveDifficultyId int32) *response.GetVoltageRankingResponse {
-	cacher := getVoltageRankingResponseCache.Get(liveDifficultyId)
-	cacher.Acquire()
-	defer cacher.Release()
-	if cacher.ExpireAt > session.Time.Unix() {
-		return cacher.Value
-	}
-	cacher.ExpireAt = session.Time.Unix() + VoltageRankingCache
-	cacher.Value = getVoltageRankingResponseNoCache(session, liveDifficultyId)
-	return cacher.Value
-}
-
-func getVoltageRankingResponseNoCache(session *userdata.Session, liveDifficultyId int32) *response.GetVoltageRankingResponse {
+func GetVoltageRankingResponse(session *userdata.Session, liveDifficultyId int32) response.GetVoltageRankingResponse {
+	records := GetRankingByLiveDifficultyId(session, liveDifficultyId).GetRange(1, VoltageRankingLimit)
 	resp := response.GetVoltageRankingResponse{}
-
-	type userIdScore struct {
-		UserId       int32
-		VoltagePoint int32
-	}
-	records := []userIdScore{}
-	err := session.Db.Table("u_voltage_ranking").Where("live_difficulty_id = ?", liveDifficultyId).
-		OrderBy("voltage_point DESC").Limit(VoltageRankingLimit).Find(&records)
-	utils.CheckErr(err)
-
 	for i, record := range records {
 		resp.VoltageRankingCells.Append(client.VoltageRankingCell{
-			Order:              int32(i + 1),
-			VoltagePoint:       record.VoltagePoint,
-			VoltageRankingUser: user_social.GetVoltageRankingUser(session, record.UserId),
+			Order:              int32(i + 1), // no tie handling
+			VoltagePoint:       record.Score,
+			VoltageRankingUser: user_social.GetVoltageRankingUser(session, record.Id),
 		})
 	}
-	return &resp
+	return resp
 }

@@ -39,7 +39,7 @@ func GetBeginnerChallengeCells(session *userdata.Session) map[int32]*client.Chal
 				result[cell.Id].Progress = 0
 			}
 		case enum.MissionClearConditionTypeReadReferenceBook:
-			// TODO(hardcored): this doesn't reference the masterdata database
+			// TODO(hardcode): this doesn't reference the masterdata database
 			// so if/when the reference books are updated, there could be mistake
 			count, err := session.Db.Table("u_reference_book").Where("user_id = ?", session.UserId).Count()
 			utils.CheckErr(err)

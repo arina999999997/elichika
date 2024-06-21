@@ -17,7 +17,7 @@ import (
 
 func fetchSubscriptionPass(ctx *gin.Context) {
 	// TODO(subscription): everytime someone click on this, give them 1 month of reward because why not
-	// reward is cyclic, after the last month it come back to normal
+	// just make reward cyclic, after the last month it come back to normal
 	req := request.FetchSubscriptionPassRequest{}
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)

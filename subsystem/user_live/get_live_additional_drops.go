@@ -27,13 +27,20 @@ func getLiveAdditionalDrops(session *userdata.Session, liveScore *client.LiveSco
 		dropCount++
 	}
 
+	dropContentGroup := liveDifficulty.AdditionalDropContentGroup
+	rareDropContentGroup := liveDifficulty.AdditionalRareDropContentGroup
+	if liveDifficulty.UnlockPattern == enum.LiveUnlockPatternDaily {
+		// daily doesn't use additional group, as using them seems to result in wrong drop
+		dropContentGroup, rareDropContentGroup = getDropContentGroups(session, liveScore, liveDifficulty)
+	}
+
 	for i := int32(0); i < dropCount; i++ {
 		isRare := rand.Int31n(10000) < liveDifficulty.RareDropRate
 		var content client.Content
 		if isRare {
-			content = liveDifficulty.AdditionalRareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
+			content = rareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		} else {
-			content = liveDifficulty.AdditionalDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
+			content = dropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		}
 
 		result := user_content.AddContent(session, content)
@@ -41,7 +48,7 @@ func getLiveAdditionalDrops(session *userdata.Session, liveScore *client.LiveSco
 			isRewardAccessoryInPresentBox = isRewardAccessoryInPresentBox || result.(bool)
 		}
 		drops.Append(client.LiveDropContent{
-			DropColor: enum.NoteDropColorBronze, // not sure if this still do anything
+			DropColor: enum.NoteDropColorBronze,
 			Content:   content,
 			IsRare:    isRare,
 		})

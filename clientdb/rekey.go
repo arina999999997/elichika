@@ -43,7 +43,7 @@ func rekey(inPath, outPath string, fromFile *FileReference, keySpec hwdecrypt.Hw
 	keyset := fromFile.getKey(keySpec)
 	outputBytes := crypt_buf.Bytes()
 	// skip the header and checksum.
-	// TODO: maybe write our own zlib manually using flate to have the same wbits things as python
+	// TODO(extra): maybe write our own zlib manually using flate to have the same wbits things as python
 	outputBytes = outputBytes[2 : len(outputBytes)-4]
 	hwdecrypt.DecryptBuffer(&keyset, outputBytes)
 	err = os.WriteFile(outPath, outputBytes, 0777)

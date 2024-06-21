@@ -21,13 +21,20 @@ func getSkipAdditionalDrops(session *userdata.Session, roundedUp bool, liveDiffi
 		dropCount = (liveDifficulty.AdditionalDropMaxCount + 1) / 2
 	}
 
+	dropContentGroup := liveDifficulty.AdditionalDropContentGroup
+	rareDropContentGroup := liveDifficulty.AdditionalRareDropContentGroup
+	if liveDifficulty.UnlockPattern == enum.LiveUnlockPatternDaily {
+		// daily doesn't use additional group, as using them seems to result in wrong drop
+		dropContentGroup, rareDropContentGroup = getDropContentGroups(session, nil, liveDifficulty)
+	}
+
 	for i := int32(0); i < dropCount; i++ {
 		isRare := rand.Int31n(10000) < liveDifficulty.RareDropRate
 		var content client.Content
 		if isRare {
-			content = liveDifficulty.AdditionalRareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
+			content = rareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		} else {
-			content = liveDifficulty.AdditionalDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
+			content = dropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		}
 
 		result := user_content.AddContent(session, content)

@@ -24,7 +24,7 @@ func recoverAp(ctx *gin.Context) {
 
 	session := ctx.MustGet("session").(*userdata.Session)
 
-	// TODO(hardcoded): Technically items can recover multiple ap at once per item, use use multiple items just to recover 1 AP
+	// TODO(hardcode): Technically items can recover multiple ap at once per item, use use multiple items just to recover 1 AP
 	errorResponse := user_status.AddUserAp(session, req.Count.Value)
 	if errorResponse != nil {
 		common.AlternativeJsonResponse(ctx, errorResponse)

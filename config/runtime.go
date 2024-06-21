@@ -24,7 +24,6 @@ type RuntimeConfig struct {
 }
 
 func defaultConfigs() *RuntimeConfig {
-	// TODO(refactor): use reflect or something
 	configs := RuntimeConfig{
 		ServerAddress:        new(string),
 		CdnServer:            new(string),

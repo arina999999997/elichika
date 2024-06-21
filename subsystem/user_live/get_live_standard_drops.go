@@ -45,13 +45,15 @@ func getLiveStandardDrops(session *userdata.Session, liveScore *client.LiveScore
 	if liveDifficulty.UnlockPattern == enum.LiveUnlockPatternStoryOnly {
 		dropCount /= 2 // story songs give half the drop
 	}
+
+	dropContentGroup, rareDropContentGroup := getDropContentGroups(session, liveScore, liveDifficulty)
 	for i := 0; i < dropCount; i++ {
 		isRare := rand.Int31n(10000) < liveDifficulty.RareDropRate
 		var content client.Content
 		if isRare {
-			content = liveDifficulty.RareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
+			content = rareDropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		} else {
-			content = liveDifficulty.DropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
+			content = dropContentGroup.GetRandomItemByDropColor(enum.NoteDropColorBronze)
 		}
 
 		result := user_content.AddContent(session, content)
@@ -59,7 +61,7 @@ func getLiveStandardDrops(session *userdata.Session, liveScore *client.LiveScore
 			isRewardAccessoryInPresentBox = isRewardAccessoryInPresentBox || result.(bool)
 		}
 		drops.Append(client.LiveDropContent{
-			DropColor: enum.NoteDropColorBronze, // not sure if this still do anything
+			DropColor: enum.NoteDropColorBronze, // not sure if this still do anything, out of all the 700ish sample in network capture, it's always 3
 			Content:   content,
 			IsRare:    isRare,
 		})

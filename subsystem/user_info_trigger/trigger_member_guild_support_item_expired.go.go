@@ -30,9 +30,6 @@ func ReadMemberGuildSupportItemExpired(session *userdata.Session) {
 	// there's also no need to remove the item, the client won't show them if they're expired
 }
 
-// TODO: Trigger member love level up isn't really that persistent, so it's probably better to only keep it in ram
-// This could be done by keeping a full user model in ram too.
-
 func init() {
 	userdata.AddFinalizer(triggerMemberGuildSupportItemExpiredFinalizer)
 }

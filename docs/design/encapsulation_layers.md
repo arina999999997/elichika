@@ -17,8 +17,6 @@ There should be no handling logic in this part, although field taggings are allo
 ## Database layers
 The database layers handle initialising, reading, and writing the database.
 
-TODO(docs): Maybe put this into its own file.
-
 Here is a quick summary of the types of databases:
 
 ### Userdata database

@@ -3,7 +3,7 @@
 // - Iterate through a list of defined cost tables
 // - Add up all the cost, to represent how much we would need to "max out" an account
 // - The drop rate of an item is just proportional to the amount we need
-// - Finally override the items with a list from "s_content_rarity" in serverdata.db if it is there TODO: actually do this
+// - Finally override the items with a list from "s_content_rarity" in serverdata.db if it is there TODO(extra): actually do this
 // - Note that this ignore the relative drop from training, for example (because it's fixed), but it should works well enough
 //
 // This data can then be used as the weight of each possible drop

@@ -14,7 +14,6 @@ func fetch(ctx *gin.Context) {
 	// there is no request body
 
 	session := ctx.MustGet("session").(*userdata.Session)
-	// TODO(database): Have a common function to sync present state maybe
 	resp := response.FetchPresentResponse{
 		PresentItems:        user_present.FetchPresentItems(session),
 		PresentHistoryItems: user_present.FetchPresentHistoryItems(session),

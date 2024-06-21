@@ -99,7 +99,7 @@ const (
 	MissionClearConditionTypeTowerClearLiveStage                   int32 = 0x00000061 // complete dlp stage
 	MissionClearConditionTypeTowerRecoverPpForPersonal             int32 = 0x00000062 // recover pp for member
 	MissionClearConditionTypeTowerRecoverPpForFree                 int32 = 0x00000063 // recover pp for all member
-	MissionClearConditionTypeClearedStorySide                      int32 = 0x00000064 // unused
+	MissionClearConditionTypeClearedStorySide                      int32 = 0x00000064
 	MissionClearConditionTypeClearedStoryMainChapter               int32 = 0x00000065 // clear story chapter
 	MissionClearConditionTypeCountReadDailyTheater                 int32 = 0x00000066 // # of different daily theater read
 	MissionClearConditionTypeClearedSRank                          int32 = 0x00000067 // clear a live difficulty on S rank

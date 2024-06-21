@@ -53,7 +53,6 @@ func (t Trade) ToClientTrade() *client.Trade {
 }
 
 // TODO(trade): Have proper gamedata types
-
 func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
 	fmt.Println("Loading Trade")
 	gamedata.Trade = make(map[int32]*Trade)

@@ -16,7 +16,7 @@ func ParseForm(ctx *gin.Context, defaultObjPtr any) error {
 	if ptr.Kind() != reflect.Pointer {
 		return errors.New("must pass a pointer to object")
 	}
-	// TODO: this only works for pointer fields for now
+	// TODO(extra): this only works for pointer fields for now
 	for i := 0; i < ptr.Elem().Type().NumField(); i++ {
 
 		field := ptr.Elem().Type().Field(i)

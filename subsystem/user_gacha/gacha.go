@@ -90,7 +90,7 @@ func HandleGacha(ctx *gin.Context, req request.DrawGachaRequest) (client.Gacha, 
 		// allow 1 card to be in multiple group
 	}
 	ctx.Set("gacha_card_pool", cardPool)
-	// TODO: gacha recovery and economy
+	// TODO(gacha): gacha recovery and economy
 	// for now just get this to work
 	resultCards := generic.List[client.AddedGachaCardResult]{}
 	for _, guaranteeId := range gamedata.GachaDrawGuarantee[req.GachaDrawMasterId].GuaranteeIds {

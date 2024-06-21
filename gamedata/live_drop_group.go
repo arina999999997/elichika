@@ -30,7 +30,6 @@ func (ldg *LiveDropGroup) GetRandomItemByDropColor(dropColor int32) client.Conte
 	_, exist := ldg.LiveDropContentGroupByDropColor[dropColor]
 	if !exist {
 		for fallback := range ldg.LiveDropContentGroupByDropColor {
-			// TODO(drop): this is wrong for daily drop(?)
 			dropColor = fallback
 			break
 		}
@@ -55,6 +54,9 @@ func loadLiveDropGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 
 	for _, row := range rows {
 		if gamedata.LiveDropContentGroup[row.DropContentGroupId] == nil {
+			continue
+		}
+		if row.DropCount == 0 {
 			continue
 		}
 
