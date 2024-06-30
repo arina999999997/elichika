@@ -1,11 +1,14 @@
 package locale
 
 import (
+	"elichika/assetdata"
 	"elichika/config"
 	"elichika/dictionary"
 	"elichika/gamedata"
 	"elichika/serverdata"
 	"elichika/utils"
+
+	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -30,6 +33,18 @@ func (locale *Locale) Load() {
 	locale.Dictionary.Init(locale.Path, locale.Language)
 	locale.Gamedata = new(gamedata.Gamedata)
 	locale.Gamedata.Init(locale.Language, MasterdataEngine, serverdata.Engine, locale.Dictionary)
+	// asset data is shared among all locale, but it is initiated multiple times, each time adding more data
+	AssetdataEngine, err := xorm.NewEngine("sqlite", fmt.Sprintf("%s/asset_a_%s.db", locale.Path, locale.Language))
+	utils.CheckErr(err)
+	AssetdataEngine.SetMaxOpenConns(50)
+	AssetdataEngine.SetMaxIdleConns(10)
+	assetdata.Init(locale.Language, AssetdataEngine)
+
+	AssetdataEngine, err = xorm.NewEngine("sqlite", fmt.Sprintf("%s/asset_i_%s.db", locale.Path, locale.Language))
+	utils.CheckErr(err)
+	AssetdataEngine.SetMaxOpenConns(50)
+	AssetdataEngine.SetMaxIdleConns(10)
+	assetdata.Init(locale.Language, AssetdataEngine)
 }
 
 var (

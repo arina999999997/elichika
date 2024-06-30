@@ -46,11 +46,19 @@ If you have GUI for Windows/Linux, you can also just run the executable directly
 Note that whenever you want to play, the server need to be on, so if you already closed termux or the server, you will have to run it again.
 
 ## Updating the server
-You can update the server by running:
+You can update the server by running the following command in the installed location:
+
+```
+curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/update.sh | bash
+```
+
+If your version is new enough, then running:
 
 ```
 ~/update_elichika
 ```
+
+would be enough.
 
 As of current version, you should be able to keep your progress while doing this, so it's recommended to do it often so you get access to newly implemented features.
 
@@ -128,7 +136,8 @@ Detailed explanations of some config options:
         - This will automatically use whatever the address the client reach `elichika` with as the CDN server.
         - Aside from that, you can also just use the address like normal.
         - You should look into this if you want to further develop the game/server, as doing so might require redownloading things a lot.
-    
+    - You can also use other CDNs, but keep in mind that there are some requirements that need to be met, otherwise some download will result in errors.
+
 - Resource config:
 
     - The config of how the resources work on the server.

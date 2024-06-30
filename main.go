@@ -17,8 +17,7 @@ import (
 )
 
 func cli() {
-	fmt.Println("Note: cli is no longer supported!")
-	fmt.Println("Note: If you want to do modification that can't be done in game, use the webUI: <your_server>/webui")
+	fmt.Println("CLI is reserved for special behaviour, the server will now exit, start it again without any argument!")
 }
 
 func main() {

@@ -9,7 +9,6 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,8 +19,6 @@ func recoverDailyLiveMusicPlayable(ctx *gin.Context) {
 	req := request.RecoverDailyLiveMusicPlayableRequest{}
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
-
-	fmt.Println(req)
 
 	session := ctx.MustGet("session").(*userdata.Session)
 
