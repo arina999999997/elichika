@@ -1,12 +1,10 @@
 version: '3'
 services:
-  llas:
-    image: llas:latest
-    container_name: llas
+  elichika:
+    image: arina999999997/elichika:latest
+    container_name: elichika
     build:
       dockerfile: "./Dockerfile"
-    environment:
-      - BRANCH
     ports:
       - 8080:8080
     volumes:
