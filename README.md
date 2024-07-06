@@ -28,9 +28,13 @@ curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/ins
 This will leave some trashes, so you can clone the respository and build manually, look at the scripts for the necessary steps.
 
 #### Using Docker
-A [docker compose](./docker/docker-compose.yml) is provided with this repository for creating a container. More information on deploying with docker can be found [here](./docs/docker.md).
+There is a public docker image available on docker hub: https://hub.docker.com/r/arina999999997/elichika
 
 Assuming you're familiar with docker, this can be a faster way of getting things working. Keep in mind that using docker, some of the step below will not apply, you should reference the docker docs instead.
+
+All config options should be set in the data/config.json file, which will be created after first startup.
+
+[docker compose](./docker/docker-compose.yml) example
 
 Thanks to [yunimoo](https://github.com/yunimoo) for preparing docker files.
 
