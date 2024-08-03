@@ -7,6 +7,7 @@ import (
 // yep this is the real name in the code
 // Strucktur is structure in deutsch but it might as well be engrish
 // TextureStruktur can be null, in which case V should be null, not the whole struct
+// pk is necessary for xorm blob mode
 type TextureStruktur struct {
 	V generic.Nullable[string] `json:"v" xorm:"pk"`
 }

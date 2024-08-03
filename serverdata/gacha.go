@@ -6,7 +6,6 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -51,7 +50,7 @@ type GachaSetupInfo struct {
 	GachaDraws  []GachaDrawSetupInfo `json:"gacha_draws"`
 }
 
-func InitGacha(session *xorm.Session, args []string) {
+func InitGacha(session *xorm.Session) {
 	// insert some relevant gacha group, gacha card, and gacha guarantee
 
 	// this is the same for everything
@@ -109,13 +108,8 @@ func InitGacha(session *xorm.Session, args []string) {
 	})
 }
 
-func InsertGacha(session *xorm.Session, args []string) {
-	if len(args) == 0 {
-		fmt.Println("Invalid params:", args)
-		return
-	}
+func InsertGacha(session *xorm.Session, file string) {
 	// insert gacha from json format, with some exceptions.
-	file := args[0]
 	gachaJsons := utils.ReadAllText(file)
 
 	gachas := []client.Gacha{}
@@ -144,15 +138,18 @@ func InsertGacha(session *xorm.Session, args []string) {
 	}
 }
 
-func GachaCli(session *xorm.Session, args []string) {
-	if len(args) == 0 {
-		fmt.Println("Invalid params:", args)
-		return
-	}
-	switch args[0] {
-	case "init":
-		InitGacha(session, args[1:])
-	case "insert":
-		InsertGacha(session, args[1:])
-	}
+func gachaInitializer(session *xorm.Session) {
+	InitGacha(session)
+	InsertGacha(session, config.ServerInitJsons+"gacha.json")
+}
+
+func init() {
+	addTable("s_gacha_guarantee", GachaGuarantee{}, nil)
+	addTable("s_gacha_group", GachaGroup{}, nil)
+	addTable("s_gacha_card", GachaCard{}, nil)
+	addTable("s_gacha", ServerGacha{}, gachaInitializer)
+	// InitTable("s_gacha_guarantee", GachaGuarantee{}, overwrite)
+	// InitTable("s_gacha", ServerGacha{}, overwrite)
+	// InitTable("s_gacha_group", GachaGroup{}, overwrite)
+	// InitTable("s_gacha_card", GachaCard{}, overwrite)
 }

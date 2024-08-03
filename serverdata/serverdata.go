@@ -1,21 +1,37 @@
 package serverdata
 
 import (
-	"elichika/client"
-	"elichika/config"
 	"elichika/utils"
 
 	"fmt"
-	"os"
 
 	"xorm.io/xorm"
 )
 
+// the serverdata system work as follow:
+// - each table has a defined structure and an initializer, which can be null
+// - if a table is new or empty, the initializer is called
+// - howerver, all tables are created before any intializer is called, so one initializer can initalize multiple tables
+
+type Initializer = func(*xorm.Session)
+
 var (
-	Engine *xorm.Engine
+	Engine                           *xorm.Engine
+	serverDataTableNameToInterface   = map[string]interface{}{}
+	serverDataTableNameToInitializer = map[string]Initializer{}
+	overwrite                        bool
 )
 
-func InitTable(tableName string, structure interface{}, overwrite bool) {
+func addTable(tableName string, structure interface{}, initializer Initializer) {
+	_, exist := serverDataTableNameToInterface[tableName]
+	if exist {
+		panic("table already exist: " + tableName)
+	}
+	serverDataTableNameToInterface[tableName] = structure
+	serverDataTableNameToInitializer[tableName] = initializer
+}
+
+func createTable(tableName string, structure interface{}, overwrite bool) bool {
 	exist, err := Engine.Table(tableName).IsTableExist(tableName)
 	utils.CheckErr(err)
 
@@ -23,75 +39,43 @@ func InitTable(tableName string, structure interface{}, overwrite bool) {
 		fmt.Println("Creating new table:", tableName)
 		err = Engine.Table(tableName).CreateTable(structure)
 		utils.CheckErr(err)
+		return true
 	} else {
 		if !overwrite {
-			return
+			return false
 		}
 		fmt.Println("Overwrite existing table:", tableName)
 		err := Engine.DropTables(tableName)
 		utils.CheckErr(err)
 		err = Engine.Table(tableName).CreateTable(structure)
 		utils.CheckErr(err)
+		return true
 	}
 }
 
-func InitTables(overwrite bool) {
-
-	InitTable("s_gacha_guarantee", GachaGuarantee{}, overwrite)
-	InitTable("s_gacha", ServerGacha{}, overwrite)
-	InitTable("s_gacha_group", GachaGroup{}, overwrite)
-	InitTable("s_gacha_card", GachaCard{}, overwrite)
-	InitTable("s_trade", client.Trade{}, overwrite)
-	InitTable("s_trade_product", client.TradeProduct{}, overwrite)
-	InitTable("s_login_bonus", LoginBonus{}, overwrite)
-	InitTable("s_login_bonus_reward_day", LoginBonusRewardDay{}, overwrite)
-	InitTable("s_login_bonus_reward_content", LoginBonusRewardContent{}, overwrite)
-	InitTable("s_ng_word", NgWord{}, overwrite)
-	InitTable("s_daily_theater", DailyTheater{}, overwrite)
-	InitTable("s_daily_theater_member", DailyTheaterMember{}, overwrite)
+func isTableEmpty(tableName string) bool {
+	total, err := Engine.Table(tableName).Count()
+	utils.CheckErr(err)
+	return total == 0
 }
 
-func AutoInsert() {
+func InitTables() {
+	initializers := []Initializer{}
+	for tableName := range serverDataTableNameToInterface {
+		newOrEmpty := createTable(tableName, serverDataTableNameToInterface[tableName], overwrite)
+		newOrEmpty = newOrEmpty || isTableEmpty(tableName)
+		if newOrEmpty {
+			initializers = append(initializers, serverDataTableNameToInitializer[tableName])
+		}
+	}
 	session := Engine.NewSession()
 	defer session.Close()
 	session.Begin()
-	total, err := session.Table("s_trade").Count()
-	utils.CheckErr(err)
-	if total == 0 { // already have something
-		TradeCli(session, []string{"insert", config.ServerInitJsons + "trade.json"})
-	}
-
-	total, err = session.Table("s_gacha").Count()
-	utils.CheckErr(err)
-	if total == 0 {
-		GachaCli(session, []string{"init"})
-		GachaCli(session, []string{"insert", config.ServerInitJsons + "gacha.json"})
-	}
-	total, err = session.Table("s_login_bonus").Count()
-	utils.CheckErr(err)
-	if total == 0 {
-		InitialiseLoginBonus(session)
-	}
-	total, err = session.Table("s_ng_word").Count()
-	utils.CheckErr(err)
-	if total == 0 {
-		InitialiseNgWord(session)
-	}
-	total, err = session.Table("s_daily_theater").Count()
-	utils.CheckErr(err)
-	if total == 0 {
-		InitialiseDailyTheater(session)
+	for _, initializer := range initializers {
+		if initializer == nil {
+			continue
+		}
+		initializer(session)
 	}
 	session.Commit()
-}
-
-func init() {
-	var err error
-	Engine, err = xorm.NewEngine("sqlite", config.ServerdataPath)
-	utils.CheckErr(err)
-	Engine.SetMaxOpenConns(50)
-	Engine.SetMaxIdleConns(10)
-	overwrite := (len(os.Args) == 2) && (os.Args[1] == "reinit")
-	InitTables(overwrite)
-	AutoInsert()
 }

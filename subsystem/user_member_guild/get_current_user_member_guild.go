@@ -23,7 +23,7 @@ func GetCurrentUserMemberGuild(session *userdata.Session) client.UserMemberGuild
 	if !exist {
 		userMemberGuild = client.UserMemberGuild{
 			MemberGuildId:            memberGuildId,
-			MemberMasterId:           session.UserModel.UserStatus.MemberGuildMemberMasterId.Value,
+			MemberMasterId:           session.UserStatus.MemberGuildMemberMasterId.Value,
 			SupportPointCountResetAt: utils.BeginOfCurrentHalfDay(session.Time).Unix(),
 		}
 		UpdateUserMemberGuild(session, userMemberGuild)
@@ -32,7 +32,7 @@ func GetCurrentUserMemberGuild(session *userdata.Session) client.UserMemberGuild
 		// reset the daily point
 		// TODO(extra): This system can't handle more than 1 rally goal, not sure if the client can handle it
 		previousDayPoint := GetPreviousDailyCoopPoint(session, utils.CurrentMidDay(session.Time).Unix())
-		memberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId.Value
+		memberMasterId := session.UserStatus.MemberGuildMemberMasterId.Value
 		reward := session.Gamedata.MemberGuildPointClearReward[memberMasterId]
 		if (previousDayPoint >= reward.TargetPoint) &&
 			(userMemberGuild.DailySupportPoint+userMemberGuild.DailyLovePoint > 0) &&

@@ -7,7 +7,7 @@ import (
 )
 
 func GetDailyCoopPoint(session *userdata.Session) int32 {
-	memberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId.Value
+	memberMasterId := session.UserStatus.MemberGuildMemberMasterId.Value
 	var totals []int64
 	var err error
 	totals, err = session.Db.Table("u_member_guild").

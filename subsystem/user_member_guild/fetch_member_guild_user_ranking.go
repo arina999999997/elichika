@@ -15,7 +15,7 @@ func FetchMemberGuildUserRanking(session *userdata.Session, memberGuildId int32)
 	// top ranking returned is the top 100 for GL, so it could be the 3rd ranking bracket, or it could be top 100 in jp as well
 	// for simplicity this is hard coded to 100
 	// top ranking always use the current user id
-	memberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId.Value
+	memberMasterId := session.UserStatus.MemberGuildMemberMasterId.Value
 	userMemberGuilds := []generic.UserIdWrapper[client.UserMemberGuild]{}
 	err := session.Db.Table("u_member_guild").
 		Where("member_master_id = ? AND member_guild_id = ? AND total_point >= ?",

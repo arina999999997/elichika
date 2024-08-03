@@ -3,6 +3,8 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/dictionary"
+	"elichika/generic"
+	"elichika/serverdata"
 	"elichika/utils"
 
 	"fmt"
@@ -65,6 +67,12 @@ type Member struct {
 
 	// from m_member_login_bonus_birthday
 	MemberLoginBonusBirthdays []MemberLoginBonusBirthday `xorm:"-"`
+
+	// from s_event_member_name_asset
+	MainNameTopAssetPath    client.TextureStruktur `xorm:"-"`
+	MainNameBottomAssetPath client.TextureStruktur `xorm:"-"`
+	SubNameTopAssetPath     client.TextureStruktur `xorm:"-"`
+	SubNameBottomAssetPath  client.TextureStruktur `xorm:"-"`
 }
 
 type MemberInit struct {
@@ -114,6 +122,25 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	// fmt.Println(member.Id, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
 	// 	member.ThemeColor, "\t", member.ThemeLightColor, "\t", member.ThemeDarkColor, "\t",
 	// 	member.BackgroundUpperLeftColor, "\t", member.BackgroundBottomRightColor)
+
+	{
+		asset := serverdata.EventMemberNameAsset{}
+		exist, err := serverdata_db.Table("s_event_member_name_asset").Where("member_master_id = ?", member.Id).Get(&asset)
+		utils.CheckErrMustExist(err, exist)
+
+		member.MainNameTopAssetPath = client.TextureStruktur{
+			V: generic.NewNullable(asset.MainNameTopAssetPath),
+		}
+		member.MainNameBottomAssetPath = client.TextureStruktur{
+			V: generic.NewNullable(asset.MainNameBottomAssetPath),
+		}
+		member.SubNameTopAssetPath = client.TextureStruktur{
+			V: generic.NewNullable(asset.SubNameTopAssetPath),
+		}
+		member.SubNameBottomAssetPath = client.TextureStruktur{
+			V: generic.NewNullable(asset.SubNameBottomAssetPath),
+		}
+	}
 }
 
 func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {

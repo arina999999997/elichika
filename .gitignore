@@ -15,4 +15,5 @@ raw_data/
 *.backup
 *.json
 *.sql
+*.dll
 template.go

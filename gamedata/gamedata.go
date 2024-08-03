@@ -74,7 +74,9 @@ func generateLoadOrder(fid uintptr) {
 }
 
 type Gamedata struct {
-	Language string
+	Language     string
+	ServerdataDb *xorm.Session
+	MasterdataDb *xorm.Session
 
 	Accessory              map[int32]*Accessory
 	AccessoryRarity        map[int32]*AccessoryRarity
@@ -93,6 +95,12 @@ type Gamedata struct {
 	ConstantInt []int32
 
 	Emblem map[int32]*Emblem
+
+	EventActive         EventActive
+	EventAvailable      EventAvailable
+	EventMarathon       map[int32]*EventMarathon
+	EventMarathonReward map[int32][]*client.Content
+	EventStory          map[int32]*EventStory
 
 	Member                          map[int32]*Member
 	MemberGroup                     map[int32]*MemberGroup
@@ -173,13 +181,18 @@ type Gamedata struct {
 	LastestDailyTheaterId int32
 }
 
+// allow for session-less access to gamedata, at the cost of being
+// locale non-specific
+var Instance *Gamedata = nil
+
 func (gamedata *Gamedata) Init(language string, masterdata *xorm.Engine, serverdata *xorm.Engine, dictionary *dictionary.Dictionary) {
+	if Instance == nil {
+		Instance = gamedata
+	}
 	start := time.Now()
 	gamedata.Language = language
-	masterdata_session := masterdata.NewSession()
-	serverdata_session := serverdata.NewSession()
-	defer masterdata_session.Close()
-	defer serverdata_session.Close()
+	gamedata.MasterdataDb = masterdata.NewSession()
+	gamedata.ServerdataDb = serverdata.NewSession()
 
 	for len(funcs) > 0 {
 		var fid uintptr
@@ -190,7 +203,7 @@ func (gamedata *Gamedata) Init(language string, masterdata *xorm.Engine, serverd
 		generateLoadOrder(fid)
 	}
 	for _, loadFunc := range loadOrder {
-		loadFunc(gamedata, masterdata_session, serverdata_session, dictionary)
+		loadFunc(gamedata, gamedata.MasterdataDb, gamedata.ServerdataDb, dictionary)
 	}
 	finish := time.Now()
 	fmt.Println("Finished loading database in: ", finish.Sub(start))

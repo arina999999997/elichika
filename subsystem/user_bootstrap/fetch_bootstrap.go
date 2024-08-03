@@ -8,6 +8,7 @@ import (
 	"elichika/subsystem/banner"
 	"elichika/subsystem/pickup_info"
 	"elichika/subsystem/user_beginner_challenge"
+	"elichika/subsystem/user_event/marathon"
 	"elichika/subsystem/user_expired_item"
 	"elichika/subsystem/user_login_bonus"
 	"elichika/subsystem/user_member_guild"
@@ -61,5 +62,7 @@ func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest
 	user_member_guild.FetchUserInfoTriggerMemberGuildRankingShowResultRows(session,
 		&resp.UserInfoTrigger.UserInfoTriggerMemberGuildRankingShowResultRows)
 
+	marathon.FetchUserInfoTriggerEventMarathonShowResultRows(session,
+		&resp.UserInfoTrigger.UserInfoTriggerEventMarathonShowResultRows)
 	return resp
 }

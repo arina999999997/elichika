@@ -17,7 +17,8 @@ func AddUserLp(session *userdata.Session, lp int32) {
 	// how many second it take to recover 1 lp
 	// is 240 with official servers but can be changed
 	livePointRecoverlyAt := session.Gamedata.ConstantInt[enum.ConstantIntLivePointRecoverlyAt]
-	if session.Time.Unix() < session.UserStatus.LivePointFullAt { // already full
+	if session.Time.Unix() < session.UserStatus.LivePointFullAt {
+		// LP isn't filled
 		timeLeft := int32(session.UserStatus.LivePointFullAt - session.Time.Unix())
 		toRecover := timeLeft / livePointRecoverlyAt
 		if timeLeft%livePointRecoverlyAt != 0 {
@@ -31,6 +32,10 @@ func AddUserLp(session *userdata.Session, lp int32) {
 		session.UserStatus.LivePointFullAt = session.Time.Unix()
 	} else {
 		session.UserStatus.LivePointBroken = maxLp
-		session.UserStatus.LivePointFullAt -= int64(lp * livePointRecoverlyAt)
+		if session.UserStatus.LivePointFullAt < session.Time.Unix() {
+			session.UserStatus.LivePointFullAt = session.Time.Unix() + int64((maxLp-currentLp)*livePointRecoverlyAt)
+		} else {
+			session.UserStatus.LivePointFullAt -= int64(lp * livePointRecoverlyAt)
+		}
 	}
 }

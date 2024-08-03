@@ -10,6 +10,7 @@ import (
 	"xorm.io/xorm"
 )
 
+// TODO(dictionary): Rewrite this to take a gamedata object or something, so we can localize the server side too
 type Dictionary struct {
 	Language     string
 	Dictionaries map[string]*xorm.Engine

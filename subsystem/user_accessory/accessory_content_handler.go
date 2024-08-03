@@ -21,7 +21,7 @@ func accessoryContentHandler(session *userdata.Session, content *client.Content)
 	masterAccessory := session.Gamedata.Accessory[content.ContentId]
 	for content.ContentAmount > 0 {
 		currentAccessoryAmount++
-		if int32(currentAccessoryAmount) > session.UserModel.UserStatus.AccessoryBoxAdditional+AccessoryBoxDefaultLimit {
+		if int32(currentAccessoryAmount) > session.UserStatus.AccessoryBoxAdditional+AccessoryBoxDefaultLimit {
 			// can't take anymore
 			return true
 		}

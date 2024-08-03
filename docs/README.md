@@ -84,7 +84,14 @@ TODO(docs): Add specific docs for specific contents if necessary.
 - [x] DLP
     - [x] Working DLP that also track voltage ranking
     - [x] User can reset DLP progress using the WebUi.
-
+- [ ] Event
+    - [x] Working marathon (story/point reward) event handling, with the first event available.
+    - [ ] Event goals / gacha are not available.
+    - [ ] Other marathon events also have missing assets that need to be remade.
+    - [ ] There are also some other limitation/defect due to the current design.
+    - [ ] Mining (exchange) event.
+    - [ ] SBL event.
+    - [ ] Voltage ranking event.
 ## Importing/Exporting account
 You can use the user WebUI to export and import your account.
 

@@ -21,6 +21,11 @@ func init() {
 	cdnMasterVersionMapping["en"] = "2d61e7b4e89961c7"
 	cdnMasterVersionMapping["ko"] = "2d61e7b4e89961c7"
 	cdnMasterVersionMapping["zh"] = "2d61e7b4e89961c7"
+
+	// // TODO(cdn): make this change globally
+	// cdnMasterVersionMapping["en"] = "b66ec2295e9a00aa"
+	// cdnMasterVersionMapping["ko"] = "b66ec2295e9a00aa"
+	// cdnMasterVersionMapping["zh"] = "b66ec2295e9a00aa"
 	cdnMasterVersionMapping["ja"] = "b66ec2295e9a00aa"
 }
 

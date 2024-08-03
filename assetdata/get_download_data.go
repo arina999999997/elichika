@@ -23,7 +23,7 @@ func GetDownloadData(packname string) DownloadData {
 	}
 	pack, exist := Pack[packname]
 	if !exist {
-		panic(fmt.Sprint("package doesn't exist: ", pack))
+		panic(fmt.Sprint("package doesn't exist: ", packname))
 	}
 	if pack.Metapack == nil {
 		return DownloadData{

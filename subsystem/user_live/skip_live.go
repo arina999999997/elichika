@@ -9,6 +9,8 @@ import (
 	"elichika/generic"
 	"elichika/item"
 	"elichika/klab"
+	"elichika/subsystem/event"
+	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
@@ -118,9 +120,9 @@ func SkipLive(session *userdata.Session, req request.SkipLiveRequest) response.S
 	}
 
 	// member guild
-	memberGuildMemberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId
+	memberGuildMemberMasterId := session.UserStatus.MemberGuildMemberMasterId
 	if memberGuildMemberMasterId.HasValue {
-		loveGained, exist := memberLoveGained[session.UserModel.UserStatus.MemberGuildMemberMasterId.Value]
+		loveGained, exist := memberLoveGained[session.UserStatus.MemberGuildMemberMasterId.Value]
 		if exist && (user_member_guild.IsMemberGuildRankingPeriod(session)) {
 			lovePointAdded := user_member_guild.AddLovePoint(session, loveGained)
 			resp.SkipLiveResult.LiveResultMemberGuild = generic.NewNullable(client.LiveResultMemberGuild{
@@ -129,6 +131,30 @@ func SkipLive(session *userdata.Session, req request.SkipLiveRequest) response.S
 				ReceiveVoltagePoint: 0,
 				TotalPoint:          user_member_guild.GetCurrentUserMemberGuildTotalPoint(session),
 			})
+		}
+	}
+
+	// events
+	activeEvent := session.Gamedata.EventActive.GetActiveEvent(session.Time)
+	if (activeEvent != nil) && (activeEvent.ExpiredAt > session.Time.Unix()) {
+		if activeEvent.EventType == enum.EventType1Marathon {
+			if req.LiveEventMarathonStatus.HasValue {
+				totalDeckBonus := int32(0)
+				marathonEvent := session.Gamedata.EventMarathon[activeEvent.EventId]
+				for _, cardMasterId := range cardMasterIds {
+					userCard := user_card.GetUserCard(session, cardMasterId)
+					memberId := session.Gamedata.Card[cardMasterId].Member.Id
+					bonusArray, exist := marathonEvent.CardBonus[cardMasterId]
+					if exist {
+						totalDeckBonus += bonusArray[userCard.Grade]
+					}
+					totalDeckBonus += marathonEvent.MemberBonus[memberId]
+				}
+				resp.SkipLiveResult.ActiveEventResult = event.GetLiveResultActiveEventMarathon(session,
+					liveDifficulty, liveDifficulty.EvaluationSScore, totalDeckBonus, req.TicketUseCount, req.LiveEventMarathonStatus.Value.IsUseEventMarathonBooster)
+			}
+		} else {
+			panic("event type not supported")
 		}
 	}
 

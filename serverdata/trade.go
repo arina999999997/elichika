@@ -2,18 +2,18 @@ package serverdata
 
 import (
 	"elichika/client"
+	"elichika/config"
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 
 	"xorm.io/xorm"
 )
 
-func InsertTrade(session *xorm.Session, args []string) {
+func InsertTrade(session *xorm.Session) {
 	// insert trades from json
 
-	file := args[0]
+	file := config.ServerInitJsons + "trade.json"
 
 	trades := []client.Trade{}
 	err := json.Unmarshal([]byte(utils.ReadAllText(file)), &trades)
@@ -34,16 +34,7 @@ func InsertTrade(session *xorm.Session, args []string) {
 	utils.CheckErr(err)
 }
 
-func TradeCli(session *xorm.Session, args []string) {
-	if len(args) == 0 {
-		fmt.Println("Invalid params:", args)
-		return
-	}
-	switch args[0] {
-	case "insert":
-		InsertTrade(session, args[1:])
-	default:
-		fmt.Println("Invalid params:", args)
-		return
-	}
+func init() {
+	addTable("s_trade", client.Trade{}, InsertTrade)
+	addTable("s_trade_product", client.TradeProduct{}, nil)
 }

@@ -3,6 +3,8 @@ package user_live
 import (
 	"elichika/client"
 	"elichika/client/response"
+	"elichika/subsystem/event"
+	"elichika/subsystem/pickup_info"
 	"elichika/userdata"
 
 	"time"
@@ -32,5 +34,7 @@ func FetchLiveMusicSelect(session *userdata.Session) response.FetchLiveMusicSele
 		resp.LiveDailyList.Append(GetUserLiveDaily(session, liveDaily.Id))
 	}
 
+	resp.LiveEventCommonInfo = event.GetLiveEventCommonInfo(session)
+	resp.PickupInfo = pickup_info.GetBootstrapPickupInfo(session)
 	return resp
 }

@@ -3,6 +3,7 @@ package pickup_info
 import (
 	"elichika/client"
 	"elichika/generic"
+	"elichika/subsystem/event"
 	"elichika/userdata"
 )
 
@@ -10,6 +11,7 @@ import (
 // and maybe put the gacha things into a database or something
 func GetBootstrapPickupInfo(session *userdata.Session) client.BootstrapPickupInfo {
 	resp := client.BootstrapPickupInfo{}
+	resp.ActiveEvent = event.GetActiveEventPickup(session)
 	// birthday scouting
 	// resp.AppealGachas.Append(client.TextureStruktur{V: generic.NewNullable("'-K")})
 	// muse festival party

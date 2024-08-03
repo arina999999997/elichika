@@ -3,7 +3,7 @@ package ranking
 // Implement a ranking data structure that has the following characteristic:
 // Elements:
 // - Each element is a pair of (id, score)
-// - The id is usually user_id. Id has to be unique.
+// - The id is usually user_id. Id has to be unique, and has to be >= 0
 // - The score is usually the score of the user
 // - The rank of a record is defined to be the number of other record with strictly higher score, plus 1
 // Operation:
@@ -13,7 +13,8 @@ package ranking
 //   - if total score = 0, it's not inserted.
 //   - additionalScore should be > 0
 // - RankOf(id): Get the rank of an id if it exist
-// - ScoreOf(id): Get the score of an id if it exist
+// - RankOfWithTie(id): Get the rank of an id if it exist, accounting for tie
+// - ScoTiedRankOfreOf(id): Get the score of an id if it exist
 // - GetRange(first, last): Get the (id, score) pairs that has rank from the range [first, last)
 // The actual implementation is as follow:
 // - Store a map[KeyT]ScoreT to quickly reference score by id.
@@ -75,6 +76,14 @@ func (r *Ranking[ScoreT, IdT]) RankOf(id IdT) (int, bool) {
 		return 0, false
 	}
 	return r.root.RankOf(score, id) + 1, true
+}
+
+func (r *Ranking[ScoreT, IdT]) TiedRankOf(id IdT) (int, bool) {
+	score, exist := r.scoreById[id]
+	if !exist {
+		return 0, false
+	}
+	return r.root.RankOf(score, -id) + 1, true
 }
 
 func (r *Ranking[ScoreT, IdT]) ScoreOf(id IdT) (ScoreT, bool) {

@@ -33,7 +33,7 @@ type LoginBonusRewardContent struct {
 	Content      client.Content `xorm:"extends"`
 }
 
-func InitialiseLoginBonus(session *xorm.Session) {
+func InitializeLoginBonus(session *xorm.Session) {
 	const BeginnerLoginBonusId = 1000001
 	const NormalLoginBonusId = 1000002
 	const BirthDayLoginBonusId = 1000003
@@ -178,4 +178,10 @@ func InitialiseLoginBonus(session *xorm.Session) {
 		utils.CheckErr(err)
 	}
 
+}
+
+func init() {
+	addTable("s_login_bonus", LoginBonus{}, InitializeLoginBonus)
+	addTable("s_login_bonus_reward_day", LoginBonusRewardDay{}, nil)
+	addTable("s_login_bonus_reward_content", LoginBonusRewardContent{}, nil)
 }

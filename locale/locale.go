@@ -13,8 +13,22 @@ import (
 	"xorm.io/xorm"
 )
 
+// create one engine for each potential file being read
+// each locale is free to create and store its own session
+var engines = map[string]*xorm.Engine{}
+
+func getEngine(path string) *xorm.Engine {
+	engine, exist := engines[path]
+	if exist {
+		return engine
+	}
+	engine, err := xorm.NewEngine("sqlite", path)
+	utils.CheckErr(err)
+	engines[path] = engine
+	return engine
+}
+
 type Locale struct {
-	// Loaded bool
 	Path          string
 	Language      string
 	StartupKey    []byte
@@ -24,9 +38,7 @@ type Locale struct {
 }
 
 func (locale *Locale) Load() {
-	var err error
-	MasterdataEngine, err := xorm.NewEngine("sqlite", locale.Path+"masterdata.db")
-	utils.CheckErr(err)
+	MasterdataEngine := getEngine(locale.Path + "masterdata.db")
 	MasterdataEngine.SetMaxOpenConns(50)
 	MasterdataEngine.SetMaxIdleConns(10)
 	locale.Dictionary = new(dictionary.Dictionary)
@@ -34,14 +46,12 @@ func (locale *Locale) Load() {
 	locale.Gamedata = new(gamedata.Gamedata)
 	locale.Gamedata.Init(locale.Language, MasterdataEngine, serverdata.Engine, locale.Dictionary)
 	// asset data is shared among all locale, but it is initiated multiple times, each time adding more data
-	AssetdataEngine, err := xorm.NewEngine("sqlite", fmt.Sprintf("%s/asset_a_%s.db", locale.Path, locale.Language))
-	utils.CheckErr(err)
+	AssetdataEngine := getEngine(fmt.Sprintf("%s/asset_a_%s.db", locale.Path, locale.Language))
 	AssetdataEngine.SetMaxOpenConns(50)
 	AssetdataEngine.SetMaxIdleConns(10)
 	assetdata.Init(locale.Language, AssetdataEngine)
 
-	AssetdataEngine, err = xorm.NewEngine("sqlite", fmt.Sprintf("%s/asset_i_%s.db", locale.Path, locale.Language))
-	utils.CheckErr(err)
+	AssetdataEngine = getEngine(fmt.Sprintf("%s/asset_i_%s.db", locale.Path, locale.Language))
 	AssetdataEngine.SetMaxOpenConns(50)
 	AssetdataEngine.SetMaxIdleConns(10)
 	assetdata.Init(locale.Language, AssetdataEngine)

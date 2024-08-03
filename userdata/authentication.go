@@ -32,6 +32,9 @@ func (session *Session) fetchAuthenticationData() {
 }
 
 func userAuthenticationDataFinalizer(session *Session) {
+	if session.IsBasic {
+		return
+	}
 	affected, err := session.Db.Table("u_authentication").Where("user_id = ?", session.UserId).AllCols().Update(&session.AuthenticationData)
 	utils.CheckErr(err)
 	if affected == 0 {

@@ -35,6 +35,14 @@ func NewNullableFromPointer[T any](pointer *T) Nullable[T] {
 	}
 }
 
+func (n *Nullable[T]) ToPointer() *T {
+	if n.HasValue {
+		return &n.Value
+	} else {
+		return nil
+	}
+}
+
 // Unmarshal: from JSON bytes to value
 func (n *Nullable[T]) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {

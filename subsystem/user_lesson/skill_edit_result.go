@@ -10,7 +10,7 @@ import (
 )
 
 func SkillEditResult(session *userdata.Session, req request.SkillEditResultRequest) {
-	session.UserModel.UserStatus.LessonResumeStatus = enum.TopPriorityProcessStatusNone
+	session.UserStatus.LessonResumeStatus = enum.TopPriorityProcessStatusNone
 
 	_, err := session.Db.Table("u_lesson").Where("user_id = ?", session.UserId).Delete(&response.LessonResultResponse{})
 	utils.CheckErr(err)

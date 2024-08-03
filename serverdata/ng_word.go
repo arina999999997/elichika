@@ -13,7 +13,7 @@ type NgWord struct {
 	Word string `xorm:"pk"`
 }
 
-func InitialiseNgWord(session *xorm.Session) {
+func InitializeNgWord(session *xorm.Session) {
 	files := []string{config.ServerInitJsons + "wordlist_gl.json", config.ServerInitJsons + "wordlist_jp.json"}
 	for _, file := range files {
 		wordsJson := utils.ReadAllText(file)
@@ -32,4 +32,8 @@ func InitialiseNgWord(session *xorm.Session) {
 			}
 		}
 	}
+}
+
+func init() {
+	addTable("s_ng_word", NgWord{}, InitializeNgWord)
 }

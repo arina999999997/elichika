@@ -26,7 +26,7 @@ import (
 
 // return the userId if it is not given
 func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
-	// TODO(now, new_account): Initialise from a table instead.
+	// TODO(now, new_account): Initialize from a table instead.
 	gamedata := ctx.MustGet("gamedata").(*gamedata.Gamedata)
 	dictionary := ctx.MustGet("dictionary").(*dictionary.Dictionary)
 	{

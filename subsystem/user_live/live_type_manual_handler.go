@@ -8,6 +8,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/klab"
+	"elichika/subsystem/event"
 	"elichika/subsystem/user_accessory"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
@@ -267,9 +268,9 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 		}
 		// member guild
 		if user_member_guild.IsMemberGuildRankingPeriod(session) {
-			memberGuildMemberMasterId := session.UserModel.UserStatus.MemberGuildMemberMasterId
+			memberGuildMemberMasterId := session.UserStatus.MemberGuildMemberMasterId
 			if memberGuildMemberMasterId.HasValue && user_member_guild.IsMemberGuildRankingPeriod(session) {
-				loveGained, hasLove := memberLoveGained[session.UserModel.UserStatus.MemberGuildMemberMasterId.Value]
+				loveGained, hasLove := memberLoveGained[session.UserStatus.MemberGuildMemberMasterId.Value]
 				voltagePoint := int32(0)
 				hasVoltage := false
 				if liveDifficulty.IsCountTarget {
@@ -417,6 +418,29 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 			user_mission.UpdateProgress(session, enum.MissionClearConditionTypeCountUseSpecificMemberSkill,
 				&gamedata.Card[cardStat.CardMasterId].Member.Id, nil,
 				user_mission.AddProgressHandler, cardStat.SkillTriggeredCount)
+		}
+
+		// events
+		activeEvent := session.Gamedata.EventActive.GetActiveEvent(session.Time)
+		if (activeEvent != nil) && (activeEvent.ExpiredAt > session.Time.Unix()) {
+			if activeEvent.EventType == enum.EventType1Marathon {
+				totalDeckBonus := int32(0)
+				marathonEvent := session.Gamedata.EventMarathon[activeEvent.EventId]
+				for _, i := range req.LiveScore.CardStatDict.OrderedKey {
+					cardMasterId := req.LiveScore.CardStatDict.Map[i].CardMasterId
+					userCard := user_card.GetUserCard(session, cardMasterId)
+					memberId := session.Gamedata.Card[cardMasterId].Member.Id
+					bonusArray, exist := marathonEvent.CardBonus[cardMasterId]
+					if exist {
+						totalDeckBonus += bonusArray[userCard.Grade]
+					}
+					totalDeckBonus += marathonEvent.MemberBonus[memberId]
+				}
+				resp.LiveResult.ActiveEventResult = event.GetLiveResultActiveEventMarathon(session,
+					liveDifficulty, req.LiveScore.CurrentScore, totalDeckBonus, 1, startReq.LiveEventMarathonStatus.Value.IsUseEventMarathonBooster)
+			} else {
+				panic("event type not supported")
+			}
 		}
 	}
 

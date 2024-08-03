@@ -16,6 +16,8 @@ import (
 	_ "elichika/handler/daily_theater_archive"
 	_ "elichika/handler/data_link"
 	_ "elichika/handler/emblem"
+	_ "elichika/handler/event_marathon"
+	_ "elichika/handler/event_marathon_ranking"
 	_ "elichika/handler/friend"
 	_ "elichika/handler/gacha"
 	_ "elichika/handler/game_settings"

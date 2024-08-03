@@ -6,5 +6,5 @@ import (
 
 func IsMaxFriend(session *userdata.Session) bool {
 	friendCount := GetFriendCount(session, session.UserId)
-	return friendCount >= session.Gamedata.UserRank[session.UserModel.UserStatus.Rank].FriendLimit
+	return friendCount >= session.Gamedata.UserRank[session.UserStatus.Rank].FriendLimit
 }

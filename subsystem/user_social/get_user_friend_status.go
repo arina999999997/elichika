@@ -13,7 +13,7 @@ func GetUserFriendStatus(session *userdata.Session, otherUserId int32) database.
 		return database.UserFriendStatus{
 			UserId:           session.UserId,
 			OtherUserId:      otherUserId,
-			FriendApprovedAt: generic.NewNullable(session.UserModel.UserStatus.TutorialEndAt),
+			FriendApprovedAt: generic.NewNullable(session.UserStatus.TutorialEndAt),
 			RequestStatus:    enum.FriendRequestStatusFriend,
 			IsRequestPending: false,
 			IsNew:            false,
