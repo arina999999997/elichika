@@ -15,6 +15,7 @@ func init() {
 	utils.CheckErr(err)
 	Engine.SetMaxOpenConns(50)
 	Engine.SetMaxIdleConns(10)
-	overwrite = (len(os.Args) == 2) && (os.Args[1] == "reinit")
+	rebuildAsset = (len(os.Args) == 2) && (os.Args[1] == "rebuild_assets")
+	resetServer = (len(os.Args) == 2) && (os.Args[1] == "reset_server")
 	InitTables()
 }

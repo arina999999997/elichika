@@ -36,7 +36,7 @@ All config options should be set in the data/config.json file, which will be cre
 
 [docker compose](./docker/docker-compose.yml) example
 
-Thanks to [yunimoo](https://github.com/yunimoo) for preparing docker files.
+Thanks to ethan and [yunimoo](https://github.com/yunimoo) for preparing docker files.
 
 ## Running the server
 After installing, you need to run the server to play using the following command:
@@ -50,7 +50,32 @@ If you have GUI for Windows/Linux, you can also just run the executable directly
 Note that whenever you want to play, the server need to be on, so if you already closed termux or the server, you will have to run it again.
 
 ## Updating the server
-You can update the server by running the following command in the installed location:
+There are 2 ways to update the server:
+
+- The basic update is more stable but will take longer because it will be downloading more stuff and rebuilding more stuff.
+- The normal update is faster, but if your server version is too old, something might break.
+
+Regardless of what update methods you want, it is also a good idea to backup ``userdata.db`` or to export your data (with the WebUI) before doing this, as updating from a too old version might result in breaking changes anyway.
+
+
+### Basic update
+You can update the server using a basic update logic:
+
+```
+curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/basic_update.sh | bash
+```
+
+If you have a new enough version, you can also run:
+
+```
+~/basic_update_elichika
+```
+to do the same thing.
+
+The basic update basically backup your data, reinstall, and then restore your data. This will work for pretty much every version, but it can be slower than the normal update.
+
+### Normal update
+If you update the server regularly, then you can use the normal update and it should work:
 
 ```
 curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/update.sh | bash
@@ -63,10 +88,6 @@ If your version is new enough, then running:
 ```
 
 would be enough.
-
-As of current version, you should be able to keep your progress while doing this, so it's recommended to do it often so you get access to newly implemented features.
-
-It is also a good idea to backup ``userdata.db`` or to export your data (with the WebUI) before doing this, as updating from a too old version might result in breaking changes.
 
 ## Playing the game
 With the server running, and the client network setup correctly, simply open the game and play.

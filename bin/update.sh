@@ -3,24 +3,20 @@
 # - update the submodules (assets)
 # - rebuild the binary
 # - rebuild the assets
-# note that this will destroy the current state of serverdata.db
-# backup you files, or better yet, make sure that serverdata.db only store derived data
+# note that this will destroy the current state of serverdata.db and the submodules
+# backup you files, or better yet, make sure that serverdata.db only store derived data or special supported data (event)
 
 git pull && \
-git submodule deinit -f . && \
-git submodule update --init --recursive --checkout && \
+git submodule deinit -f assets && \
+git submodule update --init --recursive --checkout assets && \
 (go build || CGO_ENABLED=0 go build) && \
-./elichika reinit && \
+./elichika rebuild_assets && \
 echo "Updated succesfully!"
 
 
 if [ $? -eq 0 ]; then
-    echo "cd $PWD && ./elichika" > ~/run_elichika && \
-    echo "cd $PWD && curl -L https://raw.githubusercontent.com/arina999999997/elichika/master/bin/install.sh | bash"  > ~/update_elichika && \
-    chmod +x ~/run_elichika && \
-    chmod +x ~/update_elichika && \
-    echo "Use \"~/run_elichika\" in termux to run the server!" && \
-    echo "Use \"~/update_elichika\" in termux to update the server!"
+    chmod +rwx ./bin/shortcut.sh && \
+    ./bin/shortcut.sh
 else
     echo "Error updating!"
 fi

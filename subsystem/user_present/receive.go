@@ -39,7 +39,9 @@ func Receive(session *userdata.Session, presentId int32, resp *response.ReceiveP
 		resp.ReceivedPresentItems.Append(present.Content)
 		// if it's a card then we need to set this
 		if present.Content.ContentType == enum.ContentTypeCard {
-			resp.CardGradeUpResult.Append(result.(client.AddedCardResult))
+			for _, resultCard := range result.([]client.AddedCardResult) {
+				resp.CardGradeUpResult.Append(resultCard)
+			}
 		}
 	} else {
 		// partially received

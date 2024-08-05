@@ -1,3 +1,9 @@
 [submodule "assets"]
 	path = assets
 	url = https://github.com/arina999999997/harasho.git
+[submodule "exec"]
+	path = exec
+	url = https://github.com/arina999999997/elichika-tools.git
+[submodule "gui"]
+	path = gui
+	url = https://github.com/arina999999997/elichika-gui.git

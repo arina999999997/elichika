@@ -19,7 +19,16 @@ var (
 	Engine                           *xorm.Engine
 	serverDataTableNameToInterface   = map[string]interface{}{}
 	serverDataTableNameToInitializer = map[string]Initializer{}
-	overwrite                        bool
+
+	// whether to rebuild the assets
+	// setting this to true should only update the assets to the newest version, and if the version are the same, it should not change anything
+	rebuildAsset bool
+
+	// whether to reset the server state
+	// this do not delete any user data, it only reset the server to the initial state
+	// can be used if the server sided tasks are somehow in a bad state
+	// this will almost certainly disrupt on-going events
+	resetServer bool
 )
 
 func addTable(tableName string, structure interface{}, initializer Initializer) {
@@ -60,8 +69,15 @@ func isTableEmpty(tableName string) bool {
 }
 
 func InitTables() {
+	isServerState := map[string]bool{}
+	isServerState["s_scheduled_task"] = true
+	isServerState["s_event_active"] = true
 	initializers := []Initializer{}
 	for tableName := range serverDataTableNameToInterface {
+		overwrite := rebuildAsset
+		if isServerState[tableName] {
+			overwrite = resetServer
+		}
 		newOrEmpty := createTable(tableName, serverDataTableNameToInterface[tableName], overwrite)
 		newOrEmpty = newOrEmpty || isTableEmpty(tableName)
 		if newOrEmpty {
