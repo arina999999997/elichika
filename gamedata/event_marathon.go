@@ -61,18 +61,19 @@ type EventMarathon struct {
 }
 
 func (em *EventMarathon) GetNextReward(eventPoint int32) (generic.Nullable[int32], generic.Nullable[client.Content]) {
-	// TODO(optimization): this can be a binary search
-	for _, reward := range em.TopStatus.EventMarathonPointRewardMasterRows.Slice {
-		if reward.RequiredPoint > eventPoint {
-			content := em.Gamedata.EventMarathonReward[reward.RewardGroupId][0]
-			return generic.NewNullable(reward.RequiredPoint), generic.NewNullableFromPointer(content)
-		}
+	slice := em.TopStatus.EventMarathonPointRewardMasterRows.Slice
+	idx := sort.Search(len(slice), func(i int) bool {
+		return slice[i].RequiredPoint > eventPoint
+	})
+
+	if idx < len(slice) {
+		content := em.Gamedata.EventMarathonReward[slice[idx].RequiredPoint][0]
+		return generic.NewNullable(slice[idx].RequiredPoint), generic.NewNullableFromPointer(content)
 	}
 	return generic.Nullable[int32]{}, generic.Nullable[client.Content]{}
 }
 
 func (em *EventMarathon) GetRankingReward(rank int32) int32 {
-	// TODO(optimization): this can be a binary search
 	for _, reward := range em.TopStatus.EventMarathonRankingRewardMasterRows.Slice {
 		if (!reward.LowerRank.HasValue) || (reward.LowerRank.Value >= rank) {
 			return reward.RewardGroupId
