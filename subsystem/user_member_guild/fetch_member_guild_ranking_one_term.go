@@ -2,17 +2,30 @@ package user_member_guild
 
 import (
 	"elichika/client"
+	"elichika/subsystem/cache"
 	"elichika/userdata"
 	"elichika/utils"
 
 	"sort"
 )
 
+var (
+	getFetchMemberGuildRankingOneTermCache = cache.UniquePointerMap[int64, cache.CachedObject[client.MemberGuildRankingOneTerm]]{}
+)
+
 func FetchMemberGuildRankingOneTerm(session *userdata.Session, memberGuildId int32) client.MemberGuildRankingOneTerm {
-	// TODO(cache)
-	// official server only return 10 of the top ranking unless it's the current one
-	// it's likely that this was done using a table for total point and a SELECT ORDER BY LIMIT sql
-	// we build the full result for now, the truncation can be done by the caller
+	key := (int64(memberGuildId) << 32)
+	cacher := getFetchMemberGuildRankingOneTermCache.Get(key)
+	cacher.Acquire()
+	defer cacher.Release()
+	if cacher.ExpireAt <= session.Time.Unix() {
+		cacher.ExpireAt = session.Time.Unix() + 60
+		cacher.Value = getFetchMemberGuildRankingOneTermNoCache(session, memberGuildId)
+	}
+	return *cacher.Value
+}
+
+func getFetchMemberGuildRankingOneTermNoCache(session *userdata.Session, memberGuildId int32) *client.MemberGuildRankingOneTerm {
 	startAt, endAt := GetMemberGuildStartAndEnd(session, memberGuildId)
 	ranking := client.MemberGuildRankingOneTerm{
 		MemberGuildId: memberGuildId,
@@ -40,5 +53,5 @@ func FetchMemberGuildRankingOneTerm(session *userdata.Session, memberGuildId int
 	for i := range ranking.Channels.Slice {
 		ranking.Channels.Slice[i].Order = int32(i) + 1
 	}
-	return ranking
+	return &ranking
 }

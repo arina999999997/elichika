@@ -2,12 +2,28 @@ package user_social
 
 import (
 	"elichika/client"
+	"elichika/subsystem/cache"
 	"elichika/userdata"
 	"elichika/utils"
 )
 
-// TODO(cache): This can be cached, but maybe it's not necessary since we should also cache the outer request anyway
+var (
+	getRankingUserCache = cache.UniquePointerMap[int64, cache.CachedObject[client.RankingUser]]{}
+)
+
 func GetRankingUser(session *userdata.Session, rankingUserId int32) client.RankingUser {
+	key := (int64(rankingUserId) << 32)
+	cacher := getRankingUserCache.Get(key)
+	cacher.Acquire()
+	defer cacher.Release()
+	if cacher.ExpireAt <= session.Time.Unix() {
+		cacher.ExpireAt = session.Time.Unix() + 60
+		cacher.Value = getRankingUserNoCache(session, rankingUserId)
+	}
+	return *cacher.Value
+}
+
+func getRankingUserNoCache(session *userdata.Session, rankingUserId int32) *client.RankingUser {
 	rankingUser := client.RankingUser{}
 
 	exist, err := session.Db.Table("u_status").Where("user_id = ?", rankingUserId).Cols(
@@ -20,5 +36,5 @@ func GetRankingUser(session *userdata.Session, rankingUserId int32) client.Ranki
 		&rankingUser.FavoriteCardLevel, &rankingUser.IsAwakeningImage, &rankingUser.IsAllTrainingActivated)
 	utils.CheckErrMustExist(err, exist)
 
-	return rankingUser
+	return &rankingUser
 }
