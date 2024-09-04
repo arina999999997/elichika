@@ -19,7 +19,7 @@ func FetchMemberGuildRankingOneTerm(session *userdata.Session, memberGuildId int
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {
-		cacher.ExpireAt = session.Time.Unix() + 60
+		cacher.ExpireAt = session.Time.Unix() + FetchMemberGuildRankingOneTermCache
 		cacher.Value = getFetchMemberGuildRankingOneTermNoCache(session, memberGuildId)
 	}
 	return *cacher.Value

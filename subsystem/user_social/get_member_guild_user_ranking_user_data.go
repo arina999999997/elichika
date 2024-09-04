@@ -17,7 +17,7 @@ func GetMemberGuildUserRankingUserData(session *userdata.Session, userId int32) 
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {
-		cacher.ExpireAt = session.Time.Unix() + 60
+		cacher.ExpireAt = session.Time.Unix() + MemberGuildRankingUserDataCache
 		cacher.Value = getMemberGuildUserRankingUserDataNoCache(session, userId)
 	}
 	return *cacher.Value

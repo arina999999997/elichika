@@ -17,7 +17,7 @@ func GetEventMarathonRankingUser(session *userdata.Session, userId int32) client
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {
-		cacher.ExpireAt = session.Time.Unix() + 60
+		cacher.ExpireAt = session.Time.Unix() + EventMarathonRankingUserCache
 		cacher.Value = getEventMarathonRankingUserNoCache(session, userId)
 	}
 	return *cacher.Value

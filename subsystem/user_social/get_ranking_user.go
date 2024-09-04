@@ -17,7 +17,7 @@ func GetRankingUser(session *userdata.Session, rankingUserId int32) client.Ranki
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {
-		cacher.ExpireAt = session.Time.Unix() + 60
+		cacher.ExpireAt = session.Time.Unix() + RankingUserCache
 		cacher.Value = getRankingUserNoCache(session, rankingUserId)
 	}
 	return *cacher.Value
