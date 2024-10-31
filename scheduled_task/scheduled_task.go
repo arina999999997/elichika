@@ -2,6 +2,7 @@ package scheduled_task
 
 import (
 	"elichika/serverdata"
+	"elichika/userdata/database"
 	"elichika/utils"
 
 	"fmt"
@@ -63,13 +64,73 @@ func HandleScheduledTasks(serverdata_db *xorm.Session, userdata_db *xorm.Session
 		handler, exist := taskHandlers[task[0].TaskName]
 		if !exist {
 			fmt.Println("Warning: Ignored task with no handler: ", task[0].TaskName)
-			continue
+		} else {
+			handler(serverdata_db, userdata_db, task[0])
 		}
-		handler(serverdata_db, userdata_db, task[0])
 		_, err = serverdata_db.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
 			task[0].Time, task[0].TaskName, task[0].Priority).Delete(&task[0])
 		utils.CheckErr(err)
 		serverdata_db.Commit()
 		serverdata_db.Begin()
+	}
+}
+
+// repeatedly select the tasks, check them, and run them if necessary
+// this is useful to clear out some tasks early
+// for each iteration, select at most 1 task to do and then continue to the next iteration
+// - the check function should return whether a task should be run or not
+// - it should also return if the force run should be terminated or not
+// - if no task is run, then the termination happens anyway
+// - note that if a task is run, then it is run first, then termination happen, if signified
+
+func ForceRun(serverdata_db *xorm.Session, userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool)) {
+	ownedServerdataDb := (*xorm.Session)(nil)
+	ownedUserdataDb := (*xorm.Session)(nil)
+	defer func() {
+		if ownedServerdataDb != nil {
+			ownedServerdataDb.Close()
+		}
+		if ownedUserdataDb != nil {
+			ownedUserdataDb.Close()
+		}
+	}()
+	if serverdata_db == nil {
+		ownedServerdataDb = serverdata.Engine.NewSession()
+		serverdata_db = ownedServerdataDb
+	}
+	if userdata_db == nil {
+		ownedUserdataDb = database.Engine.NewSession()
+		userdata_db = ownedUserdataDb
+	}
+	for {
+		tasks := []ScheduledTask{}
+
+		err := serverdata_db.Table("s_scheduled_task").OrderBy("time, priority").Find(&tasks)
+		utils.CheckErr(err)
+		if len(tasks) == 0 {
+			break
+		}
+		for _, task := range tasks {
+			run, terminate := check(task)
+			if run {
+				handler, exist := taskHandlers[task.TaskName]
+				if !exist {
+					fmt.Println("Warning: Ignored task with no handler: ", task.TaskName)
+				} else {
+					handler(serverdata_db, userdata_db, task)
+				}
+				_, err = serverdata_db.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
+					task.Time, task.TaskName, task.Priority).Delete(&task)
+				utils.CheckErr(err)
+				serverdata_db.Commit()
+				serverdata_db.Begin()
+			}
+			if terminate {
+				return
+			}
+			if run { // move on to the next iteration, we need to fetch the tasks again as some tasks might have been added
+				break
+			}
+		}
 	}
 }

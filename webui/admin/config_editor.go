@@ -36,6 +36,6 @@ func UpdateConfig(ctx *gin.Context) {
 
 func init() {
 	// TODO(admin): this is the only admin feature for now, so we let it be the main page
-	router.AddHandler("/webui/admin", "GET", "/", ConfigEditor)
-	router.AddHandler("/webui/admin", "POST", "/config_editor", UpdateConfig)
+	router.AddHandler("/webui/admin", "GET", "/config_editor", ConfigEditor)
+	router.AddHandler("/webui/admin", "POST", "/edit_config", UpdateConfig)
 }

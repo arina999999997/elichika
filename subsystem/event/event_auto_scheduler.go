@@ -92,20 +92,29 @@ func eventAutoScheduler(serverdata_db *xorm.Session, userdata_db *xorm.Session, 
 	}
 
 	lastEvent := gamedata.Instance.EventActive.GetEventValue()
-	lastEndedAt := int64(0)
-	if lastEvent != nil {
-		if lastEvent.EndAt >= task.Time {
-			fmt.Println("Warning: active event hasn't ended, event auto scheduler ignored")
-			return
+
+	if !isDirectEventChanging {
+		// normal operation, allow for a gap period between the events
+		lastEndedAt := int64(0)
+		if lastEvent != nil {
+			if lastEvent.EndAt >= task.Time {
+				fmt.Println("Warning: active event hasn't ended, event auto scheduler ignored")
+				return
+			}
+			lastEndedAt = lastEvent.EndAt
 		}
-		lastEndedAt = lastEvent.EndAt
+
+		for startTime < lastEndedAt+int64(configObj.RestDuration) {
+			startTime += DayDuration
+		}
 	}
 
-	for startTime < lastEndedAt+int64(configObj.RestDuration) {
-		startTime += DayDuration
+	var eventId int32
+	if isDirectEventChanging {
+		eventId = targetedEventId
+	} else {
+		eventId = gamedata.Instance.EventAvailable.GetNextEvent(lastEvent)
 	}
-
-	eventId := gamedata.Instance.EventAvailable.GetNextEvent(lastEvent)
 	eventType := gamedata.Instance.GetEventType(eventId)
 
 	// need to fill the delete condition with some stuff because of xorm
