@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -17,13 +16,16 @@ type CardLevel struct {
 	GameMoneyPrefixSum []int32 `xorm:"-"`
 }
 
-func (cardLevel *CardLevel) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_card_level").Where("card_rarity_type = ?", cardLevel.CardRarityType).OrderBy("level").Cols("exp").
-		Find(&cardLevel.ExpPrefixSum)
+func (cardLevel *CardLevel) populate(gamedata *Gamedata) {
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_card_level").Where("card_rarity_type = ?", cardLevel.CardRarityType).OrderBy("level").Cols("exp").Find(&cardLevel.ExpPrefixSum)
+	})
 	utils.CheckErr(err)
 
-	err = masterdata_db.Table("m_card_level").Where("card_rarity_type = ?", cardLevel.CardRarityType).OrderBy("level").Cols("game_money").
-		Find(&cardLevel.GameMoneyPrefixSum)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_card_level").Where("card_rarity_type = ?", cardLevel.CardRarityType).OrderBy("level").Cols("game_money").Find(&cardLevel.GameMoneyPrefixSum)
+	})
 	utils.CheckErr(err)
 	cardLevel.ExpPrefixSum = append([]int32{0}, cardLevel.ExpPrefixSum...)
 	cardLevel.GameMoneyPrefixSum = append([]int32{0}, cardLevel.GameMoneyPrefixSum...)
@@ -33,13 +35,16 @@ func (cardLevel *CardLevel) populate(gamedata *Gamedata, masterdata_db, serverda
 	}
 }
 
-func loadCardLevel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadCardLevel(gamedata *Gamedata) {
 	fmt.Println("Loading CardLevel")
 	gamedata.CardLevel = make(map[int32]*CardLevel)
-	err := masterdata_db.Table("m_card_rarity").Find(&gamedata.CardLevel)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_card_rarity").Find(&gamedata.CardLevel)
+	})
 	utils.CheckErr(err)
 	for _, cardLevel := range gamedata.CardLevel {
-		cardLevel.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		cardLevel.populate(gamedata)
 	}
 }
 

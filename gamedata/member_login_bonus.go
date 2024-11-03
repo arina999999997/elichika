@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -16,10 +15,13 @@ type MemberLoginBonusBirthday struct {
 	SuitMasterId int32 `xorm:"'suit_master_id'"`
 }
 
-func loadMemberLoginBonusBirthday(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberLoginBonusBirthday(gamedata *Gamedata) {
 	fmt.Println("Loading MemberLoginBonusBirthday")
 	bonuses := []MemberLoginBonusBirthday{}
-	err := masterdata_db.Table("m_login_bonus_birthday").OrderBy("id DESC").Find(&bonuses)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_login_bonus_birthday").OrderBy("id DESC").Find(&bonuses)
+	})
 	utils.CheckErr(err)
 	for _, memberLoginBonusBirthday := range bonuses {
 		gamedata.Member[gamedata.Suit[memberLoginBonusBirthday.SuitMasterId].Member.Id].MemberLoginBonusBirthdays = append(

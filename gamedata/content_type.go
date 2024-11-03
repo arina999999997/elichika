@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -16,10 +15,13 @@ type ContentType struct {
 	// DisplayOrder int32
 }
 
-func loadContentType(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadContentType(gamedata *Gamedata) {
 	fmt.Println("Loading ContentType")
 	gamedata.ContentType = make(map[int32]*ContentType)
-	err := masterdata_db.Table("m_content_setting").Find(&gamedata.ContentType)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_content_setting").Find(&gamedata.ContentType)
+	})
 	utils.CheckErr(err)
 }
 

@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -121,12 +120,15 @@ func (root *NgWordNode) HasMatch(s string) bool {
 	return false
 }
 
-func loadNgWord(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadNgWord(gamedata *Gamedata) {
 	fmt.Println("Loading NgWord")
 	gamedata.NgWord = new(NgWordNode)
 	gamedata.NgWord.Child = map[rune]*NgWordNode{}
 	words := []string{}
-	err := serverdata_db.Table("s_ng_word").Cols("word").Find(&words)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_ng_word").Cols("word").Find(&words)
+	})
 	utils.CheckErr(err)
 
 	for _, word := range words {

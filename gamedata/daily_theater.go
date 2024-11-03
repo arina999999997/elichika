@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -24,18 +24,21 @@ type DailyTheater struct {
 	IsInClient     bool                 `xorm:"-"`
 }
 
-func loadDailyTheater(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadDailyTheater(gamedata *Gamedata) {
 	fmt.Println("Loading DailyTheater")
 	gamedata.DailyTheater = make(map[int32]*DailyTheater)
-	err := serverdata_db.Table("s_daily_theater").Where("lang = ?", gamedata.Language).Find(&gamedata.DailyTheater)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_daily_theater").Where("lang = ?", gamedata.Language).Find(&gamedata.DailyTheater)
+	})
 	utils.CheckErr(err)
 	for _, dailyTheater := range gamedata.DailyTheater {
 		if gamedata.LastestDailyTheaterId < dailyTheater.DailyTheaterId {
 			gamedata.LastestDailyTheaterId = dailyTheater.DailyTheaterId
 		}
-		err = serverdata_db.Table("s_daily_theater_member").
-			Where("lang = ? AND daily_theater_id = ?", gamedata.Language, dailyTheater.DailyTheaterId).
-			Cols("member_master_id").Find(&dailyTheater.Members)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_daily_theater_member").Where("lang = ? AND daily_theater_id = ?", gamedata.Language, dailyTheater.DailyTheaterId).Cols("member_master_id").Find(&dailyTheater.Members)
+		})
 		utils.CheckErr(err)
 	}
 
@@ -50,8 +53,9 @@ func loadDailyTheater(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Ses
 	}
 
 	clientDailyTheaterIds := []DailyTheaterArchiveClient{}
-	err = masterdata_db.Table("m_daily_theater_archive_client").Where("lang = ?", gamedata.Language).
-		Find(&clientDailyTheaterIds)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_daily_theater_archive_client").Where("lang = ?", gamedata.Language).Find(&clientDailyTheaterIds)
+	})
 	utils.CheckErr(err)
 	for _, clientDailyTheater := range clientDailyTheaterIds {
 		dailyTheater, exist := gamedata.DailyTheater[clientDailyTheater.DailyTheaterId]

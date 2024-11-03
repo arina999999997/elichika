@@ -15,7 +15,7 @@ func ChangeEvent(eventId int32) {
 	isDirectEventChanging = true
 	targetedEventId = eventId
 
-	scheduled_task.ForceRun(nil, nil, func(task serverdata.ScheduledTask) (bool, bool) {
+	scheduled_task.ForceRun(nil, func(task serverdata.ScheduledTask) (bool, bool) {
 		if task.TaskName == "event_marathon_start" { // TODO(event): Add more event type
 			return true, true // run the task and then stop
 		}

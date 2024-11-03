@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -23,20 +23,26 @@ type MemberLovePanelCell struct {
 	Resources []client.Content `xorm:"-"`
 }
 
-func (cell *MemberLovePanelCell) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (cell *MemberLovePanelCell) populate(gamedata *Gamedata) {
 	cell.MemberLovePanel = gamedata.MemberLovePanel[*cell.MemberLovePanelMasterId]
 	cell.MemberLovePanelMasterId = &cell.MemberLovePanel.Id
-	err := masterdata_db.Table("m_member_love_panel_cell_source_content").Where("member_love_panel_cell_master_id = ?", cell.Id).Find(&cell.Resources)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_love_panel_cell_source_content").Where("member_love_panel_cell_master_id = ?", cell.Id).Find(&cell.Resources)
+	})
 	utils.CheckErr(err)
 }
 
-func loadMemberLovePanelCell(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberLovePanelCell(gamedata *Gamedata) {
 	fmt.Println("Loading MemberLovePanelCell")
 	gamedata.MemberLovePanelCell = make(map[int32]*MemberLovePanelCell)
-	err := masterdata_db.Table("m_member_love_panel_cell").Find(&gamedata.MemberLovePanelCell)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_love_panel_cell").Find(&gamedata.MemberLovePanelCell)
+	})
 	utils.CheckErr(err)
 	for _, cell := range gamedata.MemberLovePanelCell {
-		cell.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		cell.populate(gamedata)
 	}
 }
 

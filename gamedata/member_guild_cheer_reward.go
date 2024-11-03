@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/generic/drop"
 	"elichika/utils"
 
@@ -11,7 +11,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func loadMemberGuildCheerReward(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberGuildCheerReward(gamedata *Gamedata) {
 	fmt.Println("Loading MemberGuildCheerReward")
 	type MemberGuildRewardLot struct {
 		// Id
@@ -21,7 +21,10 @@ func loadMemberGuildCheerReward(gamedata *Gamedata, masterdata_db, serverdata_db
 	}
 	gamedata.MemberGuildCheerReward = map[int32]*drop.DropList[client.Content]{}
 	rewards := []MemberGuildRewardLot{}
-	err := masterdata_db.Table("m_member_guild_reward_lot").Find(&rewards)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_guild_reward_lot").Find(&rewards)
+	})
 	utils.CheckErr(err)
 	for _, reward := range rewards {
 		dropList, exist := gamedata.MemberGuildCheerReward[reward.MemberMasterId]

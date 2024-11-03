@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -25,16 +25,21 @@ type BeginnerChallenge struct {
 	CompleteReward client.Content `xorm:"-"`
 }
 
-func (b *BeginnerChallenge) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	exist, err := masterdata_db.Table("m_beginner_challenge_complete_reward").Where("challenge_m_id = ?", b.Id).
-		Get(&b.CompleteReward)
+func (b *BeginnerChallenge) populate(gamedata *Gamedata) {
+	var exist bool
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		exist, err = session.Table("m_beginner_challenge_complete_reward").Where("challenge_m_id = ?", b.Id).Get(&b.CompleteReward)
+	})
 	utils.CheckErrMustExist(err, exist)
-	exist, err = masterdata_db.Table("m_beginner_challenge_complete_reward").Where("challenge_m_id = ?", b.Id).
-		Cols("complete_count").Get(&b.CompleteCount)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		exist, err = session.Table("m_beginner_challenge_complete_reward").Where("challenge_m_id = ?", b.Id).Cols("complete_count").Get(&b.CompleteCount)
+	})
 	utils.CheckErrMustExist(err, exist)
 	cellIds := []int32{}
-	err = masterdata_db.Table("m_challenge_cell").Where("set_m_id = ?", b.CellSetId).OrderBy("display_order").
-		Cols("id").Find(&cellIds)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_challenge_cell").Where("set_m_id = ?", b.CellSetId).OrderBy("display_order").Cols("id").Find(&cellIds)
+	})
 	utils.CheckErr(err)
 	for _, id := range cellIds {
 		b.ChallengeCells = append(b.ChallengeCells, gamedata.BeginnerChallengeCell[id])
@@ -42,13 +47,16 @@ func (b *BeginnerChallenge) populate(gamedata *Gamedata, masterdata_db, serverda
 	}
 }
 
-func loadBeginnerChallenge(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadBeginnerChallenge(gamedata *Gamedata) {
 	fmt.Println("Loading BeginnerChallenge")
 	gamedata.BeginnerChallenge = make(map[int32]*BeginnerChallenge)
-	err := masterdata_db.Table("m_beginner_challenge").Find(&gamedata.BeginnerChallenge)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_beginner_challenge").Find(&gamedata.BeginnerChallenge)
+	})
 	utils.CheckErr(err)
 	for _, beginnerChallenge := range gamedata.BeginnerChallenge {
-		beginnerChallenge.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		beginnerChallenge.populate(gamedata)
 	}
 }
 

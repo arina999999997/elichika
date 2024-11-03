@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -30,22 +30,27 @@ type BeginnerChallengeCell struct {
 	Rewards []client.Content `xorm:"-"`
 }
 
-func (c *BeginnerChallengeCell) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_challenge_reward").Where("cell_m_id = ?", c.Id).OrderBy("display_order").
-		Find(&c.Rewards)
+func (c *BeginnerChallengeCell) populate(gamedata *Gamedata) {
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_challenge_reward").Where("cell_m_id = ?", c.Id).OrderBy("display_order").Find(&c.Rewards)
+	})
 	gamedata.BeginnerChallengeCellByClearConditionType[c.MissionClearConditionType] =
 		append(gamedata.BeginnerChallengeCellByClearConditionType[c.MissionClearConditionType], c)
 	utils.CheckErr(err)
 }
 
-func loadBeginnerChallengeCell(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadBeginnerChallengeCell(gamedata *Gamedata) {
 	fmt.Println("Loading BeginnerChallengeCell")
 	gamedata.BeginnerChallengeCell = make(map[int32]*BeginnerChallengeCell)
 	gamedata.BeginnerChallengeCellByClearConditionType = make(map[int32][]*BeginnerChallengeCell)
-	err := masterdata_db.Table("m_challenge_cell").Find(&gamedata.BeginnerChallengeCell)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_challenge_cell").Find(&gamedata.BeginnerChallengeCell)
+	})
 	utils.CheckErr(err)
 	for _, cell := range gamedata.BeginnerChallengeCell {
-		cell.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		cell.populate(gamedata)
 	}
 }
 

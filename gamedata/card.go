@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -45,7 +45,7 @@ type CardGradeUpItem struct {
 	Resource client.Content `xorm:"extends"`
 }
 
-func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (card *Card) populate(gamedata *Gamedata) {
 	card.Member = gamedata.Member[*card.MemberMasterId]
 	card.MemberMasterId = &card.Member.Id
 	card.TrainingTree = gamedata.TrainingTree[*card.TrainingTreeMasterId]
@@ -54,7 +54,10 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	{
 		card.CardGradeUpItem = make(map[int32](map[int32]client.Content))
 		gradeUps := []CardGradeUpItem{}
-		err := masterdata_db.Table("m_card_grade_up_item").Where("card_id = ?", card.Id).Find(&gradeUps)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_card_grade_up_item").Where("card_id = ?", card.Id).Find(&gradeUps)
+		})
 		utils.CheckErr(err)
 		for _, gradeUp := range gradeUps {
 			_, exist := card.CardGradeUpItem[gradeUp.Grade]
@@ -68,15 +71,18 @@ func (card *Card) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	gamedata.CardByMemberId[*card.MemberMasterId] = append(gamedata.CardByMemberId[*card.MemberMasterId], card)
 }
 
-func loadCard(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadCard(gamedata *Gamedata) {
 	fmt.Println("Loading Card")
 	gamedata.Card = make(map[int32]*Card)
-	err := masterdata_db.Table("m_card").Find(&gamedata.Card)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_card").Find(&gamedata.Card)
+	})
 	utils.CheckErr(err)
 	gamedata.CardByMemberId = map[int32][]*Card{}
 
 	for _, card := range gamedata.Card {
-		card.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		card.populate(gamedata)
 	}
 }
 

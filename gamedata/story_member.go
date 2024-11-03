@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -27,22 +27,29 @@ type StoryMember struct {
 	Reward *client.Content `xorm:"-"`
 }
 
-func (story *StoryMember) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (story *StoryMember) populate(gamedata *Gamedata) {
 	reward := client.Content{}
-	exist, err := masterdata_db.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.Id).Get(&reward)
+	var exist bool
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		exist, err = session.Table("m_story_member_rewards").Where("story_member_master_id = ?", story.Id).Get(&reward)
+	})
 	utils.CheckErr(err)
 	if exist {
 		story.Reward = &reward
 	}
 }
 
-func loadStoryMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadStoryMember(gamedata *Gamedata) {
 	fmt.Println("Loading StoryMember")
 	gamedata.StoryMember = make(map[int32]*StoryMember)
-	err := masterdata_db.Table("m_story_member").Find(&gamedata.StoryMember)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_story_member").Find(&gamedata.StoryMember)
+	})
 	utils.CheckErr(err)
 	for _, storyMember := range gamedata.StoryMember {
-		storyMember.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		storyMember.populate(gamedata)
 	}
 }
 

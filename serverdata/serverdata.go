@@ -1,6 +1,7 @@
 package serverdata
 
 import (
+	"elichika/db"
 	"elichika/utils"
 
 	"fmt"
@@ -16,7 +17,8 @@ import (
 type Initializer = func(*xorm.Session)
 
 var (
-	Engine                           *xorm.Engine
+	engine                           *xorm.Engine
+	Database                         *db.DatabaseSync
 	serverDataTableNameToInterface   = map[string]interface{}{}
 	serverDataTableNameToInitializer = map[string]Initializer{}
 
@@ -41,12 +43,12 @@ func addTable(tableName string, structure interface{}, initializer Initializer) 
 }
 
 func createTable(tableName string, structure interface{}, overwrite bool) bool {
-	exist, err := Engine.Table(tableName).IsTableExist(tableName)
+	exist, err := engine.Table(tableName).IsTableExist(tableName)
 	utils.CheckErr(err)
 
 	if !exist {
 		fmt.Println("Creating new table:", tableName)
-		err = Engine.Table(tableName).CreateTable(structure)
+		err = engine.Table(tableName).CreateTable(structure)
 		utils.CheckErr(err)
 		return true
 	} else {
@@ -54,16 +56,16 @@ func createTable(tableName string, structure interface{}, overwrite bool) bool {
 			return false
 		}
 		fmt.Println("Overwrite existing table:", tableName)
-		err := Engine.DropTables(tableName)
+		err := engine.DropTables(tableName)
 		utils.CheckErr(err)
-		err = Engine.Table(tableName).CreateTable(structure)
+		err = engine.Table(tableName).CreateTable(structure)
 		utils.CheckErr(err)
 		return true
 	}
 }
 
 func isTableEmpty(tableName string) bool {
-	total, err := Engine.Table(tableName).Count()
+	total, err := engine.Table(tableName).Count()
 	utils.CheckErr(err)
 	return total == 0
 }
@@ -84,7 +86,7 @@ func InitTables() {
 			initializers = append(initializers, serverDataTableNameToInitializer[tableName])
 		}
 	}
-	session := Engine.NewSession()
+	session := engine.NewSession()
 	defer session.Close()
 	session.Begin()
 	for _, initializer := range initializers {

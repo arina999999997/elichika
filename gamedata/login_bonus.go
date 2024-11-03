@@ -2,7 +2,6 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
 	"elichika/generic"
 	"elichika/serverdata"
 	"elichika/utils"
@@ -24,30 +23,36 @@ type LoginBonus struct {
 	LoginBonusRewards       generic.List[client.LoginBonusRewards] `xorm:"-"`
 }
 
-func (lb *LoginBonus) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (lb *LoginBonus) populate(gamedata *Gamedata) {
 	rewardDays := []serverdata.LoginBonusRewardDay{}
-	err := serverdata_db.Table("s_login_bonus_reward_day").Where("login_bonus_id = ?", lb.LoginBonusId).
-		OrderBy("day").Find(&rewardDays)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_login_bonus_reward_day").Where("login_bonus_id = ?", lb.LoginBonusId).OrderBy("day").Find(&rewardDays)
+	})
 	utils.CheckErr(err)
 	for _, day := range rewardDays {
 		reward := client.LoginBonusRewards{
 			Day:          day.Day,
 			ContentGrade: generic.NewNullable(day.ContentGrade),
 		}
-		err = serverdata_db.Table("s_login_bonus_reward_content").
-			Where("login_bonus_id = ? AND day = ?", lb.LoginBonusId, day.Day).Find(&reward.LoginBonusContents.Slice)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_login_bonus_reward_content").Where("login_bonus_id = ? AND day = ?", lb.LoginBonusId, day.Day).Find(&reward.LoginBonusContents.Slice)
+		})
 		utils.CheckErr(err)
 		lb.LoginBonusRewards.Append(reward)
 	}
 }
 
-func loadLoginBonus(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLoginBonus(gamedata *Gamedata) {
 	fmt.Println("Loading LoginBonus")
 	gamedata.LoginBonus = make(map[int32]*LoginBonus)
-	err := serverdata_db.Table("s_login_bonus").Find(&gamedata.LoginBonus)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_login_bonus").Find(&gamedata.LoginBonus)
+	})
 	utils.CheckErr(err)
 	for _, loginBonus := range gamedata.LoginBonus {
-		loginBonus.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		loginBonus.populate(gamedata)
 	}
 }
 

@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -35,14 +35,16 @@ func (m *MemberGuildRankingReward) GetRewardContent(rank int32) *client.Content 
 	return &m.Steps[i].Content
 }
 
-func loadMemberGuildRankingReward(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberGuildRankingReward(gamedata *Gamedata) {
 	fmt.Println("Loading MemberGuildRankingReward")
 
 	gamedata.MemberGuildRankingRewardInside = make(map[int32]*MemberGuildRankingReward)
 	for memberId := range gamedata.Member {
 		gamedata.MemberGuildRankingRewardInside[memberId] = &MemberGuildRankingReward{}
-		err := masterdata_db.Table("m_member_guild_ranking_reward_inside").Where("member_master_id = ?", memberId).
-			OrderBy("upper_rank").Find(&gamedata.MemberGuildRankingRewardInside[memberId].Steps)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_member_guild_ranking_reward_inside").Where("member_master_id = ?", memberId).OrderBy("upper_rank").Find(&gamedata.MemberGuildRankingRewardInside[memberId].Steps)
+		})
 		utils.CheckErr(err)
 		m := gamedata.MemberGuildRankingRewardInside[memberId]
 		m.StepCount = int32(len(m.Steps))
@@ -52,8 +54,10 @@ func loadMemberGuildRankingReward(gamedata *Gamedata, masterdata_db, serverdata_
 	gamedata.MemberGuildRankingRewardOutside = make(map[int32]*MemberGuildRankingReward)
 	for memberId := range gamedata.Member {
 		gamedata.MemberGuildRankingRewardOutside[memberId] = &MemberGuildRankingReward{}
-		err := masterdata_db.Table("m_member_guild_ranking_reward_outside").Where("member_master_id = ?", memberId).
-			OrderBy("upper_rank").Find(&gamedata.MemberGuildRankingRewardOutside[memberId].Steps)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_member_guild_ranking_reward_outside").Where("member_master_id = ?", memberId).OrderBy("upper_rank").Find(&gamedata.MemberGuildRankingRewardOutside[memberId].Steps)
+		})
 		utils.CheckErr(err)
 		m := gamedata.MemberGuildRankingRewardOutside[memberId]
 		m.StepCount = int32(len(m.Steps))

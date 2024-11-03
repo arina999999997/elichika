@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -16,10 +16,13 @@ type MemberGuildPointClearReward struct {
 	Content        client.Content `xorm:"extends"`
 }
 
-func loadMemberGuildPointClearReward(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberGuildPointClearReward(gamedata *Gamedata) {
 	fmt.Println("Loading MemberGuildPointClearReward")
 	gamedata.MemberGuildPointClearReward = make(map[int32]*MemberGuildPointClearReward)
-	err := masterdata_db.Table("m_member_guild_point_clear_reward").Find(&gamedata.MemberGuildPointClearReward)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_guild_point_clear_reward").Find(&gamedata.MemberGuildPointClearReward)
+	})
 	utils.CheckErr(err)
 }
 

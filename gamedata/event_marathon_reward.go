@@ -2,12 +2,9 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
-
-	"xorm.io/xorm"
 )
 
-func loadEventMarathonReward(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadEventMarathonReward(gamedata *Gamedata) {
 	gamedata.EventMarathonReward = map[int32][]*client.Content{}
 	for _, eventMarathon := range gamedata.EventMarathon {
 		for i := range eventMarathon.TopStatus.EventMarathonRewardMasterRows.Slice {

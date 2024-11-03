@@ -3,12 +3,14 @@ package locale
 import (
 	"elichika/assetdata"
 	"elichika/config"
+	"elichika/db"
 	"elichika/dictionary"
 	"elichika/gamedata"
 	"elichika/serverdata"
 	"elichika/utils"
 
 	"fmt"
+	"time"
 
 	"xorm.io/xorm"
 )
@@ -37,15 +39,17 @@ type Locale struct {
 	Dictionary    *dictionary.Dictionary
 }
 
-func (locale *Locale) Load() {
-	MasterdataEngine := getEngine(locale.Path + "masterdata.db")
-	MasterdataEngine.SetMaxOpenConns(50)
-	MasterdataEngine.SetMaxIdleConns(10)
+func (locale *Locale) LoadGamedata(syncChannel chan struct{}) {
 	locale.Dictionary = new(dictionary.Dictionary)
 	locale.Dictionary.Init(locale.Path, locale.Language)
 	locale.Gamedata = new(gamedata.Gamedata)
-	locale.Gamedata.Init(locale.Language, MasterdataEngine, serverdata.Engine, locale.Dictionary)
-	// asset data is shared among all locale, but it is initiated multiple times, each time adding more data
+	masterdataDb, err := db.NewDatabase(locale.Path + "masterdata.db")
+	utils.CheckErr(err)
+	locale.Gamedata.Init(locale.Language, masterdataDb, serverdata.Database, locale.Dictionary, syncChannel)
+
+}
+
+func (locale *Locale) LoadAsset() {
 	AssetdataEngine := getEngine(fmt.Sprintf("%s/asset_a_%s.db", locale.Path, locale.Language))
 	AssetdataEngine.SetMaxOpenConns(50)
 	AssetdataEngine.SetMaxIdleConns(10)
@@ -61,21 +65,42 @@ var (
 	Locales map[string](*Locale)
 )
 
-func addLocale(path, language, masterVersion, startUpKey string) {
+func addLocale(path, language, masterVersion, startUpKey string, syncChannel chan struct{}) {
 	locale := Locale{
 		Path:          path,
 		Language:      language,
 		MasterVersion: masterVersion,
 		StartupKey:    []byte(startUpKey),
 	}
-	locale.Load()
 	Locales[language] = &locale
 }
 
 func init() {
+	start := time.Now()
+	gamedata.GenerateLoadOrder()
 	Locales = make(map[string](*Locale))
-	addLocale(config.JpMasterdataPath, "ja", config.MasterVersionJp, config.JpStartupKey)
-	addLocale(config.GlMasterdataPath, "en", config.MasterVersionGl, config.GlStartupKey)
-	addLocale(config.GlMasterdataPath, "zh", config.MasterVersionGl, config.GlStartupKey)
-	addLocale(config.GlMasterdataPath, "ko", config.MasterVersionGl, config.GlStartupKey)
+	syncChannel := make(chan struct{})
+	addLocale(config.JpMasterdataPath, "ja", config.MasterVersionJp, config.JpStartupKey, syncChannel)
+	addLocale(config.GlMasterdataPath, "en", config.MasterVersionGl, config.GlStartupKey, syncChannel)
+	addLocale(config.GlMasterdataPath, "zh", config.MasterVersionGl, config.GlStartupKey, syncChannel)
+	addLocale(config.GlMasterdataPath, "ko", config.MasterVersionGl, config.GlStartupKey, syncChannel)
+
+	for _, locale := range Locales {
+		go locale.LoadGamedata(syncChannel)
+	}
+	// asset write to the same space so needed to be load manually
+	for _, locale := range Locales {
+		locale.LoadAsset()
+	}
+	for i := len(Locales); i > 0; i-- {
+		<-syncChannel
+	}
+	finish := time.Now()
+	fmt.Println("Finished loading databases in: ", finish.Sub(start))
+	for language, locale := range Locales {
+		gamedata.GamedataByLocale[language] = locale.Gamedata
+		// because the order of has map is random, this instance is guaranteed to not
+		// be a specific version, so don't depend on it
+		gamedata.Instance = locale.Gamedata
+	}
 }

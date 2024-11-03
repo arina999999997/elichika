@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/serverdata"
@@ -53,10 +53,9 @@ type EventMarathon struct {
 	CardBonus   map[int32][]int32
 	MemberBonus map[int32]int32
 
-	// We don't need this right because we will only be using old event stories.
-	// BoardStory []EventMarathonBoardStory
+	// We don't need this right because we will only be using old event stories.// BoardStory []EventMarathonBoardStory
 
-	// TODO(extra): Check if this data is available when the event start or only later on.
+	// TODO(extra): Check if this data is available when the event start or only later on
 	// TODO(extra): check and implement loop rewards
 }
 
@@ -83,11 +82,14 @@ func (em *EventMarathon) GetRankingReward(rank int32) int32 {
 	return 0
 }
 
-func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadEventMarathon(gamedata *Gamedata) {
 	fmt.Println("Loading EventMarathon")
 	gamedata.EventMarathon = make(map[int32]*EventMarathon)
 	events := []serverdata.EventMarathon{}
-	err := serverdata_db.Table("s_event_marathon").Find(&events)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_event_marathon").Find(&events)
+	})
 	utils.CheckErr(err)
 	for _, event := range events {
 		eventMarathon := EventMarathon{
@@ -112,20 +114,21 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 		eventMarathon.TopStatus.BoardStatus.BoardDecoImagePath.V = generic.NewNullableFromPointer(event.BoardDecoImagePath)
 
 		{
-			err = serverdata_db.Table("s_event_marathon_board_thing").
-				Where("event_id = ? AND event_marathon_board_position_type = ?", event.EventId, enum.EventMarathonBoardPositionTypeMemo).
-				OrderBy("priority").Find(&eventMarathon.BoardMemos)
+			gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("s_event_marathon_board_thing").Where("event_id = ? AND event_marathon_board_position_type = ?", event.EventId, enum.EventMarathonBoardPositionTypeMemo).OrderBy("priority").Find(&eventMarathon.BoardMemos)
+			})
 			utils.CheckErr(err)
-			err = serverdata_db.Table("s_event_marathon_board_thing").
-				Where("event_id = ? AND event_marathon_board_position_type = ?", event.EventId, enum.EventMarathonBoardPositionTypePicture).
-				OrderBy("priority").Find(&eventMarathon.BoardPictures)
+			gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("s_event_marathon_board_thing").Where("event_id = ? AND event_marathon_board_position_type = ?", event.EventId, enum.EventMarathonBoardPositionTypePicture).OrderBy("priority").Find(&eventMarathon.BoardPictures)
+			})
 			utils.CheckErr(err)
 		}
 
 		{
 			eventStoryIds := []int32{}
-			err = masterdata_db.Table("m_story_event_history_detail").Where("event_master_id = ?", event.EventId).
-				OrderBy("story_number DESC").Cols("story_event_id").Find(&eventStoryIds)
+			gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("m_story_event_history_detail").Where("event_master_id = ?", event.EventId).OrderBy("story_number DESC").Cols("story_event_id").Find(&eventStoryIds)
+			})
 			utils.CheckErr(err)
 			for _, storyId := range eventStoryIds {
 				eventMarathon.TopStatus.StoryStatus.Stories.Append(gamedata.EventStory[storyId].GetEventMarathonStory())
@@ -134,8 +137,9 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 
 		{
 			topicRewards := []serverdata.EventTopicReward{}
-			err = serverdata_db.Table("s_event_marathon_total_topic_reward").Where("event_id = ?", event.EventId).
-				OrderBy("display_order").Find(&topicRewards)
+			gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("s_event_marathon_total_topic_reward").Where("event_id = ?", event.EventId).OrderBy("display_order").Find(&topicRewards)
+			})
 			utils.CheckErr(err)
 			for _, topicReward := range topicRewards {
 				member := gamedata.Card[topicReward.RewardCardId].Member
@@ -156,8 +160,9 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 
 		{
 			topicRewards := []serverdata.EventTopicReward{}
-			err = serverdata_db.Table("s_event_marathon_ranking_topic_reward").Where("event_id = ?", event.EventId).
-				OrderBy("display_order").Find(&topicRewards)
+			gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("s_event_marathon_ranking_topic_reward").Where("event_id = ?", event.EventId).OrderBy("display_order").Find(&topicRewards)
+			})
 			utils.CheckErr(err)
 			for _, topicReward := range topicRewards {
 				member := gamedata.Card[topicReward.RewardCardId].Member
@@ -176,24 +181,29 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 			}
 		}
 
-		err = serverdata_db.Table("s_event_marathon_point_reward").Where("event_id = ?", event.EventId).
-			OrderBy("required_point").Find(&eventMarathon.TopStatus.EventMarathonPointRewardMasterRows.Slice)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_event_marathon_point_reward").Where("event_id = ?", event.EventId).OrderBy("required_point").Find(&eventMarathon.TopStatus.EventMarathonPointRewardMasterRows.Slice)
+		})
 		utils.CheckErr(err)
 
-		err = serverdata_db.Table("s_event_marathon_ranking_reward").Where("event_id = ?", event.EventId).
-			OrderBy("ranking_reward_master_id").Find(&eventMarathon.TopStatus.EventMarathonRankingRewardMasterRows.Slice)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_event_marathon_ranking_reward").Where("event_id = ?", event.EventId).OrderBy("ranking_reward_master_id").Find(&eventMarathon.TopStatus.EventMarathonRankingRewardMasterRows.Slice)
+		})
 		utils.CheckErr(err)
 
-		err = serverdata_db.Table("s_event_marathon_reward").Where("event_id = ?", event.EventId).
-			OrderBy("reward_group_id").OrderBy("display_order").Find(&eventMarathon.TopStatus.EventMarathonRewardMasterRows.Slice)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_event_marathon_reward").Where("event_id = ?", event.EventId).OrderBy("reward_group_id").OrderBy("display_order").Find(&eventMarathon.TopStatus.EventMarathonRewardMasterRows.Slice)
+		})
 		utils.CheckErr(err)
 
-		err = serverdata_db.Table("s_event_marathon_rule_description_page").Where("event_id = ?", event.EventId).
-			OrderBy("page").Find(&eventMarathon.TopStatus.EventMarathonRuleDescriptionPageMasterRows.Slice)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_event_marathon_rule_description_page").Where("event_id = ?", event.EventId).OrderBy("page").Find(&eventMarathon.TopStatus.EventMarathonRuleDescriptionPageMasterRows.Slice)
+		})
 		utils.CheckErr(err)
 
-		err = serverdata_db.Table("s_event_marathon_bonus_popup_order_card_mater").Where("event_id = ?", event.EventId).
-			Find(&eventMarathon.TopStatus.EventMarathonBonusPopupOrderCardMaterRows.Slice)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_event_marathon_bonus_popup_order_card_mater").Where("event_id = ?", event.EventId).Find(&eventMarathon.TopStatus.EventMarathonBonusPopupOrderCardMaterRows.Slice)
+		})
 		utils.CheckErr(err)
 
 		{
@@ -204,8 +214,9 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 				Value        int32 `xorm:"'value'"`
 			}
 			bonuses := []cardBonusValue{}
-			err = masterdata_db.Table("m_event_marathon_bonus_card").Where("event_marathon_master_id = ?", event.EventId).
-				Find(&bonuses)
+			gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("m_event_marathon_bonus_card").Where("event_marathon_master_id = ?", event.EventId).Find(&bonuses)
+			})
 			utils.CheckErr(err)
 			for _, bonus := range bonuses {
 				_, exist := eventMarathon.CardBonus[bonus.CardMasterId]
@@ -223,8 +234,9 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 				Value          int32 `xorm:"'value'"`
 			}
 			bonuses := []memberBonusValue{}
-			err = masterdata_db.Table("m_event_marathon_bonus_member").Where("event_marathon_master_id = ?", event.EventId).
-				Find(&bonuses)
+			gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("m_event_marathon_bonus_member").Where("event_marathon_master_id = ?", event.EventId).Find(&bonuses)
+			})
 			utils.CheckErr(err)
 			for _, bonus := range bonuses {
 				eventMarathon.MemberBonus[bonus.MemberMasterId] = bonus.Value
@@ -233,12 +245,11 @@ func loadEventMarathon(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 
 		// generate the event_marathon_bonus_popup_order_member_mater_rows field, which are always sorted on member_matser_id (typo)
 		for memberId := range eventMarathon.MemberBonus {
-			eventMarathon.TopStatus.EventMarathonBonusPopupOrderMemberMaterRows.Append(
-				client.EventMarathonBonusPopupOrderMemberMaterRow{
-					MemberMatserId: memberId,
-					DisplayLine:    3,
-					DisplayOrder:   memberId,
-				})
+			eventMarathon.TopStatus.EventMarathonBonusPopupOrderMemberMaterRows.Append(client.EventMarathonBonusPopupOrderMemberMaterRow{
+				MemberMatserId: memberId,
+				DisplayLine:    3,
+				DisplayOrder:   memberId,
+			})
 		}
 		sort.Slice(eventMarathon.TopStatus.EventMarathonBonusPopupOrderMemberMaterRows.Slice, func(i, j int) bool {
 			return eventMarathon.TopStatus.EventMarathonBonusPopupOrderMemberMaterRows.Slice[i].DisplayOrder <

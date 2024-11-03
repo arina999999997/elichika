@@ -34,8 +34,8 @@ import (
 // - scheduled tasks also take a string params, allowing for stuffs
 type ScheduledTask = serverdata.ScheduledTask
 
-// the general task take a session to the user database and a session to server database
-type TaskHandler = func(*xorm.Session, *xorm.Session, ScheduledTask)
+// the general task take a session to the user database
+type TaskHandler = func(*xorm.Session, ScheduledTask)
 
 var taskHandlers = map[string]TaskHandler{}
 
@@ -47,16 +47,29 @@ func AddScheduledTaskHandler(taskName string, handler TaskHandler) {
 	taskHandlers[taskName] = handler
 }
 
-func AddScheduledTask(serverdata_db *xorm.Session, scheduledTask ScheduledTask) {
-	_, err := serverdata_db.Table("s_scheduled_task").Insert(scheduledTask)
+func AddScheduledTask(scheduledTask ScheduledTask) {
+	var err error
+	serverdata.Database.Do(func(session *xorm.Session) {
+		_, err = session.Table("s_scheduled_task").Insert(scheduledTask)
+		if err != nil {
+			return
+		}
+		err = session.Commit()
+		if err != nil {
+			return
+		}
+		err = session.Begin()
+	})
 	utils.CheckErr(err)
 }
 
-func HandleScheduledTasks(serverdata_db *xorm.Session, userdata_db *xorm.Session, currentTime time.Time) {
+func HandleScheduledTasks(userdata_db *xorm.Session, currentTime time.Time) {
 	for {
 		task := []ScheduledTask{}
-
-		err := serverdata_db.Table("s_scheduled_task").OrderBy("time, priority").Limit(1).Find(&task)
+		var err error
+		serverdata.Database.Do(func(session *xorm.Session) {
+			err = session.Table("s_scheduled_task").OrderBy("time, priority").Limit(1).Find(&task)
+		})
 		utils.CheckErr(err)
 		if len(task) == 0 || (task[0].Time > currentTime.Unix()) {
 			break
@@ -65,13 +78,17 @@ func HandleScheduledTasks(serverdata_db *xorm.Session, userdata_db *xorm.Session
 		if !exist {
 			fmt.Println("Warning: Ignored task with no handler: ", task[0].TaskName)
 		} else {
-			handler(serverdata_db, userdata_db, task[0])
+			handler(userdata_db, task[0])
 		}
-		_, err = serverdata_db.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
-			task[0].Time, task[0].TaskName, task[0].Priority).Delete(&task[0])
+		serverdata.Database.Do(func(session *xorm.Session) {
+			_, err = session.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
+				task[0].Time, task[0].TaskName, task[0].Priority).Delete(&task[0])
+		})
 		utils.CheckErr(err)
-		serverdata_db.Commit()
-		serverdata_db.Begin()
+		serverdata.Database.Do(func(session *xorm.Session) {
+			session.Commit()
+			session.Begin()
+		})
 	}
 }
 
@@ -83,7 +100,7 @@ func HandleScheduledTasks(serverdata_db *xorm.Session, userdata_db *xorm.Session
 // - if no task is run, then the termination happens anyway
 // - note that if a task is run, then it is run first, then termination happen, if signified
 
-func ForceRun(serverdata_db *xorm.Session, userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool)) {
+func ForceRun(userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool)) {
 	ownedServerdataDb := (*xorm.Session)(nil)
 	ownedUserdataDb := (*xorm.Session)(nil)
 	defer func() {
@@ -94,18 +111,16 @@ func ForceRun(serverdata_db *xorm.Session, userdata_db *xorm.Session, check func
 			ownedUserdataDb.Close()
 		}
 	}()
-	if serverdata_db == nil {
-		ownedServerdataDb = serverdata.Engine.NewSession()
-		serverdata_db = ownedServerdataDb
-	}
 	if userdata_db == nil {
 		ownedUserdataDb = database.Engine.NewSession()
 		userdata_db = ownedUserdataDb
 	}
 	for {
 		tasks := []ScheduledTask{}
-
-		err := serverdata_db.Table("s_scheduled_task").OrderBy("time, priority").Find(&tasks)
+		var err error
+		serverdata.Database.Do(func(session *xorm.Session) {
+			err = session.Table("s_scheduled_task").OrderBy("time, priority").Find(&tasks)
+		})
 		utils.CheckErr(err)
 		if len(tasks) == 0 {
 			break
@@ -117,13 +132,17 @@ func ForceRun(serverdata_db *xorm.Session, userdata_db *xorm.Session, check func
 				if !exist {
 					fmt.Println("Warning: Ignored task with no handler: ", task.TaskName)
 				} else {
-					handler(serverdata_db, userdata_db, task)
+					handler(userdata_db, task)
 				}
-				_, err = serverdata_db.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
-					task.Time, task.TaskName, task.Priority).Delete(&task)
+				serverdata.Database.Do(func(session *xorm.Session) {
+					_, err = session.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
+						task.Time, task.TaskName, task.Priority).Delete(&task)
+				})
 				utils.CheckErr(err)
-				serverdata_db.Commit()
-				serverdata_db.Begin()
+				serverdata.Database.Do(func(session *xorm.Session) {
+					session.Commit()
+					session.Begin()
+				})
 			}
 			if terminate {
 				return

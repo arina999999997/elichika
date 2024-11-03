@@ -12,7 +12,7 @@ import (
 )
 
 // finish the event and pay out the reward for everyone who participated
-func endEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
+func endEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
 	activeEvent := gamedata.Instance.EventActive.GetActiveEventUnix(task.Time)
 	eventIdInt, _ := strconv.Atoi(task.Params)
 	eventId := int32(eventIdInt)
@@ -25,7 +25,7 @@ func endEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.Ses
 	ResetRanking()
 
 	// TODO(event): Add config for other options once we have more than 1 event
-	scheduled_task.AddScheduledTask(serverdata_db, scheduled_task.ScheduledTask{
+	scheduled_task.AddScheduledTask(scheduled_task.ScheduledTask{
 		Time:     activeEvent.EndAt + 1,
 		TaskName: "event_auto_scheduler",
 	})

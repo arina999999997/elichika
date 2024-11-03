@@ -32,7 +32,7 @@ func StartEventMarathon(userdata_db *xorm.Session, eventId int32) {
 	utils.CheckErr(err)
 }
 
-func startEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
+func startEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
 	activeEvent := gamedata.Instance.EventActive.GetActiveEventUnix(task.Time)
 	eventIdInt, _ := strconv.Atoi(task.Params)
 	eventId := int32(eventIdInt)
@@ -47,7 +47,7 @@ func startEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.S
 	StartEventMarathon(userdata_db, eventId)
 
 	// schedule the event payout and stuff
-	scheduled_task.AddScheduledTask(serverdata_db, scheduled_task.ScheduledTask{
+	scheduled_task.AddScheduledTask(scheduled_task.ScheduledTask{
 		Time:     activeEvent.ResultAt,
 		TaskName: "event_marathon_result",
 		Params:   task.Params,

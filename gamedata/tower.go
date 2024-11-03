@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/enum"
 	"elichika/utils"
 
@@ -32,15 +32,19 @@ type TowerFloor struct {
 	TowerProgressRewards  []client.Content `xorm:"-"` // from: m_tower_progress_reward
 }
 
-func (tf *TowerFloor) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (tf *TowerFloor) populate(gamedata *Gamedata) {
 	if tf.TowerClearRewardId != nil {
-		err := masterdata_db.Table("m_tower_clear_reward").Where("tower_clear_reward_id = ?", *tf.TowerClearRewardId).
-			Find(&tf.TowerClearRewards)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_tower_clear_reward").Where("tower_clear_reward_id = ?", *tf.TowerClearRewardId).Find(&tf.TowerClearRewards)
+		})
 		utils.CheckErr(err)
 	}
 	if tf.TowerProgressRewardId != nil {
-		err := masterdata_db.Table("m_tower_progress_reward").Where("tower_progress_reward_id = ?", *tf.TowerProgressRewardId).
-			Find(&tf.TowerProgressRewards)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_tower_progress_reward").Where("tower_progress_reward_id = ?", *tf.TowerProgressRewardId).Find(&tf.TowerProgressRewards)
+		})
 		utils.CheckErr(err)
 	}
 }
@@ -66,25 +70,31 @@ type Tower struct {
 	// BackgroundAssetPath string `xorm:"'background_asset_path'"`
 }
 
-func (t *Tower) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_tower_composition").Where("tower_id = ?", t.TowerId).OrderBy("floor_no").Find(&t.Floor)
+func (t *Tower) populate(gamedata *Gamedata) {
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_tower_composition").Where("tower_id = ?", t.TowerId).OrderBy("floor_no").Find(&t.Floor)
+	})
 	utils.CheckErr(err)
 	t.FloorCount = int32(len(t.Floor))
 	t.Floor = append([]TowerFloor{TowerFloor{}}, t.Floor...)
-	t.Title.DotUnderText = dictionary.Resolve(t.Title.DotUnderText)
+	t.Title.DotUnderText = gamedata.Dictionary.Resolve(t.Title.DotUnderText)
 	for i := range t.Floor {
-		t.Floor[i].populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		t.Floor[i].populate(gamedata)
 		t.IsVoltageRanked = t.IsVoltageRanked || (t.Floor[i].TowerCellType == enum.TowerCellTypeBonusLive)
 	}
 }
 
-func loadTower(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadTower(gamedata *Gamedata) {
 	fmt.Println("Loading Tower")
 	gamedata.Tower = make(map[int32]*Tower)
-	err := masterdata_db.Table("m_tower").Find(&gamedata.Tower)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_tower").Find(&gamedata.Tower)
+	})
 	utils.CheckErr(err)
 	for _, tower := range gamedata.Tower {
-		tower.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		tower.populate(gamedata)
 	}
 }
 func init() {

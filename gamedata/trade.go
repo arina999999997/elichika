@@ -13,7 +13,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/generic"
 	"elichika/item"
 	"elichika/utils"
@@ -53,17 +53,22 @@ func (t Trade) ToClientTrade() *client.Trade {
 }
 
 // TODO(trade): Have proper gamedata types
-func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadTrade(gamedata *Gamedata) {
 	fmt.Println("Loading Trade")
 	gamedata.Trade = make(map[int32]*Trade)
 	gamedata.TradeProduct = make(map[int32]*client.TradeProduct)
-	err := serverdata_db.Table("s_trade").Find(&gamedata.Trade)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_trade").Find(&gamedata.Trade)
+	})
 	utils.CheckErr(err)
 
 	for id, trade := range gamedata.Trade {
-		exist, err := masterdata_db.Table("m_trade").Where("id = ?", id).
-			Cols("trade_type", "source_content_type", "source_content_id").Get(
-			&trade.TradeType, &trade.SourceContentType, &trade.SourceContentId)
+		var exist bool
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			exist, err = session.Table("m_trade").Where("id = ?", id).Cols("trade_type", "source_content_type", "source_content_id").Get(&trade.TradeType, &trade.SourceContentType, &trade.SourceContentId)
+		})
 		utils.CheckErr(err)
 		if !exist {
 			fmt.Println("Warning: Skipped trade ", id, " (did not exist in masterdata.db)")
@@ -72,12 +77,14 @@ func loadTrade(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, d
 		}
 		// server and client product_id might not be the same, we need to sync it here
 		serverProducts := []client.TradeProduct{}
-		err = serverdata_db.Table("s_trade_product").Where("trade_id = ?", id).
-			OrderBy("product_id").Find(&serverProducts)
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_trade_product").Where("trade_id = ?", id).OrderBy("product_id").Find(&serverProducts)
+		})
 		utils.CheckErr(err)
 		clientProductIds := []int32{}
-		err = masterdata_db.Table("m_trade_product").Where("trade_master_id = ?", id).
-			OrderBy("id").Cols("id").Find(&clientProductIds)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_trade_product").Where("trade_master_id = ?", id).OrderBy("id").Cols("id").Find(&clientProductIds)
+		})
 		utils.CheckErr(err)
 
 		n := len(serverProducts)

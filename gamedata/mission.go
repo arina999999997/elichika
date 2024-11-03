@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/enum"
 	"elichika/utils"
 
@@ -41,8 +41,11 @@ type Mission struct {
 	Rewards []client.Content `xorm:"-"`
 }
 
-func (m *Mission) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_mission_reward").Where("mission_id = ?", m.Id).OrderBy("display_order").Find(&m.Rewards)
+func (m *Mission) populate(gamedata *Gamedata) {
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_mission_reward").Where("mission_id = ?", m.Id).OrderBy("display_order").Find(&m.Rewards)
+	})
 	utils.CheckErr(err)
 
 	if m.EndAt == 0 {
@@ -50,16 +53,19 @@ func (m *Mission) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xor
 	}
 }
 
-func loadMission(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMission(gamedata *Gamedata) {
 	fmt.Println("Loading Mission")
 	gamedata.Mission = make(map[int32]*Mission)
-	err := masterdata_db.Table("m_mission").Find(&gamedata.Mission)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_mission").Find(&gamedata.Mission)
+	})
 	utils.CheckErr(err)
 	gamedata.MissionByClearConditionType = make(map[int32][]*Mission)
 	gamedata.MissionByTerm = make(map[int32][]*Mission)
 	gamedata.MissionByTriggerType = make(map[int32][]*Mission)
 	for _, mission := range gamedata.Mission {
-		mission.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		mission.populate(gamedata)
 
 		gamedata.MissionByClearConditionType[mission.MissionClearConditionType] =
 			append(gamedata.MissionByClearConditionType[mission.MissionClearConditionType], mission)

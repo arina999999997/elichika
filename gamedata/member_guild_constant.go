@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -22,9 +21,13 @@ type MemberGuildConstant struct {
 	RankingViewBoder                int32 `xorm:"'ranking_view_border'"`
 }
 
-func loadMemberGuildConstant(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberGuildConstant(gamedata *Gamedata) {
 	fmt.Println("Loading MemberGuildConstant")
-	exist, err := masterdata_db.Table("m_member_guild_constant").OrderBy("start_at DESC").Limit(1).Get(&gamedata.MemberGuildConstant)
+	var exist bool
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		exist, err = session.Table("m_member_guild_constant").OrderBy("start_at DESC").Limit(1).Get(&gamedata.MemberGuildConstant)
+	})
 	utils.CheckErrMustExist(err, exist)
 }
 

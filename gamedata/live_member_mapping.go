@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -23,14 +22,17 @@ type LiveMemberMappingMember struct {
 	// SuitMasterId   *int32 `xorm:"'suit_master_id'"`
 }
 
-func loadLiveMemberMapping(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLiveMemberMapping(gamedata *Gamedata) {
 	fmt.Println("Loading LiveMemberMapping")
 	gamedata.LiveMemberMapping = make(map[int32]LiveMemberMapping)
 
 	tables := []string{"m_live_member_mapping", "m_live_override_member_mapping"}
 	for _, table := range tables {
 		memberMappings := []LiveMemberMappingMember{}
-		err := masterdata_db.Table(table).Find(&memberMappings)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table(table).Find(&memberMappings)
+		})
 		utils.CheckErr(err)
 		for _, memberMapping := range memberMappings {
 			_, exist := gamedata.LiveMemberMapping[*memberMapping.MappingId]

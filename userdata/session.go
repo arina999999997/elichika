@@ -4,7 +4,6 @@ import (
 	"elichika/client"
 	"elichika/gamedata"
 	"elichika/scheduled_task"
-	"elichika/serverdata"
 	"elichika/userdata/database"
 	"elichika/utils"
 
@@ -26,13 +25,12 @@ const (
 )
 
 type Session struct {
-	Time         time.Time
-	Db           *xorm.Session
-	ServerdataDb *xorm.Session
-	Ctx          *gin.Context
-	UserId       int32
-	Gamedata     *gamedata.Gamedata
-	UserStatus   *client.UserStatus // link to UserModel.UserStatus
+	Time       time.Time
+	Db         *xorm.Session
+	Ctx        *gin.Context
+	UserId     int32
+	Gamedata   *gamedata.Gamedata
+	UserStatus *client.UserStatus // link to UserModel.UserStatus
 	// TODO(extra): change the map to index map?
 	MemberLovePanelDiffs map[int32]client.MemberLovePanel
 	MemberLovePanels     []client.MemberLovePanel
@@ -85,10 +83,6 @@ func (session *Session) Finalize() {
 	if !session.IsSharedDb {
 		err = session.Db.Commit()
 		utils.CheckErr(err)
-		if session.ServerdataDb != nil {
-			err = session.ServerdataDb.Commit()
-			utils.CheckErr(err)
-		}
 	}
 }
 
@@ -101,16 +95,9 @@ func (session *Session) Close() {
 	if err != nil {
 		session.Db.Rollback()
 		session.Db.Close()
-		if session.ServerdataDb != nil {
-			session.ServerdataDb.Rollback()
-			session.ServerdataDb.Close()
-		}
 		panic(err)
 	} else {
 		session.Db.Close()
-		if session.ServerdataDb != nil {
-			session.ServerdataDb.Close()
-		}
 	}
 }
 
@@ -154,15 +141,11 @@ func GetSessionWithSharedDb(ctx *gin.Context, userId int32, otherSession *Sessio
 		err := recover()
 		if err != nil {
 			s.Db.Close()
-			if s.ServerdataDb != nil {
-				s.ServerdataDb.Close()
-			}
 			panic(err)
 		}
 	}()
 	if otherSession != nil {
 		s.Db = otherSession.Db
-		s.ServerdataDb = otherSession.ServerdataDb
 		s.IsSharedDb = true
 		s.Time = otherSession.Time
 	} else {
@@ -170,10 +153,7 @@ func GetSessionWithSharedDb(ctx *gin.Context, userId int32, otherSession *Sessio
 		err := s.Db.Begin()
 		utils.CheckErr(err)
 		// run scheduled tasks everytime a session is started
-		s.ServerdataDb = serverdata.Engine.NewSession()
-		err = s.ServerdataDb.Begin()
-		utils.CheckErr(err)
-		scheduled_task.HandleScheduledTasks(s.ServerdataDb, s.Db, s.Time)
+		scheduled_task.HandleScheduledTasks(s.Db, s.Time)
 	}
 
 	exist, err := s.Db.Table("u_status").Where("user_id = ?", userId).Get(&s.UserModel.UserStatus)
@@ -190,12 +170,11 @@ func GetSessionWithSharedDb(ctx *gin.Context, userId int32, otherSession *Sessio
 }
 
 // these sessions are used for updating initiated by server
-func GetBasicSession(userdata_db *xorm.Session, serverdata_db *xorm.Session, timePoint time.Time, userId int32) *Session {
+func GetBasicSession(userdata_db *xorm.Session, timePoint time.Time, userId int32) *Session {
 	s := Session{}
 	s.Time = timePoint
 	s.UserId = userId
 	s.Db = userdata_db
-	s.ServerdataDb = serverdata_db
 	s.IsSharedDb = true
 	s.Gamedata = gamedata.Instance
 	s.IsBasic = true

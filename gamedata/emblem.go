@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -25,10 +24,13 @@ type Emblem struct {
 	// DisplayOrder int32 `xorm:"'display_order'"`
 }
 
-func loadEmblem(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadEmblem(gamedata *Gamedata) {
 	fmt.Println("Loading Emblem")
 	gamedata.Emblem = make(map[int32]*Emblem)
-	err := masterdata_db.Table("m_emblem").Find(&gamedata.Emblem)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_emblem").Find(&gamedata.Emblem)
+	})
 	utils.CheckErr(err)
 }
 

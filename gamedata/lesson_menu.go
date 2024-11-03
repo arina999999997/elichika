@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/generic/drop"
 	"elichika/utils"
 
@@ -24,7 +24,7 @@ type LessonMenu struct {
 	Drop        map[int32]*drop.WeightedDropList[client.LessonDropItem] `xorm:"-"`
 }
 
-func (lm *LessonMenu) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (lm *LessonMenu) populate(gamedata *Gamedata) {
 
 	type LessonDropContent struct {
 		ContentType   int32
@@ -35,7 +35,10 @@ func (lm *LessonMenu) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	}
 
 	contents := []LessonDropContent{}
-	err := masterdata_db.Table("m_lesson_drop_content").Where("lesson_menu_master_id == ?", lm.Id).Find(&contents)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_lesson_drop_content").Where("lesson_menu_master_id == ?", lm.Id).Find(&contents)
+	})
 	utils.CheckErr(err)
 	lm.DefaultDrop = &drop.WeightedDropList[client.LessonDropItem]{}
 	for _, content := range contents {
@@ -53,7 +56,9 @@ func (lm *LessonMenu) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 		MagnificationWeight   int32
 	}
 	enhancingItems := []LessonEnhancingItemDropRate{}
-	err = masterdata_db.Table("m_lesson_enhancing_item_effect_drop_rate").Find(&enhancingItems)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_lesson_enhancing_item_effect_drop_rate").Find(&enhancingItems)
+	})
 	utils.CheckErr(err)
 	lm.Drop = map[int32]*drop.WeightedDropList[client.LessonDropItem]{}
 	for _, rate := range enhancingItems {
@@ -73,13 +78,16 @@ func (lm *LessonMenu) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	}
 }
 
-func loadLessonMenu(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLessonMenu(gamedata *Gamedata) {
 	fmt.Println("Loading LessonMenu")
 	gamedata.LessonMenu = make(map[int32]*LessonMenu)
-	err := masterdata_db.Table("m_lesson_menu").Find(&gamedata.LessonMenu)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_lesson_menu").Find(&gamedata.LessonMenu)
+	})
 	utils.CheckErr(err)
 	for _, lessonMenu := range gamedata.LessonMenu {
-		lessonMenu.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		lessonMenu.populate(gamedata)
 	}
 }
 

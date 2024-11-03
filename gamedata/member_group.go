@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -15,17 +14,20 @@ type MemberGroup struct {
 	GroupName   string `xorm:"'group_name'"`
 }
 
-func (mg *MemberGroup) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	mg.GroupName = dictionary.Resolve(mg.GroupName)
+func (mg *MemberGroup) populate(gamedata *Gamedata) {
+	mg.GroupName = gamedata.Dictionary.Resolve(mg.GroupName)
 }
 
-func loadMemberGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberGroup(gamedata *Gamedata) {
 	fmt.Println("Loading MemberGroup")
 	gamedata.MemberGroup = make(map[int32]*MemberGroup)
-	err := masterdata_db.Table("m_member_group").Find(&gamedata.MemberGroup)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_group").Find(&gamedata.MemberGroup)
+	})
 	utils.CheckErr(err)
 	for _, mg := range gamedata.MemberGroup {
-		mg.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		mg.populate(gamedata)
 	}
 }
 

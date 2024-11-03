@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -25,23 +24,31 @@ type MemberLovePanel struct {
 	Bonuses []MemberLovePanelBonus `xorm:"-"`
 }
 
-func (panel *MemberLovePanel) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (panel *MemberLovePanel) populate(gamedata *Gamedata) {
 	panel.Member = gamedata.Member[*panel.MemberMasterId]
 	panel.MemberMasterId = &panel.Member.Id
-	err := masterdata_db.Table("m_member_love_panel_bonus").Where("member_love_panel_master_id = ?", panel.Id).Find(&panel.Bonuses)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_love_panel_bonus").Where("member_love_panel_master_id = ?", panel.Id).Find(&panel.Bonuses)
+	})
 	utils.CheckErr(err)
 }
 
-func loadMemberLovePanel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberLovePanel(gamedata *Gamedata) {
 	fmt.Println("Loading MemberLovePanel")
 	gamedata.MemberLovePanel = make(map[int32]*MemberLovePanel)
-	err := masterdata_db.Table("m_member_love_panel").Find(&gamedata.MemberLovePanel)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_love_panel").Find(&gamedata.MemberLovePanel)
+	})
 	utils.CheckErr(err)
 	for _, panel := range gamedata.MemberLovePanel {
-		panel.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		panel.populate(gamedata)
 	}
 	memberLovePanels := []MemberLovePanel{}
-	err = masterdata_db.Table("m_member_love_panel").OrderBy("member_master_id, love_level_master_love_level").Find(&memberLovePanels)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_love_panel").OrderBy("member_master_id, love_level_master_love_level").Find(&memberLovePanels)
+	})
 	utils.CheckErr(err)
 	for i := len(memberLovePanels) - 2; i >= 0; i-- {
 		id := memberLovePanels[i].Id

@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -21,20 +20,23 @@ type Suit struct {
 	// DisplayOrder int `xorm:"'display_order'"`
 }
 
-func (suit *Suit) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (suit *Suit) populate(gamedata *Gamedata) {
 	suit.Member = gamedata.Member[*suit.MemberMId]
 	suit.MemberMId = &suit.Member.Id
-	// suit.Name = dictionary.Resolve(suit.Name)
+	// suit.Name = gamedata.Dictionary.Resolve(suit.Name)
 	// fmt.Println(suit.Id, "\t", *suit.MemberMId, "\t", suit.Name, "\t", suit.ThumbnailImageAssetPath, "\t", suit.ModelAssetPath)
 }
 
-func loadSuit(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadSuit(gamedata *Gamedata) {
 	fmt.Println("Loading Suit")
 	gamedata.Suit = make(map[int32]*Suit)
-	err := masterdata_db.Table("m_suit").Find(&gamedata.Suit)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_suit").Find(&gamedata.Suit)
+	})
 	utils.CheckErr(err)
 	for _, suit := range gamedata.Suit {
-		suit.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		suit.populate(gamedata)
 	}
 }
 

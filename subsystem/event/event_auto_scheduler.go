@@ -73,7 +73,7 @@ func init() {
 	}
 }
 
-func eventAutoScheduler(serverdata_db *xorm.Session, userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
+func eventAutoScheduler(userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
 	// the scheduler use real time instead of scheduled time when schduling
 	// but it will use scheduled time for checking
 	// the auto scheduler should be invoked by the event end task or directly
@@ -118,23 +118,27 @@ func eventAutoScheduler(serverdata_db *xorm.Session, userdata_db *xorm.Session, 
 	eventType := gamedata.Instance.GetEventType(eventId)
 
 	// need to fill the delete condition with some stuff because of xorm
-	_, err := serverdata_db.Table("s_event_active").Where("event_id >= 0").Delete(&serverdata.EventActive{})
-	utils.CheckErr(err)
-
-	_, err = serverdata_db.Table("s_event_active").Insert(serverdata.EventActive{
-		EventId:   eventId,
-		EventType: eventType,
-		StartAt:   startTime,
-		ExpiredAt: startTime + int64(configObj.EventDuration),
-		ResultAt:  startTime + int64(configObj.EventDuration+configObj.TallyDuration),
-		EndAt:     startTime + int64(configObj.EventDuration+configObj.TallyDuration+configObj.ResultDuration),
+	var err error
+	serverdata.Database.Do(func(session *xorm.Session) {
+		_, err = session.Table("s_event_active").Where("event_id >= 0").Delete(&serverdata.EventActive{})
+		if err != nil {
+			return
+		}
+		_, err = session.Table("s_event_active").Insert(serverdata.EventActive{
+			EventId:   eventId,
+			EventType: eventType,
+			StartAt:   startTime,
+			ExpiredAt: startTime + int64(configObj.EventDuration),
+			ResultAt:  startTime + int64(configObj.EventDuration+configObj.TallyDuration),
+			EndAt:     startTime + int64(configObj.EventDuration+configObj.TallyDuration+configObj.ResultDuration),
+		})
 	})
 	utils.CheckErr(err)
 	gamedata.InvalidateActiveEvent()
 
 	// schedule the event start at start time to truly begin the event
 	if eventType == enum.EventType1Marathon {
-		scheduled_task.AddScheduledTask(serverdata_db, serverdata.ScheduledTask{
+		scheduled_task.AddScheduledTask(serverdata.ScheduledTask{
 			Time:     startTime,
 			TaskName: "event_marathon_start",
 			Priority: 0,

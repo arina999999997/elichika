@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -22,7 +21,7 @@ type TrainingTreeCellContent struct {
 	SnsCoin int `xorm:"'sns_coin'"`
 }
 
-func (obj *TrainingTreeCellContent) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (obj *TrainingTreeCellContent) populate(gamedata *Gamedata) {
 	obj.TrainingTreeCellItemSet = gamedata.TrainingTreeCellItemSet[*obj.TrainingTreeCellItemSetMId]
 	obj.TrainingTreeCellItemSetMId = &gamedata.TrainingTreeCellItemSet[*obj.TrainingTreeCellItemSetMId].Id
 }
@@ -36,24 +35,29 @@ type TrainingTreeMapping struct {
 	TrainingTreeDesign         *TrainingTreeDesign       `xorm:"-"`
 }
 
-func (treeMapping *TrainingTreeMapping) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_training_tree_cell_content").Where("id = ?", treeMapping.TrainingTreeCellContentMId).
-		OrderBy("cell_id").Find(&treeMapping.TrainingTreeCellContents)
+func (treeMapping *TrainingTreeMapping) populate(gamedata *Gamedata) {
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_training_tree_cell_content").Where("id = ?", treeMapping.TrainingTreeCellContentMId).OrderBy("cell_id").Find(&treeMapping.TrainingTreeCellContents)
+	})
 	utils.CheckErr(err)
 	for i := range treeMapping.TrainingTreeCellContents {
-		treeMapping.TrainingTreeCellContents[i].populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		treeMapping.TrainingTreeCellContents[i].populate(gamedata)
 	}
 	treeMapping.TrainingTreeDesign = gamedata.TrainingTreeDesign[*treeMapping.TrainingTreeDesignMId]
 	treeMapping.TrainingTreeDesignMId = &treeMapping.TrainingTreeDesign.Id
 }
 
-func loadTrainingTreeMapping(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadTrainingTreeMapping(gamedata *Gamedata) {
 	fmt.Println("Loading TrainingMapping")
 	gamedata.TrainingTreeMapping = make(map[int32]*TrainingTreeMapping)
-	err := masterdata_db.Table("m_training_tree_mapping").Find(&gamedata.TrainingTreeMapping)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_training_tree_mapping").Find(&gamedata.TrainingTreeMapping)
+	})
 	utils.CheckErr(err)
 	for _, treeMapping := range gamedata.TrainingTreeMapping {
-		treeMapping.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		treeMapping.populate(gamedata)
 	}
 }
 

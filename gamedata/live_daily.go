@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	_ "elichika/clientdb"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -28,10 +28,12 @@ type LiveDaily struct {
 	RareDropContentGroup   *LiveDropGroup `xorm:"-"`
 }
 
-func (ld *LiveDaily) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	exist, err := masterdata_db.Table("m_live_daily_difficulty").Where("live_daily_id = ?", ld.Id).
-		Cols("drop_content_group_id", "rare_drop_content_group_id").
-		Get(&ld.DropContentGroupId, &ld.RareDropContentGroupId)
+func (ld *LiveDaily) populate(gamedata *Gamedata) {
+	var exist bool
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		exist, err = session.Table("m_live_daily_difficulty").Where("live_daily_id = ?", ld.Id).Cols("drop_content_group_id", "rare_drop_content_group_id").Get(&ld.DropContentGroupId, &ld.RareDropContentGroupId)
+	})
 	utils.CheckErrMustExist(err, exist)
 	ld.DropContentGroup = gamedata.LiveDropGroup[ld.DropContentGroupId]
 	ld.DropContentGroup.Check()
@@ -39,13 +41,16 @@ func (ld *LiveDaily) populate(gamedata *Gamedata, masterdata_db, serverdata_db *
 	ld.RareDropContentGroup.Check()
 }
 
-func loadLiveDaily(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLiveDaily(gamedata *Gamedata) {
 	fmt.Println("Loading LiveDaily")
 	gamedata.LiveDaily = make(map[int32]*LiveDaily)
-	err := masterdata_db.Table("m_live_daily").Find(&gamedata.LiveDaily)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_daily").Find(&gamedata.LiveDaily)
+	})
 	utils.CheckErr(err)
 	for _, liveDaily := range gamedata.LiveDaily {
-		liveDaily.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		liveDaily.populate(gamedata)
 		gamedata.Live[liveDaily.LiveId].LiveDailies = append(gamedata.Live[liveDaily.LiveId].LiveDailies, liveDaily)
 	}
 

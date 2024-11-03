@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/serverdata"
 	"elichika/utils"
 
@@ -37,8 +36,11 @@ func (ea *EventAvailable) GetNextEvent(currentEvent *serverdata.EventActive) int
 
 }
 
-func loadEventAvailable(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := serverdata_db.Table("s_event_available").OrderBy(`"order"`).Cols("event_id").Find(&gamedata.EventAvailable.EventIds)
+func loadEventAvailable(gamedata *Gamedata) {
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_event_available").OrderBy(`"order"`).Cols("event_id").Find(&gamedata.EventAvailable.EventIds)
+	})
 	utils.CheckErr(err)
 	gamedata.EventAvailable.Build()
 }

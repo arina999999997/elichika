@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"xorm.io/xorm"
@@ -20,8 +20,7 @@ type EventStory struct {
 	// - TODO(event): dynamically load these
 	// this is server sided, for now we use the arrays:
 	// - [0, 300, 2100, 4500, 8000, 14000, 25000] for marathon event:
-	//   - this is the numbers for the first event, as found in recordings on youtube.
-	//
+	//   - this is the numbers for the first event, as found in recordings on youtube
 	RequiredEventPoint       int32                    `xorm:"-"`
 	StoryBannerThumbnailPath client.TextureStruktur   `xorm:"varchar(255) 'banner_thumbnail_path'"`
 	StoryDetailThumbnailPath client.TextureStruktur   `xorm:"varchar(255) 'detail_thumbnail_path'"`
@@ -30,9 +29,9 @@ type EventStory struct {
 	ScenarioScriptAssetPath  client.AdvScriptStruktur `xorm:"varchar(255) 'scenario_script_asset_path'"`
 }
 
-func (es *EventStory) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	es.Title.DotUnderText = dictionary.Resolve(es.Title.DotUnderText)
-	es.Description.DotUnderText = dictionary.Resolve(es.Description.DotUnderText)
+func (es *EventStory) populate(gamedata *Gamedata) {
+	es.Title.DotUnderText = gamedata.Dictionary.Resolve(es.Title.DotUnderText)
+	es.Description.DotUnderText = gamedata.Dictionary.Resolve(es.Description.DotUnderText)
 }
 
 func (es *EventStory) GetEventMarathonStory() client.EventMarathonStory {
@@ -50,12 +49,15 @@ func (es *EventStory) GetEventMarathonStory() client.EventMarathonStory {
 	}
 }
 
-func loadEventStory(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadEventStory(gamedata *Gamedata) {
 	gamedata.EventStory = map[int32]*EventStory{}
-	err := masterdata_db.Table("m_story_event_history_detail").Find(&gamedata.EventStory)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_story_event_history_detail").Find(&gamedata.EventStory)
+	})
 	utils.CheckErr(err)
 	for _, story := range gamedata.EventStory {
-		story.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		story.populate(gamedata)
 	}
 }
 

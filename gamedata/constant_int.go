@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -9,7 +8,7 @@ import (
 	"xorm.io/xorm"
 )
 
-func loadConstantInt(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadConstantInt(gamedata *Gamedata) {
 	fmt.Println("Loading ConstantInt")
 	type ConstantInt struct {
 		Index int32 `xorm:"constant_int"`
@@ -17,7 +16,10 @@ func loadConstantInt(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sess
 	}
 	constants := []ConstantInt{}
 
-	err := masterdata_db.Table("m_constant_int").Find(&constants)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_constant_int").Find(&constants)
+	})
 	utils.CheckErr(err)
 	sz := int32(0)
 	for _, c := range constants {

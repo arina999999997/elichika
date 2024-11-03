@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -9,9 +8,12 @@ import (
 	"xorm.io/xorm"
 )
 
-func loadMemberLoveLevel(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberLoveLevel(gamedata *Gamedata) {
 	fmt.Println("Loading MemberLoveLevel")
-	err := masterdata_db.Table("m_member_love_level").OrderBy("love_level").Cols("love_point").Find(&gamedata.MemberLoveLevelLovePoint)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member_love_level").OrderBy("love_level").Cols("love_point").Find(&gamedata.MemberLoveLevelLovePoint)
+	})
 	utils.CheckErr(err)
 	gamedata.MemberLoveLevelCount = int32(len(gamedata.MemberLoveLevelLovePoint))
 	gamedata.MemberLoveLevelLovePoint = append([]int32{0}, gamedata.MemberLoveLevelLovePoint...)

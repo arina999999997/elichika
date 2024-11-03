@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/generic"
 	"elichika/serverdata"
 	"elichika/utils"
@@ -85,7 +85,7 @@ type MemberInit struct {
 	LovePointLimit      int32 `xorm:"'love_point_limit'"`
 }
 
-func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (member *Member) populate(gamedata *Gamedata) {
 
 	{
 		type LoveLevelReward struct {
@@ -94,7 +94,10 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 			Content   client.Content `xorm:"extends"`
 		}
 		rewards := []LoveLevelReward{}
-		err := masterdata_db.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).OrderBy("love_level").Find(&rewards)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_member_love_level_reward").Where("member_m_id = ?", member.Id).OrderBy("love_level").Find(&rewards)
+		})
 		utils.CheckErr(err)
 		for i := int32(0); i <= gamedata.MemberLoveLevelCount; i++ {
 			member.LoveLevelRewards = append(member.LoveLevelRewards, []client.Content{})
@@ -107,25 +110,37 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	}
 
 	{
-		exist, err := masterdata_db.Table("m_member_init").Where("member_m_id = ?", member.Id).Get(&member.MemberInit)
+		var exist bool
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			exist, err = session.Table("m_member_init").Where("member_m_id = ?", member.Id).Get(&member.MemberInit)
+		})
 		utils.CheckErrMustExist(err, exist)
 	}
 
 	{
-		exist, err := masterdata_db.Table("m_member_unit_detail").Where("member_m_id = ?", member.Id).Cols("member_unit").Get(&member.MemberUnit)
+		var exist bool
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			exist, err = session.Table("m_member_unit_detail").Where("member_m_id = ?", member.Id).Cols("member_unit").Get(&member.MemberUnit)
+		})
 		utils.CheckErrMustExist(err, exist)
 	}
 
-	member.Name = dictionary.Resolve(member.Name)
-	// member.NameHiragana = dictionary.Resolve(member.NameHiragana)
-	// member.NameRomaji = dictionary.Resolve(member.NameRomaji)
+	member.Name = gamedata.Dictionary.Resolve(member.Name)
+	// member.NameHiragana = gamedata.Dictionary.Resolve(member.NameHiragana)
+	// member.NameRomaji = gamedata.Dictionary.Resolve(member.NameRomaji)
 	// fmt.Println(member.Id, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
 	// 	member.ThemeColor, "\t", member.ThemeLightColor, "\t", member.ThemeDarkColor, "\t",
 	// 	member.BackgroundUpperLeftColor, "\t", member.BackgroundBottomRightColor)
 
 	{
 		asset := serverdata.EventMemberNameAsset{}
-		exist, err := serverdata_db.Table("s_event_member_name_asset").Where("member_master_id = ?", member.Id).Get(&asset)
+		var exist bool
+		var err error
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			exist, err = session.Table("s_event_member_name_asset").Where("member_master_id = ?", member.Id).Get(&asset)
+		})
 		utils.CheckErrMustExist(err, exist)
 
 		member.MainNameTopAssetPath = client.TextureStruktur{
@@ -143,14 +158,17 @@ func (member *Member) populate(gamedata *Gamedata, masterdata_db, serverdata_db 
 	}
 }
 
-func loadMember(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMember(gamedata *Gamedata) {
 	fmt.Println("Loading Member")
 	gamedata.Member = make(map[int32]*Member)
-	err := masterdata_db.Table("m_member").Find(&gamedata.Member)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_member").Find(&gamedata.Member)
+	})
 	utils.CheckErr(err)
 	gamedata.MemberByBirthday = make(map[int32]([]*Member))
 	for _, member := range gamedata.Member {
-		member.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		member.populate(gamedata)
 		gamedata.MemberByBirthday[member.BirthMonth*100+member.BirthDay] =
 			append(gamedata.MemberByBirthday[member.BirthMonth*100+member.BirthDay], member)
 	}

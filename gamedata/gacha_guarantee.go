@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/serverdata"
 	"elichika/utils"
 
@@ -10,10 +9,13 @@ import (
 
 type GachaGuarantee = serverdata.GachaGuarantee
 
-func populateGachaGuarantee(gachaGuarantee *GachaGuarantee, gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func populateGachaGuarantee(gachaGuarantee *GachaGuarantee, gamedata *Gamedata) {
 	if len(gachaGuarantee.CardSetSQL) > 0 {
 		cards := []int32{}
-		err := masterdata_db.Table("m_card").Where(gachaGuarantee.CardSetSQL).Cols("id").Find(&cards)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_card").Where(gachaGuarantee.CardSetSQL).Cols("id").Find(&cards)
+		})
 		utils.CheckErr(err)
 		gachaGuarantee.GuaranteedCardSet = make(map[int32]bool)
 		for _, card := range cards {
@@ -22,12 +24,15 @@ func populateGachaGuarantee(gachaGuarantee *GachaGuarantee, gamedata *Gamedata, 
 	}
 }
 
-func loadGachaGuarantee(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadGachaGuarantee(gamedata *Gamedata) {
 	gamedata.GachaGuarantee = make(map[int32]*GachaGuarantee)
-	err := serverdata_db.Table("s_gacha_guarantee").Find(&gamedata.GachaGuarantee)
+	var err error
+	gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("s_gacha_guarantee").Find(&gamedata.GachaGuarantee)
+	})
 	utils.CheckErr(err)
 	for _, gachaGuarantee := range gamedata.GachaGuarantee {
-		populateGachaGuarantee(gachaGuarantee, gamedata, masterdata_db, serverdata_db, dictionary)
+		populateGachaGuarantee(gachaGuarantee, gamedata)
 	}
 }
 

@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -25,8 +24,11 @@ type StoryMainChapter struct {
 	LastCellId int32   `xorm:"-"`
 }
 
-func (smc *StoryMainChapter) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	err := masterdata_db.Table("m_story_main_cell").Where("chapter_id = ?", smc.Id).Cols("id").Find(&smc.Cells)
+func (smc *StoryMainChapter) populate(gamedata *Gamedata) {
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_story_main_cell").Where("chapter_id = ?", smc.Id).Cols("id").Find(&smc.Cells)
+	})
 	utils.CheckErr(err)
 	for _, cellId := range smc.Cells {
 		if smc.LastCellId < cellId {
@@ -35,13 +37,16 @@ func (smc *StoryMainChapter) populate(gamedata *Gamedata, masterdata_db, serverd
 	}
 }
 
-func loadStoryMain(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadStoryMain(gamedata *Gamedata) {
 	fmt.Println("Loading StoryMainChapter")
 	gamedata.StoryMainChapter = make(map[int32]*StoryMainChapter)
-	err := masterdata_db.Table("m_story_main_chapter").Find(&gamedata.StoryMainChapter)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_story_main_chapter").Find(&gamedata.StoryMainChapter)
+	})
 	utils.CheckErr(err)
 	for _, storyMainChapter := range gamedata.StoryMainChapter {
-		storyMainChapter.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		storyMainChapter.populate(gamedata)
 	}
 }
 

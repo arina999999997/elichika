@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -27,7 +26,7 @@ type TrainingTreeDesign struct {
 	// ParentBranchType []int32
 }
 
-func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadTrainingTreeDesign(gamedata *Gamedata) {
 	fmt.Println("Loading TrainingTreeDesign")
 	type TrainingTreeDesignCell struct {
 		DesignId         int32 `xorm:"'id'"`
@@ -36,7 +35,10 @@ func loadTrainingTreeDesign(gamedata *Gamedata, masterdata_db, serverdata_db *xo
 		ParentBranchType int32 `xorm:"'parent_branch_type'"`
 	}
 	cells := []TrainingTreeDesignCell{}
-	err := masterdata_db.Table("m_training_tree_design").Find(&cells)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_training_tree_design").Find(&cells)
+	})
 	utils.CheckErr(err)
 	gamedata.TrainingTreeDesign = make(map[int32]*TrainingTreeDesign)
 	for _, cell := range cells {

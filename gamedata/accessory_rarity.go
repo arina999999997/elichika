@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"xorm.io/xorm"
@@ -32,52 +31,64 @@ type AccessoryRarity struct {
 	RarityUpMoney int32 `xorm:"-"`
 }
 
-func (rarity *AccessoryRarity) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (rarity *AccessoryRarity) populate(gamedata *Gamedata) {
+	var err error
 	{
-		err := masterdata_db.Table("m_accessory_grade_up_setting").Where("rarity = ?", rarity.RarityType).OrderBy("grade").
-			Cols("game_money").Find(&rarity.GradeUpMoney)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_grade_up_setting").Where("rarity = ?", rarity.RarityType).OrderBy("grade").Cols("game_money").Find(&rarity.GradeUpMoney)
+		})
 		utils.CheckErr(err)
 	}
 	{
-		err := masterdata_db.Table("m_accessory_level_up_setting").Where("rarity = ?", rarity.RarityType).OrderBy("level").Find(&rarity.LevelUp)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_level_up_setting").Where("rarity = ?", rarity.RarityType).OrderBy("level").Find(&rarity.LevelUp)
+		})
 		utils.CheckErr(err)
 		rarity.LevelUp = append([]AccessoryLevelUp{AccessoryLevelUp{}}, rarity.LevelUp...)
 	}
 
 	{
 		for grade := 0; grade < GRADE_COUNT; grade++ {
-			err := masterdata_db.Table("m_accessory_passive_skill_level_up_denominator").Where("rarity = ? AND grade = ?", rarity.RarityType, grade).
-				OrderBy("skill_level").Cols("denominator").Find(&rarity.SkillLevelUpDenominator[grade])
+			gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("m_accessory_passive_skill_level_up_denominator").Where("rarity = ? AND grade = ?", rarity.RarityType, grade).OrderBy("skill_level").Cols("denominator").Find(&rarity.SkillLevelUpDenominator[grade])
+			})
 			utils.CheckErr(err)
 			rarity.SkillLevelUpDenominator[grade] = append([]int32{0}, rarity.SkillLevelUpDenominator[grade]...)
 		}
 	}
 
 	{
-		err := masterdata_db.Table("m_accessory_passive_skill_level_up_plus_percent").Where("rarity = ?", rarity.RarityType).
-			OrderBy("skill_level").Cols("plus_percent").Find(&rarity.SkillLevelUpPlusPercent)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_passive_skill_level_up_plus_percent").Where("rarity = ?", rarity.RarityType).OrderBy("skill_level").Cols("plus_percent").Find(&rarity.SkillLevelUpPlusPercent)
+		})
 		utils.CheckErr(err)
 		rarity.SkillLevelUpPlusPercent = append([]int32{0}, rarity.SkillLevelUpPlusPercent...)
 	}
 
 	{
-		err := masterdata_db.Table("m_accessory_passive_skill_level_up_setting").Where("rarity = ?", rarity.RarityType).
-			OrderBy("grade").Cols("max_level").Find(&rarity.GradeMaxSkillLevel)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_passive_skill_level_up_setting").Where("rarity = ?", rarity.RarityType).OrderBy("grade").Cols("max_level").Find(&rarity.GradeMaxSkillLevel)
+		})
 		utils.CheckErr(err)
 	}
 
 	{
-		_, err := masterdata_db.Table("m_accessory_rarity_up_setting").Where("rarity = ?", rarity.RarityType).Cols("game_money").Get(&rarity.RarityUpMoney)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			_, err = session.Table("m_accessory_rarity_up_setting").Where("rarity = ?", rarity.RarityType).Cols("game_money").Get(&rarity.RarityUpMoney)
+		})
 		utils.CheckErr(err)
 	}
 }
 
-func loadAccessoryRarity(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadAccessoryRarity(gamedata *Gamedata) {
 	gamedata.AccessoryRarity = make(map[int32]*AccessoryRarity)
-	err := masterdata_db.Table("m_accessory_rarity_setting").Find(&gamedata.AccessoryRarity)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_accessory_rarity_setting").Find(&gamedata.AccessoryRarity)
+	})
 	utils.CheckErr(err)
 	for _, rarity := range gamedata.AccessoryRarity {
-		rarity.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		rarity.populate(gamedata)
 	}
 }
 

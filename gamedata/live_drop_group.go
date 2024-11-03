@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/generic/drop"
 	"elichika/utils"
 
@@ -37,7 +37,7 @@ func (ldg *LiveDropGroup) GetRandomItemByDropColor(dropColor int32) client.Conte
 	return ldg.LiveDropContentGroupByDropColor[dropColor].GetRandomItem().GetRandomItem()
 }
 
-func loadLiveDropGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLiveDropGroup(gamedata *Gamedata) {
 	fmt.Println("Loading LiveDropGroup")
 	gamedata.LiveDropGroup = make(map[int32]*LiveDropGroup)
 
@@ -49,7 +49,10 @@ func loadLiveDropGroup(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Se
 		DropContentGroupId int32
 	}
 	rows := []LiveDropGroupRow{}
-	err := masterdata_db.Table("m_live_drop_group").Find(&rows)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_drop_group").Find(&rows)
+	})
 	utils.CheckErr(err)
 
 	for _, row := range rows {

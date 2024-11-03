@@ -18,7 +18,7 @@ import (
 )
 
 // finish the event and pay out the reward for everyone who participated
-func resultEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
+func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.ScheduledTask) {
 	activeEvent := gamedata.Instance.EventActive.GetActiveEventUnix(task.Time)
 	eventIdInt, _ := strconv.Atoi(task.Params)
 	eventId := int32(eventIdInt)
@@ -36,7 +36,7 @@ func resultEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.
 		if (i == 0) || (result.Score != results[i-1].Score) {
 			rank = int32(i + 1)
 		}
-		session := userdata.GetBasicSession(userdata_db, serverdata_db, timePoint, result.Id)
+		session := userdata.GetBasicSession(userdata_db, timePoint, result.Id)
 		rewardGroupId := eventMarathon.GetRankingReward(rank)
 		for _, content := range gamedata.Instance.EventMarathonReward[rewardGroupId] {
 			user_present.AddPresent(session, client.PresentItem{
@@ -59,7 +59,7 @@ func resultEventScheduledHandler(serverdata_db *xorm.Session, userdata_db *xorm.
 	}
 
 	// schedule the event actual end
-	scheduled_task.AddScheduledTask(serverdata_db, scheduled_task.ScheduledTask{
+	scheduled_task.AddScheduledTask(scheduled_task.ScheduledTask{
 		Time:     activeEvent.EndAt,
 		TaskName: "event_marathon_end",
 		Params:   task.Params,

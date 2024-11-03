@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -26,7 +25,7 @@ func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIds(a, b, c int32) (partyI
 	return
 }
 
-func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLiveParty(gamedata *Gamedata) {
 	fmt.Println("Loading LiveParty")
 	type LiveParty struct {
 		Id            int    `xorm:"pk 'id'"`
@@ -37,10 +36,13 @@ func loadLiveParty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Sessio
 		LivePartyIcon int32  `xorm:"'live_party_icon'"`
 	}
 	liveParties := []LiveParty{}
-	err := masterdata_db.Table("m_live_party_name").Find(&liveParties)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_party_name").Find(&liveParties)
+	})
 	utils.CheckErr(err)
 	for _, party := range liveParties {
-		party.Name = dictionary.Resolve(party.Name)
+		party.Name = gamedata.Dictionary.Resolve(party.Name)
 		r := [3]int{}
 		r[0] = party.Role1
 		r[1] = party.Role2

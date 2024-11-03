@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -20,9 +19,13 @@ type MemberGuildPeriod struct {
 	OneCycleSecs      int64
 }
 
-func loadMemberGuildPeriod(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadMemberGuildPeriod(gamedata *Gamedata) {
 	fmt.Println("Loading MemberGuildPeriod")
-	exist, err := masterdata_db.Table("m_member_guild_period").Get(&gamedata.MemberGuildPeriod)
+	var exist bool
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		exist, err = session.Table("m_member_guild_period").Get(&gamedata.MemberGuildPeriod)
+	})
 	utils.CheckErrMustExist(err, exist)
 }
 

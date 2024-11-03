@@ -17,13 +17,10 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/enum"
 	"elichika/item"
 
 	"fmt"
-
-	"xorm.io/xorm"
 )
 
 type ContentRarity struct {
@@ -72,7 +69,7 @@ func (cr *ContentRarity) GetWeight(contentType int32, contentId int32, contentAm
 	return int32(total)
 }
 
-func loadContentRarity(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadContentRarity(gamedata *Gamedata) {
 	gamedata.ContentRarity = new(ContentRarity)
 	gamedata.ContentRarity.RarityTable = map[int32]map[int32]int64{}
 	for _, accessory := range gamedata.Accessory {

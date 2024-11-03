@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
+
 	"elichika/utils"
 
 	"fmt"
@@ -50,12 +50,14 @@ type TrainingTree struct {
 	TrainingTreeProgressRewards []TrainingTreeProgressReward `xorm:"-"`
 }
 
-func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (tree *TrainingTree) populate(gamedata *Gamedata) {
 	tree.TrainingTreeMapping = gamedata.TrainingTreeMapping[*tree.TrainingTreeMappingMId]
 	tree.TrainingTreeMappingMId = &tree.TrainingTreeMapping.Id
 	{
-		err := masterdata_db.Table("m_training_tree_card_param").Where("id = ?", tree.TrainingTreeCardParamMId).
-			OrderBy("training_content_no").Find(&tree.TrainingTreeCardParams)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_training_tree_card_param").Where("id = ?", tree.TrainingTreeCardParamMId).OrderBy("training_content_no").Find(&tree.TrainingTreeCardParams)
+		})
 		tree.TrainingTreeCardParams = append([]TrainingTreeCardParam{TrainingTreeCardParam{}}, tree.TrainingTreeCardParams...)
 		utils.CheckErr(err)
 	}
@@ -63,7 +65,10 @@ func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata
 	{
 		tree.TrainingTreeCardStorySides = make(map[int32]int32)
 		stories := []TrainingTreeCardStorySide{}
-		err := masterdata_db.Table("m_training_tree_card_story_side").Where("card_m_id = ?", tree.Id).Find(&stories)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_training_tree_card_story_side").Where("card_m_id = ?", tree.Id).Find(&stories)
+		})
 		utils.CheckErr(err)
 		for _, story := range stories {
 			tree.TrainingTreeCardStorySides[story.TrainingContentType] = story.StorySideMId
@@ -71,33 +76,42 @@ func (tree *TrainingTree) populate(gamedata *Gamedata, masterdata_db, serverdata
 	}
 
 	{
-		err := masterdata_db.Table("m_training_tree_card_suit").Where("card_m_id = ?", tree.Id).
-			OrderBy("training_content_no").Cols("suit_m_id").Find(&tree.SuitMIds)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_training_tree_card_suit").Where("card_m_id = ?", tree.Id).OrderBy("training_content_no").Cols("suit_m_id").Find(&tree.SuitMIds)
+		})
 		utils.CheckErr(err)
 		tree.SuitMIds = append([]int32{0}, tree.SuitMIds...)
 	}
 
 	{
-		err := masterdata_db.Table("m_training_tree_card_voice").Where("card_m_id = ?", tree.Id).
-			OrderBy("training_content_no").Cols("navi_action_id").Find(&tree.NaviActionIds)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_training_tree_card_voice").Where("card_m_id = ?", tree.Id).OrderBy("training_content_no").Cols("navi_action_id").Find(&tree.NaviActionIds)
+		})
 		utils.CheckErr(err)
 		tree.NaviActionIds = append([]int32{0}, tree.NaviActionIds...)
 	}
 
 	{
-		err := masterdata_db.Table("m_training_tree_progress_reward").Where("card_master_id = ?", tree.Id).
-			OrderBy("activate_num").Find(&tree.TrainingTreeProgressRewards)
+		var err error
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_training_tree_progress_reward").Where("card_master_id = ?", tree.Id).OrderBy("activate_num").Find(&tree.TrainingTreeProgressRewards)
+		})
 		utils.CheckErr(err)
 	}
 }
 
-func loadTrainingTree(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadTrainingTree(gamedata *Gamedata) {
 	fmt.Println("Loading TrainingTree")
 	gamedata.TrainingTree = make(map[int32]*TrainingTree)
-	err := masterdata_db.Table("m_training_tree").Find(&gamedata.TrainingTree)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_training_tree").Find(&gamedata.TrainingTree)
+	})
 	utils.CheckErr(err)
 	for _, tree := range gamedata.TrainingTree {
-		tree.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		tree.populate(gamedata)
 	}
 }
 

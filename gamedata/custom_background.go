@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -15,10 +14,13 @@ type CustomBackground struct {
 	// ...
 }
 
-func loadCustomBackground(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadCustomBackground(gamedata *Gamedata) {
 	fmt.Println("Loading CustomBackground")
 	gamedata.CustomBackground = make(map[int32]*CustomBackground)
-	err := masterdata_db.Table("m_custom_background").Find(&gamedata.CustomBackground)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_custom_background").Find(&gamedata.CustomBackground)
+	})
 	utils.CheckErr(err)
 }
 

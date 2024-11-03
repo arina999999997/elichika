@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"xorm.io/xorm"
@@ -23,9 +22,12 @@ type AccessoryLevelUpItem struct {
 	// DisplayOrder int
 }
 
-func loadAccessoryLevelUpItem(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadAccessoryLevelUpItem(gamedata *Gamedata) {
 	gamedata.AccessoryLevelUpItem = make(map[int32]*AccessoryLevelUpItem)
-	err := masterdata_db.Table("m_accessory_level_up_item").Find(&gamedata.AccessoryLevelUpItem)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_accessory_level_up_item").Find(&gamedata.AccessoryLevelUpItem)
+	})
 	utils.CheckErr(err)
 }
 

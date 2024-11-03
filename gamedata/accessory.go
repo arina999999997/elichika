@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"xorm.io/xorm"
@@ -21,7 +20,7 @@ type AccessoryRarityUp struct {
 	RarityUpGroup          *AccessoryRarityUpGroup `xorm:"-"`
 }
 
-func (rarityUp *AccessoryRarityUp) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (rarityUp *AccessoryRarityUp) populate(gamedata *Gamedata) {
 	rarityUp.AfterAccessory = gamedata.Accessory[*rarityUp.AfterAccessoryMasterId]
 	rarityUp.RarityUpGroup = gamedata.AccessoryRarityUpGroup[*rarityUp.RarityUpGroupMasterId]
 }
@@ -53,23 +52,29 @@ type Accessory struct {
 	RarityUp *AccessoryRarityUp `xorm:"-"`
 }
 
-func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (accessory *Accessory) populate(gamedata *Gamedata) {
 	accessory.Rarity = gamedata.AccessoryRarity[accessory.RarityType]
+	var err error
 
 	{
-		err := masterdata_db.Table("m_accessory_grade_up").Where("accessory_master_id = ?", accessory.Id).OrderBy("grade").Find(&accessory.Grade)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_grade_up").Where("accessory_master_id = ?", accessory.Id).OrderBy("grade").Find(&accessory.Grade)
+		})
 		utils.CheckErr(err)
 	}
 
 	{
-		err := masterdata_db.Table("m_accessory_level_up").Where("accessory_master_id = ?", accessory.Id).OrderBy("level").Cols("exp").Find(&accessory.LevelExp)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_level_up").Where("accessory_master_id = ?", accessory.Id).OrderBy("level").Cols("exp").Find(&accessory.LevelExp)
+		})
 		utils.CheckErr(err)
 		accessory.LevelExp = append([]int32{0}, accessory.LevelExp...)
 	}
 
 	{
-		err := masterdata_db.Table("m_accessory_melt").Where("accessory_master_id = ?", accessory.Id).OrderBy("grade").
-			Cols("accessory_melt_group_master_id").Find(&accessory.MeltGroupMasterIds)
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("m_accessory_melt").Where("accessory_master_id = ?", accessory.Id).OrderBy("grade").Cols("accessory_melt_group_master_id").Find(&accessory.MeltGroupMasterIds)
+		})
 		utils.CheckErr(err)
 		for _, meltGroupId := range accessory.MeltGroupMasterIds {
 			accessory.MeltGroup = append(accessory.MeltGroup, gamedata.AccessoryMeltGroup[meltGroupId])
@@ -78,22 +83,28 @@ func (accessory *Accessory) populate(gamedata *Gamedata, masterdata_db, serverda
 
 	{
 		rarityUp := AccessoryRarityUp{}
-		exist, err := masterdata_db.Table("m_accessory_rarity_up").Where("accessory_master_id = ?", accessory.Id).Get(&rarityUp)
+		var exist bool
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			exist, err = session.Table("m_accessory_rarity_up").Where("accessory_master_id = ?", accessory.Id).Get(&rarityUp)
+		})
 		utils.CheckErr(err)
 		if exist {
 
-			rarityUp.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+			rarityUp.populate(gamedata)
 			accessory.RarityUp = &rarityUp
 		}
 	}
 }
 
-func loadAccessory(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadAccessory(gamedata *Gamedata) {
 	gamedata.Accessory = make(map[int32]*Accessory)
-	err := masterdata_db.Table("m_accessory").Find(&gamedata.Accessory)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_accessory").Find(&gamedata.Accessory)
+	})
 	utils.CheckErr(err)
 	for _, accessory := range gamedata.Accessory {
-		accessory.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		accessory.populate(gamedata)
 	}
 
 }

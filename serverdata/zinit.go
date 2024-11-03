@@ -2,6 +2,7 @@ package serverdata
 
 import (
 	"elichika/config"
+	"elichika/db"
 	"elichika/utils"
 
 	"os"
@@ -11,11 +12,14 @@ import (
 
 func init() {
 	var err error
-	Engine, err = xorm.NewEngine("sqlite", config.ServerdataPath)
+	engine, err = xorm.NewEngine("sqlite", config.ServerdataPath)
 	utils.CheckErr(err)
-	Engine.SetMaxOpenConns(50)
-	Engine.SetMaxIdleConns(10)
+	engine.SetMaxOpenConns(50)
+	engine.SetMaxIdleConns(10)
 	rebuildAsset = (len(os.Args) == 2) && (os.Args[1] == "rebuild_assets")
 	resetServer = (len(os.Args) == 2) && (os.Args[1] == "reset_server")
 	InitTables()
+	engine.Close()
+	Database, err = db.NewDatabase(config.ServerdataPath)
+	utils.CheckErr(err)
 }

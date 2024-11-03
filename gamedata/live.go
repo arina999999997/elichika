@@ -1,7 +1,6 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/utils"
 
 	"fmt"
@@ -46,14 +45,17 @@ func init() {
 	addPrequisite(loadLive, loadLiveMemberMapping)
 }
 
-func loadLive(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLive(gamedata *Gamedata) {
 	fmt.Println("Loading Live")
 	gamedata.Live = make(map[int32]*Live)
-	err := masterdata_db.Table("m_live").Find(&gamedata.Live)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live").Find(&gamedata.Live)
+	})
 	utils.CheckErr(err)
 	for _, live := range gamedata.Live {
 		live.LiveMemberMapping = gamedata.LiveMemberMapping[*live.LiveMemberMappingId]
-		live.Name = dictionary.Resolve(live.Name)
+		live.Name = gamedata.Dictionary.Resolve(live.Name)
 		live.Gamedata = gamedata
 	}
 }

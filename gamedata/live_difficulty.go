@@ -3,7 +3,7 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/config"
-	"elichika/dictionary"
+
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/utils"
@@ -82,24 +82,29 @@ type LiveDifficulty struct {
 	LiveDifficultyNoteGimmicks []LiveDifficultyNoteGimmick `xorm:"-"`
 }
 
-func (ld *LiveDifficulty) populate(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func (ld *LiveDifficulty) populate(gamedata *Gamedata) {
 	ld.Live = gamedata.Live[*ld.LiveId]
 	// 2-way links
 	ld.Live.LiveDifficulties = append(ld.Live.LiveDifficulties, ld)
 	ld.LiveId = &gamedata.Live[*ld.LiveId].LiveId
-	err := masterdata_db.Table("m_live_difficulty_mission").Where("live_difficulty_master_id = ?", ld.LiveDifficultyId).
-		OrderBy("position").Find(&gamedata.LiveDifficulty[ld.LiveDifficultyId].Missions)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_difficulty_mission").Where("live_difficulty_master_id = ?", ld.LiveDifficultyId).OrderBy("position").Find(&gamedata.LiveDifficulty[ld.LiveDifficultyId].Missions)
+	})
+
 	utils.CheckErr(err)
 	// if ld.LiveDifficultyId == 9999 || ld.LiveDifficultyId/10 == 6000000  {
 	// 	return
 	// }
 
-	err = masterdata_db.Table("m_live_difficulty_gimmick").Where("live_difficulty_master_id = ?", ld.LiveDifficultyId).
-		Find(&ld.LiveDifficultyGimmicks)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_difficulty_gimmick").Where("live_difficulty_master_id = ?", ld.LiveDifficultyId).Find(&ld.LiveDifficultyGimmicks)
+	})
 	utils.CheckErr(err)
 
-	err = masterdata_db.Table("m_live_difficulty_note_gimmick").Where("live_difficulty_id = ?", ld.LiveDifficultyId).
-		Find(&ld.LiveDifficultyNoteGimmicks)
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_difficulty_note_gimmick").Where("live_difficulty_id = ?", ld.LiveDifficultyId).Find(&ld.LiveDifficultyNoteGimmicks)
+	})
 	utils.CheckErr(err)
 	for i := range ld.LiveDifficultyNoteGimmicks {
 		ld.LiveDifficultyNoteGimmicks[i].populate()
@@ -288,10 +293,13 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 
 }
 
-func loadLiveDifficulty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadLiveDifficulty(gamedata *Gamedata) {
 	fmt.Println("Loading LiveDifficulty")
 	gamedata.LiveDifficulty = make(map[int32]*LiveDifficulty)
-	err := masterdata_db.Table("m_live_difficulty").Find(&gamedata.LiveDifficulty)
+	var err error
+	gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+		err = session.Table("m_live_difficulty").Find(&gamedata.LiveDifficulty)
+	})
 	utils.CheckErr(err)
 	// ordered iteration is important here
 	ids := []int32{}
@@ -307,7 +315,7 @@ func loadLiveDifficulty(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.S
 	})
 	for _, id := range ids {
 		liveDifficulty := gamedata.LiveDifficulty[id]
-		liveDifficulty.populate(gamedata, masterdata_db, serverdata_db, dictionary)
+		liveDifficulty.populate(gamedata)
 	}
 
 	if config.GenerateStageFromScratch {

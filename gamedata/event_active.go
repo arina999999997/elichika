@@ -1,12 +1,12 @@
 package gamedata
 
 import (
-	"elichika/dictionary"
 	"elichika/serverdata"
 	"elichika/utils"
 
 	"fmt"
 	"time"
+
 	"xorm.io/xorm"
 )
 
@@ -43,7 +43,11 @@ type EventActive struct {
 func (ae *EventActive) GetEventValue() *serverdata.EventActive {
 	if ae.Event == nil {
 		event := serverdata.EventActive{}
-		exist, err := ae.Gamedata.ServerdataDb.Table("s_event_active").Get(&event)
+		var exist bool
+		var err error
+		ae.Gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			exist, err = session.Table("s_event_active").Get(&event)
+		})
 		fmt.Println("trying to load event active: ", event)
 		utils.CheckErr(err)
 		if exist {
@@ -79,17 +83,13 @@ func (ae *EventActive) GetActiveEventUnix(timeStamp int64) *serverdata.EventActi
 	return event
 }
 
-// TODO(extra): This is not the most elegant way to do siths
-var eventActiveInstances = []*EventActive{}
-
 func InvalidateActiveEvent() {
-	for _, instance := range eventActiveInstances {
-		instance.Event = nil
+	for _, gamedata := range GamedataByLocale {
+		gamedata.EventActive.Event = nil
 	}
 }
 
-func loadEventActive(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
-	eventActiveInstances = append(eventActiveInstances, &gamedata.EventActive)
+func loadEventActive(gamedata *Gamedata) {
 	gamedata.EventActive.Gamedata = gamedata
 	gamedata.EventActive.GetEventValue()
 }

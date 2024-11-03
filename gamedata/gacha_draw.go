@@ -2,9 +2,6 @@ package gamedata
 
 import (
 	"elichika/client"
-	"elichika/dictionary"
-
-	"xorm.io/xorm"
 )
 
 type GachaDraw = client.GachaDraw
@@ -13,7 +10,7 @@ type GachaDrawGuarantee struct {
 	GuaranteeIds []int32
 }
 
-func loadGachaDrawGuarantee(gamedata *Gamedata, masterdata_db, serverdata_db *xorm.Session, dictionary *dictionary.Dictionary) {
+func loadGachaDrawGuarantee(gamedata *Gamedata) {
 	gamedata.GachaDraw = make(map[int32]*GachaDraw)
 	gamedata.GachaDrawGuarantee = make(map[int32]*GachaDrawGuarantee)
 	for _, gacha := range gamedata.Gacha {
