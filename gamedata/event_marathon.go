@@ -40,6 +40,7 @@ type EventMarathon struct {
 	Gamedata *Gamedata
 
 	EventId       int32
+	Name          string
 	BoosterItemId int32
 
 	// this is the top status template, COPY before use
@@ -95,6 +96,7 @@ func loadEventMarathon(gamedata *Gamedata) {
 		eventMarathon := EventMarathon{
 			Gamedata:      gamedata,
 			EventId:       event.EventId,
+			Name:          gamedata.Dictionary.ServerResolve(fmt.Sprintf("event_name_%d", event.EventId)),
 			BoosterItemId: event.BoosterItemId,
 			TopStatus: client.EventMarathonTopStatus{
 				EventId: event.EventId,
@@ -196,10 +198,33 @@ func loadEventMarathon(gamedata *Gamedata) {
 		})
 		utils.CheckErr(err)
 
-		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
-			err = session.Table("s_event_marathon_rule_description_page").Where("event_id = ?", event.EventId).OrderBy("page").Find(&eventMarathon.TopStatus.EventMarathonRuleDescriptionPageMasterRows.Slice)
-		})
-		utils.CheckErr(err)
+		{
+			assetPaths := []string{}
+
+			gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+				err = session.Table("s_event_marathon_rule_description_page").Where("event_id = ?", event.EventId).OrderBy("page").Cols("image_asset_path").Find(&assetPaths)
+			})
+			utils.CheckErr(err)
+			totalPage := len(assetPaths)
+			for i, assetPath := range assetPaths {
+				var title string
+				if gamedata.Language == "ko" {
+					title = fmt.Sprintf(gamedata.Dictionary.ServerResolve("event_rule")+" %d", i+1)
+				} else {
+					title = fmt.Sprintf(gamedata.Dictionary.ServerResolve("event_rule")+" %d/%d", i+1, totalPage)
+				}
+				eventMarathon.TopStatus.EventMarathonRuleDescriptionPageMasterRows.Append(
+					client.EventMarathonRuleDescriptionPageMasterRow{
+						Page: int32(i + 1),
+						Title: client.LocalizedText{
+							DotUnderText: title,
+						},
+						ImageAssetPath: client.TextureStruktur{
+							V: generic.NewNullable[string](assetPath),
+						},
+					})
+			}
+		}
 
 		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
 			err = session.Table("s_event_marathon_bonus_popup_order_card_mater").Where("event_id = ?", event.EventId).Find(&eventMarathon.TopStatus.EventMarathonBonusPopupOrderCardMaterRows.Slice)

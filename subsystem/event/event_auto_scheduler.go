@@ -114,11 +114,28 @@ func eventAutoScheduler(userdata_db *xorm.Session, task scheduled_task.Scheduled
 		eventId = targetedEventId
 	} else {
 		eventId = gamedata.Instance.EventAvailable.GetNextEvent(lastEvent)
+		// see if there's a specially scheduled event in s_event_scheduled
+		var scheduledEvent serverdata.EventScheduled
+		var exist bool
+		var err error
+		serverdata.Database.Do(func(session *xorm.Session) {
+			exist, err = session.Table("s_event_scheduled").Get(&scheduledEvent)
+		})
+		utils.CheckErr(err)
+		if exist {
+			eventId = scheduledEvent.EventId
+		}
 	}
+	var err error
+	// no matter what, we clean up the scheduled event
+	serverdata.Database.Do(func(session *xorm.Session) {
+		_, err = session.Table("s_event_scheduled").Where("true").Delete(&serverdata.EventScheduled{})
+	})
+	utils.CheckErr(err)
+
 	eventType := gamedata.Instance.GetEventType(eventId)
 
 	// need to fill the delete condition with some stuff because of xorm
-	var err error
 	serverdata.Database.Do(func(session *xorm.Session) {
 		_, err = session.Table("s_event_active").Where("event_id >= 0").Delete(&serverdata.EventActive{})
 		if err != nil {

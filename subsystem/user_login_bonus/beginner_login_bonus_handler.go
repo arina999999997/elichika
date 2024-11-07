@@ -42,9 +42,8 @@ func beginnerLoginBonusHandler(_ string, session *userdata.Session, loginBonus *
 			Content:          content,
 			PresentRouteType: enum.PresentRouteTypeLoginBonus,
 			PresentRouteId:   generic.NewNullable(int32(1000001)),
-			// TODO(localization): This is not localized to the correct language, also we don't even know if this is the correct string
 			ParamServer: generic.NewNullable(client.LocalizedText{
-				DotUnderText: "Beginner Login Bonus",
+				DotUnderText: "beginner_login_bonus",
 			}),
 			ParamClient: generic.NewNullable(fmt.Sprint(userLoginBonus.LastReceivedReward + 1)),
 		})

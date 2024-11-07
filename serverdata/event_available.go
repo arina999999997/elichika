@@ -1,7 +1,11 @@
 package serverdata
 
 import (
+	"elichika/config"
 	"elichika/utils"
+
+	"os"
+	"strconv"
 
 	"xorm.io/xorm"
 )
@@ -15,17 +19,19 @@ func init() {
 	addTable("s_event_available", EventAvailable{}, initEventAvailable)
 }
 
-// this is always manually handled
 func initEventAvailable(session *xorm.Session) {
 	events := []EventAvailable{}
-	events = append(events, EventAvailable{
-		EventId: 30001, // Secret Party!
-		Order:   1,
-	})
-	events = append(events, EventAvailable{
-		EventId: 30035, // Cutie☆Wonderland
-		Order:   64,
-	})
-	_, err := session.Table("s_event_available").Insert(events)
+
+	entries, err := os.ReadDir(config.AssetPath + "event/marathon")
+	utils.CheckErr(err)
+	for _, entry := range entries {
+		eventId, err := strconv.Atoi(entry.Name())
+		utils.CheckErr(err)
+		events = append(events, EventAvailable{
+			EventId: int32(eventId),
+			Order:   int32(eventId),
+		})
+	}
+	_, err = session.Table("s_event_available").Insert(events)
 	utils.CheckErr(err)
 }

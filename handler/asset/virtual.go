@@ -30,7 +30,7 @@ func staticVirtual(ctx *gin.Context) {
 		host = "https://" + ctx.Request.Host + "/static"
 	}
 	client := &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/%s", host, cdnMasterVersionMapping[downloadData.Locale], downloadData.File), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", host, downloadData.File), nil)
 	utils.CheckErr(err)
 	request.Header.Add("Range", fmt.Sprintf("bytes=%d-%d", downloadData.Start, downloadData.Start+downloadData.Size-1))
 	response, err := client.Do(request)

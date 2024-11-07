@@ -30,8 +30,10 @@ func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.
 
 	results := GetRanking(userdata_db, eventId).GetRange(1, 1<<31-1)
 	eventMarathon := gamedata.Instance.EventActive.GetEventMarathon()
+	eventName := fmt.Sprintf("event_name_%d", eventId)
 	rank := int32(0)
 	timePoint := time.Unix(task.Time, 0)
+
 	for i, result := range results {
 		if (i == 0) || (result.Score != results[i-1].Score) {
 			rank = int32(i + 1)
@@ -43,10 +45,9 @@ func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.
 				Content:          *content,
 				PresentRouteType: enum.PresentRouteTypeEventMarathonRankingReward,
 				PresentRouteId:   generic.NewNullable(eventMarathon.EventId),
-				// TODO(localization): Fill in param_client and param_server to show event and ranking
-				ParamClient: generic.NewNullable(strconv.Itoa(int(rank))),
+				ParamClient:      generic.NewNullable(strconv.Itoa(int(rank))),
 				ParamServer: generic.NewNullable(client.LocalizedText{
-					DotUnderText: "Secret Party!", // client doesn't resolve this automatically from number
+					DotUnderText: eventName, // this is resolved everytime user fetch present
 				}),
 			})
 		}

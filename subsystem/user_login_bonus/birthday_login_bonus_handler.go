@@ -70,9 +70,8 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 				Content:          content,
 				PresentRouteType: enum.PresentRouteTypeLoginBonus,
 				PresentRouteId:   generic.NewNullable(int32(1000003)),
-				// TODO(localization): This is not localized to the correct language, also we don't even know if this is the correct string
 				ParamServer: generic.NewNullable(client.LocalizedText{
-					DotUnderText: fmt.Sprint(member.Name, " Birthday Login Bonus"),
+					DotUnderText: fmt.Sprintf("k.m_dic_member_name_%d birthday_login_bonus", member.Id),
 				}),
 			})
 		}

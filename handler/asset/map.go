@@ -17,7 +17,7 @@ func staticMap(ctx *gin.Context) {
 		panic("entire file downloaded through map endpoint")
 	}
 
-	sendRange(ctx, fmt.Sprintf("static/%s/%s", cdnMasterVersionMapping[downloadData.Locale], downloadData.File), downloadData.Start, downloadData.Size)
+	sendRange(ctx, fmt.Sprintf("static/%s", downloadData.File), downloadData.Start, downloadData.Size)
 }
 
 func init() {

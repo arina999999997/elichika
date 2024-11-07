@@ -2,9 +2,16 @@ package object_form
 
 import (
 	"fmt"
+	htmllib "html"
 	"reflect"
 	"strings"
 )
+
+var externalOptions = map[string][]string{}
+
+func SetExternalOptions(key string, options []string) {
+	externalOptions[key] = options
+}
 
 func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitText string) string {
 	html := `<form id="` + formId + `" method="POST"  enctype="multipart/form-data" onkeydown="if(event.keyCode === 13) {
@@ -32,7 +39,17 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 			currentValue := fmt.Sprint(reflect.Indirect(ptr.Elem().Field(i)).Interface())
 			html += `<select name="` + field.Name + `">` + "\n"
 			optionsString := field.Tag.Get("of_options")
-			options := strings.Split(optionsString, "\n")
+			var options []string
+			if optionsString == "" {
+				// kind of a hack but it allow us to set options at runtime
+				externalKey := field.Tag.Get("of_options_external")
+				if externalKey == "" {
+					panic("no option of external key provided")
+				}
+				options = externalOptions[externalKey]
+			} else {
+				options = strings.Split(optionsString, "\n")
+			}
 			n := len(options)
 			if n%2 == 1 {
 				panic("wrong of_options")
@@ -43,7 +60,7 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 					html += " selected"
 				}
 				html += ">"
-				html += options[i]
+				html += htmllib.EscapeString(options[i])
 				html += `</option>` + "\n"
 			}
 			html += `</select>` + "\n"

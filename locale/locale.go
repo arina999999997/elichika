@@ -65,7 +65,7 @@ var (
 	Locales map[string](*Locale)
 )
 
-func addLocale(path, language, masterVersion, startUpKey string, syncChannel chan struct{}) {
+func addLocale(path, language, masterVersion, startUpKey string) {
 	locale := Locale{
 		Path:          path,
 		Language:      language,
@@ -80,10 +80,10 @@ func init() {
 	gamedata.GenerateLoadOrder()
 	Locales = make(map[string](*Locale))
 	syncChannel := make(chan struct{})
-	addLocale(config.JpMasterdataPath, "ja", config.MasterVersionJp, config.JpStartupKey, syncChannel)
-	addLocale(config.GlMasterdataPath, "en", config.MasterVersionGl, config.GlStartupKey, syncChannel)
-	addLocale(config.GlMasterdataPath, "zh", config.MasterVersionGl, config.GlStartupKey, syncChannel)
-	addLocale(config.GlMasterdataPath, "ko", config.MasterVersionGl, config.GlStartupKey, syncChannel)
+	addLocale(config.JpMasterdataPath, "ja", config.MasterVersionJp, config.JpStartupKey)
+	addLocale(config.GlMasterdataPath, "en", config.MasterVersionGl, config.GlStartupKey)
+	addLocale(config.GlMasterdataPath, "zh", config.MasterVersionGl, config.GlStartupKey)
+	addLocale(config.GlMasterdataPath, "ko", config.MasterVersionGl, config.GlStartupKey)
 
 	for _, locale := range Locales {
 		go locale.LoadGamedata(syncChannel)

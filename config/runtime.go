@@ -42,8 +42,8 @@ func defaultConfigs() *RuntimeConfig {
 		EventAutoSchedulerPeriod: new(string),
 	}
 	*configs.ServerAddress = "0.0.0.0:8080"
-	*configs.CdnServer = "https://llsifas.catfolk.party/static/"
-	*configs.CdnPartialFileCapability = "nothing" // TODO(cdn): Change this to other method when the public cdn is updated
+	*configs.CdnServer = "https://llsifas.imsofucking.gay/static"
+	*configs.CdnPartialFileCapability = "nothing"
 	*configs.AdminPassword = ""
 	*configs.TapBondGain = 20
 	*configs.AutoJudgeType = enum.JudgeTypeGreat

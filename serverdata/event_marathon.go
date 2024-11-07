@@ -19,14 +19,16 @@ import (
 // this is the storage of event in the database, while gamedata.EventMarathon is the processing structure
 // TODO(tech): note that due to xorm limitation, TextureStruktur and SoundStruktur can't be used right now.
 type EventMarathon struct {
-	EventId             int32   `xorm:"pk 'event_id'" json:"event_id"`
-	BoosterItemId       int32   `xorm:"'booster_item_id'" json:"booster_item_id"`
-	TitleImagePath      *string `xorm:"'title_image_path'" json:"title_image_path"`
-	BackgroundImagePath *string `xorm:"'background_image_path'" json:"background_image_path"`
-	BoardBaseImagePath  *string `xorm:"'board_base_image_path'" json:"board_base_image_path"`
-	BoardDecoImagePath  *string `xorm:"'board_deco_image_path'" json:"board_deco_image_path"`
-	BgmAssetPath        *string `xorm:"'bgm_asset_path'" json:"bgm_asset_path"`
-	GachaMasterId       int32   `xorm:"'gacha_master_id'" json:"gacha_master_id"`
+	EventId                       int32             `xorm:"pk 'event_id'" json:"event_id"`
+	EventName                     map[string]string `xorm:"-" json:"event_name"`
+	BoosterItemId                 int32             `xorm:"'booster_item_id'" json:"booster_item_id"`
+	TitleImagePath                *string           `xorm:"'title_image_path'" json:"title_image_path"`
+	BackgroundImagePath           *string           `xorm:"'background_image_path'" json:"background_image_path"`
+	BoardBaseImagePath            *string           `xorm:"'board_base_image_path'" json:"board_base_image_path"`
+	BoardDecoImagePath            *string           `xorm:"'board_deco_image_path'" json:"board_deco_image_path"`
+	BgmAssetPath                  *string           `xorm:"'bgm_asset_path'" json:"bgm_asset_path"`
+	GachaMasterId                 int32             `xorm:"'gacha_master_id'" json:"gacha_master_id"`
+	RuleDescriptionPagesAssetPath []string          `xorm:"-" json:"rule_description_pages_asset_path"`
 }
 
 type EventMarathonBoardThing struct {
@@ -68,10 +70,10 @@ type EventMarathonReward struct {
 }
 
 type EventMarathonRuleDescriptionPage struct {
-	EventId        int32                `xorm:"pk 'event_id'"`
-	Page           int32                `xorm:"pk 'page'"`
-	Title          client.LocalizedText `xorm:"'title'"`
-	ImageAssetPath string               `xorm:"'image_asset_path'"`
+	EventId int32 `xorm:"pk 'event_id'"`
+	Page    int32 `xorm:"pk 'page'"`
+	// Title          client.LocalizedText `xorm:"'title'"`
+	ImageAssetPath string `xorm:"'image_asset_path'"`
 }
 
 // reproduced typos
@@ -115,6 +117,13 @@ func initEventMarathon(session *xorm.Session) {
 		_, err = session.Table("s_event_marathon").Insert(eventMarathon)
 		utils.CheckErr(err)
 		fmt.Println(eventMarathon)
+		for language, name := range eventMarathon.EventName {
+			_, err = session.Table("s_dictionary_" + language).Insert(DictionaryItem{
+				Id:      fmt.Sprintf("event_name_%d", eventMarathon.EventId),
+				Message: name,
+			})
+			utils.CheckErr(err)
+		}
 
 		boardThings := []EventMarathonBoardThing{}
 		parser.ParseCsv(path+"board.csv", &boardThings, &parser.CsvContext{
@@ -128,13 +137,14 @@ func initEventMarathon(session *xorm.Session) {
 		utils.CheckErr(err)
 
 		ruleDescriptionPages := []EventMarathonRuleDescriptionPage{}
-		parser.ParseCsv(path+"rule_description_page.csv", &ruleDescriptionPages, &parser.CsvContext{
-			StartField: 1,
-			HasHeader:  true,
-		})
-		for i := range ruleDescriptionPages {
-			ruleDescriptionPages[i].EventId = eventMarathon.EventId
+		for i, assetPath := range eventMarathon.RuleDescriptionPagesAssetPath {
+			ruleDescriptionPages = append(ruleDescriptionPages, EventMarathonRuleDescriptionPage{
+				EventId:        eventMarathon.EventId,
+				Page:           int32(i + 1),
+				ImageAssetPath: assetPath,
+			})
 		}
+
 		_, err = session.Table("s_event_marathon_rule_description_page").Insert(ruleDescriptionPages)
 		utils.CheckErr(err)
 

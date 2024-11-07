@@ -21,6 +21,9 @@ func FetchPresentItems(session *userdata.Session) generic.List[client.PresentIte
 		Find(&presents.Slice)
 	utils.CheckErr(err)
 
+	for i := range presents.Slice {
+		presents.Slice[i].ParamServer = session.Gamedata.Dictionary.ResolveServerLocalizedText(presents.Slice[i].ParamServer)
+	}
 	// TODO(database): This set everything, which arguablly is the correct thing to do but it might be slow
 
 	_, err = session.Db.Exec("UPDATE u_present_item SET is_new = 0 WHERE user_id = ?", session.UserId)

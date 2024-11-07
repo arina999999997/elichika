@@ -57,9 +57,8 @@ func normalLoginBonusHandler(_ string, session *userdata.Session, loginBonus *ga
 			Content:          content,
 			PresentRouteType: enum.PresentRouteTypeLoginBonus,
 			PresentRouteId:   generic.NewNullable(int32(1000002)), // this doesn't really matter much even though it's sent
-			// TODO(localization): This is not localized to the correct language
 			ParamServer: generic.NewNullable(client.LocalizedText{
-				DotUnderText: "Daily Login Bonus",
+				DotUnderText: "daily_login_bonus",
 			}),
 			ParamClient: generic.NewNullable(fmt.Sprint(userLoginBonus.LastReceivedReward + 1)),
 		})

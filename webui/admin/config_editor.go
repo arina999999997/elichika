@@ -22,7 +22,7 @@ func ConfigEditor(ctx *gin.Context) {
 	`
 
 	ctx.HTML(http.StatusOK, "logged_in_admin.html", gin.H{
-		"body": starts + object_form.GenerateWebForm(config.Conf, "config_form", `onclick="submit_form('config_form', './config_editor')"`, "Reset to current config", "Update config"),
+		"body": starts + object_form.GenerateWebForm(config.Conf, "config_form", `onclick="submit_form('config_form', './edit_config')"`, "Reset to current config", "Update config"),
 	})
 }
 
@@ -35,7 +35,6 @@ func UpdateConfig(ctx *gin.Context) {
 }
 
 func init() {
-	// TODO(admin): this is the only admin feature for now, so we let it be the main page
 	router.AddHandler("/webui/admin", "GET", "/config_editor", ConfigEditor)
 	router.AddHandler("/webui/admin", "POST", "/edit_config", UpdateConfig)
 }

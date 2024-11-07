@@ -4,6 +4,8 @@ import (
 	"elichika/serverdata"
 	"elichika/utils"
 
+	"fmt"
+
 	"xorm.io/xorm"
 )
 
@@ -11,6 +13,8 @@ type EventAvailable struct {
 	Count          int32
 	EventIds       []int32
 	EventIdToOrder map[int32]int32
+
+	Gamedata *Gamedata
 }
 
 func (ea *EventAvailable) Build() {
@@ -33,7 +37,17 @@ func (ea *EventAvailable) GetNextEvent(currentEvent *serverdata.EventActive) int
 	} else {
 		return ea.EventIds[(order+1)%ea.Count]
 	}
+}
 
+// mainly used for the event selector
+func (ea *EventAvailable) GetEventToIdList() []string {
+	// TODO(event): Handle other event type
+	result := []string{}
+	for _, eventId := range ea.EventIds {
+		result = append(result, ea.Gamedata.EventMarathon[eventId].Name)
+		result = append(result, fmt.Sprint(eventId))
+	}
+	return result
 }
 
 func loadEventAvailable(gamedata *Gamedata) {
@@ -43,6 +57,7 @@ func loadEventAvailable(gamedata *Gamedata) {
 	})
 	utils.CheckErr(err)
 	gamedata.EventAvailable.Build()
+	gamedata.EventAvailable.Gamedata = gamedata
 }
 
 func init() {
