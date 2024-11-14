@@ -18,6 +18,8 @@ func Index(ctx *gin.Context) {
 			Event Selector</button></div>
 	<div><button onclick="location.href='event_scheduler'" type="button">
 			Event Scheduler</button></div>
+	<div><button onclick="location.href='maintenance_mode'" type="button">
+			Maintenance Mode (for updating)</button></div>
 	`
 
 	ctx.HTML(http.StatusOK, "logged_in_admin.html", gin.H{

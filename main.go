@@ -3,6 +3,7 @@ package main
 import (
 	"elichika/config"
 	_ "elichika/handler"
+	"elichika/shutdown"
 	_ "elichika/subsystem"
 	"elichika/userdata"
 	_ "elichika/webui"
@@ -32,6 +33,9 @@ func main() {
 	r := gin.Default()
 	router.Router(r)
 	fmt.Println("server address: ", *config.Conf.ServerAddress)
-	fmt.Println("WebUI address: ", *config.Conf.ServerAddress+"/webui")
-	r.Run(*config.Conf.ServerAddress)
+	fmt.Println("WebUI address: ", *config.Conf.ServerAddress+"/webui/...")
+	go func() {
+		r.Run(*config.Conf.ServerAddress)
+	}()
+	shutdown.ReceiveFinalSignal()
 }

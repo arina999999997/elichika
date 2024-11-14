@@ -3,6 +3,7 @@ package user
 import (
 	"elichika/locale"
 	"elichika/router"
+	"elichika/shutdown"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -16,6 +17,12 @@ import (
 )
 
 func userInitial(ctx *gin.Context) {
+	if shutdown.IsShutdown() {
+		return
+	}
+	shutdown.StartConnection()
+	defer shutdown.FinishConnection()
+
 	lang, _ := ctx.GetQuery("l")
 	if lang == "" {
 		lang = "en"

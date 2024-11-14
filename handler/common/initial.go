@@ -5,6 +5,7 @@ import (
 	"elichika/encrypt"
 	"elichika/locale"
 	"elichika/router"
+	"elichika/shutdown"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -19,6 +20,11 @@ import (
 )
 
 func initial(ctx *gin.Context) {
+	if shutdown.IsShutdown() {
+		return
+	}
+	shutdown.StartConnection()
+	defer shutdown.FinishConnection()
 	body, err := io.ReadAll(ctx.Request.Body)
 	utils.CheckErr(err)
 

@@ -56,6 +56,7 @@ func login(ctx *gin.Context) {
 			}
 		}
 	}
+	resp.CheckMaintenance = true
 	common.JsonResponse(ctx, &resp)
 
 	{
