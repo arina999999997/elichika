@@ -59,4 +59,4 @@ COPY --from=builder /elichika/privatekey.pem /root/elichika/privatekey.pem
 ARG folder="server init jsons"
 COPY --from=builder /elichika/${folder}/ /root/elichika/${folder}/
 
-ENTRYPOINT ["/root/elichika/elichika"]
+ENTRYPOINT ["/root/elichika/elichika", "rebuild_assets", "keep_alive"]

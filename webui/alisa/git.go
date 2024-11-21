@@ -33,6 +33,13 @@ func rebuildElichika() (string, error) {
 	if err != nil {
 		return "", errors.New(fmt.Sprint("error building elichika.\noutput: ", string(output), "\nerror: ", err))
 	}
+
+	cmd := exec.Command("./elichika", "rebuild_assets")
+	output, err = cmd.Output()
+	if err != nil {
+		return "", errors.New(fmt.Sprint("error building elichika assets.\noutput: ", string(output), "\nerror: ", err))
+	}
+
 	version, _ := getVersion()
 	return "Updated elichika to version: " + version, nil
 }

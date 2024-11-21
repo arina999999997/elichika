@@ -36,8 +36,6 @@ All config options should be set in the data/config.json file, which will be cre
 
 [docker compose](./docker/docker-compose.yml) example
 
-Thanks to ethan and [yunimoo](https://github.com/yunimoo) for preparing docker files.
-
 ## Running the server
 After installing, you need to run the server to play using the following command:
 
@@ -141,7 +139,7 @@ It can be found at: `<server_address>/webui/admin`, which default to http://127.
 
 To use the admin webui, you will need the admin password, but it is empty by default.
 
-Currently, it only has the config editor, but in the future it can include things like starting/ending event and such.
+Checkout the various features for a detailed explaination of each of them.
 
 Detailed explanations of some config options:
 
@@ -207,10 +205,11 @@ Special thanks to the LL Hax community in general for:
 Even more special thanks for the specific individuals or groups (in no particular order):
 
 - YumeMichi for original elichika.
-- triangle for informations and scripts to encode/decode database, for patching the ios clients, for daily theater logs, for databases across all versions, and for some various missing asset files.
+- triangle for informations and scripts to encode/decode database, for patching the ios clients, for daily theater logs, for databases across all versions, and for various missing asset files.
 - gam for various missing asset files.
 - [SIFAStheatre](https://twitter.com/SIFAStheatre) and [Idol Story](https://twitter.com/idoldotst) for Daily theater English tranlation and for the original Japanese transcript.
-- ethan for hosting various resource and hosting a public testing server.
+- ethan for hosting various resource, for hosting a public testing server, and for help with docker.
+- [yunimoo](https://github.com/yunimoo) for help with docker, and for resolving TODOs.
 - rayfirefirst, cppo for various cryptographic keys.
 - tungnotpunk for ios client and help with network structure.
 - Suyooo for the very helpful [SIFAS wiki](https://suyo.be/sifas/wiki/), for providing more accurate stage data, and for the bad word lists.
@@ -221,6 +220,6 @@ Even more special thanks for the specific individuals or groups (in no particula
 ## Disclaimer
 This repository is designed for official contents of SIFAS only.
 
-The authors do not endorse any modification, except for the modifications included in this repoistory. 
+The authors do not endorse any modification, except for the modifications already included in this repository. 
 
 ALL other modifications to the assets, servers, or clients are outside of the authors' control. If such modifications cause issues, this repository is not the root cause.

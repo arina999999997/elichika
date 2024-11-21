@@ -21,6 +21,7 @@ import (
 
 func initial(ctx *gin.Context) {
 	if shutdown.IsShutdown() {
+		ctx.Abort()
 		return
 	}
 	shutdown.StartConnection()

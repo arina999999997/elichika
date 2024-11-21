@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,13 @@ func main() {
 
 	// every request by client and elsewhere get hit with the maintenance
 	// maybe it's better to filter out but oh well
-	router.NoRoute(maintenance)
+	router.NoRoute(func(ctx *gin.Context) {
+		if strings.HasPrefix(ctx.Request.URL.Path, "/webui/user") {
+			maintenanceWebUi(ctx)
+		} else {
+			maintenanceClient(ctx)
+		}
+	})
 
 	router.StaticFile("/favicon.ico", "./webui/favicon.ico")
 
@@ -41,14 +48,13 @@ func main() {
 	router.SetFuncMap(funcs)
 	router.LoadHTMLFiles("./webui/admin/logged_in_admin.html")
 
-	group := router.Group("/webui/admin", adminInitial)
-
-	group.GET("/", Index)
-	group.StaticFile("/login", "./webui/admin/login.html")
-	group.POST("/login", login)
-	group.POST("/update_elichika", UpdateElichika)
-	group.POST("/run_elichika", RunElichika)
-	group.POST("/rebuild_elichika", RebuildElichika)
+	admin := router.Group("/webui/admin", adminInitial)
+	admin.GET("/", Index)
+	admin.StaticFile("/login", "./webui/admin/login.html")
+	admin.POST("/login", login)
+	admin.POST("/update_elichika", UpdateElichika)
+	admin.POST("/run_elichika", RunElichika)
+	admin.POST("/rebuild_elichika", RebuildElichika)
 
 	server := &http.Server{
 		Addr:    *config.Conf.ServerAddress,
