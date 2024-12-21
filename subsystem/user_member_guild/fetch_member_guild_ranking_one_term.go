@@ -10,15 +10,14 @@ import (
 )
 
 var (
-	getFetchMemberGuildRankingOneTermCache = cache.UniquePointerMap[int64, cache.CachedObject[client.MemberGuildRankingOneTerm]]{}
+	getFetchMemberGuildRankingOneTermCache = cache.UniquePointerMap[int32, cache.CachedObject[client.MemberGuildRankingOneTerm]]{}
 )
 
 func FetchMemberGuildRankingOneTerm(session *userdata.Session, memberGuildId int32) client.MemberGuildRankingOneTerm {
-	key := (int64(memberGuildId) << 32)
-	cacher := getFetchMemberGuildRankingOneTermCache.Get(key)
+	cacher := getFetchMemberGuildRankingOneTermCache.Get(-1)
 	cacher.Acquire()
 	defer cacher.Release()
-	if cacher.ExpireAt <= session.Time.Unix() {
+	if memberGuildId == cacher.Value.MemberGuildId || cacher.ExpireAt <= session.Time.Unix() {
 		cacher.ExpireAt = session.Time.Unix() + FetchMemberGuildRankingOneTermCache
 		cacher.Value = getFetchMemberGuildRankingOneTermNoCache(session, memberGuildId)
 	}

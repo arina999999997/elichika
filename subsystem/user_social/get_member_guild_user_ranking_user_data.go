@@ -8,12 +8,11 @@ import (
 )
 
 var (
-	getMemberGuildUserRankingUserDataCache = cache.UniquePointerMap[int64, cache.CachedObject[client.MemberGuildUserRankingUserData]]{}
+	getMemberGuildUserRankingUserDataCache = cache.UniquePointerMap[int32, cache.CachedObject[client.MemberGuildUserRankingUserData]]{}
 )
 
 func GetMemberGuildUserRankingUserData(session *userdata.Session, userId int32) client.MemberGuildUserRankingUserData {
-	key := (int64(userId) << 32)
-	cacher := getMemberGuildUserRankingUserDataCache.Get(key)
+	cacher := getMemberGuildUserRankingUserDataCache.Get(userId)
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {

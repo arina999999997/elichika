@@ -8,12 +8,11 @@ import (
 )
 
 var (
-	getRankingUserCache = cache.UniquePointerMap[int64, cache.CachedObject[client.RankingUser]]{}
+	getRankingUserCache = cache.UniquePointerMap[int32, cache.CachedObject[client.RankingUser]]{}
 )
 
 func GetRankingUser(session *userdata.Session, rankingUserId int32) client.RankingUser {
-	key := (int64(rankingUserId) << 32)
-	cacher := getRankingUserCache.Get(key)
+	cacher := getRankingUserCache.Get(rankingUserId)
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {
