@@ -12,8 +12,7 @@ var (
 )
 
 func GetVoltageRankingUser(session *userdata.Session, userId int32) client.VoltageRankingUser {
-	key := (int64(userId) << 32)
-	cacher := getVoltageRankingUserCache.Get(key)
+	cacher := getVoltageRankingUserCache.Get(userId)
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {

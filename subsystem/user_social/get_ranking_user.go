@@ -12,8 +12,7 @@ var (
 )
 
 func GetRankingUser(session *userdata.Session, rankingUserId int32) client.RankingUser {
-	key := (int64(rankingUserId) << 32)
-	cacher := getRankingUserCache.Get(key)
+	cacher := getRankingUserCache.Get(rankingUserId)
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {

@@ -14,8 +14,7 @@ var (
 )
 
 func FetchMemberGuildRankingOneTerm(session *userdata.Session, memberGuildId int32) client.MemberGuildRankingOneTerm {
-	key := (int64(memberGuildId) << 32)
-	cacher := getFetchMemberGuildRankingOneTermCache.Get(key)
+	cacher := getFetchMemberGuildRankingOneTermCache.Get(memberGuildId)
 	cacher.Acquire()
 	defer cacher.Release()
 	if cacher.ExpireAt <= session.Time.Unix() {
