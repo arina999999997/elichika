@@ -11,6 +11,8 @@ RUN apt update && apt install -y curl git gcc
 RUN curl -LO https://go.dev/dl/go1.22.5.linux-amd64.tar.gz
 RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.5.linux-amd64.tar.gz
 
+RUN git clone https://github.com/arina999999997/elichika elichika --depth 1
+
 WORKDIR /elichika/
 
 COPY ./ ./
