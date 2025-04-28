@@ -6,8 +6,6 @@ import (
 	"elichika/userdata"
 	"elichika/utils"
 
-	"fmt"
-
 	"xorm.io/xorm"
 )
 
@@ -57,7 +55,7 @@ func fixCard(session *xorm.Session, cells []FixUserCardTrainingTreeCell) {
 	userId := cells[0].UserId
 	cardMasterId := cells[0].CardMasterId
 
-	uncompressed := gamedata.Instance.TrainingTree[cardMasterId].Design().Uncompress(storedCells)
+	// uncompressed := gamedata.Instance.TrainingTree[cardMasterId].Design().Uncompress(storedCells)
 	recompressed := gamedata.Instance.TrainingTree[cardMasterId].Design().Compress(storedCells)
 	for _, cell := range recompressed {
 		fixInsertCells = append(fixInsertCells, FixUserCardTrainingTreeCell{
