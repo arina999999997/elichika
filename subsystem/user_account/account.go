@@ -71,7 +71,7 @@ func CreateNewAccount(ctx *gin.Context, userId int32, passWord string) int32 {
 			EmblemId:                                  10500521, // new player
 			TutorialPhase:                             tutorialPhase,
 			TutorialEndAt:                             tutorialEndAt,
-			LoginDays:                                 1221,
+			LoginDays:                                 0,
 			NaviTapRecoverAt:                          1688137200,
 			LessonResumeStatus:                        1,
 			// AccessoryBoxAdditional:                    400,
