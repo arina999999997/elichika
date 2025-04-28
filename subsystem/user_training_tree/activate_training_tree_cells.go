@@ -1,6 +1,7 @@
 package user_training_tree
 
 import (
+	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
 	"elichika/subsystem/user_card"
@@ -102,7 +103,15 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 
 	user_card.UpdateUserCard(session, card)
 
+	trainingTreeCells := []client.UserCardTrainingTreeCell{}
 	for _, cellId := range cellIds {
+		trainingTreeCells = append(trainingTreeCells, client.UserCardTrainingTreeCell{
+			CellId:      cellId,
+			ActivatedAt: session.Time.Unix(),
+		})
+	}
+	storedCells := session.Gamedata.TrainingTree[cardMasterId].Design().Compress(trainingTreeCells)
+	for _, cell := range storedCells {
 		type Wrapper struct {
 			CardMasterId int32
 			CellId       int32
@@ -110,8 +119,8 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 		}
 		userdata.GenericDatabaseInsert(session, "u_card_training_tree_cell", Wrapper{
 			CardMasterId: cardMasterId,
-			CellId:       cellId,
-			ActivatedAt:  session.Time.Unix(),
+			CellId:       cell.CellId,
+			ActivatedAt:  cell.ActivatedAt,
 		})
 	}
 }
