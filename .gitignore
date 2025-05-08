@@ -17,3 +17,5 @@ raw_data/
 *.sql
 *.dll
 template.go
+*.swp
+
