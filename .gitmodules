@@ -1,3 +1,6 @@
 [submodule "assets"]
 	path = assets
 	url = https://github.com/arina999999997/harasho.git
+[submodule "kube/kubernetes-vagrant"]
+	path = kube/kubernetes-vagrant
+	url = https://github.com/munchtoast/kubernetes-vagrant
