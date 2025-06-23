@@ -1,0 +1,6 @@
+# COPY to kubespray/vagrant/subtasks
+---
+- name: "Append extend_input_tasks_run_order"
+  ansible.builtin.set_fact:
+
+...

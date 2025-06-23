@@ -1,0 +1,9 @@
+# COPY to kubespray/vagrant/subtask_vars
+---
+charts:
+  - name: argocd
+    namespace: argocd
+    url:
+    ref: argocd/argocd
+    values_files: ["helm_values/argocd.values.yml"]
+...

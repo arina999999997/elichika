@@ -1,0 +1,144 @@
+# This is a bit hacky to add extended inputs to Vagrant test environment. This task is guaranteed to execute at the end of Vagrant provisioning.
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    kube_vagrant_dir: "{{ playbook_dir | dirname }}/kubespray/vagrant"
+    token_length: 6
+  tags:
+    - play1
+    - inject
+  tasks:
+    - name: Stat existence of required files and dirs
+      ansible.builtin.stat:
+        path: "{{ path }}"
+      register: stat_result
+      loop_control:
+        loop_var: path
+      loop:
+        - "{{ kube_vagrant_dir }}"
+        - subtask
+        - subtasks_vars
+        - helm_values
+        - default.yml
+
+    - name: Fail if required files or dirs do not exist
+      when: stat_result.results | selectattr('stat.exists', 'equalto', 'false') | list | length > 0
+      ansible.builtin.fail:
+        msg: Missing required file or directory.
+
+    - name: Fail if backup default is present (Use cleanup if failed)
+      ansible.builtin.stat:
+        path: "{{ playbook_dir }}/.backup_default.yml"
+      register: backup_default_result
+      failed_when: backup_default_result.stat.exists
+
+    - name: Gather all files to be injected
+      ansible.builtin.find:
+        paths:
+          - "{{ playbook_dir }}/subtask"
+          - "{{ playbook_dir }}/subtask_vars"
+          - "{{ playbook_dir }}/helm_values"
+      register: found_files
+
+    - name: debug
+      debug:
+        msg: "{{ found_files.files }}"
+
+    - name: Construct unique files
+      ansible.builtin.set_fact:
+        tokenized_files: "{{ tokenized_files | default([]) + [ {
+          'path': file.path,
+          'dirname': (file.path | dirname),
+          'basename': (file.path | basename),
+          'token': lookup('community.general.random_string', length=6, base64=True, special=False)} ] }}"
+      loop: "{{ found_files.files }}"
+      loop_control:
+        loop_var: file
+
+    - name: Output tokenized file facts
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/templates/tokenized_output.vars.j2"
+        dest: "{{ playbook_dir }}/.tokenized_output.vars.yml"
+
+    - name: Copy directory paths
+      ansible.builtin.copy:
+        src: "{{ file.path }}"
+        dest: "{{ kube_vagrant_dir }}/{{ file.dirname | basename }}/{{ file.token }}_{{ file.basename }}"
+      loop_control:
+        loop_var: file
+      loop: "{{ tokenized_files }}"
+
+    - name: Copy modified default.yml
+      block:
+        - name: Backup kubespray/vagrant default.yml
+          ansible.builtin.copy:
+            src: "{{ kube_vagrant_dir }}/default.yml"
+            dest: "{{ playbook_dir }}/.backup_default.yml"
+
+        - name: Load elichika project default.yml
+          ansible.builtin.include_vars:
+            file: "{{ playbook_dir }}/default.yml"
+
+        - name: Load kubespray/vagrant default.yml
+          ansible.builtin.include_vars:
+            file: "{{ playbook_dir }}/.backup_default.yml"
+
+        - name: Merge tasks_run_order
+          ansible.builtin.set_fact:
+            input_tasks_run_order: "{{ input_tasks_run_order | default([]) + extend_input_tasks_run_order | default([]) | list }}"
+
+        - name: Save output to kubespray/vagrant default.yml
+          ansible.builtin.template:
+            src: "{{ playbook_dir }}/templates/default.vars.j2"
+            dest: "{{ kube_vagrant_dir }}/default.yml"
+
+    - name: Debug vagrant run command
+      ansible.builtin.debug:
+        msg: >-
+          Due to Ansible limitations with command/shell stdout, execute the Vagrantfile manually.
+
+          To provision cluster from scratch (Also runs injected files):
+            cd {{ kube_vagrant_dir }} && vagrant up && cd -
+
+          To provision injected files for pre-existing test cluster:
+            cd {{ kube_vagrant_dir }} && vagrant provision --provision-with "extend" && cd -
+
+          When ready to cleanup injected vars_files:
+            ansible-playbook run.yml --tags cleanup
+
+- hosts: localhost
+  gather_facts: false
+  vars:
+    kube_vagrant_dir: "{{ playbook_dir | dirname }}/kubespray/vagrant"
+  vars_files:
+    - "{{ playbook_dir }}/.tokenized_output.vars.yml"
+  tags:
+    - play2
+    - cleanup
+  tasks:
+    - name: Cleanup all uniquely injected files
+      ansible.builtin.file:
+        path: "{{ kube_vagrant_dir }}/{{ file.dirname | basename }}/{{ file.token }}_{{ file.basename }}"
+        state: absent
+      loop_control:
+        loop_var: file
+      loop: "{{ tokenized_files }}"
+
+    - name: Restore original default.yml in kubespray/vagrant
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/.backup_default.yml"
+        dest: "{{ kube_vagrant_dir }}/default.yml"
+
+    - name: Cleanup generated vars files
+      ansible.builtin.file:
+        path: "{{ path }}"
+        state: absent
+      loop_control:
+        loop_var: path
+      loop:
+        - "{{ playbook_dir }}/.tokenized_output.vars.yml"
+        - "{{ playbook_dir }}/.backup_default.yml"
+
+# TODO: Add in update play that automatically synchronizes the content. This would save the need to constantly call play1 and play2
+...
