@@ -5,6 +5,11 @@
   vars:
     kube_vagrant_dir: "{{ playbook_dir | dirname }}/kubespray/vagrant"
     token_length: 6
+    inject_file_list:
+      - "{{ playbook_dir }}/subtask"
+      - "{{ playbook_dir }}/subtask_vars"
+      - "{{ playbook_dir }}/helm_values"
+      - "{{ playbook_dir }}/templates"
   tags:
     - play1
     - inject
@@ -15,12 +20,7 @@
       register: stat_result
       loop_control:
         loop_var: path
-      loop:
-        - "{{ kube_vagrant_dir }}"
-        - subtask
-        - subtasks_vars
-        - helm_values
-        - default.yml
+      loop: "{{ inject_file_list + [kube_vagrant_dir, 'default.yml'] }}"
 
     - name: Fail if required files or dirs do not exist
       when: stat_result.results | selectattr('stat.exists', 'equalto', 'false') | list | length > 0
@@ -35,15 +35,8 @@
 
     - name: Gather all files to be injected
       ansible.builtin.find:
-        paths:
-          - "{{ playbook_dir }}/subtask"
-          - "{{ playbook_dir }}/subtask_vars"
-          - "{{ playbook_dir }}/helm_values"
+        paths: "{{ inject_file_list }}"
       register: found_files
-
-    - name: debug
-      debug:
-        msg: "{{ found_files.files }}"
 
     - name: Construct unique files
       ansible.builtin.set_fact:
@@ -68,6 +61,12 @@
       loop_control:
         loop_var: file
       loop: "{{ tokenized_files }}"
+    
+    - name: Replace template references with unique tokens
+      ansible.builtin.include_tasks: "utils/replace-unique-template.yml"
+      loop_control:
+        loop_var: template_file
+      loop: "{{ tokenized_files | selectattr('path', 'search', 'templates') | list }}"
 
     - name: Copy modified default.yml
       block:
