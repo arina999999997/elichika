@@ -4,5 +4,5 @@ extend_input_tasks_run_order:
   - name: build-argocd-values.yml
   - name: install-helm-charts.yml
     vars:
-      - argocd.values.yml
+      - argocd-helm-chart.vars.yml
 ...

@@ -22,8 +22,8 @@ applicationSet:
 
 configs:
   clusterCredentials:
-    - name: testcluster
-      server: https://{{ ansible_eth1.ipv4.address }}:6443
+    testcluster:
+      server: "https://{{ ansible_eth1.ipv4.address }}:6443"
       labels: {}
       annotations: {}
       config:

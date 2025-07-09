@@ -3,7 +3,7 @@
 charts:
   - name: argocd
     namespace: argocd
-    url:
-    ref: argocd/argocd
-    values_files: ["helm_values/argocd.values.yml"]
+    url: https://argoproj.github.io/argo-helm
+    ref: argocd/argo-cd
+    values_files: ["/root/argocd.values.yml"]
 ...
