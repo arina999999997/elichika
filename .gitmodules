@@ -1,3 +1,7 @@
 [submodule "assets"]
 	path = assets
 	url = https://github.com/arina999999997/harasho.git
+[submodule "kube/kubespray"]
+	path = kube/kubespray
+	url = https://github.com/munchtoast/kubespray.git
+	branch = elichika-dev

@@ -1,0 +1,11 @@
+# COPY to kubespray/vagrant/subtask_vars
+
+# Mostly for reference, argocd should handle this
+---
+charts:
+  - name: elichika
+    namespace: elichika-dev
+    url: # TODO: Test this later
+    ref: elichika/elichika
+    values_files: ["helm_values/elichika.values.yml"]
+...

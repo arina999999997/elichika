@@ -1,0 +1,33 @@
+# This file has been modified with {{ playbook_dir }}.
+#       Please run: `ansible-playbook {{ playbook_dir }} --tags cleanup` to restore the original argocd.values.yml
+
+redis-ha:
+  enabled: true
+
+controller:
+  replicas: 1
+
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+applicationSet:
+  replicas: 2
+
+configs:
+  clusterCredentials:
+    testcluster:
+      server: "https://{{ ansible_eth1.ipv4.address }}:6443"
+      labels: {}
+      annotations: {}
+      config:
+        bearerToken: "{{ bearer_token }}"
+        tlsClientConfig:
+          insecure: false
+          caData: "{{ cadata }}"

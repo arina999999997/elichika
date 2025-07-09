@@ -1,0 +1,26 @@
+# This file has been modified with {{ playbook_dir }}.
+#       Please run: `ansible-playbook {{ playbook_dir }} --tags cleanup` to restore the original default.yml
+---
+input_tasks_run_order:
+{% for task in input_tasks_run_order %}
+{% set matches = tokenized_files | selectattr("basename", "equalto", task.name) | list %}
+{% if matches | length > 0 %}
+{% set matched_file = matches[0] %}
+{% else %}
+{% set matched_file = None %}
+{% endif %}
+  - name: {{ matched_file.token ~ "_" if matched_file else "" }}{{ task.name }}
+{% if task.vars is defined %}
+    vars:
+{% for var_file in task.vars %}
+{% set var_matches = tokenized_files | selectattr("basename", "equalto", var_file) | list %}
+{% if var_matches | length > 0 %}
+{% set matched_var = var_matches[0] %}
+      - {{ matched_var.token }}_{{ var_file }}
+{% else %}
+      - {{ var_file }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+...

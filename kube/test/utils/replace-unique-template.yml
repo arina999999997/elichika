@@ -1,0 +1,8 @@
+- name: Replace reference with unique tokenized template filename
+  ansible.builtin.replace:
+    path: "{{ kube_vagrant_dir }}/{{ file.dirname | basename }}/{{ file.token }}_{{ file.basename }}"
+    regexp: '^(.*)(template:.*)(\n)(\s*src:\s*){{ template_file.basename }}(\s*)$'
+    replace: '\1\2\3\4{{ template_file.token }}_{{ template_file.basename }}\5'
+  loop_control:
+    loop_var: file
+  loop: "{{ tokenized_files | rejectattr('path', 'search', 'templates') | list }}"

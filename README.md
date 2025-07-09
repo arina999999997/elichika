@@ -36,6 +36,9 @@ All config options should be set in the data/config.json file, which will be cre
 
 [docker compose](./docker/docker-compose.yml) example
 
+#### Using Kubernetes
+TODO: Add in public helm chart here once it's in a somewhat working state?
+
 ## Running the server
 After installing, you need to run the server to play using the following command:
 
@@ -209,7 +212,7 @@ Even more special thanks for the specific individuals or groups (in no particula
 - gam for various missing asset files.
 - [SIFAStheatre](https://twitter.com/SIFAStheatre) and [Idol Story](https://twitter.com/idoldotst) for Daily theater English tranlation and for the original Japanese transcript.
 - ethan for hosting various resource, for hosting a public testing server, and for help with docker.
-- [yunimoo](https://github.com/yunimoo) for help with docker, and for resolving TODOs.
+- [munchtoast](https://github.com/munchtoast) for help with docker, and for resolving TODOs.
 - rayfirefirst, cppo for various cryptographic keys.
 - tungnotpunk for ios client and help with network structure.
 - Suyooo for the very helpful [SIFAS wiki](https://suyo.be/sifas/wiki/), for providing more accurate stage data, and for the bad word lists.

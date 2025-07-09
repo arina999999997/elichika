@@ -1,6 +1,6 @@
-# GitHub actions workflow which builds and publishes the docker images.
+# GitHub actions workflow which builds and publishes the docker images. Additionally, the workflow tests the image deployment.
 
-name: Build docker images
+name: Build and test deploy docker image
 
 on:
   push:
@@ -76,3 +76,22 @@ jobs:
           # https://github.com/rust-lang/cargo/issues/10583
           build-args: |
             CARGO_NET_GIT_FETCH_WITH_CLI=true
+  deploy:
+    needs: build
+    #if: github.repository == 'arina999999997/elichika'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up docker
+        uses: docker/setup-docker-action@v4
+      
+      - name: Run docker image
+        run: |
+          cd docker
+          docker compose up -d
+      
+      - name: Wait for endpoint to be reachable
+        run: |
+          npx wait-on http://localhost:8080/webui/user --timeout 300000
