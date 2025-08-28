@@ -1,0 +1,23 @@
+<html>
+<head><meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8"/></head>
+<body>
+    {{ .body | noescape }}
+</body>
+</html>
+
+<script>
+    var old_selected_element = null
+    function set_form_data(obj, inputId, value) {
+        if (old_selected_element != null) {
+            style_item = old_selected_element.childNodes[0].attributes.getNamedItem("style")
+            style_item.value = style_item.value.substr(0, style_item.value.length - 8) + "00000000"
+        }
+        old_selected_element = obj
+        style_item = obj.childNodes[0].attributes.getNamedItem("style")
+        style_item.value = style_item.value.substr(0, style_item.value.length - 8) + "00ff00ff"
+        document.getElementById(inputId).value = value
+        document.getElementsByTagName("input")[0].focus({
+            preventScroll: true
+        })
+    }
+</script>
