@@ -20,7 +20,7 @@ import (
 // each locale is free to create and store its own session
 var engines = map[string]*xorm.Engine{}
 
-func getEngine(path string) *xorm.Engine {
+func GetEngine(path string) *xorm.Engine {
 	engine, exist := engines[path]
 	if exist {
 		return engine
@@ -51,12 +51,12 @@ func (locale *Locale) LoadGamedata(syncChannel chan struct{}) {
 }
 
 func (locale *Locale) LoadAsset() {
-	AssetdataEngine := getEngine(fmt.Sprintf("%s/asset_a_%s.db", locale.Path, locale.Language))
+	AssetdataEngine := GetEngine(fmt.Sprintf("%s/asset_a_%s.db", locale.Path, locale.Language))
 	AssetdataEngine.SetMaxOpenConns(50)
 	AssetdataEngine.SetMaxIdleConns(10)
 	assetdata.Init(locale.Language, AssetdataEngine)
 
-	AssetdataEngine = getEngine(fmt.Sprintf("%s/asset_i_%s.db", locale.Path, locale.Language))
+	AssetdataEngine = GetEngine(fmt.Sprintf("%s/asset_i_%s.db", locale.Path, locale.Language))
 	AssetdataEngine.SetMaxOpenConns(50)
 	AssetdataEngine.SetMaxIdleConns(10)
 	assetdata.Init(locale.Language, AssetdataEngine)

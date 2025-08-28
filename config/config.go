@@ -9,6 +9,16 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+const (
+	// Running in developer mode will likely corrupt the database in one way or another, back them up before doing anything
+	// DeveloperMode = 0: off
+	// DeveloperMode = 1: developing marathon event
+	// DeveloperMode > 1: reserved for future
+	// The developer mode functionality will be developped as need arise, and will not exists on the final product
+	DeveloperMode = 0
+	DeveloperModeEventMarathonDev = 1
+)
+
 var (
 	// merged from:
 	// https://github.com/RayFirefist/SukuStar_Datamine/blob/master/lib/sifas_api/sifas.py#L120

@@ -41,7 +41,7 @@ func loadPack(locale string, session *xorm.Session) {
 			cnt++
 			continue
 		}
-		if (previous.FileSize != pack.FileSize) || (previous.Category != pack.Category) {
+		if previous.FileSize != pack.FileSize {
 			// TODO(assert): This doesn't necessarily imply all packs are the same, some test is necessary
 			log.Panic(fmt.Sprint("pack name reused: ", *previous, *pack))
 		}
