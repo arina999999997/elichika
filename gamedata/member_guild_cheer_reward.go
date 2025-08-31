@@ -2,17 +2,15 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/generic/drop"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
 
 func loadMemberGuildCheerReward(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGuildCheerReward")
+	log.Println("Loading MemberGuildCheerReward")
 	type MemberGuildRewardLot struct {
 		// Id
 		MemberMasterId int32

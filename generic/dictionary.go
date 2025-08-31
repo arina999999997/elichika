@@ -26,11 +26,11 @@
 package generic
 
 import (
+	"elichika/log"
 	"elichika/utils"
 
 	"encoding/json"
 	"errors"
-	"fmt"
 	"reflect"
 	"sort"
 
@@ -174,7 +174,7 @@ func (d *Dictionary[K, V]) LoadFromDb(db *xorm.Session, userId int32, table, map
 				d.Set(keys[i].(K), values[i])
 			}
 		} else {
-			fmt.Println("use default system", table, mapKey)
+			log.Println("use default system", table, mapKey)
 			// V is a raw type but the key doesn't exists
 			// we fetch the object and then the key separately, both time ordered
 			err := db.Table(table).Where("user_id = ?", userId).OrderBy(mapKey).Find(&values)

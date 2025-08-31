@@ -1,9 +1,9 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
 
-	"fmt"
 	"strings"
 
 	"xorm.io/xorm"
@@ -82,7 +82,7 @@ func (root *NgWordNode) Build() {
 		if exist && (suffix != node) {
 			node.Suffix = suffix
 		}
-		// fmt.Println(node.GetString(), "->", node.Suffix.GetString())
+		// log.Println(node.GetString(), "->", node.Suffix.GetString())
 		node.HasWord = node.HasWord || node.Suffix.HasWord
 	}
 }
@@ -121,7 +121,7 @@ func (root *NgWordNode) HasMatch(s string) bool {
 }
 
 func loadNgWord(gamedata *Gamedata) {
-	fmt.Println("Loading NgWord")
+	log.Println("Loading NgWord")
 	gamedata.NgWord = new(NgWordNode)
 	gamedata.NgWord.Child = map[rune]*NgWordNode{}
 	words := []string{}

@@ -2,6 +2,7 @@ package clientdb
 
 import (
 	"elichika/config"
+	"elichika/log"
 	"elichika/utils"
 
 	"bufio"
@@ -66,7 +67,7 @@ func initLocale(locale string) {
 			session = sessions[dbName]
 			session.Begin()
 		}
-		fmt.Println("Running SQL file: ", file.Name())
+		log.Println("Running SQL file: ", file.Name())
 
 		f, err := os.Open(sqlDir + file.Name())
 		utils.CheckErr(err)

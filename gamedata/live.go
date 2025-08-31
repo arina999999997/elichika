@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -46,7 +45,7 @@ func init() {
 }
 
 func loadLive(gamedata *Gamedata) {
-	fmt.Println("Loading Live")
+	log.Println("Loading Live")
 	gamedata.Live = make(map[int32]*Live)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

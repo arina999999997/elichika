@@ -3,9 +3,8 @@ package gamedata
 import (
 	_ "elichika/clientdb"
 
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -42,7 +41,7 @@ func (ld *LiveDaily) populate(gamedata *Gamedata) {
 }
 
 func loadLiveDaily(gamedata *Gamedata) {
-	fmt.Println("Loading LiveDaily")
+	log.Println("Loading LiveDaily")
 	gamedata.LiveDaily = make(map[int32]*LiveDaily)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

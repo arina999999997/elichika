@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -26,7 +25,7 @@ func (gamedata *Gamedata) GetLivePartyInfoByCardMasterIds(a, b, c int32) (partyI
 }
 
 func loadLiveParty(gamedata *Gamedata) {
-	fmt.Println("Loading LiveParty")
+	log.Println("Loading LiveParty")
 	type LiveParty struct {
 		Id            int    `xorm:"pk 'id'"`
 		Role1         int    `xorm:"'role_1'"`

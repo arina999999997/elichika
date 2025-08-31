@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/config"
 	// "elichika/enum"
+	"elichika/log"
 	"elichika/parser"
 	"elichika/utils"
 
@@ -111,12 +112,12 @@ func initEventMarathon(session *xorm.Session) {
 			continue
 		}
 		path := config.AssetPath + "event/marathon/" + entry.Name() + "/"
-		fmt.Println("Parsing event marathon: ", path)
+		log.Println("Parsing event marathon: ", path)
 		eventMarathon := EventMarathon{}
 		parser.ParseJson(path+"main.json", &eventMarathon)
 		_, err = session.Table("s_event_marathon").Insert(eventMarathon)
 		utils.CheckErr(err)
-		fmt.Println(eventMarathon)
+		log.Println(eventMarathon)
 		for language, name := range eventMarathon.EventName {
 			_, err = session.Table("s_dictionary_" + language).Insert(DictionaryItem{
 				Id:      fmt.Sprintf("event_name_%d", eventMarathon.EventId),

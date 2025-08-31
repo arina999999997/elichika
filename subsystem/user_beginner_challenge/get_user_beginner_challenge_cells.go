@@ -63,7 +63,7 @@ func GetBeginnerChallengeCells(session *userdata.Session) map[int32]*client.Chal
 			result[cell.Id].Progress = int32(count)
 		default:
 			changed = false
-			// fmt.Println("default type: ", cell.MissionClearConditionType)
+			// log.Println("default type: ", cell.MissionClearConditionType)
 		}
 		if changed || (!exist) {
 			UpdateChallengeCell(session, *result[cell.Id])

@@ -3,9 +3,9 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/config"
-
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/utils"
 
 	"encoding/json"
@@ -139,7 +139,7 @@ func (ld *LiveDifficulty) loadSimpleLiveStage(gamedata *Gamedata) {
 	if ld.SimpleLiveStage != nil {
 		return // already loaded
 	}
-	// fmt.Println("Loading for", ld.LiveDifficultyId)
+	// log.Println("Loading for", ld.LiveDifficultyId)
 	liveNotes := utils.ReadAllText(fmt.Sprintf("assets/simple_stages/%d.json", ld.LiveDifficultyId))
 	if (liveNotes == "") || (ld.UnlockPattern == enum.LiveUnlockPatternTowerOnly) {
 
@@ -179,7 +179,7 @@ func (ld *LiveDifficulty) loadSimpleLiveStage(gamedata *Gamedata) {
 	if ld.SimpleLiveStage.Original != nil {
 		_, exists := gamedata.LiveDifficulty[*ld.SimpleLiveStage.Original]
 		if !exists {
-			fmt.Println("Warning: original live referenced but do not exist in database: ",
+			log.Println("Warning: original live referenced but do not exist in database: ",
 				*ld.SimpleLiveStage.Original, ". Attemping to just load the json.")
 			gamedata.LiveDifficulty[*ld.SimpleLiveStage.Original] = new(LiveDifficulty)
 			gamedata.LiveDifficulty[*ld.SimpleLiveStage.Original].LiveDifficultyId = *ld.SimpleLiveStage.Original
@@ -281,7 +281,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	}
 	text := utils.ReadAllText(fmt.Sprintf("assets/full_stages/%d.json", ld.LiveDifficultyId))
 	if text == "" {
-		// fmt.Println("Newly generated map: ", ld.LiveDifficultyId)
+		// log.Println("Newly generated map: ", ld.LiveDifficultyId)
 		return
 	}
 	pregeneratedStage := client.LiveStage{}
@@ -294,7 +294,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 }
 
 func loadLiveDifficulty(gamedata *Gamedata) {
-	fmt.Println("Loading LiveDifficulty")
+	log.Println("Loading LiveDifficulty")
 	gamedata.LiveDifficulty = make(map[int32]*LiveDifficulty)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

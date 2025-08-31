@@ -2,11 +2,10 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
 
 	"fmt"
-	"log"
 
 	"xorm.io/xorm"
 )
@@ -25,7 +24,7 @@ type DailyTheater struct {
 }
 
 func loadDailyTheater(gamedata *Gamedata) {
-	fmt.Println("Loading DailyTheater")
+	log.Println("Loading DailyTheater")
 	gamedata.DailyTheater = make(map[int32]*DailyTheater)
 	var err error
 	gamedata.ServerdataDb.Do(func(session *xorm.Session) {

@@ -2,11 +2,9 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/enum"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -17,7 +15,7 @@ type Content struct {
 }
 
 func loadContent(gamedata *Gamedata) {
-	fmt.Println("Loading Content")
+	log.Println("Loading Content")
 	gamedata.Content = make(map[int32]map[int32]*Content)
 	for contentType := range gamedata.ContentType {
 		gamedata.Content[contentType] = make(map[int32]*Content)

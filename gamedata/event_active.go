@@ -1,10 +1,10 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/serverdata"
 	"elichika/utils"
 
-	"fmt"
 	"time"
 
 	"xorm.io/xorm"
@@ -48,7 +48,7 @@ func (ae *EventActive) GetEventValue() *serverdata.EventActive {
 		ae.Gamedata.ServerdataDb.Do(func(session *xorm.Session) {
 			exist, err = session.Table("s_event_active").Get(&event)
 		})
-		fmt.Println("trying to load event active: ", event)
+		log.Println("trying to load event active: ", event)
 		utils.CheckErr(err)
 		if exist {
 			// do some check

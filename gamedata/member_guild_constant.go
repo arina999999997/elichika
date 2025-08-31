@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -22,7 +21,7 @@ type MemberGuildConstant struct {
 }
 
 func loadMemberGuildConstant(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGuildConstant")
+	log.Println("Loading MemberGuildConstant")
 	var exist bool
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -19,7 +18,7 @@ func (mg *MemberGroup) populate(gamedata *Gamedata) {
 }
 
 func loadMemberGroup(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGroup")
+	log.Println("Loading MemberGroup")
 	gamedata.MemberGroup = make(map[int32]*MemberGroup)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

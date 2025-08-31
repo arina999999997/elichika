@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -23,7 +22,7 @@ type LiveMemberMappingMember struct {
 }
 
 func loadLiveMemberMapping(gamedata *Gamedata) {
-	fmt.Println("Loading LiveMemberMapping")
+	log.Println("Loading LiveMemberMapping")
 	gamedata.LiveMemberMapping = make(map[int32]LiveMemberMapping)
 
 	tables := []string{"m_live_member_mapping", "m_live_override_member_mapping"}

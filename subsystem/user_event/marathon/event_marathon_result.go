@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/scheduled_task"
 	"elichika/subsystem/user_info_trigger"
 	"elichika/subsystem/user_present"
@@ -24,7 +25,7 @@ func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.
 	eventId := int32(eventIdInt)
 	if (activeEvent == nil) || (activeEvent.EventId != eventId) ||
 		(activeEvent.EventType != enum.EventType1Marathon) || (activeEvent.ResultAt != task.Time) {
-		fmt.Println("Warning: Failed to result event: ", task)
+		log.Println("Warning: Failed to result event: ", task)
 		return
 	}
 

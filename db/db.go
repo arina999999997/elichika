@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"elichika/log"
 
 	"xorm.io/xorm"
 )
@@ -41,6 +41,7 @@ type DatabaseSync struct {
 var databases = map[string]*DatabaseSync{}
 
 func NewDatabase(path string) (d *DatabaseSync, err error) {
+
 	var exists bool
 	d, exists = databases[path]
 	if exists {
@@ -83,7 +84,7 @@ func (d *DatabaseSync) serve() {
 
 func (d *DatabaseSync) Do(f func(session *xorm.Session)) {
 	if f == nil {
-		fmt.Println("nil function ignored. If you want to stop, use .Close() instead!")
+		log.Println("nil function ignored. If you want to stop, use .Close() instead!")
 	}
 	d.requestChannel <- f
 	<-d.syncChannel

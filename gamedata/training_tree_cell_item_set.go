@@ -2,10 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -25,7 +23,7 @@ func (set *TrainingTreeCellItemSet) populate(gamedata *Gamedata) {
 }
 
 func loadTrainingTreeCellItemSet(gamedata *Gamedata) {
-	fmt.Println("Loading TrainingCellItemSet")
+	log.Println("Loading TrainingCellItemSet")
 	gamedata.TrainingTreeCellItemSet = make(map[int32]*TrainingTreeCellItemSet)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

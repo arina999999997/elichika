@@ -2,11 +2,9 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/generic/drop"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -79,7 +77,7 @@ func (lm *LessonMenu) populate(gamedata *Gamedata) {
 }
 
 func loadLessonMenu(gamedata *Gamedata) {
-	fmt.Println("Loading LessonMenu")
+	log.Println("Loading LessonMenu")
 	gamedata.LessonMenu = make(map[int32]*LessonMenu)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

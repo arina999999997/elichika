@@ -2,11 +2,9 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/enum"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -86,7 +84,7 @@ func (t *Tower) populate(gamedata *Gamedata) {
 }
 
 func loadTower(gamedata *Gamedata) {
-	fmt.Println("Loading Tower")
+	log.Println("Loading Tower")
 	gamedata.Tower = make(map[int32]*Tower)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

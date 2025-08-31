@@ -2,12 +2,10 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/generic"
+	"elichika/log"
 	"elichika/serverdata"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -130,7 +128,7 @@ func (member *Member) populate(gamedata *Gamedata) {
 	member.Name = gamedata.Dictionary.Resolve(member.Name)
 	// member.NameHiragana = gamedata.Dictionary.Resolve(member.NameHiragana)
 	// member.NameRomaji = gamedata.Dictionary.Resolve(member.NameRomaji)
-	// fmt.Println(member.Id, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
+	// log.Println(member.Id, "\t", member.Name, "\t", member.NameHiragana, "\t", member.NameRomaji, "\t",
 	// 	member.ThemeColor, "\t", member.ThemeLightColor, "\t", member.ThemeDarkColor, "\t",
 	// 	member.BackgroundUpperLeftColor, "\t", member.BackgroundBottomRightColor)
 
@@ -159,7 +157,7 @@ func (member *Member) populate(gamedata *Gamedata) {
 }
 
 func loadMember(gamedata *Gamedata) {
-	fmt.Println("Loading Member")
+	log.Println("Loading Member")
 	gamedata.Member = make(map[int32]*Member)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

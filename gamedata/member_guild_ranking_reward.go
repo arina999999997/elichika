@@ -2,10 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -36,7 +34,7 @@ func (m *MemberGuildRankingReward) GetRewardContent(rank int32) *client.Content 
 }
 
 func loadMemberGuildRankingReward(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGuildRankingReward")
+	log.Println("Loading MemberGuildRankingReward")
 
 	gamedata.MemberGuildRankingRewardInside = make(map[int32]*MemberGuildRankingReward)
 	for memberId := range gamedata.Member {

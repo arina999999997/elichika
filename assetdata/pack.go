@@ -1,6 +1,7 @@
 package assetdata
 
 import (
+	"elichika/log"
 	"elichika/utils"
 
 	"fmt"
@@ -19,7 +20,7 @@ type PackType struct {
 }
 
 func loadPack(locale string, session *xorm.Session) {
-	fmt.Println("Loading Pack")
+	log.Println("Loading Pack")
 	packs := []*PackType{}
 	err := session.Table("m_asset_package_mapping").Find(&packs)
 	utils.CheckErr(err)
@@ -45,5 +46,5 @@ func loadPack(locale string, session *xorm.Session) {
 			panic(fmt.Sprint("pack name reused: ", *previous, *pack))
 		}
 	}
-	fmt.Printf("Loaded %d new pack\n", cnt)
+	log.Printf("Loaded %d new pack\n", cnt)
 }

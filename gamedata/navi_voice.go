@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -14,7 +13,7 @@ type NaviVoice struct {
 }
 
 func loadNaviVoice(gamedata *Gamedata) {
-	fmt.Println("Loading NaviVoice")
+	log.Println("Loading NaviVoice")
 	gamedata.NaviVoice = make(map[int32]*NaviVoice)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

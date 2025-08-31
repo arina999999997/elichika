@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -18,7 +17,7 @@ type UserRank struct {
 }
 
 func loadUserRank(gamedata *Gamedata) {
-	fmt.Println("Loading UserRank")
+	log.Println("Loading UserRank")
 	gamedata.UserRank = make(map[int32]*UserRank)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -16,7 +15,7 @@ type ContentType struct {
 }
 
 func loadContentType(gamedata *Gamedata) {
-	fmt.Println("Loading ContentType")
+	log.Println("Loading ContentType")
 	gamedata.ContentType = make(map[int32]*ContentType)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

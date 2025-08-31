@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -25,7 +24,7 @@ type Emblem struct {
 }
 
 func loadEmblem(gamedata *Gamedata) {
-	fmt.Println("Loading Emblem")
+	log.Println("Loading Emblem")
 	gamedata.Emblem = make(map[int32]*Emblem)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

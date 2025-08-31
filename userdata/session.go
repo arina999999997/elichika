@@ -87,7 +87,7 @@ func (session *Session) Finalize() {
 }
 
 func (session *Session) Close() {
-	// fmt.Printf("close: %p\n", session)
+	// log.Printf("close: %p\n", session)
 	if (session == nil) || session.IsSharedDb {
 		return
 	}

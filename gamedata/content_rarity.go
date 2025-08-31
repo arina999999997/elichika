@@ -121,7 +121,7 @@ func loadContentRarity(gamedata *Gamedata) {
 	}
 	// for contentType, m := range gamedata.ContentRarity.RarityTable {
 	// 	for contentId, contentAmount := range m {
-	// 		fmt.Println(contentType, contentId, contentAmount)
+	// 		log.Println(contentType, contentId, contentAmount)
 	// 	}
 	// }
 }
