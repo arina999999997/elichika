@@ -1,6 +1,8 @@
 package encrypt
 
 import (
+	"elichika/log"
+
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -23,20 +25,20 @@ func RSA_Gen(bits int) {
 	// random source random (for example, crypto/rand.Reader).
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	//serialize privatekey to ASN.1 der by x509.MarshalPKCS8PrivateKey
 	x509privatekey, err := x509.MarshalPKCS8PrivateKey(privateKey)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	//encode x509 to pem and save to file
 	//1. create privatefile
 	privatekeyfile, err := os.Create(currentpath + "/privatekey.pem")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer privatekeyfile.Close()
 	//2. new a pem block struct object
@@ -59,7 +61,7 @@ func RSA_Gen(bits int) {
 	//1. create publickeyfile
 	publickeyfile, err := os.Create(currentpath + "/publickey.pem")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer publickeyfile.Close()
 
@@ -78,7 +80,7 @@ func RSA_Encrypt(plainText []byte, publickeypath string) []byte {
 	//open publickeyfile
 	publickeyfile, err := os.Open(publickeypath)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer publickeyfile.Close()
 
@@ -95,7 +97,7 @@ func RSA_Encrypt(plainText []byte, publickeypath string) []byte {
 	//4. x509 decode
 	publicKeyInterface, err := x509.ParsePKIXPublicKey(publickeyDecodeBlock.Bytes)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	//assert
 	publicKey := publicKeyInterface.(*rsa.PublicKey)
@@ -103,7 +105,7 @@ func RSA_Encrypt(plainText []byte, publickeypath string) []byte {
 	//encrypt plainText
 	cipherText, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, plainText)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	return cipherText
@@ -113,7 +115,7 @@ func RSA_Decrypt(cipherText []byte, privatekeypath string) []byte {
 	//open privatekeyfile
 	privatekeyfile, err := os.Open(privatekeypath)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer privatekeyfile.Close()
 	//get privatekeyfile content
@@ -125,13 +127,13 @@ func RSA_Decrypt(cipherText []byte, privatekeypath string) []byte {
 	//X509 decode
 	parseKey, err := x509.ParsePKCS8PrivateKey(privatekeyblock.Bytes)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	privateKey := parseKey.(*rsa.PrivateKey)
 	//decrypt the cipher
 	plainText, err := rsa.DecryptPKCS1v15(rand.Reader, privateKey, cipherText)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	return plainText
@@ -141,7 +143,7 @@ func RSA_Sign_SHA1(cipherText []byte, privatekeypath string) []byte {
 	//open privatekeyfile
 	privatekeyfile, err := os.Open(privatekeypath)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer privatekeyfile.Close()
 	//get privatekeyfile content
@@ -153,20 +155,20 @@ func RSA_Sign_SHA1(cipherText []byte, privatekeypath string) []byte {
 	//X509 decode
 	parseKey, err := x509.ParsePKCS8PrivateKey(privatekeyblock.Bytes)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	privateKey := parseKey.(*rsa.PrivateKey)
 
 	msgHash := sha1.New()
 	_, err = msgHash.Write(cipherText)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	msgHashSum := msgHash.Sum(nil)
 
 	signature, err := rsa.SignPSS(rand.Reader, privateKey, crypto.SHA1, msgHashSum, nil)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	return signature
@@ -176,7 +178,7 @@ func RSA_DecryptOAEP(cipherText []byte, privatekeypath string) []byte {
 	//open privatekeyfile
 	privatekeyfile, err := os.Open(privatekeypath)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer privatekeyfile.Close()
 	//get privatekeyfile content
@@ -188,13 +190,13 @@ func RSA_DecryptOAEP(cipherText []byte, privatekeypath string) []byte {
 	//X509 decode
 	parseKey, err := x509.ParsePKCS8PrivateKey(privatekeyblock.Bytes)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	privateKey := parseKey.(*rsa.PrivateKey)
 	//decrypt the cipher
 	plainText, err := rsa.DecryptOAEP(sha1.New(), rand.Reader, privateKey, cipherText, nil)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	return plainText

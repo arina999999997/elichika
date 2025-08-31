@@ -30,7 +30,7 @@ func loadMetapack(locale string, session *xorm.Session) {
 			continue
 		}
 		if (previous.FileSize != metapack.FileSize) || (previous.Category != metapack.Category) {
-			panic(fmt.Sprint("Metapack name reused: ", *previous, *metapack, "\nLocale: ", locale, ", previous locale: ", NameToLocale[name]))
+			log.Panic(fmt.Sprint("Metapack name reused: ", *previous, *metapack, "\nLocale: ", locale, ", previous locale: ", NameToLocale[name]))
 		}
 	}
 	log.Printf("Loaded %d new metapack\n", cnt)

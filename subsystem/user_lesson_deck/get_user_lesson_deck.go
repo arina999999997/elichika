@@ -2,6 +2,7 @@ package user_lesson_deck
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -17,7 +18,7 @@ func GetUserLessonDeck(session *userdata.Session, userLessonDeckId int32) client
 		Get(&deck)
 	utils.CheckErr(err)
 	if !exist {
-		panic("deck not found")
+		log.Panic("deck not found")
 	}
 	return deck
 }

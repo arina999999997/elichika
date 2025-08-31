@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/client/response"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/userdata"
 )
 
@@ -154,7 +155,7 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 		case 4: // technique
 			node.DPWeight[DPDimensionTrainingDexterity] += paramCell.Value
 		default:
-			panic("Unexpected training content type")
+			log.Panic("Unexpected training content type")
 		}
 		return true
 	case 3: // voice
@@ -167,7 +168,7 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 	case 4: // story cell
 		storySideId, exist := solver.TrainingTree.TrainingTreeCardStorySides[11]
 		if !exist {
-			panic("story doesn't exist")
+			log.Panic("story doesn't exist")
 		}
 		if solver.HasStorySide[storySideId] {
 			return solver.MarkPicked(node)
@@ -195,7 +196,7 @@ func (node *SolverNode) Populate(solver *TrainingTreeSolver) bool {
 	case 9: // ability
 		solver.BFNodes[BFDimensionPassiveSkillALevel] = append(solver.BFNodes[BFDimensionPassiveSkillALevel], node)
 	default:
-		panic("Unknown cell type")
+		log.Panic("Unknown cell type")
 		return false
 	}
 	return true

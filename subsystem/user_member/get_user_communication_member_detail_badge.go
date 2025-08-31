@@ -2,6 +2,7 @@ package user_member
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -17,7 +18,7 @@ func GetUserCommunicationMemberDetailBadge(session *userdata.Session, memberMast
 	utils.CheckErr(err)
 	if !exist {
 		// always inserted at login if not exist
-		panic("member not found")
+		log.Panic("member not found")
 	}
 	return badge
 }

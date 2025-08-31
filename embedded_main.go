@@ -1,4 +1,4 @@
-//go:build !embedded
+//go:build embedded
 
 package main
 
@@ -12,9 +12,12 @@ import (
 	_ "elichika/webui"
 
 	"github.com/gin-gonic/gin"
+
+	"C"
 )
 
-func main() {
+func init() {
+	log.Println("Entered main init")
 	log.Println("Start loading userdata")
 	userdata.Init()
 	gin.SetMode(gin.ReleaseMode)
@@ -23,5 +26,10 @@ func main() {
 	router.Router(r)
 	log.Println("server address: ", *config.Conf.ServerAddress)
 	log.Println("WebUI address: ", *config.Conf.ServerAddress+"/webui/...")
-	r.Run(*config.Conf.ServerAddress)
+	go func() {
+		r.Run(*config.Conf.ServerAddress)
+	}()
+	log.Println("Exit main init, server should be live")
 }
+
+func main() {}

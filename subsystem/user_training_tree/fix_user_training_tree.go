@@ -3,6 +3,7 @@ package user_training_tree
 import (
 	"elichika/client"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -70,7 +71,7 @@ func fixCard(session *xorm.Session, cells []FixUserCardTrainingTreeCell) {
 func FixUsersTrainingTrees() {
 	session := userdata.Engine.NewSession()
 	if session == nil {
-		panic("can't get session")
+		log.Panic("can't get session")
 	}
 
 	// this will requires some memory to run

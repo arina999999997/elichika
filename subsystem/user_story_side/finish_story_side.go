@@ -2,6 +2,7 @@ package user_story_side
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -12,7 +13,7 @@ func FinishStorySide(session *userdata.Session, storySideMasterId int32) {
 		session.UserId, storySideMasterId).Get(&userStorySide)
 	utils.CheckErr(err)
 	if !exist {
-		panic("side story must exist to be read")
+		log.Panic("side story must exist to be read")
 	}
 	if !userStorySide.IsNew { // already read
 		return

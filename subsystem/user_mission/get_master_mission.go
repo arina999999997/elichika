@@ -3,6 +3,7 @@ package user_mission
 import (
 	"elichika/client"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/userdata"
 )
 
@@ -15,6 +16,7 @@ func GetMasterMission(session *userdata.Session, mission any) *gamedata.Mission 
 	case client.UserWeeklyMission:
 		return session.Gamedata.Mission[mission.MissionMId]
 	default:
-		panic("not supported")
+		log.Panic("not supported")
+		return nil
 	}
 }

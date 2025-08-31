@@ -4,6 +4,7 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/handler/common"
+	"elichika/log"
 	"elichika/router"
 	"elichika/subsystem/user_mission"
 	"elichika/userdata"
@@ -29,7 +30,7 @@ func receiveReward(ctx *gin.Context) {
 	case response.MissionReceiveErrorResponse:
 		common.AlternativeJsonResponse(ctx, &resp)
 	default:
-		panic("not supported")
+		log.Panic("not supported")
 	}
 }
 

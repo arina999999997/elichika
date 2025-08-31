@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"elichika/log"
 	"elichika/router"
 	"elichika/utils"
 
@@ -20,7 +21,7 @@ func adminInitial(ctx *gin.Context) {
 			sessionKey, err := base64.StdEncoding.DecodeString(form.Value["admin_session_key"][0])
 			utils.CheckErr(err)
 			if !bytes.Equal(sessionKey, adminSessionKey) {
-				panic("wrong session key")
+				log.Panic("wrong session key")
 			}
 		}
 	}

@@ -22,7 +22,7 @@ func (ldg *LiveDropGroup) Check() {
 		return
 	}
 	if ldg.Bad {
-		panic(fmt.Sprint("bad live drop group:", ldg.GroupId))
+		log.Panic(fmt.Sprint("bad live drop group:", ldg.GroupId))
 	}
 }
 

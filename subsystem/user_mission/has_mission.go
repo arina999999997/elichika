@@ -2,6 +2,7 @@ package user_mission
 
 import (
 	"elichika/enum"
+	"elichika/log"
 	"elichika/subsystem/user_subscription_status"
 	"elichika/userdata"
 )
@@ -28,7 +29,8 @@ func hasTriggerCondition(session *userdata.Session, missionId int32) bool {
 	case enum.MissionTriggerClearMission:
 		return finishedMission(session, masterMissionId.TriggerCondition1)
 	default:
-		panic("unsuported mission trigger type")
+		log.Panic("unsuported mission trigger type")
+		return false
 	}
 }
 

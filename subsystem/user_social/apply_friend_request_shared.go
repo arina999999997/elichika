@@ -2,6 +2,7 @@ package user_social
 
 import (
 	"elichika/enum"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/userdata/database"
 	"elichika/utils"
@@ -13,7 +14,7 @@ import (
 // return ok, error key (if not ok)
 func ApplyFriendRequestShared(session *userdata.Session, otherUserId int32) (bool, int32) {
 	if session.UserId == otherUserId {
-		panic("must have different user id")
+		log.Panic("must have different user id")
 	}
 	// various checks
 	if !UserExist(session, otherUserId) {

@@ -35,7 +35,7 @@ func rekey(inPath, outPath string, fromFile *FileReference, keySpec hwdecrypt.Hw
 	clear_buf, err := os.ReadFile(inPath)
 	utils.CheckErr(err)
 	if string(clear_buf[:16]) != "SQLite format 3\x00" {
-		panic("Missing SQLite file signature. Is it already encrypted?")
+		log.Panic("Missing SQLite file signature. Is it already encrypted?")
 	}
 	var crypt_buf bytes.Buffer
 	zlibWriter := zlib.NewWriter(&crypt_buf)

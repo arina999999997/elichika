@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/subsystem/user_event/marathon"
 	"elichika/userdata"
 
@@ -46,7 +47,7 @@ func GetLiveResultActiveEventMarathon(session *userdata.Session, liveDifficulty 
 		case 20:
 			return []int32{525, 516, 507, 498, 489}[id]
 		default:
-			panic(fmt.Sprint("not supported LP amount: ", liveDifficulty.ConsumedLP))
+			log.Panic(fmt.Sprint("not supported LP amount: ", liveDifficulty.ConsumedLP))
 		}
 		return 0
 	}

@@ -1,6 +1,7 @@
 package asset
 
 import (
+	"elichika/log"
 	"elichika/utils"
 
 	"fmt"
@@ -25,7 +26,7 @@ func sendRange(ctx *gin.Context, fileName string, start, size int) {
 		if count > size {
 			count = size
 		} else if (count < 1024) && (count < size) {
-			panic("wrong requested range")
+			log.Panic("wrong requested range")
 		}
 		buffer = buffer[:count]
 		ctx.Writer.Write(buffer)

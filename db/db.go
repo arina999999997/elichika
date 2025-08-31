@@ -10,7 +10,7 @@ import (
 // when only one single thread call to NewDatabase, it should be thread safe for everything:
 // - multiple call to the same NewDatabase / Close is safe because we check it and we only call them on 1 thread.
 // - each of the database itself is threadsafe across threads:
-//   - assuming that the request functions do not panic without recovery
+//   - assuming that the request functions do not log.Panic( without recovery
 // - the database object always hold a connection to the actual database, so even if a new database is opened using other method, they can't do anything with it.
 // note that different path will be treated as different
 // for now, the user database doesn't use this system for a few reason:

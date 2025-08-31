@@ -2,6 +2,7 @@ package userdata
 
 import (
 	"elichika/client/response"
+	"elichika/log"
 	"elichika/userdata/database"
 	"elichika/utils"
 
@@ -16,7 +17,7 @@ import (
 func (session *Session) ImportLoginData(ctx *gin.Context, loginData *response.LoginResponse) {
 	session.SessionType = SessionTypeImportAccount
 	if session.Ctx != ctx {
-		panic("context changed")
+		log.Panic("context changed")
 	}
 	session.UserModel = *loginData.UserModel
 	session.UserStatus = &session.UserModel.UserStatus
@@ -27,7 +28,7 @@ func (session *Session) ImportDatabaseData(ctx *gin.Context, bytes []byte) (*str
 	resp := new(string)
 	session.SessionType = SessionTypeDirectDbWrite
 	if session.Ctx != ctx {
-		panic("context changed")
+		log.Panic("context changed")
 	}
 	fileName := fmt.Sprintf("backup_%d.db", session.UserId)
 	os.Remove(fileName) // remove dirty data if any

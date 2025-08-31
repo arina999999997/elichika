@@ -1,6 +1,7 @@
 package event
 
 import (
+	"elichika/log"
 	"elichika/scheduled_task"
 	"elichika/serverdata"
 	"elichika/utils"
@@ -17,7 +18,7 @@ func ScheduleEvent(eventId int32) {
 		{
 			err := recover()
 			if err != nil {
-				panic(err)
+				log.Panic(err)
 			}
 		}
 		serverdata.Database.Do(func(session *xorm.Session) {

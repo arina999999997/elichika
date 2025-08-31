@@ -2,6 +2,7 @@ package user_mission
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 )
 
@@ -20,6 +21,6 @@ func MaximizeMissionProgress(session *userdata.Session, mission any, count int32
 		}
 		session.UserModel.UserMissionByMissionId.Set(userMission.MissionMId, userMission)
 	default:
-		panic("not supported")
+		log.Panic("not supported")
 	}
 }

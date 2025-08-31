@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/log"
 	"fmt"
 	"reflect"
 )
@@ -49,7 +50,7 @@ func (session *Session) PopulateUserModelField(fieldName string) {
 			rMethod.Call([]reflect.Value{reflect.ValueOf(session.Db), reflect.ValueOf(session.UserId),
 				reflect.ValueOf(tableName), reflect.ValueOf(keyColumn)})
 		} else {
-			panic(fmt.Sprint("Tagged but not supported: ", i, rField, rMethod, tableName, keyColumn))
+			log.Panic(fmt.Sprint("Tagged but not supported: ", i, rField, rMethod, tableName, keyColumn))
 		}
 	}
 }
@@ -63,7 +64,7 @@ func genericTableFieldPopulator(session *Session) {
 		if rFieldType.Name == "UserStatus" || tableName == "u_content" {
 			continue
 		} else if tableName == "" {
-			panic(rFieldType.Name)
+			log.Panic(rFieldType.Name)
 		}
 		rField := rModel.Elem().Field(i)
 		rMethod := rField.Addr().MethodByName("LoadFromDb")
@@ -71,7 +72,7 @@ func genericTableFieldPopulator(session *Session) {
 			rMethod.Call([]reflect.Value{reflect.ValueOf(session.Db), reflect.ValueOf(session.UserId),
 				reflect.ValueOf(tableName), reflect.ValueOf(keyColumn)})
 		} else {
-			panic(fmt.Sprint("Tagged but not supported: ", i, rField, rMethod, tableName, keyColumn))
+			log.Panic(fmt.Sprint("Tagged but not supported: ", i, rField, rMethod, tableName, keyColumn))
 		}
 	}
 }

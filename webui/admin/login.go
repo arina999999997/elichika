@@ -39,7 +39,7 @@ func login(ctx *gin.Context) {
 
 func init() {
 	router.AddSpecialSetup("/webui/admin", func(group *gin.RouterGroup) {
-		group.StaticFile("/login", "./webui/admin/login.html")
+		group.StaticFile("/login", config.RootPath+"webui/admin/login.html")
 	})
 	router.AddHandler("/webui/admin", "POST", "/login", login)
 }

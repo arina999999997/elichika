@@ -38,7 +38,7 @@ func FinishConnection() {
 
 func WaitForFinish() {
 	if !IsShutdown() {
-		panic("shutdown flag not set, waiting for it to be set")
+		log.Panic("shutdown flag not set, waiting for it to be set")
 	}
 	for {
 		if connectionCount.Load() == 0 {

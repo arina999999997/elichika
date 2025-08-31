@@ -78,11 +78,11 @@ func loadMission(gamedata *Gamedata) {
 			gamedata.Mission[mission.TriggerCondition1].TriggerMissions = append(gamedata.Mission[mission.TriggerCondition1].TriggerMissions, mission)
 			if mission.MissionClearConditionType != gamedata.Mission[mission.TriggerCondition1].MissionClearConditionType {
 				if mission.CompleteMissionNum == nil {
-					panic(fmt.Sprint("different clear contition type from parent mission ", mission.Id, mission.TriggerCondition1))
+					log.Panic(fmt.Sprint("different clear contition type from parent mission ", mission.Id, mission.TriggerCondition1))
 				}
 			}
 		} else if mission.TriggerType != enum.MissionTriggerGameStart {
-			panic("unsupported trigger type")
+			log.Panic("unsupported trigger type")
 		}
 	}
 	for _, list := range gamedata.MissionByClearConditionType {

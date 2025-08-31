@@ -223,7 +223,7 @@ solutionFound:
 		solution = append(solution, centerNode)
 		for _, node := range solution {
 			if !solver.MarkPicked(node) {
-				panic("wrong logic")
+				log.Panic("wrong logic")
 			}
 		}
 		for i := int32(1); i <= solver.NodeCount; i++ {

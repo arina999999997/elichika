@@ -2,6 +2,7 @@ package user_card
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/subsystem/user_member"
 	"elichika/userdata"
 	"elichika/utils"
@@ -13,7 +14,7 @@ func GetOtherUserCard(session *userdata.Session, otherUserId, cardMasterId int32
 		Where("user_id = ? AND card_master_id = ?", otherUserId, cardMasterId).Get(&userCard)
 	utils.CheckErr(err)
 	if !exist {
-		panic("other user card doesn't exist")
+		log.Panic("other user card doesn't exist")
 	}
 	otherUserCard := client.OtherUserCard{
 		CardMasterId: userCard.CardMasterId,

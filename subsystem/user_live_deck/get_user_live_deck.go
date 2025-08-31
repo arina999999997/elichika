@@ -2,6 +2,7 @@ package user_live_deck
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -15,7 +16,7 @@ func GetUserLiveDeck(session *userdata.Session, userLiveDeckId int32) client.Use
 			Get(liveDeckPtr)
 		utils.CheckErr(err)
 		if !exist {
-			panic("Deck doesn't exist")
+			log.Panic("Deck doesn't exist")
 		}
 	}
 	return *liveDeckPtr

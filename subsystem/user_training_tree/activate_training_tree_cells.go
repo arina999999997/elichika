@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/config"
 	"elichika/enum"
+	"elichika/log"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
 	"elichika/subsystem/user_mission"
@@ -50,7 +51,7 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 			case enum.TrainingContentTypeTechnique: // technique
 				card.TrainingDexterity += int32(paramCell.Value)
 			default:
-				panic("Unexpected training content type")
+				log.Panic("Unexpected training content type")
 			}
 		case enum.TrainingTreeCellTypeVoice:
 			naviActionId := trainingTree.NaviActionIds[cell.TrainingContentNo]
@@ -59,7 +60,7 @@ func ActivateTrainingTreeCells(session *userdata.Session, cardMasterId int32, ce
 			// training_content_type 11 in m_training_tree_card_story_side
 			storySideId, exist := trainingTree.TrainingTreeCardStorySides[enum.TrainingContentTypeStory]
 			if !exist {
-				panic("story doesn't exist")
+				log.Panic("story doesn't exist")
 			}
 			user_story_side.InsertStorySide(session, storySideId)
 		case enum.TrainingTreeCellTypeAwakening:

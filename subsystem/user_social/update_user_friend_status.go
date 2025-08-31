@@ -1,6 +1,7 @@
 package user_social
 
 import (
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/userdata/database"
 	"elichika/utils"
@@ -12,6 +13,6 @@ func UpdateUserFriendStatus(session *userdata.Session, status database.UserFrien
 		status.UserId, status.OtherUserId).AllCols().Update(&status)
 	utils.CheckErr(err)
 	if affected == 0 {
-		panic("friend status doesn't exist")
+		log.Panic("friend status doesn't exist")
 	}
 }

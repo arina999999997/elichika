@@ -71,7 +71,7 @@ func ParseCsv[T any](path string, result *[]T, ctx *CsvContext) {
 				}))
 			default:
 				log.Println(field.Type)
-				panic("field type not supported")
+				log.Panic("field type not supported")
 			}
 		}
 		*result = append(*result, dummy)

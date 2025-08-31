@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/subsystem/banner"
 	"elichika/subsystem/pickup_info"
 	"elichika/subsystem/user_beginner_challenge"
@@ -48,7 +49,7 @@ func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest
 			// this is no longer used, the client can't comprehend it unless we change stuff
 			continue
 		default:
-			panic("unexpected type")
+			log.Panic("unexpected type")
 		}
 	}
 

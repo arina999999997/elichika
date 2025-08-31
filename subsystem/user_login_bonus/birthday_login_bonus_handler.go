@@ -6,6 +6,7 @@ import (
 	"elichika/gamedata"
 	"elichika/generic"
 	"elichika/item"
+	"elichika/log"
 	"elichika/subsystem/user_present"
 	"elichika/userdata"
 
@@ -16,7 +17,7 @@ import (
 
 func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *client.BootstrapLoginBonus) {
 	if loginBonus.LoginBonusType != enum.LoginBonusTypeBirthday {
-		panic("wrong handler used")
+		log.Panic("wrong handler used")
 	}
 	year, month, day := session.Time.Date()
 	mmdd := int32(month)*100 + int32(day)
@@ -83,7 +84,7 @@ func birthdayLoginBonusHandler(mode string, session *userdata.Session, loginBonu
 			memberLoginBonusBirthday = member.MemberLoginBonusBirthdays[rand.Intn(len(member.MemberLoginBonusBirthdays))]
 		case "latest":
 		default:
-			panic("not supported")
+			log.Panic("not supported")
 		}
 		target.BirthdayMember.Append(client.LoginBonusBirthDayMember{
 			MemberMasterId: generic.NewNullable(member.Id),

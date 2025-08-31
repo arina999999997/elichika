@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/subsystem/user_live_party"
 	"elichika/subsystem/user_mission"
 	"elichika/subsystem/user_suit"
@@ -39,7 +40,7 @@ func ChangeLiveDeckCards(session *userdata.Session, deckId int32, cardMasterIds 
 		suitMasterId0 := reflect.ValueOf(deck).Field(1 + int(position0) + 9).Interface().(generic.Nullable[int32]).Value
 		suitMasterId1 := reflect.ValueOf(deck).Field(1 + int(position1) + 9).Interface().(generic.Nullable[int32]).Value
 		if (cardMasterId0 != *cardMasterIds.GetOnly(position1)) || (cardMasterId1 != *cardMasterIds.GetOnly(position0)) {
-			panic("unexpected card swap")
+			log.Panic("unexpected card swap")
 		}
 		reflect.ValueOf(&deck).Elem().Field(1 + int(position0)).Set(reflect.ValueOf(generic.NewNullable(cardMasterId1)))
 		reflect.ValueOf(&deck).Elem().Field(1 + int(position0) + 9).Set(reflect.ValueOf(generic.NewNullable(suitMasterId1)))

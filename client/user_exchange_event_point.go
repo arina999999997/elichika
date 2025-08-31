@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -12,7 +13,7 @@ type UserExchangeEventPoint struct {
 
 func (ueep *UserExchangeEventPoint) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeExchangeEventPoint { // 21
-		panic(fmt.Sprintln("Wrong content for ExchangeEventPoint: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for ExchangeEventPoint: ", content))
 	}
 	ueep.Amount = content.ContentAmount
 }

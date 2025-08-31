@@ -5,6 +5,7 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/subsystem/user_present"
 	"elichika/userdata"
 
@@ -13,7 +14,7 @@ import (
 
 func beginnerLoginBonusHandler(_ string, session *userdata.Session, loginBonus *gamedata.LoginBonus, target *client.BootstrapLoginBonus) {
 	if loginBonus.LoginBonusType != enum.LoginBonusTypeNormal {
-		panic("wrong handler used")
+		log.Panic("wrong handler used")
 	}
 	userLoginBonus := getUserLoginBonus(session, loginBonus.LoginBonusId)
 	lastUnlocked := latestLoginBonusTime(session.Time)

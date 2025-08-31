@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserAccessoryRarityUpItem struct {
 
 func (uarui *UserAccessoryRarityUpItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeAccessoryRarityUp { // 25
-		panic(fmt.Sprintln("Wrong content for AccessoryRarityUpItem: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for AccessoryRarityUpItem: ", content))
 	}
 	uarui.AccessoryRarityUpItemMasterId = content.ContentId
 	uarui.Amount = content.ContentAmount

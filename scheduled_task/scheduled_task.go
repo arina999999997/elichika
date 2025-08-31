@@ -43,7 +43,7 @@ var taskHandlers = map[string]TaskHandler{}
 func AddScheduledTaskHandler(taskName string, handler TaskHandler) {
 	_, exist := taskHandlers[taskName]
 	if exist {
-		panic(fmt.Sprint("task already has handler: ", taskName))
+		log.Panic(fmt.Sprint("task already has handler: ", taskName))
 	}
 	taskHandlers[taskName] = handler
 }

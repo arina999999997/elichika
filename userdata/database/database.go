@@ -18,7 +18,7 @@ var (
 func AddTable(tableName string, structure interface{}) {
 	_, exist := UserDataTableNameToInterface[tableName]
 	if exist {
-		panic("table name already used: " + tableName)
+		log.Panic("table name already used: " + tableName)
 	}
 	UserDataTableNameToInterface[tableName] = structure
 }

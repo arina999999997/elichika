@@ -2,6 +2,7 @@ package user_live_party
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -13,7 +14,7 @@ func GetUserLiveParty(session *userdata.Session, partyId int) client.UserLivePar
 		Get(&liveParty)
 	utils.CheckErr(err)
 	if !exist {
-		panic("Party doesn't exist")
+		log.Panic("Party doesn't exist")
 	}
 	return liveParty
 }

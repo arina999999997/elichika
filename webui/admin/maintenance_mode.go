@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"elichika/log"
 	"elichika/router"
 	"elichika/shutdown"
 	"elichika/utils"
@@ -59,7 +60,7 @@ func RunAlisa(ctx *gin.Context) {
 	}
 	if err != nil {
 		webui_utils.CommonResponse(ctx, "Error when building the maintenence server: "+fmt.Sprint("\noutput: ", output, "\nerror: ", err), "")
-		panic(err)
+		log.Panic(err)
 	}
 	webui_utils.CommonResponse(ctx, "No error detected, trying to start maintenance server.", "")
 	good = true

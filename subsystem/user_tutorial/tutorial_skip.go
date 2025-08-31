@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/subsystem/user_live_deck"
 	"elichika/subsystem/user_member"
 	"elichika/subsystem/user_training_tree"
@@ -37,6 +38,6 @@ func TutorialSkip(session *userdata.Session, cardWithSuitDict generic.Dictionary
 	case enum.TutorialPhaseFinal:
 		PhaseEnd(session)
 	default:
-		panic("unexpected skip")
+		log.Panic("unexpected skip")
 	}
 }

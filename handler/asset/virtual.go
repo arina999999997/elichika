@@ -6,6 +6,7 @@ package asset
 import (
 	"elichika/assetdata"
 	"elichika/config"
+	"elichika/log"
 	"elichika/router"
 	"elichika/utils"
 
@@ -20,7 +21,7 @@ func staticVirtual(ctx *gin.Context) {
 	file := ctx.Param("fileName")
 	downloadData := assetdata.GetDownloadData(file)
 	if downloadData.IsEntireFile {
-		panic("downloading whole file through the virtual endpoint")
+		log.Panic("downloading whole file through the virtual endpoint")
 	}
 
 	host := *config.Conf.CdnServer
@@ -37,7 +38,7 @@ func staticVirtual(ctx *gin.Context) {
 	utils.CheckErr(err)
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusPartialContent { // http.StatusPartialContent
-		panic("wrong status received")
+		log.Panic("wrong status received")
 	}
 	body, err := io.ReadAll(response.Body)
 	utils.CheckErr(err)
