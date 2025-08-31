@@ -1,6 +1,7 @@
 package webui_utils
 
 import (
+	"elichika/log"
 	"elichika/utils"
 	"mime/multipart"
 	"strconv"
@@ -40,7 +41,7 @@ func GetFormBool(ctx *gin.Context, key string) bool {
 	form := ctx.MustGet("form").(*multipart.Form)
 	onString, on := form.Value[key]
 	if on && (onString[0] != "on") {
-		panic("explicit off checkbox?")
+		log.Panic("explicit off checkbox?")
 	}
 	return on
 }

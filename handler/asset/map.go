@@ -2,6 +2,7 @@ package asset
 
 import (
 	"elichika/assetdata"
+	"elichika/log"
 	"elichika/router"
 
 	"fmt"
@@ -14,7 +15,7 @@ func staticMap(ctx *gin.Context) {
 	file := ctx.Param("fileName")
 	downloadData := assetdata.GetDownloadData(file)
 	if downloadData.IsEntireFile {
-		panic("entire file downloaded through map endpoint")
+		log.Panic("entire file downloaded through map endpoint")
 	}
 
 	sendRange(ctx, fmt.Sprintf("static/%s", downloadData.File), downloadData.Start, downloadData.Size)

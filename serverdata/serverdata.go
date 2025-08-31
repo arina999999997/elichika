@@ -35,7 +35,7 @@ var (
 func addTable(tableName string, structure interface{}, initializer Initializer) {
 	_, exist := serverDataTableNameToInterface[tableName]
 	if exist {
-		panic("table already exist: " + tableName)
+		log.Panic("table already exist: " + tableName)
 	}
 	serverDataTableNameToInterface[tableName] = structure
 	serverDataTableNameToInitializer[tableName] = initializer

@@ -49,7 +49,7 @@ func userInitial(ctx *gin.Context) {
 				sessionKey, err := base64.StdEncoding.DecodeString(form.Value["user_session_key"][0])
 				utils.CheckErr(err)
 				if !bytes.Equal(sessionKey, session.SessionKey()) {
-					panic("wrong session key")
+					log.Panic("wrong session key")
 				}
 			} else {
 				session.SessionType = userdata.SessionTypeLogin

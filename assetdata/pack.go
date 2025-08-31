@@ -28,7 +28,7 @@ func loadPack(locale string, session *xorm.Session) {
 	for _, pack := range packs {
 		_, exist := Metapack[pack.PackName]
 		if exist {
-			panic(fmt.Sprint("same name used for both a pack and a metapack: ", pack.PackName,
+			log.Panic(fmt.Sprint("same name used for both a pack and a metapack: ", pack.PackName,
 				"\nLocale: ", locale, ", previous locale: ", NameToLocale[pack.PackName]))
 		}
 		if pack.MetapackName != nil {
@@ -43,7 +43,7 @@ func loadPack(locale string, session *xorm.Session) {
 		}
 		if (previous.FileSize != pack.FileSize) || (previous.Category != pack.Category) {
 			// TODO(assert): This doesn't necessarily imply all packs are the same, some test is necessary
-			panic(fmt.Sprint("pack name reused: ", *previous, *pack))
+			log.Panic(fmt.Sprint("pack name reused: ", *previous, *pack))
 		}
 	}
 	log.Printf("Loaded %d new pack\n", cnt)

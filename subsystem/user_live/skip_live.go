@@ -9,6 +9,7 @@ import (
 	"elichika/generic"
 	"elichika/item"
 	"elichika/klab"
+	"elichika/log"
 	"elichika/subsystem/event"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
@@ -154,7 +155,7 @@ func SkipLive(session *userdata.Session, req request.SkipLiveRequest) response.S
 					liveDifficulty, liveDifficulty.EvaluationSScore, totalDeckBonus, req.TicketUseCount, req.LiveEventMarathonStatus.Value.IsUseEventMarathonBooster)
 			}
 		} else {
-			panic("event type not supported")
+			log.Panic("event type not supported")
 		}
 	}
 

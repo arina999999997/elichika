@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserEventMarathonBooster struct {
 
 func (uemb *UserEventMarathonBooster) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeEventMarathonBooster { // 27
-		panic(fmt.Sprintln("Wrong content for EventMarathonBooster: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for EventMarathonBooster: ", content))
 	}
 	uemb.EventItemId = content.ContentId
 	uemb.Amount = content.ContentAmount

@@ -60,7 +60,7 @@ func initial(ctx *gin.Context) {
 	var session *userdata.Session
 	defer func() { session.Close() }()
 	// the session will always be closed this way
-	// this session will be passed downstream using ctx, any panic in handling will lead to the whole request being ignored
+	// this session will be passed downstream using ctx, any log.Panic( in handling will lead to the whole request being ignored
 	// finally, if it managed to reach the end then session.Finalize() is called
 	// session.Finalize() will be called before generating the response:
 	// - Responses should use a pointer to user model, so we can create the response object, but it will use user model after finalize
@@ -68,7 +68,7 @@ func initial(ctx *gin.Context) {
 	if userIdErr == nil {
 		session = userdata.GetSession(ctx, int32(userId))
 		if session == nil {
-			panic("session is nil, use a transfer to get a proper user id")
+			log.Panic("session is nil, use a transfer to get a proper user id")
 		}
 		ctx.Set("sign_key", session.SessionKey())
 		// signAuth := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])), session.AuthorizationKey())
@@ -80,17 +80,17 @@ func initial(ctx *gin.Context) {
 			signAuth := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])),
 				session.AuthorizationKey())
 			if sign != signAuth { // incorrect auth key, reject
-				panic("wrong authentication key, sign-in again using password")
+				log.Panic("wrong authentication key, sign-in again using password")
 			}
 			session.AuthenticationData.CommandId = int32(commandId)
 		} else {
 			signSession := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])),
 				session.SessionKey())
 			if sign != signSession { // incorrect auth key, reject
-				panic("wrong session key")
+				log.Panic("wrong session key")
 			}
 			if session.AuthenticationData.CommandId+1 != int32(commandId) {
-				panic("wrong command id")
+				log.Panic("wrong command id")
 			} else {
 				session.AuthenticationData.CommandId++
 			}
@@ -100,7 +100,7 @@ func initial(ctx *gin.Context) {
 			locale.Locales[lang].StartupKey)
 		if sign != signStartUp { // incorrect start up key, reject
 			log.Println("startup: ", signStartUp, "\nactual: ", sign)
-			panic("wrong startup key, get the correct app version")
+			log.Panic("wrong startup key, get the correct app version")
 		}
 	}
 	ctx.Set("session", session)

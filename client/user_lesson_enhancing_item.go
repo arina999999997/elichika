@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserLessonEnhancingItem struct {
 
 func (ulei *UserLessonEnhancingItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeLessonEnhancingItem { // 6
-		panic(fmt.Sprintln("Wrong content for LessonEnhancingItem: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for LessonEnhancingItem: ", content))
 	}
 	ulei.EnhancingItemId = content.ContentId
 	ulei.Amount = content.ContentAmount

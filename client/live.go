@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/generic"
+	"elichika/log"
 
 	"encoding/json"
 	"reflect"
@@ -32,7 +33,7 @@ func (l Live) MarshalJSON() ([]byte, error) {
 		if key == "-" {
 			continue
 		} else if key == "" {
-			panic("empty key")
+			log.Panic("empty key")
 		}
 		if isFirst {
 			isFirst = false

@@ -21,7 +21,7 @@ func PopulateGenericContentDiffFromUserModel(session *userdata.Session) {
 		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())
 		rDictionaryToContents, ok := rDictionaryPtrType.MethodByName("ToContents")
 		if !ok {
-			panic(fmt.Sprintln("Type ", rDictionaryPtrType, " must have method ToContents"))
+			log.Panic(fmt.Sprintln("Type ", rDictionaryPtrType, " must have method ToContents"))
 		}
 		contents := rDictionaryToContents.Func.Call([]reflect.Value{rDictionary.Addr()})[0].Interface().([]any)
 		for _, content := range contents {

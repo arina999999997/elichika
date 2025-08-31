@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"elichika/config"
 	"elichika/router"
 	"elichika/utils"
 
@@ -23,5 +24,5 @@ func newSessionKey() {
 
 func init() {
 	newSessionKey()
-	router.AddTemplates("./webui/admin/logged_in_admin.html")
+	router.AddTemplates(config.RootPath + "webui/admin/logged_in_admin.html")
 }

@@ -3,6 +3,7 @@ package user_mission
 import (
 	"elichika/client"
 	"elichika/enum"
+	"elichika/log"
 	"elichika/userdata"
 )
 
@@ -18,7 +19,7 @@ var missionInitializers = map[int32]MissionInitializer{}
 func AddMissionInitializer(missionClearConditionType int32, initializer MissionInitializer) {
 	_, exist := missionInitializers[missionClearConditionType]
 	if exist {
-		panic("mission initializer already exist")
+		log.Panic("mission initializer already exist")
 	}
 	missionInitializers[missionClearConditionType] = initializer
 }

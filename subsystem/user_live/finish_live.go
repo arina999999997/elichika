@@ -4,6 +4,7 @@ import (
 	"elichika/client/request"
 	"elichika/client/response"
 	"elichika/enum"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -21,6 +22,7 @@ func FinishLive(session *userdata.Session, req request.FinishLiveRequest) respon
 	case enum.LiveTypeTower:
 		return liveTypeTowerHandler(session, req, live, startReq)
 	default:
-		panic("not handled")
+		log.Panic("not handled")
+		return response.FinishLiveResponse{}
 	}
 }

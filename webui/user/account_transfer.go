@@ -2,6 +2,7 @@ package user
 
 import (
 	"elichika/account"
+	"elichika/log"
 	"elichika/router"
 	"elichika/userdata"
 	"elichika/utils"
@@ -34,7 +35,7 @@ func transferAccount(ctx *gin.Context) {
 		length, err := file.Read(bytes)
 		utils.CheckErr(err)
 		if int64(length) != fileHeader.Size {
-			panic("error reading file")
+			log.Panic("error reading file")
 		}
 		switch ext {
 		case ".json":

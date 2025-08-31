@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/handler/common"
 	"elichika/locale"
+	"elichika/log"
 	"elichika/router"
 	"elichika/subsystem/user_authentication"
 	"elichika/userdata"
@@ -46,7 +47,7 @@ func checkTakeOver(ctx *gin.Context) {
 	}
 	linkedUserId = int32(_linkedUserId)
 	if linkedUserId < -1 {
-		panic("user_id can't be negative except for the recovery ones")
+		log.Panic("user_id can't be negative except for the recovery ones")
 	}
 
 	currentSession = userdata.GetSession(ctx, req.UserId)

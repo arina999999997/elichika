@@ -1,14 +1,18 @@
 package utils
 
+import (
+	"elichika/log"
+)
+
 func CheckErr(err error) {
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
 func MustExist(exist bool) {
 	if !exist {
-		panic("doesn't exist")
+		log.Panic("doesn't exist")
 	}
 }
 

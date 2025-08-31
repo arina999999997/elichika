@@ -1,0 +1,1 @@
+go build -buildmode=c-shared -tags=embedded -o libElichika.so

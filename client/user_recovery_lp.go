@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserRecoveryLp struct {
 
 func (url *UserRecoveryLp) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeRecoveryLp { // 17
-		panic(fmt.Sprintln("Wrong content for RecoveryLp: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for RecoveryLp: ", content))
 	}
 	url.RecoveryLpMasterId = content.ContentId
 	url.Amount = content.ContentAmount

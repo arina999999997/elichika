@@ -3,6 +3,7 @@ package userdata
 import (
 	"elichika/client"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/scheduled_task"
 	"elichika/userdata/database"
 	"elichika/utils"
@@ -95,7 +96,7 @@ func (session *Session) Close() {
 	if err != nil {
 		session.Db.Rollback()
 		session.Db.Close()
-		panic(err)
+		log.Panic(err)
 	} else {
 		session.Db.Close()
 	}
@@ -109,7 +110,7 @@ func userStatusFinalizer(session *Session) {
 	utils.CheckErr(err)
 	if affected != 1 {
 		if session.SessionType != SessionTypeImportAccount {
-			panic("user doesn't exist in u_info")
+			log.Panic("user doesn't exist in u_info")
 		} else {
 			GenericDatabaseInsert(session, "u_status", *session.UserStatus)
 		}
@@ -141,7 +142,7 @@ func GetSessionWithSharedDb(ctx *gin.Context, userId int32, otherSession *Sessio
 		err := recover()
 		if err != nil {
 			s.Db.Close()
-			panic(err)
+			log.Panic(err)
 		}
 	}()
 	if otherSession != nil {

@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserRecoveryTowerCardUsedCountItem struct {
 
 func (urtcuci *UserRecoveryTowerCardUsedCountItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeRecoveryTowerCardUsedCount { // 31
-		panic(fmt.Sprintln("Wrong content for RecoveryTowerCardUsedCountItem: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for RecoveryTowerCardUsedCountItem: ", content))
 	}
 	urtcuci.RecoveryTowerCardUsedCountItemMasterId = content.ContentId
 	urtcuci.Amount = content.ContentAmount

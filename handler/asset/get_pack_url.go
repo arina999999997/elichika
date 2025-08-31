@@ -6,6 +6,7 @@ import (
 	"elichika/client/response"
 	"elichika/config"
 	"elichika/handler/common"
+	"elichika/log"
 	"elichika/router"
 	"elichika/utils"
 
@@ -73,7 +74,7 @@ func getPackUrl(ctx *gin.Context) {
 			virtualHost := "http://" + ctx.Request.Host + "/static"
 			resp.UrlList.Append(fmt.Sprintf("%s_virtual/%s", virtualHost, pack))
 		} else {
-			panic("wrong cdn_partial_file_capability")
+			log.Panic("wrong cdn_partial_file_capability")
 		}
 	}
 

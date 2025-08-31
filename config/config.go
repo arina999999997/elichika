@@ -17,13 +17,13 @@ var (
 
 	DefaultSessionKey = "12345678123456781234567812345678"
 
-	AssetPath = "assets/"
+	AssetPath = RootPath + "assets/"
 
 	GlMasterdataPath = AssetPath + "db/gl/"
 	JpMasterdataPath = AssetPath + "db/jp/"
 
-	ServerdataPath = "serverdata.db"
-	UserdataPath   = "userdata.db"
+	ServerdataPath = RootPath + "serverdata.db"
+	UserdataPath   = RootPath + "userdata.db"
 
 	UserDataBackupPath = "backup/"
 
@@ -33,13 +33,13 @@ var (
 	GlStartupKey = "TxQFwgNcKDlesb93"
 	JpStartupKey = "5f7IZY1QrAX0D49g"
 
-	StaticDataPath = "static/"
+	StaticDataPath = RootPath + "static/"
 
 	Platforms   = []string{"a", "i"}
 	GlLanguages = []string{"en", "ko", "zh"}
 	JpLanguages = []string{"ja"}
 
-	ServerInitJsons = "server init jsons/"
+	ServerInitJsons = RootPath + "server init jsons/"
 	Conf            = &RuntimeConfig{}
 
 	GenerateStageFromScratch = false

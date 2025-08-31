@@ -8,6 +8,7 @@ import (
 	"elichika/enum"
 	"elichika/generic"
 	"elichika/klab"
+	"elichika/log"
 	"elichika/subsystem/event"
 	"elichika/subsystem/user_accessory"
 	"elichika/subsystem/user_card"
@@ -186,7 +187,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 					continue
 				}
 			default:
-				panic("unsuported target type")
+				log.Panic("unsuported target type")
 			}
 
 			resp.LiveResult.LiveResultAchievements.Map[mission.Position].IsCurrentlyAchieved = true
@@ -439,7 +440,7 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 				resp.LiveResult.ActiveEventResult = event.GetLiveResultActiveEventMarathon(session,
 					liveDifficulty, req.LiveScore.CurrentScore, totalDeckBonus, 1, startReq.LiveEventMarathonStatus.Value.IsUseEventMarathonBooster)
 			} else {
-				panic("event type not supported")
+				log.Panic("event type not supported")
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserTrainingMaterial struct {
 
 func (utm *UserTrainingMaterial) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeTrainingMaterial { // 12
-		panic(fmt.Sprintln("Wrong content for TrainingMaterial: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for TrainingMaterial: ", content))
 	}
 	utm.TrainingMaterialMasterId = content.ContentId
 	utm.Amount = content.ContentAmount

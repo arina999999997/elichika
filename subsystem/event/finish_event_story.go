@@ -18,7 +18,7 @@ func FinishEventStory(session *userdata.Session, storyEventMasterId int32, isAut
 	log.Println(eventStory)
 	log.Println(userEvent)
 	if eventStory.EventMasterId != userEvent.EventMasterId {
-		panic("event changed")
+		log.Panic("event changed")
 	}
 	if userEvent.ReadStoryNumber < eventStory.StoryNumber {
 		userEvent.ReadStoryNumber = eventStory.StoryNumber

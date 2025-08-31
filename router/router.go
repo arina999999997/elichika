@@ -1,7 +1,8 @@
 package router
 
 import (
-	// "elichika/webui"
+	"elichika/config"
+	"elichika/log"
 	// "elichika/webui/user"
 
 	"html/template"
@@ -47,7 +48,7 @@ func (g *GroupInfo) AddInitialHandler(handler gin.HandlerFunc) {
 func (g *GroupInfo) AddHandler(method, path string, handler gin.HandlerFunc) {
 	_, exist := g.Handlers[method+path]
 	if exist {
-		panic("Multiple handler for path and method: " + method + " " + path)
+		log.Panic("Multiple handler for path and method: " + method + " " + path)
 	}
 	g.Handlers[method+path] = HandlerInfo{
 		Method:  method,
@@ -79,8 +80,9 @@ func AddTemplates(path string) {
 }
 
 func Router(r *gin.Engine) {
-	r.Static("/static", "static")
-	r.StaticFile("/favicon.ico", "./webui/favicon.ico")
+	r.Static("/static", config.StaticDataPath)
+
+	r.StaticFile("/favicon.ico", config.RootPath+"webui/favicon.ico")
 
 	funcs := template.FuncMap{}
 	funcs["noescape"] = func(s string) template.HTML {
@@ -98,7 +100,7 @@ func Router(r *gin.Engine) {
 			case "GET":
 				groupApi.GET(handlerInfo.Path, handlerInfo.Handler)
 			default:
-				panic("must be GET or POST only")
+				log.Panic("must be GET or POST only")
 			}
 		}
 		for _, specialSetup := range groupInfo.SpecialSetups {

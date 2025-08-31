@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -17,7 +18,7 @@ type UserGachaTicket struct {
 
 func (ugt *UserGachaTicket) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeGachaTicket { // 9
-		panic(fmt.Sprintln("Wrong content for GachaTicket: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for GachaTicket: ", content))
 	}
 	ugt.TicketMasterId = content.ContentId
 	ugt.NormalAmount = content.ContentAmount

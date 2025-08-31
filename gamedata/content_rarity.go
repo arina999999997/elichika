@@ -19,6 +19,7 @@ package gamedata
 import (
 	"elichika/enum"
 	"elichika/item"
+	"elichika/log"
 
 	"fmt"
 )
@@ -56,15 +57,15 @@ func (cr *ContentRarity) GetWeight(contentType int32, contentId int32, contentAm
 	}
 	_, exist := cr.RarityTable[contentType]
 	if !exist {
-		panic(fmt.Sprint("Required amount doesn't exist for: ", contentType, ", ", contentId))
+		log.Panic(fmt.Sprint("Required amount doesn't exist for: ", contentType, ", ", contentId))
 	}
 	total, exist := cr.RarityTable[contentType][contentId]
 	if !exist {
-		panic(fmt.Sprint("Required amount doesn't exist for: ", contentType, ", ", contentId))
+		log.Panic(fmt.Sprint("Required amount doesn't exist for: ", contentType, ", ", contentId))
 	}
 	total /= int64(contentAmount)
 	if total < 50 || total > 1<<28 {
-		panic(fmt.Sprint("Abnormal weight: ", contentType, ", ", contentId, ", ", contentAmount, ": ", total))
+		log.Panic(fmt.Sprint("Abnormal weight: ", contentType, ", ", contentId, ", ", contentAmount, ": ", total))
 	}
 	return int32(total)
 }

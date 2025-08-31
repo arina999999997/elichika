@@ -5,6 +5,7 @@ import (
 	"elichika/client/response"
 	"elichika/enum"
 	"elichika/handler/common"
+	"elichika/log"
 	"elichika/router"
 	"elichika/subsystem/user_member"
 	"elichika/userdata"
@@ -37,7 +38,7 @@ func updateUserCommunicationMemberDetailBadge(ctx *gin.Context) {
 	case enum.CommunicationMemberDetailBadgeTypeMusic:
 		detailBadge.IsMusicBadge = false
 	default:
-		panic("unknown type")
+		log.Panic("unknown type")
 	}
 	user_member.UpdateUserCommunicationMemberDetailBadge(session, detailBadge)
 

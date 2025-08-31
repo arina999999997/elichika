@@ -4,6 +4,7 @@ import (
 	"elichika/client"
 	"elichika/enum"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/userdata"
 )
 
@@ -21,7 +22,7 @@ func GetLiveEventCommonInfo(session *userdata.Session) generic.Nullable[client.L
 		result.PointBoostContentId = generic.NewNullable(session.Gamedata.EventActive.GetEventMarathon().BoosterItemId)
 	} else {
 		// TODO(event mining)
-		panic("not supported")
+		log.Panic("not supported")
 	}
 	return generic.NewNullable(result)
 }

@@ -52,7 +52,7 @@ var autoSchedulerConfigs = map[string]AutoSchedulerConfig{}
 
 func init() {
 	if ActualDayDuration%DayDuration != 0 {
-		panic("DayDuration must be a divisor of ActualDayDuration")
+		log.Panic("DayDuration must be a divisor of ActualDayDuration")
 	}
 	// event cycle every day
 	// used if user want to quickly cycle through the events to get all the rewards
@@ -163,7 +163,7 @@ func eventAutoScheduler(userdata_db *xorm.Session, task scheduled_task.Scheduled
 			Params:   fmt.Sprint(eventId),
 		})
 	} else {
-		panic("unsupported event type")
+		log.Panic("unsupported event type")
 	}
 }
 

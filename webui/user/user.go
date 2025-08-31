@@ -1,6 +1,7 @@
 package user
 
 import (
+	"elichika/config"
 	"elichika/router"
 
 	"fmt"
@@ -33,7 +34,7 @@ func addFeature(name, path string) {
 }
 
 func init() {
-	router.AddTemplates("./webui/user/logged_in_user.html")
+	router.AddTemplates(config.RootPath + "webui/user/logged_in_user.html")
 	router.AddHandler("/webui/user", "GET", "/", func(ctx *gin.Context) {
 		if featuresBody == nil {
 			featuresBody = new(string)

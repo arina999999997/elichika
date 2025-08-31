@@ -1,6 +1,8 @@
 package object_form
 
 import (
+	"elichika/log"
+
 	"fmt"
 	htmllib "html"
 	"reflect"
@@ -21,7 +23,7 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 	// html
 	ptr := reflect.ValueOf(defaultObjPtr) // pointer
 	if ptr.Kind() != reflect.Pointer {
-		panic("must pass a pointer to object")
+		log.Panic("must pass a pointer to object")
 	}
 
 	for i := 0; i < ptr.Elem().Type().NumField(); i++ {
@@ -44,7 +46,7 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 				// kind of a hack but it allow us to set options at runtime
 				externalKey := field.Tag.Get("of_options_external")
 				if externalKey == "" {
-					panic("no option of external key provided")
+					log.Panic("no option of external key provided")
 				}
 				options = externalOptions[externalKey]
 			} else {
@@ -52,7 +54,7 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 			}
 			n := len(options)
 			if n%2 == 1 {
-				panic("wrong of_options")
+				log.Panic("wrong of_options")
 			}
 			for i := 0; i < n; i += 2 {
 				html += `<option value="` + options[i+1] + `"`
@@ -77,7 +79,7 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 					value := reflect.Indirect(ptr.Elem().Field(i)).Interface().(string)
 					html += value
 				default:
-					panic("field type not supported")
+					log.Panic("field type not supported")
 				}
 				html += `"`
 			} else {
@@ -113,7 +115,7 @@ func GenerateWebForm(defaultObjPtr any, formId, buttonAction, resetText, submitT
 						html += ` checked`
 					}
 				default:
-					panic("field type not supported")
+					log.Panic("field type not supported")
 				}
 				extraTags := field.Tag.Get("of_attrs")
 				if extraTags != "" {

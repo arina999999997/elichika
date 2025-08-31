@@ -70,7 +70,7 @@ func Load(p string) *RuntimeConfig {
 	c := RuntimeConfig{}
 	err := json.Unmarshal([]byte(utils.ReadAllText(p)), &c)
 	if err != nil {
-		panic("config file is wrong, change/delete it and try again")
+		log.Panic("config file is wrong, change/delete it and try again")
 	}
 	d := defaultConfigs()
 	for i := 0; i < reflect.TypeOf(c).NumField(); i++ {

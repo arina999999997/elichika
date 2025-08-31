@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserGradeUpItem struct {
 
 func (ugui *UserGradeUpItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeGradeUpper { // 13
-		panic(fmt.Sprintln("Wrong content for GradeUpItem: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for GradeUpItem: ", content))
 	}
 	ugui.ItemMasterId = content.ContentId
 	ugui.Amount = content.ContentAmount

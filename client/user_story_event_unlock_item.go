@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserStoryEventUnlockItem struct {
 
 func (useui *UserStoryEventUnlockItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeStoryEventUnlock { // 30
-		panic(fmt.Sprintln("Wrong content for StoryEventUnlockItem: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for StoryEventUnlockItem: ", content))
 	}
 	useui.StoryEventUnlockItemMasterId = content.ContentId
 	useui.Amount = content.ContentAmount

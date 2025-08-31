@@ -83,7 +83,7 @@ func (dictionary *Dictionary) Resolve(id string) string {
 func (dictionary *Dictionary) ServerResolve(id string) string {
 	message, exist := dictionary.ServerDictionary[id]
 	if !exist {
-		panic("server dictionary key doesn't exist: " + id)
+		log.Panic("server dictionary key doesn't exist: " + id)
 	}
 	return message
 }

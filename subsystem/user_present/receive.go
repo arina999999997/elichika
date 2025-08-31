@@ -16,10 +16,10 @@ func Receive(session *userdata.Session, presentId int32, resp *response.ReceiveP
 	// LimitExceededItems is for
 	utils.CheckErrMustExist(err, exist)
 
-	// has expired item panic so the user has to reload and trigger present delete
+	// has expired item log.Panic( so the user has to reload and trigger present delete
 	// for now we will give the present to the user anyway if they managed to load it before it expire
 	// if (present.ExpiredAt.HasValue && (present.ExpiredAt.Value <= session.Time.Unix())) {
-	// 	panic("has expired item")
+	// 	log.Panic("has expired item")
 	// }
 	result := user_content.AddContent(session, present.Content)
 	if len(session.UnreceivedContent) == 0 {

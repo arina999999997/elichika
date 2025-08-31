@@ -2,11 +2,12 @@ package user_love_ranking
 
 import (
 	"elichika/enum"
+	"elichika/log"
 )
 
 func getMemberIdFromCondition(condtiionType int32) int32 {
 	if (condtiionType < enum.LoveRankingConditionTypeMember1) || (condtiionType > enum.LoveRankingConditionTypeMember212) {
-		panic("must be a single member condition")
+		log.Panic("must be a single member condition")
 	}
 	if condtiionType <= enum.LoveRankingConditionTypeMember9 {
 		return condtiionType - enum.LoveRankingConditionTypeMember1 + 1

@@ -140,7 +140,7 @@ func (ld *LiveDifficulty) loadSimpleLiveStage(gamedata *Gamedata) {
 		return // already loaded
 	}
 	// log.Println("Loading for", ld.LiveDifficultyId)
-	liveNotes := utils.ReadAllText(fmt.Sprintf("assets/simple_stages/%d.json", ld.LiveDifficultyId))
+	liveNotes := utils.ReadAllText(fmt.Sprintf(config.RootPath+"assets/simple_stages/%d.json", ld.LiveDifficultyId))
 	if (liveNotes == "") || (ld.UnlockPattern == enum.LiveUnlockPatternTowerOnly) {
 
 		// song doesn't exist, use rule to find the original map
@@ -174,7 +174,7 @@ func (ld *LiveDifficulty) loadSimpleLiveStage(gamedata *Gamedata) {
 		utils.CheckErr(err)
 	}
 	if ld.SimpleLiveStage == nil {
-		panic(fmt.Sprint("Error finding live stage for: ", ld.LiveDifficultyId))
+		log.Panic(fmt.Sprint("Error finding live stage for: ", ld.LiveDifficultyId))
 	}
 	if ld.SimpleLiveStage.Original != nil {
 		_, exists := gamedata.LiveDifficulty[*ld.SimpleLiveStage.Original]
@@ -189,7 +189,7 @@ func (ld *LiveDifficulty) loadSimpleLiveStage(gamedata *Gamedata) {
 		ld.SimpleLiveStage = gamedata.LiveDifficulty[*ld.SimpleLiveStage.Original].SimpleLiveStage
 	}
 	if ld.SimpleLiveStage == nil {
-		panic(fmt.Sprint("Error finding original live stage for: ", ld.LiveDifficultyId))
+		log.Panic(fmt.Sprint("Error finding original live stage for: ", ld.LiveDifficultyId))
 	}
 }
 
@@ -199,14 +199,14 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	}
 
 	if !config.GenerateStageFromScratch { // load generated stage, it must exists
-		text := utils.ReadAllText(fmt.Sprintf("assets/stages/%d.json", ld.LiveDifficultyId))
+		text := utils.ReadAllText(fmt.Sprintf(config.RootPath+"assets/stages/%d.json", ld.LiveDifficultyId))
 		if text == "" {
-			panic(fmt.Sprintf("Stage %d doesn't exists in assets/stages", ld.LiveDifficultyId))
+			log.Panic(fmt.Sprintf("Stage %d doesn't exists in assets/stages", ld.LiveDifficultyId))
 		}
 		ld.LiveStage = new(client.LiveStage)
 		err := json.Unmarshal([]byte(text), &ld.LiveStage)
 		if err != nil {
-			panic(fmt.Sprintf("Failed to load stage %d: wrong format", ld.LiveDifficultyId))
+			log.Panic(fmt.Sprintf("Failed to load stage %d: wrong format", ld.LiveDifficultyId))
 		}
 		return
 	}
@@ -216,7 +216,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 		if ld.UnlockPattern != enum.LiveUnlockPatternTowerOnly {
 			return
 		}
-		panic(fmt.Sprint("Failed to load simple live stage for: ", ld.LiveDifficultyId))
+		log.Panic(fmt.Sprint("Failed to load simple live stage for: ", ld.LiveDifficultyId))
 	}
 
 	// make the object and set relevant stuff
@@ -269,7 +269,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	{
 		output, err := json.Marshal(ld.LiveStage)
 		utils.CheckErr(err)
-		utils.WriteAllText(fmt.Sprintf("assets/stages/%d.json", ld.LiveDifficultyId), string(output))
+		utils.WriteAllText(fmt.Sprintf(config.RootPath+"assets/stages/%d.json", ld.LiveDifficultyId), string(output))
 	}
 
 	// check against pregenerated map
@@ -279,7 +279,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	if ld.UnlockPattern == enum.LiveUnlockPatternCoopOnly {
 		return
 	}
-	text := utils.ReadAllText(fmt.Sprintf("assets/full_stages/%d.json", ld.LiveDifficultyId))
+	text := utils.ReadAllText(fmt.Sprintf(config.RootPath+"assets/full_stages/%d.json", ld.LiveDifficultyId))
 	if text == "" {
 		// log.Println("Newly generated map: ", ld.LiveDifficultyId)
 		return
@@ -288,7 +288,7 @@ func (ld *LiveDifficulty) ConstructLiveStage(gamedata *Gamedata) {
 	err := json.Unmarshal([]byte(text), &pregeneratedStage)
 	utils.CheckErr(err)
 	if !pregeneratedStage.IsSame(ld.LiveStage) {
-		panic(fmt.Sprint("Difference detected for: ", ld.LiveDifficultyId, "\n", ld.LiveStage, "\n_______________\n", pregeneratedStage))
+		log.Panic(fmt.Sprint("Difference detected for: ", ld.LiveDifficultyId, "\n", ld.LiveStage, "\n_______________\n", pregeneratedStage))
 	}
 
 }

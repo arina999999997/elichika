@@ -2,6 +2,7 @@ package user_tutorial
 
 import (
 	"elichika/enum"
+	"elichika/log"
 	"elichika/subsystem/user_reference_book"
 	"elichika/subsystem/user_unlock_scene"
 	"elichika/userdata"
@@ -9,7 +10,7 @@ import (
 
 func PhaseEnd(session *userdata.Session) {
 	if session.UserStatus.TutorialPhase != enum.TutorialPhaseFinal {
-		panic("Unexpected tutorial phase")
+		log.Panic("Unexpected tutorial phase")
 	}
 	session.UserStatus.TutorialPhase = enum.TutorialPhaseTutorialEnd
 	session.UserStatus.TutorialEndAt = session.Time.Unix()

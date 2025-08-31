@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserLiveSkipTicket struct {
 
 func (ulst *UserLiveSkipTicket) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeLiveSkipTicket { // 28
-		panic(fmt.Sprintln("Wrong content for LiveSkipTicket: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for LiveSkipTicket: ", content))
 	}
 	ulst.TicketMasterId = content.ContentId
 	ulst.Amount = content.ContentAmount

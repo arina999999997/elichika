@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserGachaPoint struct {
 
 func (ugp *UserGachaPoint) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeGachaPoint { // 5
-		panic(fmt.Sprintln("Wrong content for GachaPoint: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for GachaPoint: ", content))
 	}
 	ugp.PointMasterId = content.ContentId
 	ugp.Amount = content.ContentAmount

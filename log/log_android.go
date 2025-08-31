@@ -1,3 +1,4 @@
+// go:build embedded
 package log
 
 /*
@@ -15,6 +16,8 @@ import "C"
 // it's important for the import C to be right before the implementation
 import (
 	"unsafe"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AndroidLogger struct {
@@ -28,6 +31,9 @@ func (w AndroidLogger) Write(data []byte) (n int, err error) {
 }
 
 func init() {
+	// capture standard log
 	SetOutput(AndroidLogger{})
+	// capture gin's log
+	gin.DefaultWriter = AndroidLogger{}
 	Printf("Set android logger")
 }

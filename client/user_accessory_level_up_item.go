@@ -2,6 +2,7 @@ package client
 
 import (
 	"elichika/enum"
+	"elichika/log"
 
 	"fmt"
 )
@@ -13,7 +14,7 @@ type UserAccessoryLevelUpItem struct {
 
 func (ualui *UserAccessoryLevelUpItem) FromContent(content Content) {
 	if content.ContentType != enum.ContentTypeAccessoryLevelUp { // 24
-		panic(fmt.Sprintln("Wrong content for AccessoryLevelUpItem: ", content))
+		log.Panic(fmt.Sprintln("Wrong content for AccessoryLevelUpItem: ", content))
 	}
 	ualui.AccessoryLevelUpItemMasterId = content.ContentId
 	ualui.Amount = content.ContentAmount

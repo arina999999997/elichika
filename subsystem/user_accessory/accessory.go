@@ -3,6 +3,7 @@ package user_accessory
 import (
 	"elichika/client"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 )
@@ -63,7 +64,7 @@ func accessoryFinalizer(session *userdata.Session) {
 				Delete(client.UserAccessory{})
 			utils.CheckErr(err)
 			if affected != 1 {
-				panic("accessory doesn't exist")
+				log.Panic("accessory doesn't exist")
 			}
 		}
 	}

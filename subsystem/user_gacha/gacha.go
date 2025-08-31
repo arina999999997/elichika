@@ -7,6 +7,7 @@ import (
 	"elichika/enum"
 	"elichika/gamedata"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/serverdata"
 	"elichika/subsystem/user_card"
 	"elichika/subsystem/user_content"
@@ -39,7 +40,8 @@ func ChooseRandomCard(gamedata *gamedata.Gamedata, cards []serverdata.GachaCard)
 			groupRand -= gamedata.GachaGroup[groupId].GroupWeight
 		}
 	}
-	panic("this shouldn't happen")
+	log.Panic("this shouldn't happen")
+	return 0
 }
 
 func MakeResultCard(session *userdata.Session, cardMasterId int32, isGuaranteed bool) client.AddedGachaCardResult {

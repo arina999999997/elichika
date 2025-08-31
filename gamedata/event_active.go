@@ -53,7 +53,7 @@ func (ae *EventActive) GetEventValue() *serverdata.EventActive {
 		if exist {
 			// do some check
 			if (event.StartAt >= event.ExpiredAt) || (event.ExpiredAt > event.ResultAt) || (event.ResultAt >= event.EndAt) {
-				panic("active event have bad time constraint")
+				log.Panic("active event have bad time constraint")
 			}
 			ae.Event = &event
 		}

@@ -61,7 +61,7 @@ func updateClientDb(baseDir string, masterdataRefs []string) {
 		if oldVersion == "" {
 			oldVersion = mMap[refPath].Version
 		} else if oldVersion != mMap[refPath].Version {
-			panic("manifest files must come from the same version")
+			log.Panic("manifest files must come from the same version")
 		}
 		for _, file := range mMap[refPath].Files {
 			actualFileVersion := hex.EncodeToString(fileSha1(baseDir + file.Name))
@@ -135,7 +135,6 @@ func updateClientDb(baseDir string, masterdataRefs []string) {
 
 func init() {
 	databaseInit()
-	// outDir := config.StaticDataPath
 
 	// Gl
 	masterdataRefGls := []string{}
@@ -168,7 +167,7 @@ func readMasterdataManinest(path string) string {
 	count, err := file.Read(buff)
 	utils.CheckErr(err)
 	if count < 21 {
-		panic("file too short")
+		log.Panic("file too short")
 	}
 	length := int(buff[20])
 	version := string(buff[21 : 21+length])

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"elichika/config"
 	"elichika/enum"
 	"elichika/router"
 	"elichika/subsystem/user_authentication"
@@ -52,7 +53,7 @@ func Login(ctx *gin.Context) {
 
 func init() {
 	router.AddSpecialSetup("/webui/user", func(group *gin.RouterGroup) {
-		group.StaticFile("/login", "./webui/user/login.html")
+		group.StaticFile("/login", config.RootPath+"webui/user/login.html")
 	})
 	router.AddHandler("/webui/user", "POST", "/login", Login)
 }

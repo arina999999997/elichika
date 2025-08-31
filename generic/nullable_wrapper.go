@@ -1,6 +1,7 @@
 package generic
 
 import (
+	"elichika/log"
 	"elichika/utils"
 
 	"encoding/json"
@@ -82,7 +83,7 @@ func (Nullable[T]) LoadFromDb(db *xorm.Session, userId int32, table, mapKey stri
 		}
 	}
 	if !valueHasKey {
-		panic(fmt.Sprint("Not supported yet, table: ", table, ", key: ", mapKey))
+		log.Panic(fmt.Sprint("Not supported yet, table: ", table, ", key: ", mapKey))
 	}
 	var items []T
 	err := db.Table(table).Where("user_id = ?", userId).Find(&items)

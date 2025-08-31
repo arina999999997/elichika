@@ -67,7 +67,7 @@ func (session *Session) SessionKey() []byte {
 func (session *Session) EncodedAuthorizationKey(mask64 string) string {
 	mask, err := base64.StdEncoding.DecodeString(mask64)
 	utils.CheckErr(err)
-	randomBytes := encrypt.RSA_DecryptOAEP(mask, "privatekey.pem")
+	randomBytes := encrypt.RSA_DecryptOAEP(mask, config.RootPath+"privatekey.pem")
 	newKey := utils.Xor(randomBytes, []byte(session.AuthorizationKey()))
 	newKey64 := base64.StdEncoding.EncodeToString(newKey)
 	return newKey64
@@ -76,7 +76,7 @@ func (session *Session) EncodedAuthorizationKey(mask64 string) string {
 func (session *Session) EncodedSessionKey(mask64 string) string {
 	mask, err := base64.StdEncoding.DecodeString(mask64)
 	utils.CheckErr(err)
-	randomBytes := encrypt.RSA_DecryptOAEP(mask, "privatekey.pem")
+	randomBytes := encrypt.RSA_DecryptOAEP(mask, config.RootPath+"privatekey.pem")
 	serverEventReceiverKey, err := hex.DecodeString(config.ServerEventReceiverKey)
 	utils.CheckErr(err)
 	newKey := utils.Xor(randomBytes, []byte(session.SessionKey()))

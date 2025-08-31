@@ -12,7 +12,7 @@ func OverflowCheckedAdd(current *int32, added *int32) {
 		*current = int32(res)
 		*added = 0
 	} else {
-		// TODO(resource): Maybe this should panic or put user in debt but let's not think about it now
+		// TODO(resource): Maybe this should log.Panic( or put user in debt but let's not think about it now
 		*current = 0
 		*added = 0
 	}
