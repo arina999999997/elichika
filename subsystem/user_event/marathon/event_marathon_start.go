@@ -3,6 +3,7 @@ package marathon
 import (
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/scheduled_task"
 	"elichika/utils"
 
@@ -39,8 +40,8 @@ func startEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.S
 	if (activeEvent == nil) || (activeEvent.EventId != eventId) ||
 		(activeEvent.EventType != enum.EventType1Marathon) || (activeEvent.StartAt != task.Time) {
 
-		fmt.Println("Warning: Failed to start event: ", task)
-		fmt.Println((activeEvent == nil), (activeEvent.EventId != eventId), (activeEvent.EventType != enum.EventType1Marathon), (activeEvent.StartAt != task.Time))
+		log.Println("Warning: Failed to start event: ", task)
+		log.Println((activeEvent == nil), (activeEvent.EventId != eventId), (activeEvent.EventType != enum.EventType1Marathon), (activeEvent.StartAt != task.Time))
 		return
 	}
 	// this will be scheduled by an event scheduler, and called when the event is ready to start

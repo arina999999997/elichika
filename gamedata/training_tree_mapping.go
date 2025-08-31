@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -49,7 +48,7 @@ func (treeMapping *TrainingTreeMapping) populate(gamedata *Gamedata) {
 }
 
 func loadTrainingTreeMapping(gamedata *Gamedata) {
-	fmt.Println("Loading TrainingMapping")
+	log.Println("Loading TrainingMapping")
 	gamedata.TrainingTreeMapping = make(map[int32]*TrainingTreeMapping)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

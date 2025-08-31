@@ -1,6 +1,7 @@
 package assetdata
 
 import (
+	"elichika/log"
 	"elichika/utils"
 
 	"fmt"
@@ -15,7 +16,7 @@ type MetapackType struct {
 }
 
 func loadMetapack(locale string, session *xorm.Session) {
-	fmt.Println("Loading Metapack")
+	log.Println("Loading Metapack")
 	metapacks := map[string]*MetapackType{}
 	err := session.Table("metapack").Find(&metapacks)
 	utils.CheckErr(err)
@@ -32,5 +33,5 @@ func loadMetapack(locale string, session *xorm.Session) {
 			panic(fmt.Sprint("Metapack name reused: ", *previous, *metapack, "\nLocale: ", locale, ", previous locale: ", NameToLocale[name]))
 		}
 	}
-	fmt.Printf("Loaded %d new metapack\n", cnt)
+	log.Printf("Loaded %d new metapack\n", cnt)
 }

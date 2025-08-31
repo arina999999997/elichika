@@ -2,9 +2,8 @@ package serverdata
 
 import (
 	"elichika/db"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -47,7 +46,7 @@ func createTable(tableName string, structure interface{}, overwrite bool) bool {
 	utils.CheckErr(err)
 
 	if !exist {
-		fmt.Println("Creating new table:", tableName)
+		log.Println("Creating new table:", tableName)
 		err = engine.Table(tableName).CreateTable(structure)
 		utils.CheckErr(err)
 		return true
@@ -55,7 +54,7 @@ func createTable(tableName string, structure interface{}, overwrite bool) bool {
 		if !overwrite {
 			return false
 		}
-		fmt.Println("Overwrite existing table:", tableName)
+		log.Println("Overwrite existing table:", tableName)
 		err := engine.DropTables(tableName)
 		utils.CheckErr(err)
 		err = engine.Table(tableName).CreateTable(structure)

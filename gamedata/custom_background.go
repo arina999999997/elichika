@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -15,7 +14,7 @@ type CustomBackground struct {
 }
 
 func loadCustomBackground(gamedata *Gamedata) {
-	fmt.Println("Loading CustomBackground")
+	log.Println("Loading CustomBackground")
 	gamedata.CustomBackground = make(map[int32]*CustomBackground)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -18,7 +17,7 @@ func (m *MemberGuildChallengeLive) GetLiveId(memberGuildId int32) int32 {
 }
 
 func loadMemberGuildChallengeLive(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGuildChallengeLive")
+	log.Println("Loading MemberGuildChallengeLive")
 
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

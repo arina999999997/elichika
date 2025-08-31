@@ -1,6 +1,7 @@
 package scheduled_task
 
 import (
+	"elichika/log"
 	"elichika/serverdata"
 	"elichika/userdata/database"
 	"elichika/utils"
@@ -76,7 +77,7 @@ func HandleScheduledTasks(userdata_db *xorm.Session, currentTime time.Time) {
 		}
 		handler, exist := taskHandlers[task[0].TaskName]
 		if !exist {
-			fmt.Println("Warning: Ignored task with no handler: ", task[0].TaskName)
+			log.Println("Warning: Ignored task with no handler: ", task[0].TaskName)
 		} else {
 			handler(userdata_db, task[0])
 		}
@@ -130,7 +131,7 @@ func ForceRun(userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool))
 			if run {
 				handler, exist := taskHandlers[task.TaskName]
 				if !exist {
-					fmt.Println("Warning: Ignored task with no handler: ", task.TaskName)
+					log.Println("Warning: Ignored task with no handler: ", task.TaskName)
 				} else {
 					handler(userdata_db, task)
 				}

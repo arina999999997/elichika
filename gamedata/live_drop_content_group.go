@@ -2,17 +2,15 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/generic/drop"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
 
 func loadLiveDropContentGroup(gamedata *Gamedata) {
-	fmt.Println("Loading LiveDropContentGroup")
+	log.Println("Loading LiveDropContentGroup")
 	gamedata.LiveDropContentGroup = make(map[int32]*drop.WeightedDropList[client.Content])
 
 	type LiveDropContentGroup struct {

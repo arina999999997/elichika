@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -36,7 +35,7 @@ func (cardLevel *CardLevel) populate(gamedata *Gamedata) {
 }
 
 func loadCardLevel(gamedata *Gamedata) {
-	fmt.Println("Loading CardLevel")
+	log.Println("Loading CardLevel")
 	gamedata.CardLevel = make(map[int32]*CardLevel)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

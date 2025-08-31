@@ -3,7 +3,6 @@ package main
 import (
 	"elichika/webui/webui_utils"
 
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

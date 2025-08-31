@@ -3,9 +3,9 @@ package marathon
 import (
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/scheduled_task"
 
-	"fmt"
 	"strconv"
 
 	"xorm.io/xorm"
@@ -18,7 +18,7 @@ func endEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.Sch
 	eventId := int32(eventIdInt)
 	if (activeEvent == nil) || (activeEvent.EventId != eventId) ||
 		(activeEvent.EventType != enum.EventType1Marathon) || (activeEvent.EndAt != task.Time) {
-		fmt.Println("Warning: Failed to end event: ", task)
+		log.Println("Warning: Failed to end event: ", task)
 		return
 	}
 	// no actual clean up is necessary, we just need to remove the ranking object

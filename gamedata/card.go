@@ -2,10 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -72,7 +70,7 @@ func (card *Card) populate(gamedata *Gamedata) {
 }
 
 func loadCard(gamedata *Gamedata) {
-	fmt.Println("Loading Card")
+	log.Println("Loading Card")
 	gamedata.Card = make(map[int32]*Card)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

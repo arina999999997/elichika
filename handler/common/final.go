@@ -30,7 +30,7 @@ func JsonResponse(ctx *gin.Context, resp any) {
 		session.Finalize() // calling this multiple time is fine, sometime we want some result that is only obtained after finalizing
 	}
 	signBody, err := json.Marshal(resp)
-	// fmt.Println(string(signBody))
+	// log.Println(string(signBody))
 	utils.CheckErr(err)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, SignResp(ctx, string(signBody), ctx.MustGet("sign_key").([]byte)))
@@ -52,8 +52,8 @@ func AlternativeJsonResponse(ctx *gin.Context, resp any) {
 		session.Finalize() // calling this multiple time is fine
 	}
 	signBody, err := json.Marshal(resp)
-	// fmt.Println(string(signBody))
-	// fmt.Println(ctx.MustGet("sign_key").([]byte))
+	// log.Println(string(signBody))
+	// log.Println(ctx.MustGet("sign_key").([]byte))
 	utils.CheckErr(err)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, SignRespWithRespnoseType(ctx, string(signBody), ctx.MustGet("sign_key").([]byte), 1))

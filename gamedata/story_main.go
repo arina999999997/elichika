@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -38,7 +37,7 @@ func (smc *StoryMainChapter) populate(gamedata *Gamedata) {
 }
 
 func loadStoryMain(gamedata *Gamedata) {
-	fmt.Println("Loading StoryMainChapter")
+	log.Println("Loading StoryMainChapter")
 	gamedata.StoryMainChapter = make(map[int32]*StoryMainChapter)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

@@ -2,9 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -107,7 +106,7 @@ func (design *TrainingTreeDesign) Uncompress(cells []client.UserCardTrainingTree
 }
 
 func loadTrainingTreeDesign(gamedata *Gamedata) {
-	fmt.Println("Loading TrainingTreeDesign")
+	log.Println("Loading TrainingTreeDesign")
 	type TrainingTreeDesignCell struct {
 		DesignId         int32 `xorm:"'id'"`
 		CellId           int32 `xorm:"'cell_id'"`

@@ -2,12 +2,13 @@ package clientdb
 
 import (
 	"elichika/config"
+	"elichika/log"
 	"elichika/utils"
 
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/hex"
-	"fmt"
+
 	"os"
 
 	hwdecrypt "github.com/arina999999997/gohwdecrypt"
@@ -52,7 +53,7 @@ func updateClientDb(baseDir string, masterdataRefs []string) {
 	newFileVersion := map[string]string{}
 	mMap := map[string]*manifest{}
 	for _, refPath := range masterdataRefs {
-		fmt.Println(baseDir + refPath)
+		log.Println(baseDir + refPath)
 		f, err := os.Open(baseDir + refPath)
 		utils.CheckErr(err)
 		defer f.Close()
@@ -75,14 +76,14 @@ func updateClientDb(baseDir string, masterdataRefs []string) {
 	os.MkdirAll(config.StaticDataPath+newVersion+"/", 0755)
 	if newVersion == oldVersion {
 		// check for integrity  of the data
-		fmt.Println("Performing integrity check for version: ", oldVersion)
+		log.Println("Performing integrity check for version: ", oldVersion)
 		updated := false
 		for _, m := range mMap {
 			for i := range m.Files {
 				inputFile := baseDir + m.Files[i].Name
 				existingFile := config.StaticDataPath + oldVersion + "/" + m.Files[i].Name
 				if hex.EncodeToString(fileSha1(existingFile)) != m.Files[i].EncryptedSHA {
-					fmt.Println("Integrity error detected for file: ", m.Files[i].Name, ", rekeying")
+					log.Println("Integrity error detected for file: ", m.Files[i].Name, ", rekeying")
 					// remove the file first, if it exists
 					if fileExist(existingFile) {
 						err := os.Remove(existingFile)
@@ -103,7 +104,7 @@ func updateClientDb(baseDir string, masterdataRefs []string) {
 			}
 		}
 	} else {
-		fmt.Println("Difference detected, new version: ", newVersion)
+		log.Println("Difference detected, new version: ", newVersion)
 		for refPath, m := range mMap {
 			m.Version = newVersion
 			for i := range m.Files {
@@ -119,7 +120,7 @@ func updateClientDb(baseDir string, masterdataRefs []string) {
 					}
 					ver = m.Files[i].SHA
 				}
-				fmt.Println("Rekeying file: ", m.Files[i].Name)
+				log.Println("Rekeying file: ", m.Files[i].Name)
 				m.Files[i].SHA = ver
 				rekey(inputFile, outputFile, &m.Files[i], keySpec)
 			}
@@ -156,8 +157,8 @@ func init() {
 	config.MasterVersionGl = readMasterdataManinest(config.GlMasterdataPath + "masterdata_a_en")
 	config.MasterVersionJp = readMasterdataManinest(config.JpMasterdataPath + "masterdata_a_ja")
 
-	fmt.Println("gl master version:", config.MasterVersionGl)
-	fmt.Println("jp master version:", config.MasterVersionJp)
+	log.Println("gl master version:", config.MasterVersionGl)
+	log.Println("jp master version:", config.MasterVersionJp)
 }
 
 func readMasterdataManinest(path string) string {

@@ -2,8 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/generic/drop"
+	"elichika/log"
 	"elichika/utils"
 
 	"fmt"
@@ -38,7 +38,7 @@ func (ldg *LiveDropGroup) GetRandomItemByDropColor(dropColor int32) client.Conte
 }
 
 func loadLiveDropGroup(gamedata *Gamedata) {
-	fmt.Println("Loading LiveDropGroup")
+	log.Println("Loading LiveDropGroup")
 	gamedata.LiveDropGroup = make(map[int32]*LiveDropGroup)
 
 	type LiveDropGroupRow struct {

@@ -2,10 +2,10 @@ package serverdata
 
 import (
 	"elichika/config"
+	"elichika/log"
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -56,7 +56,7 @@ func InitializeDailyTheater(session *xorm.Session) {
 		if !strings.HasSuffix(info.Name(), ".json") {
 			return nil
 		}
-		fmt.Printf("Parsing daily theater file: %s\n", path)
+		log.Printf("Parsing daily theater file: %s\n", path)
 		text := utils.ReadAllText(path)
 		dailyTheater := DailyTheater{}
 		err = json.Unmarshal([]byte(text), &dailyTheater)

@@ -2,6 +2,7 @@ package user_content
 
 import (
 	"elichika/client"
+	"elichika/log"
 	"elichika/userdata"
 
 	"fmt"
@@ -14,7 +15,7 @@ func PopulateGenericContentDiffFromUserModel(session *userdata.Session) {
 	for contentType, fieldName := range userModelField {
 		rDictionary := rModel.Elem().FieldByName(fieldName)
 		if !rDictionary.IsValid() {
-			fmt.Println("Invalid field: ", contentType, "->", fieldName)
+			log.Println("Invalid field: ", contentType, "->", fieldName)
 			continue
 		}
 		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())

@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -20,7 +19,7 @@ type MemberGuildPeriod struct {
 }
 
 func loadMemberGuildPeriod(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGuildPeriod")
+	log.Println("Loading MemberGuildPeriod")
 	var exist bool
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

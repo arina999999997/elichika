@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -24,11 +23,11 @@ func (suit *Suit) populate(gamedata *Gamedata) {
 	suit.Member = gamedata.Member[*suit.MemberMId]
 	suit.MemberMId = &suit.Member.Id
 	// suit.Name = gamedata.Dictionary.Resolve(suit.Name)
-	// fmt.Println(suit.Id, "\t", *suit.MemberMId, "\t", suit.Name, "\t", suit.ThumbnailImageAssetPath, "\t", suit.ModelAssetPath)
+	// log.Println(suit.Id, "\t", *suit.MemberMId, "\t", suit.Name, "\t", suit.ThumbnailImageAssetPath, "\t", suit.ModelAssetPath)
 }
 
 func loadSuit(gamedata *Gamedata) {
-	fmt.Println("Loading Suit")
+	log.Println("Loading Suit")
 	gamedata.Suit = make(map[int32]*Suit)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

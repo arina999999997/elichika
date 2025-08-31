@@ -10,7 +10,7 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
+
 	"io"
 	"log"
 	"strconv"
@@ -73,8 +73,8 @@ func initial(ctx *gin.Context) {
 		ctx.Set("sign_key", session.SessionKey())
 		// signAuth := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])), session.AuthorizationKey())
 		// signSession := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])), session.SessionKey())
-		// fmt.Println("auth: ", signAuth, "\nactual: ", string(messages[n-1]))
-		// fmt.Println("session: ", signSession, "\nactual: ", string(messages[n-1]))
+		// log.Println("auth: ", signAuth, "\nactual: ", string(messages[n-1]))
+		// log.Println("session: ", signSession, "\nactual: ", string(messages[n-1]))
 		commandId, _ := strconv.Atoi(ctx.Query("id"))
 		if strings.HasPrefix(ctx.Request.URL.String(), "/login/login?") {
 			signAuth := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])),
@@ -99,7 +99,7 @@ func initial(ctx *gin.Context) {
 		signStartUp := encrypt.HMAC_SHA1_Encrypt([]byte(ctx.Request.URL.String()+" "+string(messages[n-2])),
 			locale.Locales[lang].StartupKey)
 		if sign != signStartUp { // incorrect start up key, reject
-			fmt.Println("startup: ", signStartUp, "\nactual: ", sign)
+			log.Println("startup: ", signStartUp, "\nactual: ", sign)
 			panic("wrong startup key, get the correct app version")
 		}
 	}

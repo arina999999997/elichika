@@ -1,15 +1,14 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
 
 func loadConstantInt(gamedata *Gamedata) {
-	fmt.Println("Loading ConstantInt")
+	log.Println("Loading ConstantInt")
 	type ConstantInt struct {
 		Index int32 `xorm:"constant_int"`
 		Value int32 `xorm:"value"`

@@ -12,7 +12,7 @@ import (
 	"elichika/utils"
 
 	"encoding/json"
-	// "fmt"
+	//
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ func fetchGameServiceDataBeforeLogin(ctx *gin.Context) {
 	req := request.FetchGameServiceDataBeforeLoginRequest{}
 	err := json.Unmarshal(*ctx.MustGet("reqBody").(*json.RawMessage), &req)
 	utils.CheckErr(err)
-	// fmt.Println(req)
+	// log.Println(req)
 	resp := response.FetchGameServiceDataBeforeLoginResponse{}
 
 	// TODO(authentication): probably want to check against service id

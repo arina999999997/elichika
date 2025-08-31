@@ -2,10 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -41,7 +39,7 @@ func (c *BeginnerChallengeCell) populate(gamedata *Gamedata) {
 }
 
 func loadBeginnerChallengeCell(gamedata *Gamedata) {
-	fmt.Println("Loading BeginnerChallengeCell")
+	log.Println("Loading BeginnerChallengeCell")
 	gamedata.BeginnerChallengeCell = make(map[int32]*BeginnerChallengeCell)
 	gamedata.BeginnerChallengeCellByClearConditionType = make(map[int32][]*BeginnerChallengeCell)
 	var err error

@@ -2,10 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -17,7 +15,7 @@ type MemberGuildPointClearReward struct {
 }
 
 func loadMemberGuildPointClearReward(gamedata *Gamedata) {
-	fmt.Println("Loading MemberGuildPointClearReward")
+	log.Println("Loading MemberGuildPointClearReward")
 	gamedata.MemberGuildPointClearReward = make(map[int32]*MemberGuildPointClearReward)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

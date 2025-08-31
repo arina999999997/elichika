@@ -4,6 +4,7 @@ import (
 	"elichika/config"
 	"elichika/enum"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/scheduled_task"
 	"elichika/serverdata"
 	"elichika/utils"
@@ -98,7 +99,7 @@ func eventAutoScheduler(userdata_db *xorm.Session, task scheduled_task.Scheduled
 		lastEndedAt := int64(0)
 		if lastEvent != nil {
 			if lastEvent.EndAt >= task.Time {
-				fmt.Println("Warning: active event hasn't ended, event auto scheduler ignored")
+				log.Println("Warning: active event hasn't ended, event auto scheduler ignored")
 				return
 			}
 			lastEndedAt = lastEvent.EndAt

@@ -1,7 +1,8 @@
 package shutdown
 
 import (
-	"fmt"
+	"elichika/log"
+
 	"sync/atomic"
 	"time"
 )
@@ -17,7 +18,7 @@ var sync = make(chan struct{})
 
 func Shutdown() {
 	if isShutdown.Load() {
-		fmt.Println("Warning: shutdown is already triggered")
+		log.Println("Warning: shutdown is already triggered")
 		return
 	}
 	isShutdown.Store(true)
@@ -45,7 +46,7 @@ func WaitForFinish() {
 		}
 		time.Sleep(1 * time.Second)
 	}
-	fmt.Println("No outstanding connection, stopping server")
+	log.Println("No outstanding connection, stopping server")
 }
 
 func SendFinalSignal() {

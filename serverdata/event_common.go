@@ -2,10 +2,10 @@ package serverdata
 
 import (
 	"elichika/config"
+	"elichika/log"
 	"elichika/utils"
 
 	"encoding/json"
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -40,7 +40,7 @@ type EventActive struct {
 func initEventMemberNameAsset(session *xorm.Session) {
 	path := config.AssetPath + "event/event_member_name.json"
 
-	fmt.Printf("Parsing event member name asset file: %s\n", path)
+	log.Printf("Parsing event member name asset file: %s\n", path)
 	text := utils.ReadAllText(path)
 
 	assets := []EventMemberNameAsset{}

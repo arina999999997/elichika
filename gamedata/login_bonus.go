@@ -3,10 +3,9 @@ package gamedata
 import (
 	"elichika/client"
 	"elichika/generic"
+	"elichika/log"
 	"elichika/serverdata"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -44,7 +43,7 @@ func (lb *LoginBonus) populate(gamedata *Gamedata) {
 }
 
 func loadLoginBonus(gamedata *Gamedata) {
-	fmt.Println("Loading LoginBonus")
+	log.Println("Loading LoginBonus")
 	gamedata.LoginBonus = make(map[int32]*LoginBonus)
 	var err error
 	gamedata.ServerdataDb.Do(func(session *xorm.Session) {

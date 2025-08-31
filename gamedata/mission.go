@@ -2,8 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/enum"
+	"elichika/log"
 	"elichika/utils"
 
 	"fmt"
@@ -54,7 +54,7 @@ func (m *Mission) populate(gamedata *Gamedata) {
 }
 
 func loadMission(gamedata *Gamedata) {
-	fmt.Println("Loading Mission")
+	log.Println("Loading Mission")
 	gamedata.Mission = make(map[int32]*Mission)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

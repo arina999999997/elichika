@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -16,7 +15,7 @@ type MemberLoginBonusBirthday struct {
 }
 
 func loadMemberLoginBonusBirthday(gamedata *Gamedata) {
-	fmt.Println("Loading MemberLoginBonusBirthday")
+	log.Println("Loading MemberLoginBonusBirthday")
 	bonuses := []MemberLoginBonusBirthday{}
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

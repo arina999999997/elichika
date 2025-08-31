@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -15,7 +14,7 @@ type StoryEventHistory struct {
 }
 
 func loadStoryEventHistory(gamedata *Gamedata) {
-	fmt.Println("Loading StoryEventHistory")
+	log.Println("Loading StoryEventHistory")
 	gamedata.StoryEventHistory = make(map[int32]*StoryEventHistory)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

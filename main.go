@@ -3,16 +3,14 @@ package main
 import (
 	"elichika/config"
 	_ "elichika/handler"
+	"elichika/log"
+	"elichika/router"
 	"elichika/shutdown"
 	_ "elichika/subsystem"
+	"elichika/subsystem/user_training_tree"
 	"elichika/userdata"
 	_ "elichika/webui"
 
-	"elichika/subsystem/user_training_tree"
-
-	"elichika/router"
-
-	"fmt"
 	"os"
 	"runtime"
 
@@ -30,7 +28,7 @@ func checkCli() bool {
 	if os.Args[1] == "fix_training_trees" {
 		user_training_tree.FixUsersTrainingTrees()
 	}
-	fmt.Println("CLI is reserved for special behaviour, the server will now exit, start it again without any argument!")
+	log.Println("CLI is reserved for special behaviour, the server will now exit, start it again without any argument!")
 	return false
 }
 
@@ -46,8 +44,8 @@ func main() {
 
 	r := gin.Default()
 	router.Router(r)
-	fmt.Println("server address: ", *config.Conf.ServerAddress)
-	fmt.Println("WebUI address: ", *config.Conf.ServerAddress+"/webui/...")
+	log.Println("server address: ", *config.Conf.ServerAddress)
+	log.Println("WebUI address: ", *config.Conf.ServerAddress+"/webui/...")
 	go func() {
 		r.Run(*config.Conf.ServerAddress)
 	}()

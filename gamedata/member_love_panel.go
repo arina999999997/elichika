@@ -1,9 +1,8 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -35,7 +34,7 @@ func (panel *MemberLovePanel) populate(gamedata *Gamedata) {
 }
 
 func loadMemberLovePanel(gamedata *Gamedata) {
-	fmt.Println("Loading MemberLovePanel")
+	log.Println("Loading MemberLovePanel")
 	gamedata.MemberLovePanel = make(map[int32]*MemberLovePanel)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

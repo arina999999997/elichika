@@ -2,10 +2,8 @@ package gamedata
 
 import (
 	"elichika/client"
-
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -48,7 +46,7 @@ func (b *BeginnerChallenge) populate(gamedata *Gamedata) {
 }
 
 func loadBeginnerChallenge(gamedata *Gamedata) {
-	fmt.Println("Loading BeginnerChallenge")
+	log.Println("Loading BeginnerChallenge")
 	gamedata.BeginnerChallenge = make(map[int32]*BeginnerChallenge)
 	var err error
 	gamedata.MasterdataDb.Do(func(session *xorm.Session) {

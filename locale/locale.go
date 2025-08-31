@@ -6,6 +6,7 @@ import (
 	"elichika/db"
 	"elichika/dictionary"
 	"elichika/gamedata"
+	"elichika/log"
 	"elichika/serverdata"
 	"elichika/utils"
 
@@ -96,7 +97,7 @@ func init() {
 		<-syncChannel
 	}
 	finish := time.Now()
-	fmt.Println("Finished loading databases in: ", finish.Sub(start))
+	log.Println("Finished loading databases in: ", finish.Sub(start))
 	for language, locale := range Locales {
 		gamedata.GamedataByLocale[language] = locale.Gamedata
 		// because the order of has map is random, this instance is guaranteed to not

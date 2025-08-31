@@ -13,12 +13,10 @@ package gamedata
 
 import (
 	"elichika/client"
-
 	"elichika/generic"
 	"elichika/item"
+	"elichika/log"
 	"elichika/utils"
-
-	"fmt"
 
 	"xorm.io/xorm"
 )
@@ -54,7 +52,7 @@ func (t Trade) ToClientTrade() *client.Trade {
 
 // TODO(trade): Have proper gamedata types
 func loadTrade(gamedata *Gamedata) {
-	fmt.Println("Loading Trade")
+	log.Println("Loading Trade")
 	gamedata.Trade = make(map[int32]*Trade)
 	gamedata.TradeProduct = make(map[int32]*client.TradeProduct)
 	var err error
@@ -71,7 +69,7 @@ func loadTrade(gamedata *Gamedata) {
 		})
 		utils.CheckErr(err)
 		if !exist {
-			fmt.Println("Warning: Skipped trade ", id, " (did not exist in masterdata.db)")
+			log.Println("Warning: Skipped trade ", id, " (did not exist in masterdata.db)")
 			delete(gamedata.Trade, id)
 			continue
 		}

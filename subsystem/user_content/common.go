@@ -3,6 +3,7 @@ package user_content
 import (
 	"elichika/client"
 	"elichika/enum"
+	"elichika/log"
 	"elichika/userdata"
 	"elichika/utils"
 
@@ -78,7 +79,7 @@ func genericContentByContentIdFinalizer(session *userdata.Session) {
 	for contentType, contentDiffByContentId := range session.UserContentDiffs {
 		rDictionary := rModel.Elem().FieldByName(userModelField[contentType])
 		if !rDictionary.IsValid() {
-			fmt.Println("Invalid field: ", contentType, "->", userModelField[contentType])
+			log.Println("Invalid field: ", contentType, "->", userModelField[contentType])
 			continue
 		}
 		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())
@@ -126,7 +127,7 @@ func genericContentByContentIdPopulator(session *userdata.Session) {
 		}
 		rDictionary := rModel.Elem().FieldByName(fieldName)
 		if !rDictionary.IsValid() {
-			fmt.Println("Invalid field: ", contentType, "->", fieldName)
+			log.Println("Invalid field: ", contentType, "->", fieldName)
 			continue
 		}
 		rDictionaryPtrType := reflect.PointerTo(rDictionary.Type())
