@@ -1,4 +1,4 @@
-package serverdata
+package serverstate
 
 import (
 	"elichika/utils"

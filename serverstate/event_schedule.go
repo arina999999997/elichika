@@ -1,4 +1,4 @@
-package serverdata
+package serverstate
 
 type EventScheduled struct {
 	EventId int32 `xorm:"pk 'event_id'"`

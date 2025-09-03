@@ -60,7 +60,7 @@ func initial(ctx *gin.Context) {
 	var session *userdata.Session
 	defer func() { session.Close() }()
 	// the session will always be closed this way
-	// this session will be passed downstream using ctx, any log.Panic( in handling will lead to the whole request being ignored
+	// this session will be passed downstream using ctx, any panic in handling will lead to the whole request being ignored
 	// finally, if it managed to reach the end then session.Finalize() is called
 	// session.Finalize() will be called before generating the response:
 	// - Responses should use a pointer to user model, so we can create the response object, but it will use user model after finalize

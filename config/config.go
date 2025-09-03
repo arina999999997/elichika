@@ -22,8 +22,9 @@ var (
 	GlMasterdataPath = AssetPath + "db/gl/"
 	JpMasterdataPath = AssetPath + "db/jp/"
 
-	ServerdataPath = RootPath + "serverdata.db"
-	UserdataPath   = RootPath + "userdata.db"
+	ServerdataPath  = RootPath + "serverdata.db"
+	UserdataPath    = RootPath + "userdata.db"
+	ServerstatePath = RootPath + "serverstate.db"
 
 	UserDataBackupPath = "backup/"
 
