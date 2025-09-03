@@ -1,7 +1,7 @@
 package gamedata
 
 import (
-	"elichika/serverdata"
+	"elichika/serverstate"
 	"elichika/utils"
 
 	"fmt"
@@ -27,7 +27,7 @@ func (ea *EventAvailable) Build() {
 
 // reload the event if necessary
 // return nil if the event doesn't exist
-func (ea *EventAvailable) GetNextEvent(currentEvent *serverdata.EventActive) int32 {
+func (ea *EventAvailable) GetNextEvent(currentEvent *serverstate.EventActive) int32 {
 	if currentEvent == nil {
 		return ea.EventIds[0]
 	}

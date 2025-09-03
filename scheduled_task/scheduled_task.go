@@ -2,7 +2,7 @@ package scheduled_task
 
 import (
 	"elichika/log"
-	"elichika/serverdata"
+	"elichika/serverstate"
 	"elichika/userdata/database"
 	"elichika/utils"
 
@@ -33,7 +33,7 @@ import (
 //   - or lead to multistage tasks.
 //
 // - scheduled tasks also take a string params, allowing for stuffs
-type ScheduledTask = serverdata.ScheduledTask
+type ScheduledTask = serverstate.ScheduledTask
 
 // the general task take a session to the user database
 type TaskHandler = func(*xorm.Session, ScheduledTask)
@@ -50,7 +50,7 @@ func AddScheduledTaskHandler(taskName string, handler TaskHandler) {
 
 func AddScheduledTask(scheduledTask ScheduledTask) {
 	var err error
-	serverdata.Database.Do(func(session *xorm.Session) {
+	serverstate.Database.Do(func(session *xorm.Session) {
 		_, err = session.Table("s_scheduled_task").Insert(scheduledTask)
 		if err != nil {
 			return
@@ -68,7 +68,7 @@ func HandleScheduledTasks(userdata_db *xorm.Session, currentTime time.Time) {
 	for {
 		task := []ScheduledTask{}
 		var err error
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			err = session.Table("s_scheduled_task").OrderBy("time, priority").Limit(1).Find(&task)
 		})
 		utils.CheckErr(err)
@@ -81,12 +81,12 @@ func HandleScheduledTasks(userdata_db *xorm.Session, currentTime time.Time) {
 		} else {
 			handler(userdata_db, task[0])
 		}
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			_, err = session.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
 				task[0].Time, task[0].TaskName, task[0].Priority).Delete(&task[0])
 		})
 		utils.CheckErr(err)
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			session.Commit()
 			session.Begin()
 		})
@@ -102,11 +102,11 @@ func HandleScheduledTasks(userdata_db *xorm.Session, currentTime time.Time) {
 // - note that if a task is run, then it is run first, then termination happen, if signified
 
 func ForceRun(userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool)) {
-	ownedServerdataDb := (*xorm.Session)(nil)
+	ownedserverstateDb := (*xorm.Session)(nil)
 	ownedUserdataDb := (*xorm.Session)(nil)
 	defer func() {
-		if ownedServerdataDb != nil {
-			ownedServerdataDb.Close()
+		if ownedserverstateDb != nil {
+			ownedserverstateDb.Close()
 		}
 		if ownedUserdataDb != nil {
 			ownedUserdataDb.Close()
@@ -119,7 +119,7 @@ func ForceRun(userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool))
 	for {
 		tasks := []ScheduledTask{}
 		var err error
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			err = session.Table("s_scheduled_task").OrderBy("time, priority").Find(&tasks)
 		})
 		utils.CheckErr(err)
@@ -135,12 +135,12 @@ func ForceRun(userdata_db *xorm.Session, check func(ScheduledTask) (bool, bool))
 				} else {
 					handler(userdata_db, task)
 				}
-				serverdata.Database.Do(func(session *xorm.Session) {
+				serverstate.Database.Do(func(session *xorm.Session) {
 					_, err = session.Table("s_scheduled_task").Where("time = ? AND task_name = ? AND priority = ?",
 						task.Time, task.TaskName, task.Priority).Delete(&task)
 				})
 				utils.CheckErr(err)
-				serverdata.Database.Do(func(session *xorm.Session) {
+				serverstate.Database.Do(func(session *xorm.Session) {
 					session.Commit()
 					session.Begin()
 				})

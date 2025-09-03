@@ -13,7 +13,7 @@ void android_log(const char* data) {
 */
 import "C"
 
-// it's important for the import C to be right before the implementation
+// it's important for the import C to be right after the implementation
 import (
 	"unsafe"
 

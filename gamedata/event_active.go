@@ -2,7 +2,7 @@ package gamedata
 
 import (
 	"elichika/log"
-	"elichika/serverdata"
+	"elichika/serverstate"
 	"elichika/utils"
 
 	"time"
@@ -34,18 +34,18 @@ import (
 
 // handling object, this can refetch from database if necessary
 type EventActive struct {
-	Event    *serverdata.EventActive
+	Event    *serverstate.EventActive
 	Gamedata *Gamedata `xorm:"-"`
 }
 
 // reload the event if necessary
 // return nil if the event doesn't exist
-func (ae *EventActive) GetEventValue() *serverdata.EventActive {
+func (ae *EventActive) GetEventValue() *serverstate.EventActive {
 	if ae.Event == nil {
-		event := serverdata.EventActive{}
+		event := serverstate.EventActive{}
 		var exist bool
 		var err error
-		ae.Gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			exist, err = session.Table("s_event_active").Get(&event)
 		})
 		log.Println("trying to load event active: ", event)
@@ -71,11 +71,11 @@ func (ae *EventActive) GetEventMarathon() *EventMarathon {
 
 // get active event given a time point
 // if the active event doesn't contain the timePoint, then null is returned
-func (ae *EventActive) GetActiveEvent(timePoint time.Time) *serverdata.EventActive {
+func (ae *EventActive) GetActiveEvent(timePoint time.Time) *serverstate.EventActive {
 	return ae.GetActiveEventUnix(timePoint.Unix())
 }
 
-func (ae *EventActive) GetActiveEventUnix(timeStamp int64) *serverdata.EventActive {
+func (ae *EventActive) GetActiveEventUnix(timeStamp int64) *serverstate.EventActive {
 	event := ae.GetEventValue()
 	if (event == nil) || (event.StartAt > timeStamp) || (event.EndAt < timeStamp) {
 		return nil

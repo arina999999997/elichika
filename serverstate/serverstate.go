@@ -1,5 +1,6 @@
-package serverdata
+package serverstate
 
+// serverstate used to be part of serverdata, as we moved to support embedded elichika, it need to be separated as embedded version cannot properly generate serverdata.db
 import (
 	"elichika/db"
 	"elichika/log"
@@ -8,31 +9,28 @@ import (
 	"xorm.io/xorm"
 )
 
-// the serverdata system work as follow:
-// - each table has a defined structure and an initializer, which can be null
-// - if a table is new or empty, the initializer is called
-// - howerver, all tables are created before any intializer is called, so one initializer can initalize multiple tables
-
 type Initializer = func(*xorm.Session)
 
 var (
-	engine                           *xorm.Engine
-	Database                         *db.DatabaseSync
-	serverDataTableNameToInterface   = map[string]interface{}{}
-	serverDataTableNameToInitializer = map[string]Initializer{}
+	engine                            *xorm.Engine
+	Database                          *db.DatabaseSync
+	serverstateTableNameToInterface   = map[string]interface{}{}
+	serverstateTableNameToInitializer = map[string]Initializer{}
 
-	// whether to rebuild the assets
-	// setting this to true should only update the assets to the newest version, and if the version are the same, it should not change anything
-	rebuildAsset bool
+	// whether to reset the server state
+	// this do not delete any user data, it only reset the server to the initial state
+	// can be used if the server sided tasks are somehow in a bad state
+	// this will almost certainly disrupt on-going events
+	resetServer bool
 )
 
 func addTable(tableName string, structure interface{}, initializer Initializer) {
-	_, exist := serverDataTableNameToInterface[tableName]
+	_, exist := serverstateTableNameToInterface[tableName]
 	if exist {
 		log.Panic("table already exist: " + tableName)
 	}
-	serverDataTableNameToInterface[tableName] = structure
-	serverDataTableNameToInitializer[tableName] = initializer
+	serverstateTableNameToInterface[tableName] = structure
+	serverstateTableNameToInitializer[tableName] = initializer
 }
 
 func createTable(tableName string, structure interface{}, overwrite bool) bool {
@@ -65,12 +63,11 @@ func isTableEmpty(tableName string) bool {
 
 func InitTables() {
 	initializers := []Initializer{}
-	for tableName := range serverDataTableNameToInterface {
-		overwrite := rebuildAsset
-		newOrEmpty := createTable(tableName, serverDataTableNameToInterface[tableName], overwrite)
+	for tableName := range serverstateTableNameToInterface {
+		newOrEmpty := createTable(tableName, serverstateTableNameToInterface[tableName], resetServer)
 		newOrEmpty = newOrEmpty || isTableEmpty(tableName)
 		if newOrEmpty {
-			initializers = append(initializers, serverDataTableNameToInitializer[tableName])
+			initializers = append(initializers, serverstateTableNameToInitializer[tableName])
 		}
 	}
 	session := engine.NewSession()

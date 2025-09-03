@@ -3,7 +3,7 @@ package event
 import (
 	"elichika/log"
 	"elichika/scheduled_task"
-	"elichika/serverdata"
+	"elichika/serverstate"
 	"elichika/utils"
 
 	"strings"
@@ -21,31 +21,31 @@ func ScheduleEvent(eventId int32) {
 				log.Panic(err)
 			}
 		}
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			err = session.Commit()
 		})
 		utils.CheckErr(err)
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			err = session.Begin()
 		})
 		utils.CheckErr(err)
 	}()
-	event := serverdata.EventScheduled{
+	event := serverstate.EventScheduled{
 		EventId: eventId,
 	}
-	serverdata.Database.Do(func(session *xorm.Session) {
+	serverstate.Database.Do(func(session *xorm.Session) {
 		affected, err = session.Table("s_event_scheduled").Update(&event)
 	})
 	utils.CheckErr(err)
 	if affected == 0 {
-		serverdata.Database.Do(func(session *xorm.Session) {
+		serverstate.Database.Do(func(session *xorm.Session) {
 			_, err = session.Table("s_event_scheduled").Insert(&event)
 		})
 		utils.CheckErr(err)
 	}
 
-	tasks := []serverdata.ScheduledTask{}
-	serverdata.Database.Do(func(session *xorm.Session) {
+	tasks := []serverstate.ScheduledTask{}
+	serverstate.Database.Do(func(session *xorm.Session) {
 		err = session.Table("s_scheduled_task").Find(&tasks)
 	})
 	utils.CheckErr(err)
@@ -55,7 +55,7 @@ func ScheduleEvent(eventId int32) {
 		}
 	}
 	// no event, so we add a new task
-	scheduled_task.AddScheduledTask(serverdata.ScheduledTask{
+	scheduled_task.AddScheduledTask(serverstate.ScheduledTask{
 		Time:     0,
 		TaskName: "event_auto_scheduler",
 		Priority: 0,
