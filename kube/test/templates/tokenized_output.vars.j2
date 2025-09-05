@@ -1,0 +1,6 @@
+# This file has been created with {{ playbook_dir }}.
+#       Please run: `ansible-playbook {{ playbook_dir }} --tags cleanup` to delete this file.
+---
+tokenized_files:
+{{ tokenized_files | to_nice_yaml }}
+...

@@ -1,0 +1,66 @@
+---
+- name: Only run once on any control plane
+  when: inventory_hostname in groups['kube_control_plane']
+  run_once: true # This can cause a bug! If k8s-1 is not control plane, it will fail.
+  block:
+    - name: Create a k8s namespace
+      kubernetes.core.k8s:
+        name: argocd
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Create ServiceAccount
+      kubernetes.core.k8s:
+        kubeconfig: "/root/.kube/config"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ServiceAccount
+          metadata:
+            name: argocd-service-account
+            namespace: argocd
+
+    - name: Create ServiceAccount token
+      kubernetes.core.k8s:
+        kubeconfig: "/root/.kube/config"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: argocd-service-account-token
+            namespace: argocd
+            annotations:
+              kubernetes.io/service-account.name: argocd-service-account
+          type: kubernetes.io/service-account-token
+
+    - name: Get Service Account Token
+      kubernetes.core.k8s_info:
+        kubeconfig: "/root/.kube/config"
+        api_version: v1
+        kind: Secret
+        name: argocd-service-account-token
+        namespace: argocd
+        label_selectors:
+          - "kubernetes.io/service-account.name=argocd-service-account"
+      register: service_account_secret
+
+    - name: Extract Token
+      set_fact:
+        bearer_token: "{{ service_account_secret.resources[0].data.token }}"
+
+    - name: Read Kubernetes CA certificate
+      ansible.builtin.slurp:
+        src: /etc/kubernetes/pki/ca.crt
+      register: ca_cert
+
+    - name: Set base64-encoded CA data (cadata)
+      ansible.builtin.set_fact:
+        cadata: "{{ ca_cert['content'] }}"
+
+    - name: Build out argocd values
+      ansible.builtin.template:
+        src: argocd.values.j2
+        dest: /root/argocd.values.yml
+...
