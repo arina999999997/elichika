@@ -1,4 +1,4 @@
-//go:build embedded
+//go:build embedded_gl
 
 package config
 

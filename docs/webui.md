@@ -39,6 +39,8 @@ Allow you to export / import your account:
 
 Importing an account will overwrite your (account logged into webui's) current progress.
 
+For more details, check [import export docs](https://github.com/arina999999997/elichika/blob/master/docs/import_export.md).
+
 #### Other features
 *This is considered [advanced usage](https://github.com/arina999999997/elichika/blob/master/docs/advanced_usage.md)*.
 
