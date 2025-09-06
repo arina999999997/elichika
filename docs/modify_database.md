@@ -1,4 +1,7 @@
 # Modifying database
+*This is considered [advanced usage](https://github.com/arina999999997/elichika/blob/master/docs/advanced_usage.md)*
+
+
 The database the server use is at `elichika/assets/db/jp` or `elichika/assets/db/gl`, depending on the version you want to use.
 
 The server read this database to operate, and the client download this database from the server.
@@ -15,9 +18,9 @@ However, there is a catch:
 
 To modify the database, directly modify the server's database in `elichika/assets/db/jp` or `elichika/assets/db/gl`:
 
-    - This can be done manually using some program like [DB brower for SQLite](https://sqlitebrowser.org/)
-    - It can also be done through SQL scripts, that can be executed by [DB brower for SQLite](https://sqlitebrowser.org/) or any program that support handling such scripts.
-    - And you can also just replace the files with files you got from elsewhere.
+- This can be done manually using some program like [DB brower for SQLite](https://sqlitebrowser.org/)
+- It can also be done through SQL scripts, that can be executed by [DB brower for SQLite](https://sqlitebrowser.org/) or any program that support handling such scripts.
+- And you can also just replace the files with files you got from elsewhere.
 
 After that, you only need to restart the server and it will automatically generate the necessary files. Then you only have to login or move around with the client to trigger a database update on client side.
 

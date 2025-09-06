@@ -92,6 +92,7 @@ TODO(docs): Add specific docs for specific contents if necessary.
     - [ ] Mining (exchange) event.
     - [ ] SBL event.
     - [ ] Voltage ranking event.
+    
 ## Importing/Exporting account
 You can use the user WebUI to export and import your account.
 
@@ -131,6 +132,7 @@ This can also be used to recover data from captured network data (pcap), you can
 - For now we don't care that much about those data as it's not core to the gameplay experience. 
 
 ## Modifying client database
+*This is considered [advanced usage](https://github.com/arina999999997/elichika/blob/master/docs/advanced_usage.md)*
 
 This server by default provide the databases as they were at EOS, plus the relevant modification for the features (turning DLP on and so), but if necessary, you can modify the databases that the game and the server use.
 

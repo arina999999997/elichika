@@ -1,5 +1,20 @@
 # Event marathon dev
-Note that, this is only for remaking old event.
+*This tool is considered [advanced usage](https://github.com/arina999999997/elichika/blob/master/docs/advanced_usage.md). You will have to setup a lot of resources file for it to work properly.*
+
+Event marathon maker to remaking old events.
+## Idea
+- The event manarathon maker is implemented as a webui on the server.
+- From the webui, we can change things about the events to set it up.
+- And we can directly view the event in game.
+## Usage
+
+Build the server with tag `event_marathon_dev` to enable the event marathon dev webui.
+
+Then start the server and go to http://127.0.0.1:8080/webui/event_marathon_dev/ to start.
+
+This might change the serverstate in unexpected way, so backup all serverside databases just to be sure.
+
+After that just follow the routine and create the event. If working on multiple events, it might be a good idea to restart the server between making each events.
 
 ## Routine
 The steps to remake an event marathon that the maker will follow:
@@ -21,9 +36,9 @@ The steps to remake an event marathon that the maker will follow:
     - Finally filter to relevant asset paths (with correct size)
 - 5th: Board texture
   - Select from a list of known texture.
-  - If the known texture doesn't match, trigger a request to select from a list of texture from the same packages as previous assets.
+  - If not found then we have to go look for it manually.
 - 6th: Board deco
-  - Usually this is just null
+  - Usually this is just null (empty)
   - If it is not null, just enter the asset path manually.
 - 7th: Board memo and pictures
   - These are the notes and images on the board.
@@ -35,9 +50,8 @@ The steps to remake an event marathon that the maker will follow:
     - 2nd picture
     - ...
     - 7th picture
-  - 
   - Select from images in the same package as the main icon or enter manually.
-  - The priority follow this order, but if necessary, assign the priority manually later
+  - The priority follow this order, but if necessary, assign the priority manually later.
   - Do note that we need to exit to the main screen then go back to event for this to take effect, going to menu and reloading event doesn't work
 - 8th: Rule descriptions pages
   - Select from a known list of commonly used rule description pages and images from the same package as main icon.
@@ -68,6 +82,7 @@ At any point, we can go to any previous step to ammend the data:
 Some future stuff that are not handled totally correct yet that might be appended at the end later:
 - BGM
   - The missing data file is not on the cdn even if we have it, so we have to host it first
+  - datafile can be packed into the apk, but that wouldn't work for ios users.
 - Gacha associated with the event:
   - The current gacha system is written long ago without caring about non permanent gacha.
   - Then there's gacha rate up and stuff and the pool of cards
