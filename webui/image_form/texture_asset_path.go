@@ -35,6 +35,8 @@ var (
 )
 
 func init() {
+	// texture.db is a database containing the textures of the game
+	// if you are interested in playing around with this, contact the relevant people in discord
 	engine, err := xorm.NewEngine("sqlite", "texture.db")
 	utils.CheckErr(err)
 	languages := []string{"en", "ja", "ko", "zh", "th"}

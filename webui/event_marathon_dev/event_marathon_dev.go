@@ -1,10 +1,12 @@
+//go:build dev
+
 package event_marathon_dev
 
 import (
 	"elichika/client"
+	"elichika/config"
 	"elichika/generic"
 	"elichika/router"
-	"elichika/config"
 
 	"time"
 )

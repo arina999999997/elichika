@@ -1,4 +1,6 @@
 # Packages
+*This documentations is for an older version of the implementation and has not been updated in a long time. It is keep for archival purpose, but the information in it is most likely not up-to-date*
+
 This file is a summary of the packages that this repository implements and what they do, and what type of package they are.
 
 Each package might also have some docs inside of it. The local information is probably more up-to-date and accurate.

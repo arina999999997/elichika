@@ -1,4 +1,7 @@
 # Extracting gamedata from pcap
+
+*This is considered [advanced usage](https://github.com/arina999999997/elichika/blob/master/docs/advanced_usage.md): you should know what pcap is and you need to have a generated pcap from before EOS to do this with.*
+
 This guide assume that you used PcapDroid to capture the network data. If you have used something else, it will be mostly applicable.
 
 Assuming that you have correctly captured the network data, you will have the 2 files:

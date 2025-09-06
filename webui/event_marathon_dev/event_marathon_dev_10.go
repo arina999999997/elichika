@@ -1,3 +1,5 @@
+//go:build dev
+
 package event_marathon_dev
 
 // TODO: note sure why but partial viewing of bonus doesn't work, even after adding proper bootstrap information

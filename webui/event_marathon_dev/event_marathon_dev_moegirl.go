@@ -1,10 +1,11 @@
+//go:build dev
+
+package event_marathon_dev
+
 // moegirl.icu
 // https://moegirl.icu/LoveLive!%E5%AD%A6%E5%9B%AD%E5%81%B6%E5%83%8F%E7%A5%ADALL_STARS/%E9%97%AA%E4%BA%AE%E7%81%AF%E6%B5%B7%E4%B9%8B%E5%A4%9C
 //
 // some of the event have complete list of reward, we can then use this to parse it
-
-package event_marathon_dev
-
 import (
 	"elichika/utils"
 

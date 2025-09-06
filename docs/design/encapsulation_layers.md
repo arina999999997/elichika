@@ -1,4 +1,6 @@
 # Encapsulation layers
+*This documentations is for an older version of the implementation and has not been updated in a long time. It is keep for archival purpose, but the information in it is most likely not up-to-date*
+
 We divide the codebase into layers of encapsulations for easier handling of things: 
 
 - Each layers can contain multiple packages that can use (access) earlier layers.
