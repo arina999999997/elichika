@@ -5,6 +5,9 @@ A fork of https://github.com/YumeMichi/elichika, check out the original.
 ### Android
 The easiest way is to play on android is with the embedded client, which can be found [here](https://github.com/arina999999997/elichika/releases/tag/Embedded):
 
+#### Important notice
+The embedded clients are only supported for 64-bits. If your device is 32-bits, you will have to use an external server or host your own server with termux.
+
 #### Installing and playing
 
 1. Pick the apk depending on version (Japanese or Global) and install it.
@@ -37,7 +40,7 @@ As the server is still in development, it will get updates from time to time. If
 
 ### iOS
 
-It's a bit more involved to play on iOS, you should checkout the [LL hax wiki](https://carette.codeberg.page/ll-hax-docs/sifas/) first about how to install the app. After  that, come back here if you want to host your own server.
+It's a bit more involved to play on iOS, you should checkout the [LL hax wiki](https://carette.codeberg.page/ll-hax-docs/sifas/) first about how to install the app. After that, come back here if you want to host your own server.
 
 ## Documentations
 
