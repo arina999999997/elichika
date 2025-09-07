@@ -1,6 +1,7 @@
 package userdata
 
 import (
+	"elichika/config"
 	"elichika/userdata/database"
 	"elichika/utils"
 
@@ -14,7 +15,7 @@ import (
 // export to .db one user
 
 func (session *Session) ExportDb() []byte {
-	fileName := fmt.Sprintf("backup_%d.db", session.UserId)
+	fileName := fmt.Sprintf(config.RootPath+"backup_%d.db", session.UserId)
 	os.Remove(fileName) // remove dirty data if any
 	engine, err := xorm.NewEngine("sqlite", fileName)
 	defer engine.Close()
