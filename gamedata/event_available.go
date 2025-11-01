@@ -1,6 +1,7 @@
 package gamedata
 
 import (
+	"elichika/log"
 	"elichika/serverstate"
 	"elichika/utils"
 
@@ -44,7 +45,15 @@ func (ea *EventAvailable) GetEventToIdList() []string {
 	// TODO(event): Handle other event type
 	result := []string{}
 	for _, eventId := range ea.EventIds {
-		result = append(result, ea.Gamedata.EventMarathon[eventId].Name)
+		eventMarathon, isEventMarathon := ea.Gamedata.EventMarathon[eventId]
+		eventMining, isEventMining := ea.Gamedata.EventMining[eventId]
+		if isEventMarathon {
+			result = append(result, eventMarathon.Name)
+		} else if isEventMining {
+			result = append(result, eventMining.Name)
+		} else {
+			log.Panic(fmt.Sprintf("not supported event: %d", eventId))
+		}
 		result = append(result, fmt.Sprint(eventId))
 	}
 	return result
@@ -62,4 +71,6 @@ func loadEventAvailable(gamedata *Gamedata) {
 
 func init() {
 	addLoadFunc(loadEventAvailable)
+	addPrequisite(loadEventAvailable, loadEventMarathon)
+	addPrequisite(loadEventAvailable, loadEventMining)
 }

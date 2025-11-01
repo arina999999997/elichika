@@ -4,8 +4,6 @@ import (
 	"elichika/generic"
 )
 
-// These types are implemented but we don't really have a good idea what should be null or not
-// it's probably possible to reconstruct an event and see
 type LiveResultActiveEvent struct {
 	EventId               int32                                              `json:"event_id"`
 	EventType             int32                                              `json:"event_type"`

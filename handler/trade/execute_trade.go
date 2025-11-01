@@ -27,7 +27,7 @@ func executeTrade(ctx *gin.Context) {
 
 	session.Finalize()
 	common.JsonResponse(ctx, response.ExecuteTradeResponse{
-		Trades:           user_trade.GetTrades(session, session.Gamedata.Trade[session.Gamedata.TradeProduct[req.ProductId].TradeId].TradeType),
+		Trades:           user_trade.GetTrades(session, user_trade.GetTradeTypeByProductId(session, req.ProductId)),
 		IsSendPresentBox: sentToPresentBox,
 		UserModelDiff:    &session.UserModel,
 	})

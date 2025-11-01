@@ -10,6 +10,7 @@ import (
 	"elichika/subsystem/pickup_info"
 	"elichika/subsystem/user_beginner_challenge"
 	"elichika/subsystem/user_event/marathon"
+	"elichika/subsystem/user_event/mining"
 	"elichika/subsystem/user_expired_item"
 	"elichika/subsystem/user_login_bonus"
 	"elichika/subsystem/user_member_guild"
@@ -65,5 +66,8 @@ func FetchBootstrap(session *userdata.Session, req request.FetchBootstrapRequest
 
 	marathon.FetchUserInfoTriggerEventMarathonShowResultRows(session,
 		&resp.UserInfoTrigger.UserInfoTriggerEventMarathonShowResultRows)
+
+	mining.FetchUserInfoTriggerEventMiningShowResultRows(session,
+		&resp.UserInfoTrigger.UserInfoTriggerEventMiningShowResultRows)
 	return resp
 }

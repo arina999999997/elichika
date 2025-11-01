@@ -69,6 +69,14 @@ func (ae *EventActive) GetEventMarathon() *EventMarathon {
 	return ae.Gamedata.EventMarathon[event.EventId]
 }
 
+func (ae *EventActive) GetEventMining() *EventMining {
+	event := ae.GetEventValue()
+	if event == nil {
+		return nil
+	}
+	return ae.Gamedata.EventMining[event.EventId]
+}
+
 // get active event given a time point
 // if the active event doesn't contain the timePoint, then null is returned
 func (ae *EventActive) GetActiveEvent(timePoint time.Time) *serverstate.EventActive {

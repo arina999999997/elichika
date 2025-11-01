@@ -439,6 +439,18 @@ func liveTypeManualHandler(session *userdata.Session, req request.FinishLiveRequ
 				}
 				resp.LiveResult.ActiveEventResult = event.GetLiveResultActiveEventMarathon(session,
 					liveDifficulty, req.LiveScore.CurrentScore, totalDeckBonus, 1, startReq.LiveEventMarathonStatus.Value.IsUseEventMarathonBooster)
+			} else if activeEvent.EventType == enum.EventType1Mining {
+				totalDeckBonus := int32(0)
+				miningEvent := session.Gamedata.EventMining[activeEvent.EventId]
+				for _, i := range req.LiveScore.CardStatDict.OrderedKey {
+					cardMasterId := req.LiveScore.CardStatDict.Map[i].CardMasterId
+					userCard := user_card.GetUserCard(session, cardMasterId)
+					bonusArray, exist := miningEvent.CardBonus[cardMasterId]
+					if exist {
+						totalDeckBonus += bonusArray[userCard.Grade]
+					}
+				}
+				resp.LiveResult.ActiveEventResult = event.HandleLiveResultActiveEventMining(session, liveDifficulty, req.LiveScore.CurrentScore, totalDeckBonus, 0)
 			} else {
 				log.Panic("event type not supported")
 			}

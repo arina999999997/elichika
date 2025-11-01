@@ -162,6 +162,13 @@ func eventAutoScheduler(userdata_db *xorm.Session, task scheduled_task.Scheduled
 			Priority: 0,
 			Params:   fmt.Sprint(eventId),
 		})
+	} else if eventType == enum.EventType1Mining {
+		scheduled_task.AddScheduledTask(serverstate.ScheduledTask{
+			Time:     startTime,
+			TaskName: "event_mining_start",
+			Priority: 0,
+			Params:   fmt.Sprint(eventId),
+		})
 	} else {
 		log.Panic("unsupported event type")
 	}

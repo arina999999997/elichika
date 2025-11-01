@@ -14,9 +14,6 @@ func FinishEventStory(session *userdata.Session, storyEventMasterId int32, isAut
 	}
 	eventStory := session.Gamedata.EventStory[storyEventMasterId]
 	userEvent := marathon.GetUserEventMarathon(session)
-	log.Println(storyEventMasterId)
-	log.Println(eventStory)
-	log.Println(userEvent)
 	if eventStory.EventMasterId != userEvent.EventMasterId {
 		log.Panic("event changed")
 	}
