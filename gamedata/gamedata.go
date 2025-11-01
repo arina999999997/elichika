@@ -98,6 +98,8 @@ type Gamedata struct {
 	EventAvailable      EventAvailable
 	EventMarathon       map[int32]*EventMarathon
 	EventMarathonReward map[int32][]*client.Content
+	EventMining         map[int32]*EventMining
+	EventMiningReward   map[int32][]*client.Content
 	EventStory          map[int32]*EventStory
 
 	Member                          map[int32]*Member

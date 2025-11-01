@@ -78,13 +78,13 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /emblem/fetchEmblemById
 - [ ] /eventCoop/fetchLobby
 - [ ] /eventCoopRanking/fetchEventCoopRanking
-- [ ] /eventMarathon/fetchEventMarathon
-- [ ] /eventMarathon/finishEventStory
-- [ ] /eventMarathonRanking/fetchEventMarathonRanking
-- [ ] /eventMining/fetchEventMining
-- [ ] /eventMining/finishEventMiningStory
-- [ ] /eventMining/likeEventMiningPanel
-- [ ] /eventMiningRanking/fetchEventMiningRanking
+- [x] /eventMarathon/fetchEventMarathon
+- [x] /eventMarathon/finishEventStory
+- [x] /eventMarathonRanking/fetchEventMarathonRanking
+- [x] /eventMining/fetchEventMining 
+- [x] /eventMining/finishEventMiningStory
+- [x] /eventMining/likeEventMiningPanel
+- [x] /eventMiningRanking/fetchEventMiningRanking
 - [ ] /externalMovie/fetchBrowseExternalMovie
 - [ ] /externalMovie/saveBrowseExternalMovie
 - [x] /friend/apply
@@ -109,8 +109,8 @@ Also note that some endpoints won't need to be handled at all either because the
 - [x] /infoTrigger/readByType
 - [x] /infoTrigger/readCardGradeUp
 - [ ] /infoTrigger/readEventCommonShowResult
-- [ ] /infoTrigger/readEventMarathonResult
-- [ ] /infoTrigger/readEventMiningResult
+- [x] /infoTrigger/readEventMarathonResult
+- [x] /infoTrigger/readEventMiningResult
 - [ ] /infoTrigger/readExpiredGiftBox
 - [ ] /infoTrigger/readGachaPointExchange
 - [x] /infoTrigger/readMemberGuildRankingResult

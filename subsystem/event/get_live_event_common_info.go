@@ -20,8 +20,13 @@ func GetLiveEventCommonInfo(session *userdata.Session) generic.Nullable[client.L
 	}
 	if event.EventType == enum.EventType1Marathon {
 		result.PointBoostContentId = generic.NewNullable(session.Gamedata.EventActive.GetEventMarathon().BoosterItemId)
+	} else if event.EventType == enum.EventType1Mining {
+		result.EventMusics = session.Gamedata.EventActive.GetEventMining().EventMusics
+		// TODO(channel): we might need to insert the channel appeal tex for the song here
+		for i := range result.EventMusics.Slice {
+			result.EventMusics.Slice[i].EndAt = event.ExpiredAt
+		}
 	} else {
-		// TODO(event mining)
 		log.Panic("not supported")
 	}
 	return generic.NewNullable(result)

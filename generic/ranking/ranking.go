@@ -31,19 +31,19 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type Ranking[ScoreT constraints.Integer, IdT constraints.Integer] struct {
+type Ranking[IdT constraints.Integer, ScoreT constraints.Integer] struct {
 	root      *Node[ScoreT, IdT]
 	scoreById map[IdT]ScoreT
 }
 
-func NewRanking[ScoreT constraints.Integer, IdT constraints.Integer]() *Ranking[ScoreT, IdT] {
-	return &Ranking[ScoreT, IdT]{
+func NewRanking[IdT constraints.Integer, ScoreT constraints.Integer]() *Ranking[IdT, ScoreT] {
+	return &Ranking[IdT, ScoreT]{
 		root:      nil,
 		scoreById: map[IdT]ScoreT{},
 	}
 }
 
-func (r *Ranking[ScoreT, IdT]) Update(id IdT, newScore ScoreT) {
+func (r *Ranking[IdT, ScoreT]) Update(id IdT, newScore ScoreT) {
 	score, exist := r.scoreById[id]
 	if exist {
 		if score == newScore {
@@ -55,7 +55,7 @@ func (r *Ranking[ScoreT, IdT]) Update(id IdT, newScore ScoreT) {
 	r.root = r.root.Insert(newScore, id)
 }
 
-func (r *Ranking[ScoreT, IdT]) AddScore(id IdT, additionalScore ScoreT) {
+func (r *Ranking[IdT, ScoreT]) AddScore(id IdT, additionalScore ScoreT) {
 	if additionalScore == 0 {
 		return
 	}
@@ -70,7 +70,7 @@ func (r *Ranking[ScoreT, IdT]) AddScore(id IdT, additionalScore ScoreT) {
 	r.root = r.root.Insert(score, id)
 }
 
-func (r *Ranking[ScoreT, IdT]) RankOf(id IdT) (int, bool) {
+func (r *Ranking[IdT, ScoreT]) RankOf(id IdT) (int, bool) {
 	score, exist := r.scoreById[id]
 	if !exist {
 		return 0, false
@@ -78,7 +78,7 @@ func (r *Ranking[ScoreT, IdT]) RankOf(id IdT) (int, bool) {
 	return r.root.RankOf(score, id) + 1, true
 }
 
-func (r *Ranking[ScoreT, IdT]) TiedRankOf(id IdT) (int, bool) {
+func (r *Ranking[IdT, ScoreT]) TiedRankOf(id IdT) (int, bool) {
 	score, exist := r.scoreById[id]
 	if !exist {
 		return 0, false
@@ -86,11 +86,11 @@ func (r *Ranking[ScoreT, IdT]) TiedRankOf(id IdT) (int, bool) {
 	return r.root.RankOf(score, -id) + 1, true
 }
 
-func (r *Ranking[ScoreT, IdT]) ScoreOf(id IdT) (ScoreT, bool) {
+func (r *Ranking[IdT, ScoreT]) ScoreOf(id IdT) (ScoreT, bool) {
 	score, exist := r.scoreById[id]
 	return score, exist
 }
 
-func (r *Ranking[ScoreT, IdT]) GetRange(first, last int) []Pair[ScoreT, IdT] {
+func (r *Ranking[IdT, ScoreT]) GetRange(first, last int) []Pair[ScoreT, IdT] {
 	return r.root.Range(first-1, last-1)
 }

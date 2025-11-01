@@ -2,6 +2,7 @@ package serverdata
 
 import (
 	"elichika/config"
+	"elichika/parser"
 	"elichika/utils"
 
 	"os"
@@ -20,18 +21,37 @@ func init() {
 }
 
 func initEventAvailable(session *xorm.Session) {
-	events := []EventAvailable{}
-
-	entries, err := os.ReadDir(config.AssetPath + "event/marathon")
-	utils.CheckErr(err)
-	for _, entry := range entries {
-		eventId, err := strconv.Atoi(entry.Name())
-		utils.CheckErr(err)
-		events = append(events, EventAvailable{
-			EventId: int32(eventId),
-			Order:   int32(eventId),
-		})
+	eventOrders := []int32{}
+	parser.ParseJson(config.AssetPath+"event/event_order.json", &eventOrders)
+	eventOrderMap := map[int32]int32{}
+	for order, eventId := range eventOrders {
+		eventOrderMap[eventId] = int32(order + 1)
 	}
-	_, err = session.Table("s_event_available").Insert(events)
+	events := []EventAvailable{}
+	{
+		entries, err := os.ReadDir(config.AssetPath + "event/marathon")
+		utils.CheckErr(err)
+		for _, entry := range entries {
+			eventId, err := strconv.Atoi(entry.Name())
+			utils.CheckErr(err)
+			events = append(events, EventAvailable{
+				EventId: int32(eventId),
+				Order:   eventOrderMap[int32(eventId)],
+			})
+		}
+	}
+	{
+		entries, err := os.ReadDir(config.AssetPath + "event/mining")
+		utils.CheckErr(err)
+		for _, entry := range entries {
+			eventId, err := strconv.Atoi(entry.Name())
+			utils.CheckErr(err)
+			events = append(events, EventAvailable{
+				EventId: int32(eventId),
+				Order:   eventOrderMap[int32(eventId)],
+			})
+		}
+	}
+	_, err := session.Table("s_event_available").Insert(events)
 	utils.CheckErr(err)
 }

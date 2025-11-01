@@ -39,7 +39,8 @@ func ParseCsv[T any](path string, result *[]T, ctx *CsvContext) {
 		ctx.EndField = ptr.Elem().Type().NumField()
 	}
 	reader.FieldsPerRecord = ctx.EndField - ctx.StartField
-
+	var intPtrDummy *int32
+	var stringPtrDummy *string
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
@@ -69,6 +70,26 @@ func ParseCsv[T any](path string, result *[]T, ctx *CsvContext) {
 				ptr.Elem().Field(i + ctx.StartField).Set(reflect.ValueOf(client.LocalizedText{
 					DotUnderText: str,
 				}))
+			case reflect.TypeOf(intPtrDummy):
+				var value *int32
+				if str == "null" {
+					value = nil
+				} else {
+					valueInt, err := strconv.Atoi(str)
+					utils.CheckErr(err)
+					value = new(int32)
+					*value = int32(valueInt)
+				}
+				ptr.Elem().Field(i + ctx.StartField).Set(reflect.ValueOf(value))
+			case reflect.TypeOf(stringPtrDummy):
+				var value *string
+				if str == "null" {
+					value = nil
+				} else {
+					value = new(string)
+					*value = str
+				}
+				ptr.Elem().Field(i + ctx.StartField).Set(reflect.ValueOf(value))
 			default:
 				log.Println(field.Type)
 				log.Panic("field type not supported")

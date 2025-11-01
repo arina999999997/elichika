@@ -80,7 +80,7 @@ func GetLiveResultActiveEventMarathon(session *userdata.Session, liveDifficulty 
 			BonusParam: deckBonusFactor,
 		},
 		// OpenedEventStory: // filled by user_event/marathon
-		// LiveEventDropItemInfo: // filled by user_event/marathon
+		// LiveEventDropItemInfo: // only used by mining event
 		// PointReward: // filled by user_event/marathon,
 		IsStartLoopReward: false,
 	}

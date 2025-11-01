@@ -65,3 +65,21 @@ func (pack *Pack) GetUpdateSQL(assetDatabase *AssetDatabase) string {
 	}
 	return sql
 }
+
+func (pack *Pack) GetCdnCheck(assetDatabase *AssetDatabase, packs *[]string) {
+	if !assetDatabase.Updating {
+		panic("asset database is not set to updating")
+	}
+	if assetDatabase.PackIsMainPackage[pack.PackName] { // already exist and included in the main package (downloaded by default), no need to insert it
+		return
+	}
+	if assetDatabase.PackMap[pack.PackName] {
+		// exist but not inside main, so we insert the main package key for this pack to be available
+		return
+	}
+	if pack.MetapackName != nil {
+		*packs = append(*packs, *pack.MetapackName)
+	} else {
+		*packs = append(*packs, pack.PackName)
+	}
+}

@@ -18,6 +18,8 @@ import (
 	_ "elichika/handler/emblem"
 	_ "elichika/handler/event_marathon"
 	_ "elichika/handler/event_marathon_ranking"
+	_ "elichika/handler/event_mining"
+	_ "elichika/handler/event_mining_ranking"
 	_ "elichika/handler/friend"
 	_ "elichika/handler/gacha"
 	_ "elichika/handler/game_settings"

@@ -9,7 +9,7 @@ import (
 )
 
 // return the sql for updating assets, with a comment stating if an asset from different locale was used
-func GetUpdateSQLForAssets(assetDatabasePath string, assetPaths []string, preferedLocale string, backupLocales []string) string {
+func GetUpdateSQLForAssets(assetDatabasePath string, assetPaths []string, preferedLocale string, backupLocales []string, cdnChecResult *string) string {
 	// check first
 	for _, assetPath := range assetPaths {
 		_, exists := Assets[assetPath]
@@ -24,13 +24,14 @@ func GetUpdateSQLForAssets(assetDatabasePath string, assetPaths []string, prefer
 	assetDatabase := NewAssetDatabaseForUpdating(assetDatabasePath)
 	// gather the necessary pack and insert them
 	packCheck := map[string]bool{}
+	cdnCheckPacks := []string{}
 
 	for _, assetPath := range assetPaths {
 		rawAsset := Assets[assetPath].GetRawAssetByLocale(preferedLocale)
 		if rawAsset == nil {
 			rawAsset = Assets[assetPath].GetRawAssetByPreference(backupLocales)
 			if rawAsset == nil {
-				panic("Asset path %s doesn't have an associated valid raw asset")
+				panic(fmt.Sprintf("Asset path %s doesn't have an associated valid raw asset", assetPath))
 			} else {
 				assetPathUpdates += fmt.Sprintf("-- no valid asset for locale %s, defaulted to locale %s\n", preferedLocale, rawAsset.GetLocale())
 			}
@@ -44,11 +45,17 @@ func GetUpdateSQLForAssets(assetDatabasePath string, assetPaths []string, prefer
 		if !packCheck[pack.PackName] {
 			packCheck[pack.PackName] = true
 			packUpdates += pack.GetUpdateSQL(assetDatabase)
+			if cdnChecResult != nil {
+				pack.GetCdnCheck(assetDatabase, &cdnCheckPacks)
+			}
 		}
 		secondaryPack := rawAsset.GetAwbPack()
 		if (secondaryPack != nil) && (!packCheck[secondaryPack.PackName]) {
 			packCheck[secondaryPack.PackName] = true
 			packUpdates += secondaryPack.GetUpdateSQL(assetDatabase)
+			if cdnChecResult != nil {
+				secondaryPack.GetCdnCheck(assetDatabase, &cdnCheckPacks)
+			}
 		}
 	}
 	// finally merge the asset update
@@ -61,6 +68,9 @@ func GetUpdateSQLForAssets(assetDatabasePath string, assetPaths []string, prefer
 		_, err := rand.Read(version)
 		utils.CheckErr(err)
 		packUpdates += fmt.Sprintf("UPDATE m_asset_package SET version = \"%s\", pack_num = (SELECT COUNT(*) FROM m_asset_package_mapping WHERE package_key=\"main\") WHERE package_key = \"main\";\n", hex.EncodeToString(version))
+	}
+	if cdnChecResult != nil {
+		*cdnChecResult += performPackCheck(cdnCheckPacks)
 	}
 	return packUpdates + assetPathUpdates
 }

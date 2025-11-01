@@ -30,7 +30,7 @@ func JsonResponse(ctx *gin.Context, resp any) {
 		session.Finalize() // calling this multiple time is fine, sometime we want some result that is only obtained after finalizing
 	}
 	signBody, err := json.Marshal(resp)
-	// log.Println(string(signBody))
+	// utils.WriteAllText("api.json", string(signBody))
 	utils.CheckErr(err)
 	ctx.Header("Content-Type", "application/json")
 	ctx.String(http.StatusOK, SignResp(ctx, string(signBody), ctx.MustGet("sign_key").([]byte)))
