@@ -6,8 +6,6 @@ import (
 	"elichika/utils"
 )
 
-// TODO(cache): This can be cached
-
 func GetLivePartner(session *userdata.Session, otherUserId int32) client.LivePartner {
 	partner := client.LivePartner{}
 
@@ -23,3 +21,4 @@ func GetLivePartner(session *userdata.Session, otherUserId int32) client.LivePar
 	}
 	return partner
 }
+
