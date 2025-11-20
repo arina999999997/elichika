@@ -116,6 +116,7 @@ func HandleLiveResultActiveEventMining(session *userdata.Session, liveDifficulty
 		// PointReward: // only used by event marathon
 		IsStartLoopReward: false,
 	}
+	deckBonusFactor += 10000
 	itemPerClear := getBaseEventCurrencyMining() * deckBonusFactor / 10000
 	itemDropTotal := itemPerClear * loopCount
 	itemDropTotalBase := getBaseEventCurrencyMining() * loopCount
@@ -125,11 +126,13 @@ func HandleLiveResultActiveEventMining(session *userdata.Session, liveDifficulty
 		ContentId:     eventMining.TopStatus.EventPointMasterId,
 		ContentAmount: itemDropTotalBase,
 	})
-	result.LiveEventDropItemInfo.Value.LiveEventDropContents.Slice[0].BonusDrops.Append(client.Content{
-		ContentType:   enum.ContentTypeExchangeEventPoint,
-		ContentId:     eventMining.TopStatus.EventPointMasterId,
-		ContentAmount: itemDropTotal - itemDropTotalBase,
-	})
+	if itemDropTotal - itemDropTotalBase > 0 {
+		result.LiveEventDropItemInfo.Value.LiveEventDropContents.Slice[0].BonusDrops.Append(client.Content{
+			ContentType:   enum.ContentTypeExchangeEventPoint,
+			ContentId:     eventMining.TopStatus.EventPointMasterId,
+			ContentAmount: itemDropTotal - itemDropTotalBase,
+		})
+	}
 	user_content.AddContent(session, result.LiveEventDropItemInfo.Value.LiveEventDropContents.Slice[0].StandardDrops.Slice[0])
 
 	mining.AddEventPoint(session, epPointTotal, &result)

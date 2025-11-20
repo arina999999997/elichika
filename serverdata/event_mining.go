@@ -33,7 +33,6 @@ type EventMining struct {
 	RuleDescriptionPagesAssetPath []string `xorm:"-" json:"rule_description_pages_asset_path"`
 	// the topic reward for voltage ranking just show an image
 	VoltageRankingTopicRewardAssetPath string `xorm:"'voltage_ranking_topic_reward_asset_path'" json:"voltage_ranking_topic_reward_asset_path"`
-	BannerImagePath                    string `xorm:"'banner_image_path'" json:"banner_image_path"`
 }
 
 type EventMiningRankingReward struct {

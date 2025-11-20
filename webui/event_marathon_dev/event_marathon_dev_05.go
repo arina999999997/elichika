@@ -9,7 +9,7 @@ import (
 	"elichika/router"
 	"elichika/utils"
 	// "elichika/locale"
-	"elichika/webui/image_form"
+	"elichika/webui/form/image_form"
 
 	"fmt"
 	"net/http"

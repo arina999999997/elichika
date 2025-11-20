@@ -59,7 +59,7 @@ func getBase64ImageData(data []byte) string {
 }
 
 func init() {
-	missingAssetFile := "webui/image_form/missing_asset.png"
+	missingAssetFile := "webui/form/image_form/missing_asset.png"
 	stat, err := os.Stat(missingAssetFile)
 	utils.CheckErr(err)
 	data := make([]byte, stat.Size())
@@ -69,7 +69,7 @@ func init() {
 	MissingAssetImage = getBase64ImageData(data)
 }
 func init() {
-	unknownAssetFile := "webui/image_form/unknown_asset.png"
+	unknownAssetFile := "webui/form/image_form/unknown_asset.png"
 	stat, err := os.Stat(unknownAssetFile)
 	utils.CheckErr(err)
 	data := make([]byte, stat.Size())
@@ -82,8 +82,9 @@ func init() {
 func (t Texture) LoadUnencrypted() (output []byte) {
 	output = nil
 	defer func() {
-		if r := recover(); r != nil {
-		}
+		// if r := recover(); r != nil {
+		// 	fmt.Println(r)
+		// }
 	}()
 	data := assetdata.GetDownloadData(t.PackName)
 	actualFile := fmt.Sprintf("static/%s", data.File)

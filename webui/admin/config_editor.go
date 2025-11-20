@@ -4,7 +4,7 @@ import (
 	"elichika/config"
 	"elichika/router"
 	"elichika/utils"
-	"elichika/webui/object_form"
+	"elichika/webui/form/object_form"
 	"elichika/webui/webui_utils"
 
 	"net/http"

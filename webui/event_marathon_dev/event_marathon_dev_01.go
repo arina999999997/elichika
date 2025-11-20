@@ -6,7 +6,7 @@ import (
 	"elichika/config"
 	"elichika/router"
 	"elichika/utils"
-	"elichika/webui/image_form"
+	"elichika/webui/form/image_form"
 
 	"fmt"
 	"net/http"

@@ -34,7 +34,7 @@ func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.
 	eventName := fmt.Sprintf("event_name_%d", eventId)
 	rank := int32(0)
 	timePoint := time.Unix(task.Time, 0)
-
+	user_info_trigger.CleanUpTriggerBasicByType(userdata_db, enum.InfoTriggerTypeEventMarathonShowResult)
 	for i, result := range results {
 		if (i == 0) || (result.Score != results[i-1].Score) {
 			rank = int32(i + 1)

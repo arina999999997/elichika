@@ -168,7 +168,7 @@ func loadEventMining(gamedata *Gamedata) {
 		// we will load all the cells in here, then filter out irrelevant data later
 		topStillCells := []serverdata.EventMiningTopStillCell{}
 		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
-			err = session.Table("s_event_mining_top_still_cell").Where("event_id = ?", event.EventId).OrderBy("thumbnail_cell_id").Find(&topStillCells)
+			err = session.Table("s_event_mining_top_still_cell").Where("event_id = ?", event.EventId).OrderBy("add_story_number").Find(&topStillCells)
 		})
 		utils.CheckErr(err)
 		for _, cell := range topStillCells {
@@ -247,7 +247,8 @@ func loadEventMining(gamedata *Gamedata) {
 		}
 
 		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
-			err = session.Table("s_event_mining_bonus_popup_order_card_mater").Where("event_id = ?", event.EventId).Find(&eventMining.TopStatus.EventMiningBonusPopupOrderCardMaterRows.Slice)
+			err = session.Table("s_event_mining_bonus_popup_order_card_mater").Where("event_id = ?", event.EventId).OrderBy("display_order").
+				Find(&eventMining.TopStatus.EventMiningBonusPopupOrderCardMaterRows.Slice)
 		})
 		utils.CheckErr(err)
 
@@ -300,10 +301,17 @@ func loadEventMining(gamedata *Gamedata) {
 		}
 
 		// trades
+		bannerImagePath := ""
+		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
+			_, err = session.Table("m_story_event_history").Where("id = ?", event.EventId).Cols("banner_image_asset_path").
+				Get(&bannerImagePath)
+			utils.CheckErr(err)
+		})
+
 		eventMining.Trade = &client.Trade{
 			TradeId: eventMining.TopStatus.TradeMasterId.Value,
 			BannerImagePath: client.TextureStruktur{
-				V: generic.NewNullable(event.BannerImagePath),
+				V: generic.NewNullable(bannerImagePath),
 			},
 			SourceContentType: enum.ContentTypeExchangeEventPoint,
 			SourceContentId:   eventMining.TopStatus.EventPointMasterId,
@@ -313,7 +321,7 @@ func loadEventMining(gamedata *Gamedata) {
 			MonthlyReset: false,
 		}
 		gamedata.MasterdataDb.Do(func(session *xorm.Session) {
-			_, err = session.Table("m_exchange_event_point").Where("id = ?", eventMining.Trade.SourceContentId).Cols("thumbnail_asset_path").
+			_, err = session.Table("m_exchange_event_point").Where("id = ?", eventMining.Trade.SourceContentId).Cols("icon_asset_path").
 				Get(&eventMining.Trade.SourceThumbnailAssetPath.V.Value)
 		})
 		utils.CheckErr(err)

@@ -9,6 +9,7 @@ import (
 	"elichika/generic"
 	"elichika/userdata"
 	"elichika/webui/event_marathon_dev"
+	"elichika/webui/event_mining_dev"
 )
 
 func GetActiveEventPickup(session *userdata.Session) generic.Nullable[client.BootstrapPickupEventInfo] {
@@ -23,6 +24,16 @@ func GetActiveEventPickup(session *userdata.Session) generic.Nullable[client.Boo
 		if event_marathon_dev.BoosterItemId != 0 {
 			result.Value.BoosterItemId = generic.NewNullable(event_marathon_dev.BoosterItemId)
 		}
+		return result
+	}
+	if config.DeveloperMode == config.DeveloperModeEventMiningDev {
+		result := generic.NewNullable(client.BootstrapPickupEventInfo{
+			EventId:   event_mining_dev.TopStatus.EventId,
+			StartAt:   event_marathon_dev.TopStatus.StartAt,
+			ClosedAt:  event_marathon_dev.TopStatus.ExpiredAt,
+			EndAt:     event_marathon_dev.TopStatus.EndAt,
+			EventType: enum.EventType1Mining,
+		})
 		return result
 	}
 	event := session.Gamedata.EventActive.GetActiveEvent(session.Time)

@@ -1,6 +1,6 @@
 //go:build dev
 
-package event_marathon_dev
+package event_mining_dev
 
 import (
 	"elichika/client"
@@ -19,12 +19,14 @@ import (
 
 var (
 	RuleDescriptionPageAssetPaths = []string{
-		"8FA",
-		";b;",
+		"<:t",
+		"`^Q",
+		"o:K",
+		"!3)",
 	}
 )
 
-func EventMarathonDev08GET(ctx *gin.Context) {
+func EventMiningDev07GET(ctx *gin.Context) {
 	page := ctx.DefaultQuery("page", "1")
 	// pageInt, err := strconv.Atoi(page)
 	// utils.CheckErr(err)
@@ -43,12 +45,12 @@ func EventMarathonDev08GET(ctx *gin.Context) {
 
 	ctx.Header("Content-Type", "text/html")
 	msg := form.GetHTML()
-	ctx.HTML(http.StatusOK, "event_marathon_dev.html", gin.H{
+	ctx.HTML(http.StatusOK, "event_mining_dev.html", gin.H{
 		"body": msg,
 	})
 }
 
-func EventMarathonDev08POST(ctx *gin.Context) {
+func EventMiningDev07POST(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	utils.CheckErr(err)
 	fmt.Println(form.Value)
@@ -58,12 +60,12 @@ func EventMarathonDev08POST(ctx *gin.Context) {
 	assetPath := form.Value["rule_description_page_"+page][0]
 	if assetPath == "" {
 		// done
-		ctx.Header("Location", "/webui/event_marathon_dev/09")
+		ctx.Header("Location", "/webui/event_mining_dev/08")
 	} else {
-		if len(TopStatus.EventMarathonRuleDescriptionPageMasterRows.Slice) >= pageInt {
-			TopStatus.EventMarathonRuleDescriptionPageMasterRows.Slice = TopStatus.EventMarathonRuleDescriptionPageMasterRows.Slice[:pageInt-1]
+		if len(TopStatus.EventMiningRuleDescriptionPageMasterRows.Slice) >= pageInt {
+			TopStatus.EventMiningRuleDescriptionPageMasterRows.Slice = TopStatus.EventMiningRuleDescriptionPageMasterRows.Slice[:pageInt-1]
 		}
-		TopStatus.EventMarathonRuleDescriptionPageMasterRows.Append(client.EventMarathonRuleDescriptionPageMasterRow{
+		TopStatus.EventMiningRuleDescriptionPageMasterRows.Append(client.EventMiningRuleDescriptionPageMasterRow{
 			Page: int32(pageInt),
 			Title: client.LocalizedText{
 				DotUnderText: fmt.Sprintf("Event Rules %s/?", page),
@@ -72,14 +74,14 @@ func EventMarathonDev08POST(ctx *gin.Context) {
 				V: generic.NewNullable[string](assetPath),
 			},
 		})
-		ctx.Header("Location", fmt.Sprintf("/webui/event_marathon_dev/08?page=%d", pageInt+1))
+		ctx.Header("Location", fmt.Sprintf("/webui/event_mining_dev/07?page=%d", pageInt+1))
 	}
 	ctx.String(http.StatusSeeOther, "")
 }
 
 func init() {
-	if config.DeveloperMode == config.DeveloperModeEventMarathonDev {
-		router.AddHandler("/webui/event_marathon_dev", "GET", "/08", EventMarathonDev08GET)
-		router.AddHandler("/webui/event_marathon_dev", "POST", "/08", EventMarathonDev08POST)
+	if config.DeveloperMode == config.DeveloperModeEventMiningDev {
+		router.AddHandler("/webui/event_mining_dev", "GET", "/07", EventMiningDev07GET)
+		router.AddHandler("/webui/event_mining_dev", "POST", "/07", EventMiningDev07POST)
 	}
 }

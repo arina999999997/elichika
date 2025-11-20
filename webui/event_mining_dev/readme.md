@@ -1,75 +1,72 @@
-# Event marathon dev
+# Event mining dev
 *This tool is considered [advanced usage](https://github.com/arina999999997/elichika/blob/master/docs/advanced_usage.md). You will have to setup a lot of resources file for it to work properly.*
 
 Event mining maker to remake old events.
 ## Idea
-- The event manarathon maker is implemented as a webui on the server.
-- From the webui, we can change things about the events to set it up.
-- And we can directly view the event in game.
+- Similar to event marathon maker
 ## Usage
 
-Build the server with tag `event_marathon_dev` to enable the event marathon dev webui.
+Set the config_dev.go file correctly, build the server with tag `dev` to enable the event mining dev webui.
 
-Then start the server and go to http://127.0.0.1:8080/webui/event_marathon_dev/ to start.
+Then start the server and go to http://127.0.0.1:8080/webui/event_mining_dev/ to start.
 
 This might change the serverstate in unexpected way, so backup all serverside databases just to be sure.
 
 After that just follow the routine and create the event. If working on multiple events, it might be a good idea to restart the server between making each events.
 
+## Convention
+Assume the following:
+- The SR card rewarded in ranking is the one that appeared later in topic reward
+- This is true for the event capture we have
 ## Routine
-The steps to remake an event marathon that the maker will follow:
+The steps to remake an event mining that the maker will follow:
 
-- 1st: Event id
+- 1st: Event id - Event Name
   - This is the main decider of what the event is gonna be.
-  - This need to be entered manually to select what to do.
-- 2nd: Event names
-  - The names of the events in 4 locales.
-  - Copy from various wikis for this.
-- 3rd: Event main icon
+  - Since event name is stored in database already, we just pick the one linked with the event id and name.
+- 2nd: Event main icon
   - The icon of the main event.
   - Select from a list of icons or manually enter the asset path.
-- 4th: Event background
+- 3rd: Event background
   - The background art of the event.
   - Select from a list of images that usually contain the background, or manually enter the asset path:
     - The images are found by first looking in `m_story_event_history_detail` and find all `scenario_script_asset_path` associated with event id.
     - Then look inside `adv_graphic` to find the relevant asset paths.
     - Finally filter to relevant asset paths (with correct size)
-- 5th: Board texture
-  - Select from a list of known texture.
-  - If not found then we have to go look for it manually.
-- 6th: Board deco
-  - Usually this is just null (empty)
-  - If it is not null, just enter the asset path manually.
-- 7th: Board memo and pictures
-  - These are the notes and images on the board.
-  - The order is as follow:
-    - 1st memo
-    - 2nd memo
-    - 3rd memo
-    - 1st picture
-    - 2nd picture
-    - ...
-    - 7th picture
-  - Select from images in the same package as the main icon or enter manually.
-  - The priority follow this order, but if necessary, assign the priority manually later.
-  - Do note that we need to exit to the main screen then go back to event for this to take effect, going to menu and reloading event doesn't work
-- 8th: Rule descriptions pages
+- 4th: Event top still cell
+  - Select from a list of cell in the same package with the event main icon, and have certain sizes.
+  - Select until done.
+- 5th: Event top still sub cell
+  - Select from a list of commonly used subcells.
+  - Usually we can't get all the cells, so there's a auto complete button that will choose from the remaining subcells:
+    - The algorithm for this is to balance the amount of idols from each school.
+    - Which idol is selected is random but is seeded using the event id.
+- 6th: Ranking songs
+  - Select 3 ranking songs and select the ranking amount (3 or 5)
+- 7th: Rule descriptions pages
   - Select from a known list of commonly used rule description pages and images from the same package as main icon.
   - Select done to finish with selection and move on to next steps
-- 9th: Event booster icon
-  - The icon of the event booster
-  - Select from a list of icons
-- 10th: Bonus popup order
+- 8th: Bonus popup order
   - The order the card appear in bonus popup
   - Go through the cards that give bonus and select the position
-- 11th: Point rewards
-  - Send a point reward file accquired through a wiki and parsed with a python script.
-- 12th: Ranking rewards
-  - Send a ranking reward file accquired through a wiki and parsed with a python script.
-- 13th: Total topic reward
-  - The order the event card show up when previewing reward accquired with points.
-- 14th: Ranking topic reward
+- 9th: Point ranking topic reward
   - The order the event card show up when previewing reward accquired with ranking.
+- 10th: Point ranking reward
+  - Interactive builder
+  - First is the template phase:
+    - Select the SR order in ranking (who appear more)
+    - Then select from some template:
+      - Will only support 1 template to begin with, but more can be added later if necessary.
+  - After the template phase, enter the adjustment phase:
+    - The reward is locked, but the amount can change.
+- 11th: Voltage ranking topic reward:
+  - Pick from the image of the correct size on the same package as the main title.
+- 12th: Voltage ranking reward:
+  - Works similar to point ranking reward.
+- 13th: Banner image path
+  - This is used for the trade in shop
+- 14th: Trade
+  - This is the trade product
 
 After going through the steps, an archive files containing the relevant data is generated.
 
@@ -81,8 +78,7 @@ At any point, we can go to any previous step to ammend the data:
 ## TODO
 Some future stuff that are not handled totally correct yet that might be appended at the end later:
 - BGM
-  - The missing data file is not on the cdn even if we have it, so we have to host it first
-  - datafile can be packed into the apk, but that wouldn't work for ios users.
+  - The BGM will use only one song for event mining.
 - Gacha associated with the event:
   - The current gacha system is written long ago without caring about non permanent gacha.
   - Then there's gacha rate up and stuff and the pool of cards

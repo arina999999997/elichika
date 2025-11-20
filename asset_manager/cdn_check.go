@@ -5,9 +5,9 @@ import (
 	"elichika/utils"
 
 	"fmt"
-	"io"
+	// "io"
 	"net/http"
-	"os"
+	// "os"
 	"sort"
 )
 
@@ -31,7 +31,7 @@ func sortAndUnique(data []string) []string {
 // for best effect, download and compare with files in /static
 func performPackCheck(packs []string) string {
 	publicCdn := "https://llsifas.imsofucking.gay/static/"
-	localCdn := "static/"
+	// localCdn := "static/"
 	packs = sortAndUnique(packs)
 	n := len(packs)
 	log.Printf("Performing cdn pack check on %d packs\n", n)
@@ -45,20 +45,20 @@ func performPackCheck(packs []string) string {
 			report += fmt.Sprintf("Failed to download pack from server: %s (status code: %d)\n", pack, res.StatusCode)
 			continue
 		}
-		body, err := io.ReadAll(res.Body)
-		utils.CheckErr(err)
-		// compare to local file
-		local, err := os.ReadFile(localCdn + pack)
-		utils.CheckErr(err)
-		if len(body) != len(local) {
-			report += fmt.Sprintf("File difference for pack: %s (size isn't equal)\n", pack)
-		}
-		for i := range body {
-			if body[i] != local[i] {
-				report += fmt.Sprintf("File difference for pack: %s (byte %d isn't equal)\n", pack, i)
-				break
-			}
-		}
+		// body, err := io.ReadAll(res.Body)
+		// utils.CheckErr(err)
+		// // compare to local file
+		// local, err := os.ReadFile(localCdn + pack)
+		// utils.CheckErr(err)
+		// if len(body) != len(local) {
+		// 	report += fmt.Sprintf("File difference for pack: %s (size isn't equal)\n", pack)
+		// }
+		// for i := range body {
+		// 	if body[i] != local[i] {
+		// 		report += fmt.Sprintf("File difference for pack: %s (byte %d isn't equal)\n", pack, i)
+		// 		break
+		// 	}
+		// }
 	}
 	return report
 }

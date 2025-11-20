@@ -20,8 +20,7 @@ func SetOutput(w io.Writer) {
 
 // capturing panic is annoying, so we will just replace panic with our own
 func Panic(errAny any) {
-	err := errAny.(error)
-	Println(err)
+	Println(errAny)
 	Println(string(debug.Stack()))
-	panic(err)
+	panic(errAny)
 }

@@ -5,7 +5,7 @@ import (
 	"elichika/subsystem/reset_progress"
 	"elichika/userdata"
 	"elichika/utils"
-	"elichika/webui/object_form"
+	"elichika/webui/form/object_form"
 	"elichika/webui/webui_utils"
 
 	"encoding/json"

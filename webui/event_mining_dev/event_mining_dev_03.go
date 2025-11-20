@@ -1,6 +1,6 @@
 //go:build dev
 
-package event_marathon_dev
+package event_mining_dev
 
 import (
 	"elichika/client"
@@ -13,11 +13,12 @@ import (
 
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 )
 
-func EventMarathonDev04GET(ctx *gin.Context) {
+func EventMiningDev03GET(ctx *gin.Context) {
 
 	form := image_form.ImageForm{
 		FormId:    "background_image_path_form",
@@ -38,31 +39,36 @@ func EventMarathonDev04GET(ctx *gin.Context) {
 			texturesMap[assetPath] = true
 		}
 	}
+	textures = nil
 	for assetPath := range texturesMap {
+		textures = append(textures, assetPath)
+	}
+	sort.Strings(textures)
+	for _, assetPath := range textures {
 		form.AddImageByAssetPathFilterBySize("", assetPath, 1800, 900)
 	}
 
 	ctx.Header("Content-Type", "text/html")
 	msg := form.GetHTML()
-	ctx.HTML(http.StatusOK, "event_marathon_dev.html", gin.H{
+	ctx.HTML(http.StatusOK, "event_mining_dev.html", gin.H{
 		"body": msg,
 	})
 }
 
-func EventMarathonDev04POST(ctx *gin.Context) {
+func EventMiningDev03POST(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	utils.CheckErr(err)
 	fmt.Println(form.Value)
 	TopStatus.BackgroundImagePath = client.TextureStruktur{
 		V: generic.NewNullable[string](form.Value["background_image_path"][0]),
 	}
-	ctx.Header("Location", "/webui/event_marathon_dev/05")
+	ctx.Header("Location", "/webui/event_mining_dev/04")
 	ctx.String(http.StatusSeeOther, "")
 }
 
 func init() {
-	if config.DeveloperMode == config.DeveloperModeEventMarathonDev {
-		router.AddHandler("/webui/event_marathon_dev", "GET", "/04", EventMarathonDev04GET)
-		router.AddHandler("/webui/event_marathon_dev", "POST", "/04", EventMarathonDev04POST)
+	if config.DeveloperMode == config.DeveloperModeEventMiningDev {
+		router.AddHandler("/webui/event_mining_dev", "GET", "/03", EventMiningDev03GET)
+		router.AddHandler("/webui/event_mining_dev", "POST", "/03", EventMiningDev03POST)
 	}
 }

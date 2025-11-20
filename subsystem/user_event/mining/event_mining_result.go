@@ -28,7 +28,7 @@ func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.
 		log.Println("Warning: Failed to result event: ", task)
 		return
 	}
-
+	user_info_trigger.CleanUpTriggerBasicByType(userdata_db, enum.InfoTriggerTypeEventMiningShowResult)
 	eventMining := gamedata.Instance.EventActive.GetEventMining()
 	eventName := fmt.Sprintf("m.event_mining_title_%d", eventId)
 	timePoint := time.Unix(task.Time, 0)
@@ -69,7 +69,6 @@ func resultEventScheduledHandler(userdata_db *xorm.Session, task scheduled_task.
 				})
 			}
 		}
-
 		user_info_trigger.AddTriggerBasic(session, client.UserInfoTriggerBasic{
 			InfoTriggerType: enum.InfoTriggerTypeEventMiningShowResult,
 			ParamInt:        generic.NewNullable(eventId),

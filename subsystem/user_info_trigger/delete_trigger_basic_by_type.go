@@ -3,6 +3,8 @@ package user_info_trigger
 import (
 	"elichika/userdata"
 	"elichika/utils"
+
+	"xorm.io/xorm"
 )
 
 func DeleteTriggerBasicByType(session *userdata.Session, infoTriggerType int32) {
@@ -13,4 +15,9 @@ func DeleteTriggerBasicByType(session *userdata.Session, infoTriggerType int32) 
 	for _, id := range ids {
 		session.UserModel.UserInfoTriggerBasicByTriggerId.SetNull(id)
 	}
+}
+
+func CleanUpTriggerBasicByType(userdata_db *xorm.Session, infoTriggerType int32) {
+	_, err := userdata_db.Table("u_info_trigger_basic").Where("info_trigger_type = ?", infoTriggerType).Cols("trigger_id").Delete()
+	utils.CheckErr(err)
 }

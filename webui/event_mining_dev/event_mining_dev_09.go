@@ -1,6 +1,6 @@
 //go:build dev
 
-package event_marathon_dev
+package event_mining_dev
 
 import (
 	"elichika/client"
@@ -18,15 +18,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func EventMarathonDev13GET(ctx *gin.Context) {
-
+func EventMiningDev09GET(ctx *gin.Context) {
 	form := image_form.ImageForm{
-		FormId:    "total_topic_reward_form",
-		DataLabel: "Total topic reward order",
-		DataId:    "total_topic_reward_data",
+		FormId:    "point_ranking_topic_reward_form",
+		DataLabel: "Point ranking topic reward order",
+		DataId:    "point_ranking_topic_reward_data",
 	}
 	cards := []int32{}
-	for _, item := range TopStatus.EventMarathonBonusPopupOrderCardMaterRows.Slice {
+	for _, item := range TopStatus.EventMiningBonusPopupOrderCardMaterRows.Slice {
 		if item.IsGacha {
 			continue
 		}
@@ -61,16 +60,16 @@ func EventMarathonDev13GET(ctx *gin.Context) {
 
 	ctx.Header("Content-Type", "text/html")
 	msg := form.GetHTML()
-	ctx.HTML(http.StatusOK, "event_marathon_dev.html", gin.H{
+	ctx.HTML(http.StatusOK, "event_mining_dev.html", gin.H{
 		"body": msg,
 	})
 
 }
 
-func EventMarathonDev13POST(ctx *gin.Context) {
+func EventMiningDev09POST(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	utils.CheckErr(err)
-	data := form.Value["total_topic_reward_data"][0]
+	data := form.Value["point_ranking_topic_reward_data"][0]
 	tokens := strings.Split(data, ",")
 	ur, err := strconv.Atoi(tokens[0])
 	utils.CheckErr(err)
@@ -78,39 +77,42 @@ func EventMarathonDev13POST(ctx *gin.Context) {
 	utils.CheckErr(err)
 	sr1, err := strconv.Atoi(tokens[2])
 	utils.CheckErr(err)
-	TopStatus.EventTotalTopicRewardInfo.Slice = nil
-	TopStatus.EventTotalTopicRewardInfo.Append(client.EventTopicReward{
+	TopStatus.EventPointRankingTopicRewardInfo.Slice = nil
+	TopStatus.EventPointRankingTopicRewardInfo.Append(client.EventMiningTopicReward{
 		DisplayOrder: 1,
 		RewardContent: client.Content{
 			ContentType:   enum.ContentTypeCard,
 			ContentId:     int32(ur),
 			ContentAmount: 1,
 		},
+		RankingCategory: enum.EventRankingCategoryPoint,
 		// the texturestruckture are the names of the character, no need to fill it
 	})
-	TopStatus.EventTotalTopicRewardInfo.Append(client.EventTopicReward{
+	TopStatus.EventPointRankingTopicRewardInfo.Append(client.EventMiningTopicReward{
 		DisplayOrder: 2,
 		RewardContent: client.Content{
 			ContentType:   enum.ContentTypeCard,
 			ContentId:     int32(sr0),
 			ContentAmount: 1,
 		},
+		RankingCategory: enum.EventRankingCategoryPoint,
 	})
-	TopStatus.EventTotalTopicRewardInfo.Append(client.EventTopicReward{
+	TopStatus.EventPointRankingTopicRewardInfo.Append(client.EventMiningTopicReward{
 		DisplayOrder: 3,
 		RewardContent: client.Content{
 			ContentType:   enum.ContentTypeCard,
 			ContentId:     int32(sr1),
 			ContentAmount: 1,
 		},
+		RankingCategory: enum.EventRankingCategoryPoint,
 	})
-	ctx.Header("Location", "/webui/event_marathon_dev/14")
+	ctx.Header("Location", "/webui/event_mining_dev/10")
 	ctx.String(http.StatusSeeOther, "")
 }
 
 func init() {
-	if config.DeveloperMode == config.DeveloperModeEventMarathonDev {
-		router.AddHandler("/webui/event_marathon_dev", "GET", "/13", EventMarathonDev13GET)
-		router.AddHandler("/webui/event_marathon_dev", "POST", "/13", EventMarathonDev13POST)
+	if config.DeveloperMode == config.DeveloperModeEventMiningDev {
+		router.AddHandler("/webui/event_mining_dev", "GET", "/09", EventMiningDev09GET)
+		router.AddHandler("/webui/event_mining_dev", "POST", "/09", EventMiningDev09POST)
 	}
 }
