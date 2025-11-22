@@ -4,6 +4,7 @@ package main
 
 import (
 	"elichika/config"
+	"elichika/embedded"
 	_ "elichika/handler"
 	"elichika/log"
 	"elichika/router"
@@ -12,8 +13,6 @@ import (
 	_ "elichika/webui"
 
 	"github.com/gin-gonic/gin"
-
-	"C"
 )
 
 func init() {
@@ -30,6 +29,8 @@ func init() {
 		r.Run(*config.Conf.ServerAddress)
 	}()
 	log.Println("Exit main init, server should be live")
+	embedded.SendLoadedSignal()
+	log.ElichikaReady = true
 }
 
 func main() {}

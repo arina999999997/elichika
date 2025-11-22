@@ -8,7 +8,7 @@ static/
 backup/
 
 raw_data/
-
+local_git_server/
 *.exe
 *.txt
 *.db

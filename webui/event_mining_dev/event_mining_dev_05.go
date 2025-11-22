@@ -105,7 +105,7 @@ func EventMiningDev05POST(ctx *gin.Context) {
 	priority := 16 - cellIdInt
 	if cellIdInt <= 2 {
 		if cellIdInt == 1 {
-			priority = 30	
+			priority = 30
 		} else {
 			priority = 20
 		}

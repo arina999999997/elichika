@@ -15,15 +15,22 @@ import "C"
 
 // it's important for the import C to be right after the implementation
 import (
+	"elichika/embedded"
+
 	"unsafe"
 
 	"github.com/gin-gonic/gin"
 )
 
+var ElichikaReady = false
+
 type AndroidLogger struct {
 }
 
 func (w AndroidLogger) Write(data []byte) (n int, err error) {
+	if !ElichikaReady {
+		embedded.Alert(string(data))
+	}
 	dataStr := C.CString(string(data))
 	defer C.free(unsafe.Pointer(dataStr))
 	C.android_log(dataStr)

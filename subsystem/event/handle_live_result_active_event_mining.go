@@ -126,7 +126,7 @@ func HandleLiveResultActiveEventMining(session *userdata.Session, liveDifficulty
 		ContentId:     eventMining.TopStatus.EventPointMasterId,
 		ContentAmount: itemDropTotalBase,
 	})
-	if itemDropTotal - itemDropTotalBase > 0 {
+	if itemDropTotal-itemDropTotalBase > 0 {
 		result.LiveEventDropItemInfo.Value.LiveEventDropContents.Slice[0].BonusDrops.Append(client.Content{
 			ContentType:   enum.ContentTypeExchangeEventPoint,
 			ContentId:     eventMining.TopStatus.EventPointMasterId,
