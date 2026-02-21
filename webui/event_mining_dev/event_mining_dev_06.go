@@ -37,10 +37,9 @@ func EventMiningDev06GET(ctx *gin.Context) {
 		}
 		goodLiveDiff := false
 		for _, live := range gamedata.Live[liveId].LiveDifficulties {
-			if live.UnlockPattern == enum.LiveUnlockPatternOpen {
-				goodLiveDiff = true
-				break
-			}
+			goodLiveDiff = goodLiveDiff || (live.UnlockPattern == enum.LiveUnlockPatternOpen);
+			goodLiveDiff = goodLiveDiff || (live.UnlockPattern == enum.LiveUnlockPatternMemberStory);
+			goodLiveDiff = goodLiveDiff || (live.UnlockPattern == enum.LiveUnlockPatternExtra);
 		}
 		if goodLiveDiff {
 			liveIds = append(liveIds, liveId)
