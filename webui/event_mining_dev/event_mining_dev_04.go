@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,7 +39,7 @@ func EventMiningDev04GET(ctx *gin.Context) {
 
 	form := image_form.ImageForm{
 		FormId:    "event_top_still_cell_form",
-		DataLabel: "Event top still cells (note: select by appearance order AT THE END, from bottom up)",
+		DataLabel: "Event top still cells (note: select by appearance order AT THE END, from bottom up, prefix with animation_ to use animation instead. If using animation, use _animation_split_ to split between the normal and popup assets, and put the event card animation in the middle spot)",
 		DataId:    "event_top_still_cell_" + fmt.Sprint(cellId),
 	}
 
@@ -72,21 +73,45 @@ func EventMiningDev04POST(ctx *gin.Context) {
 	if cellIdInt == 16 {
 		TopStatus.EventMiningTopStillCellMasterRows.Slice = nil
 	}
-	TopStatus.EventMiningTopStillCellMasterRows.Append(
-		client.EventMiningTopStillCellMasterRow{
-			EventMiningMasterId: TopStatus.EventId,
-			ThumbnailCellId:     TopStatus.EventId*100 + int32(cellIdInt),
-			AddStoryNumber:      addStoryNumberByCellId[cellIdInt],
-			Priority:            int32(cellIdInt * 10),
-			ImageThumbnailAssetPath: client.TextureStruktur{
-				V: generic.NewNullable(assetPath),
-			},
-			IsPopup: true,
-			PopupImageThumbnailAssetPath: client.TextureStruktur{
-				V: generic.NewNullable(assetPath),
-			},
-			IsBig: (cellIdInt == 16) || (cellIdInt == 21) || (cellIdInt == 26),
-		})
+	if !strings.HasPrefix(assetPath, "animation_") {
+		TopStatus.EventMiningTopStillCellMasterRows.Append(
+			client.EventMiningTopStillCellMasterRow{
+				EventMiningMasterId: TopStatus.EventId,
+				ThumbnailCellId:     TopStatus.EventId*100 + int32(cellIdInt),
+				AddStoryNumber:      addStoryNumberByCellId[cellIdInt],
+				Priority:            int32(cellIdInt * 10),
+				ImageThumbnailAssetPath: client.TextureStruktur{
+					V: generic.NewNullable(assetPath),
+				},
+				IsPopup: true,
+				PopupImageThumbnailAssetPath: client.TextureStruktur{
+					V: generic.NewNullable(assetPath),
+				},
+				IsBig: (cellIdInt == 16) || (cellIdInt == 21) || (cellIdInt == 26),
+			})
+	} else {
+		assetPaths := strings.Split(assetPath[10:], "_animation_split_")
+		if len(assetPaths) != 2 {
+			panic("must have exactly the normal and pop up asset path")
+		}
+		TopStatus.EventMiningTopAnimationCellMasterRows.Append(
+			client.EventMiningTopAnimationCellMasterRow{
+				EventMiningMasterId: TopStatus.EventId,
+				ThumbnailCellId:     TopStatus.EventId*100 + int32(cellIdInt),
+				// this is actually set to 0 by the client anyway, but server side want it to reveal the cells based on story read
+				AddStoryNumber: addStoryNumberByCellId[cellIdInt],
+				Priority:       int32(cellIdInt * 10),
+				MovieAssetPath: client.MovieStruktur{
+					V: assetPaths[0],
+				},
+				IsPopup: true,
+				PopupMovieAssetPath: client.MovieStruktur{
+					V: assetPaths[1],
+				},
+				IsBig: true,
+				// the other fields are not necessary
+			})
+	}
 	if cellIdInt == 26 { // done
 		ctx.Header("Location", "/webui/event_mining_dev/05")
 	} else {

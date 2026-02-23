@@ -31,6 +31,27 @@ func FetchEventMining(session *userdata.Session, eventId int32) (*response.Fetch
 		UpdateUserEventStatus(session, userEventStatus)
 	}
 	userEventMining := mining.GetUserEventMining(session)
+	// the engine can only display at most 2 animations, even if it looks like it should display all 3
+	// the way it work is something like this:
+	// - 1 animation is always unlocked for the gacha characters
+	//   - it's pretty much random which gacha characters is shown
+	//   - we just choose random here
+	// - the animation is unlocked after all story are cleared and is always reserved for the event character
+	// - one animation has highest priority, another animation has the lowest priority (after the end)
+	// - we have to dynamically set these values pretty much
+	if eventMining.HasAnimation() {
+		gachaCharacterAnimation := eventMining.RandomGachaCharacterAnimation()
+		if userEventMining.ReadStoryNumber < 7 {
+			gachaCharacterAnimation.Priority = 160
+			resp.EventMiningTopStatus.EventMiningTopAnimationCellMasterRows.Append(gachaCharacterAnimation)
+		} else {
+			eventCharacterAnimation := eventMining.EventCharacterAnimation()
+			gachaCharacterAnimation.Priority = 260
+			eventCharacterAnimation.Priority = 210
+			resp.EventMiningTopStatus.EventMiningTopAnimationCellMasterRows.Append(eventCharacterAnimation)
+			resp.EventMiningTopStatus.EventMiningTopAnimationCellMasterRows.Append(gachaCharacterAnimation)
+		}
+	}
 	n := 0
 	for ; n < len(resp.EventMiningTopStatus.EventMiningTopStillCellMasterRows.Slice); n++ {
 		if resp.EventMiningTopStatus.EventMiningTopStillCellMasterRows.Slice[n].AddStoryNumber > userEventMining.ReadStoryNumber {

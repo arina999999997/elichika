@@ -115,6 +115,35 @@ func EventMiningDevFinalGET(ctx *gin.Context) {
 		utils.CheckErr(err)
 	}
 
+	topAnimationCellBuffer := new(bytes.Buffer)
+	topAnimationCellWriter := csv.NewWriter(topAnimationCellBuffer)
+	err = topAnimationCellWriter.Write([]string{
+		"thumbnail_cell_id",
+		"is_gacha",
+		"movie_asset_path",
+		"is_popup",
+		"popup_movie_asset_path",
+		"popup_comment",
+		"is_big"})
+	utils.CheckErr(err)
+	for _, cell := range TopStatus.EventMiningTopAnimationCellMasterRows.Slice {
+		err = topAnimationCellWriter.Write([]string{
+			fmt.Sprint(cell.ThumbnailCellId),
+			fmt.Sprint(intBool(cell.Priority != 210)),
+			fmt.Sprint(cell.MovieAssetPath.V),
+			fmt.Sprint(intBool(cell.IsPopup)),
+			fmt.Sprint(cell.PopupMovieAssetPath.V),
+			fmt.Sprint("null"), // TODO(extra): figure it out if it is ever not null
+			fmt.Sprint(intBool(cell.IsBig)),
+		})
+		utils.CheckErr(err)
+	}
+	topAnimationCellWriter.Flush()
+	topAnimationCellFile, err := archiveWriter.Create("top_animation_cell.csv")
+	utils.CheckErr(err)
+	_, err = topAnimationCellFile.Write(topAnimationCellBuffer.Bytes())
+	utils.CheckErr(err)
+
 	topStillCellBuffer := new(bytes.Buffer)
 	topStillCellWriter := csv.NewWriter(topStillCellBuffer)
 	err = topStillCellWriter.Write([]string{

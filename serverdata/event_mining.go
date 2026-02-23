@@ -9,7 +9,7 @@ import (
 	"elichika/utils"
 
 	// "encoding/json"
-	// "fmt"
+	"fmt"
 	"os"
 	// "path/filepath"
 	// "strings"
@@ -125,11 +125,25 @@ type EventMiningTopStillSubCell struct {
 	PopupImageThumbnailAssetPath string `xorm:"'popup_image_thumbnail_asset_path'"`
 }
 
-// animated cell in event mining, these were used initially  but by the end they gave up doing it
-// it seems like the game no longer has the ability to actually do this:
-// - this is tested with item inside m_movie and with some recovered early asset
-// we will give up on this for now, and add it later if we can get animation to work
+// animated cell in event mining, these were used initially but by the end they gave up doing it
+// we have the assets for 2 events
+// these pretty much replace the big top still cell, so we use the same id and priority convention as those
 type EventMiningTopAnimationCell struct {
+	EventId int32 `xorm:"pk 'event_id'"`
+	// id convention: event_id * 100 + cell id
+	// cell id is from 16 to 26:
+	// - this is because 1 to 15 is used for subcell
+	// - 16 and 17 is for the 2 always unlocked item
+	// - 18 - 26 are for items unlocked after story:
+	// - 7 smaller image and 2 bigger image
+	// - they will form a 5 x 3 grid at the end
+	ThumbnailCellId     int32   `xorm:"pk 'thumbnail_cell_id'"`
+	IsGacha             bool    `xorm:"'is_gacha'"`
+	MovieAssetPath      string  `xorm:"'image_thumbnail_asset_path'"`
+	IsPopup             bool    `xorm:"'is_popup'"`
+	PopupMovieAssetPath string  `xorm:"'popup_image_thumbnail_asset_path'"`
+	PopupComment        *string `xorm:"'popup_comment'"`
+	IsBig               bool    `xorm:"'is_big'"`
 }
 
 // reproduced typos
@@ -168,7 +182,7 @@ func init() {
 	addTable("s_event_mining_trade_product", EventMiningTradeProduct{}, nil)
 	addTable("s_event_mining_top_still_cell", EventMiningTopStillCell{}, nil)
 	addTable("s_event_mining_top_still_sub_cell", EventMiningTopStillSubCell{}, nil)
-	// addTable("s_event_mining_top_animation_cell", EventMiningTopStillAnimationCell{}, nil)
+	addTable("s_event_mining_top_animation_cell", EventMiningTopAnimationCell{}, nil)
 	addTable("s_event_mining_bonus_popup_order_card_mater", EventMiningBonusPopupOrderCardMater{}, nil)
 	addTable("s_event_mining_rule_description_page", EventMiningRuleDescriptionPage{}, nil)
 
@@ -286,7 +300,7 @@ func initEventMining(session *xorm.Session) {
 				}
 				for k := i; k <= j; k++ {
 					if rankingRewards[k].RankingResultPrizeType != rankingRewards[i].RankingResultPrizeType {
-						log.Panic("RankingResultPrizeType changed")
+						log.Panic("RankingResultPrizeType changed" + fmt.Sprint(i) + "->" + fmt.Sprint(j))
 					}
 					eventMiningRewards = append(eventMiningRewards, EventMiningReward{
 						EventId:       eventMining.EventId,
@@ -311,7 +325,19 @@ func initEventMining(session *xorm.Session) {
 		utils.CheckErr(err)
 		_, err = session.Table("s_event_mining_reward").Insert(eventMiningRewards)
 		utils.CheckErr(err)
-
+		// animation
+		topAnimationCells := []EventMiningTopAnimationCell{}
+		parser.ParseCsv(path+"top_animation_cell.csv", &topAnimationCells, &parser.CsvContext{
+			StartField: 1,
+			HasHeader:  true,
+		})
+		if len(topAnimationCells) > 0 {
+			for i := range topAnimationCells {
+				topAnimationCells[i].EventId = eventMining.EventId
+			}
+			_, err = session.Table("s_event_mining_top_animation_cell").Insert(topAnimationCells)
+			utils.CheckErr(err)
+		}
 		// stills
 		topStillCells := []EventMiningTopStillCell{}
 		parser.ParseCsv(path+"top_still_cell.csv", &topStillCells, &parser.CsvContext{
@@ -321,8 +347,10 @@ func initEventMining(session *xorm.Session) {
 		for i := range topStillCells {
 			topStillCells[i].EventId = eventMining.EventId
 		}
-		_, err := session.Table("s_event_mining_top_still_cell").Insert(topStillCells)
-		utils.CheckErr(err)
+		if len(topStillCells) > 0 {
+			_, err := session.Table("s_event_mining_top_still_cell").Insert(topStillCells)
+			utils.CheckErr(err)
+		}
 		topStillSubCells := []EventMiningTopStillSubCell{}
 		parser.ParseCsv(path+"top_still_sub_cell.csv", &topStillSubCells, &parser.CsvContext{
 			StartField: 1,

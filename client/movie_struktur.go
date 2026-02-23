@@ -1,5 +1,5 @@
 package client
 
 type MovieStruktur struct {
-	V string `json:"V"`
+	V string `json:"v"`
 }

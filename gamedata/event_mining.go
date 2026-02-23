@@ -9,6 +9,7 @@ import (
 	"elichika/utils"
 
 	"fmt"
+	"math/rand"
 	"sort"
 
 	"xorm.io/xorm"
@@ -21,7 +22,9 @@ type EventMining struct {
 	Name    string // name is not stored as it is actually in dictionary db for mining event, but it's here too for easy access
 
 	// this is the top status template, COPY before use
-	TopStatus client.EventMiningTopStatus
+	TopStatus       client.EventMiningTopStatus
+	EventAnimation  *client.EventMiningTopAnimationCellMasterRow
+	GachaAnimations []client.EventMiningTopAnimationCellMasterRow
 
 	// bonus mapping
 	CardBonus map[int32][]int32
@@ -50,6 +53,18 @@ func (em *EventMining) GetVoltageRankingReward(rank int32) int32 {
 	}
 	log.Panic("wrong ranking reward")
 	return 0
+}
+
+func (em *EventMining) HasAnimation() bool {
+	return em.EventAnimation != nil
+}
+
+func (em *EventMining) EventCharacterAnimation() client.EventMiningTopAnimationCellMasterRow {
+	return *em.EventAnimation
+}
+
+func (em *EventMining) RandomGachaCharacterAnimation() client.EventMiningTopAnimationCellMasterRow {
+	return em.GachaAnimations[rand.Intn(2)]
 }
 
 func loadEventMining(gamedata *Gamedata) {
@@ -161,6 +176,51 @@ func loadEventMining(gamedata *Gamedata) {
 			err = session.Table("s_event_mining_reward").Where("event_id = ?", event.EventId).OrderBy("reward_group_id").OrderBy("display_order").Find(&eventMining.TopStatus.EventMiningRewardMasterRows.Slice)
 		})
 		utils.CheckErr(err)
+
+		// animations
+		topAnimationCells := []serverdata.EventMiningTopAnimationCell{}
+		gamedata.ServerdataDb.Do(func(session *xorm.Session) {
+			err = session.Table("s_event_mining_top_animation_cell").Where("event_id = ?", event.EventId).Find(&topAnimationCells)
+		})
+		utils.CheckErr(err)
+		for _, cell := range topAnimationCells {
+			popupComment := generic.Nullable[client.LocalizedText]{}
+			if cell.PopupComment != nil {
+				popupComment = generic.NewNullable(client.LocalizedText{
+					DotUnderText: *cell.PopupComment,
+					// TODO(extra): if ths is ever used, it should be localised
+				})
+			}
+			if cell.IsGacha {
+				eventMining.GachaAnimations = append(eventMining.GachaAnimations, client.EventMiningTopAnimationCellMasterRow{
+					EventMiningMasterId: event.EventId,
+					ThumbnailCellId:     cell.ThumbnailCellId,
+					MovieAssetPath: client.MovieStruktur{
+						V: cell.MovieAssetPath,
+					},
+					IsPopup: cell.IsPopup,
+					PopupMovieAssetPath: client.MovieStruktur{
+						V: cell.PopupMovieAssetPath,
+					},
+					PopupComment: popupComment,
+					IsBig:        cell.IsBig,
+				})
+			} else {
+				eventMining.EventAnimation = &client.EventMiningTopAnimationCellMasterRow{
+					EventMiningMasterId: event.EventId,
+					ThumbnailCellId:     cell.ThumbnailCellId,
+					MovieAssetPath: client.MovieStruktur{
+						V: cell.MovieAssetPath,
+					},
+					IsPopup: cell.IsPopup,
+					PopupMovieAssetPath: client.MovieStruktur{
+						V: cell.PopupMovieAssetPath,
+					},
+					PopupComment: popupComment,
+					IsBig:        cell.IsBig,
+				}
+			}
+		}
 
 		// stills
 
