@@ -30,7 +30,6 @@ func sortAndUnique(data []string) []string {
 // only do this for newly added pack
 // for best effect, download and compare with files in /static
 func performPackCheck(packs []string) string {
-	return ""
 	publicCdn := "https://llsifas.imsofucking.gay/static/"
 	// localCdn := "static/"
 	packs = sortAndUnique(packs)
@@ -61,5 +60,6 @@ func performPackCheck(packs []string) string {
 		// 	}
 		// }
 	}
+	log.Printf(report)
 	return report
 }
